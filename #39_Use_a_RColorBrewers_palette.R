@@ -1,0 +1,6 @@
+png("#39_Use_a_RColorBrewers_palette.png" , width = 480, height = 480)
+par(mar=c(0,0,1,0))
+library(RColorBrewer)
+coul <- brewer.pal(5, "BuPu") 
+pie(rep(1, length(coul)), col = coul , main="") 
+dev.off()
