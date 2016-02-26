@@ -1,5 +1,3 @@
-# --- The R graph Gallery --- #
-
 ### Exemple 1 : with only one factor
 #Let's create datas. We will consider 7 varieties of wheat / 20 samples per variety / a degree of resistance to a disease (mark from 0 to 20) for each sample:
 

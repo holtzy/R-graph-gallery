@@ -38,6 +38,7 @@ d3 = forceNetwork(Links = relations, Nodes = vertices,
 
 #If you want to save the graph as html file
 saveNetwork(d3,file = '#87_Interactive_network.html',selfcontained = F)
+saveNetwork(d3,file = '#87_Interactive_network.html',selfcontained = T)
 
 
 

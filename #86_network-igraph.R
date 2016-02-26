@@ -18,7 +18,7 @@ vertices$group = edge.betweenness.community(g)$membership # betweeness centralit
 png("#86_network-igraph.png", width = 480, height = 480 )
 
 plot(g,
-     mark.groups=vertices$group, # group vertices by betweeness indicator (redish blob background)
+     #mark.groups=vertices$group, # group vertices by betweeness indicator (redish blob background)
      layout=layout.auto, 
      vertex.color = vertices$group, # color vertices by edge betweeness
      vertex.label=NA, # no vertex label (name)
