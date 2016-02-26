@@ -2,7 +2,8 @@
 # Explication PCA en français :
 http://www.pacea.u-bordeaux1.fr/IMG/pdf/TP_ACP.pdf
 
-
+#CHange1
+#Change 2
 
 # library 
 library(FactoMineR)
