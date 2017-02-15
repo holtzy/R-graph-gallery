@@ -50,3 +50,80 @@ plotly_POST(my_graph, filename = "#121_Manage_colors_in_plotly-5", world_readabl
 plotly_IMAGE(my_graph, width = 480, height = 480, format = "png", scale = 2, out_file = "#121_Manage_colors_in_plotly-5.png")
 
 
+
+
+
+
+
+=======
+UPDATE DU AU CHANGEMENT DE PLOTLY
+
+library(plotly)
+head(iris)
+
+
+1 -- / Hand chosen colors.
+
+#121 Manage colors in plotly
+ 
+ 
+a
+This is the most basic way to set the color: you choose the color point by point or give one color for all the points. It works like a classic R graph. Add the color argument IN the marker argument because it does not depend of another variable!
+ 
+There are several formats available with plotly for color names :
+        - hex (e.g. '#d3d3d3')
+        - rgb (e.g. 'rgb(255, 0, 0)')
+        - rgba (e.g. 'rgb(255, 0, 0, 0.5)')
+        - hsl (e.g. 'hsl(0, 100%, 50%)')
+        - hsv (e.g. 'hsv(0, 100%, 100%)')
+        - named colors (full list here)
+
+plot_ly(iris, x = ~Petal.Length, y = ~Petal.Width , type="scatter", mode="markers" , marker=list(color="purple" , size=20 , opacity=0.5)  )
+
+ 
+ 
+a
+a
+2 -- / Qualitative color mapping
+
+#121 Manage colors in plotly#121 Manage colors in plotly
+ 
+ 
+a
+If a ordinal variable (AKA a non-ordered factor variable) is assigned to the coloR argument, then a qualitative color palette is used by default. So we put the argument color OUT of the marker arguments!
+ 
+If you want to change the default palette, it's recommended that you provide a RColorBrewer qualitative pallette name (e.g., "Set1" or "Accent") to the colorS argument. See graph #38 to see the existing palettes.
+
+# left
+plot_ly(iris, x = ~Petal.Length, y = ~Petal.Width,  type="scatter", mode = "markers" , color = ~Species , 
+         marker=list( size=20 , opacity=0.5)  )
+
+# right
+plot_ly(iris, x = ~Petal.Length, y = ~Petal.Width,  type="scatter", mode = "markers" , color = ~Species , 
+         colors = "Set1",  
+         marker=list( size=20 , opacity=0.5)  )
+
+ 
+ 
+a
+a
+3 -- / Sequential color mapping
+
+#121 Manage colors in plotly#121 Manage colors in plotly
+
+
+If either a numeric or an ordered factor is mapped to the coloR argument, plot_ly() applies a sequential color scale by default.
+
+You can also change the palette, giving the starting and ending colors to the colorS argument.
+
+# left
+plot_ly(iris, x = ~Petal.Length, y = ~Petal.Width , type="scatter", mode = "markers", 
+        marker=list( size=20 , opacity=0.5), color = ~Sepal.Length)
+
+# right
+plot_ly(iris, x = ~Petal.Length, y = ~Petal.Width , type="scatter", mode = "markers", 
+        marker=list( size=20 , opacity=0.5), color = ~Sepal.Length , 
+        colors=c("green","blue") )
+
+
+

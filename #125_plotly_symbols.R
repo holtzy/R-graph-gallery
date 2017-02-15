@@ -1,3 +1,4 @@
+
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 #125 : The plotly symbols :
 
@@ -14,12 +15,15 @@ data=cbind(data , my_symbol=c(1:36))
 data=data[data$my_symbol<33 , ]
 
 # Make the graph
-my_graph=plot_ly(data , x=Var1 , y=Var2 , mode="markers+text" , hovermode="text" , text=my_symbol , textposition = "bottom right" , marker=list(symbol=my_symbol , size=40 , color="red" , opacity=0.7) )%>% 
+my_graph=plot_ly(data , x=~Var1 , y=~Var2 , type="scatter", mode="markers+text" , hoverinfo="text" , text=~my_symbol , textposition = "bottom right" , marker=list(symbol=~my_symbol , size=40 , color="red" , opacity=0.7) )%>% 
 layout(
 	hovermode="closest",
 	yaxis=list(autorange="reversed" , title="" , tickfont=list(color="white")  ) ,
 	xaxis=list( title="" , tickfont=list(color="white")) 
 	)
+
+# Show graph
+my_graph
 
 
 #Save
