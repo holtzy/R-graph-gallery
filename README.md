@@ -31,7 +31,7 @@ Thank you very much for any contribution!
 
 Charts re-utilization
 --------
-Feel free to reuse any of the chart displayed in the gallery at your convenience! However, please don't forget to **give credit** to this work by citing it! Most importantly, **add links** to the gallery since it allows the website to grow. For more info, please refer to the license of the website.
+Feel free to reuse any of the chart displayed in the gallery at your convenience! However, please don't forget to **give credit** to this work by citing it! Most importantly, **add links** to the gallery since it allows the website to grow. For more info, please refer to the [**license**](https://github.com/holtzy/R-graph-gallery/blob/master/LICENSE) of the website.
 
 
 
