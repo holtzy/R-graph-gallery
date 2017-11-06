@@ -1,4 +1,4 @@
-   The Python Graph Gallery
+   The R Graph Gallery
 ===================
 
 <img align="center" src="overview_RGG.png">
@@ -38,10 +38,12 @@ Feel free to reuse any of the chart displayed in the gallery at your convenience
 Acknowledgment
 --------
 There are many people I would like to acknowledge:
-- Creators of [**Matplotlib**](https://matplotlib.org), [**Seaborn**](https://seaborn.pydata.org), and [**Pandas**](http://pandas.pydata.org). Awesome tools, without them python would be way different, and the gallery would not exist. Sometimes, my examples can be close from their documentation, but I always link toward their webpages.
-- Creators of other libraries and blog who accepted that I share their creations.
-- People who already sent me some feedbacks / bug reports / proposition of improvement.
+- Creators of the multiple libraries I used in the gallery. Awesome tools, without them R would be way different, and the gallery would not exist. Sometimes, my examples can be close from their documentation, but I always link toward their webpages.
+- [**R studio**](https://www.rstudio.com) for all the libraries they have created + their awesome IDE I use every day
+- [**R blogger**](https://www.r-bloggers.com) for displaying some of the content of the gallery
+- People who sent me some feedbacks / bug reports / proposition of improvement.
 - People who said me thank you! Without that I would not developp this resource...
+- Companies that have sponsored the gallery
 
 - My friend [**Guillaume Guimzu Debreu**](https://www.linkedin.com/in/guillaume-debreu-7b360b125/) without who I would never have had the Idea to make the galleries.
 - My friend [**Conor Healy**](www.conor.fr), best designer ever, who did the awesome set of Logo.
