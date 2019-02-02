@@ -1,0 +1,269 @@
+List of theme
+-------------------
+- Basis of SVG -> circle, rect, line.. AND d3-shape helpers.
+- Axis
+- Transition
+- tooltip
+- Reading data
+- Manipulating data / calculation
+
+
+.append("g")                                      -       This adds a <g> element that is used to group several svg elements together.
+
+.attr("transform", translate(23,34))              -       Generally applied to a <g> to do a translation of the element. if called with translate, just put the g element a bit more right and down.
+
+SVG object                                        -       Circle, Rect, Path
+
+var                                               -       Create a variable. It can be
+                                                                  -> just a value: var height = 200
+                                                                  -> a list : var data = [12,20,23,11,33]
+                                                                  -> a function: var myfunction = d3.timeParse("%d-%b-%y"), then I can call myfunction
+
+console.log("my message")                         -       To output something in the javascript console
+
+.sort                                             -       To sort your array. Use then a weird syntax I don't understand at all.
+
+data.myFunction                                   -       This is gonna apply myFunction to data, and directly change data! no need to redirect it in another object.
+
+.extent                                           -       Find minimum and maximum
+
+compute the maximum of a column:                  -       d3.csv("file.csv", function(data) {var mymax = d3.max(data, function(d) { return +d.Value;} ); })
+
+function (d, i)                                   -       When reading data, d is the element in the data, i is the iteration of the loop. I can give the names I want, only the position matter: first element is value, second is index.
+
+
+.attr("class", function (d, i) { return ((i >= 0) ? "A" : "B"); })   -       This is a ifelse statement to attr the class of the object
+
+.style("text-anchor", "middle")                   -       The equivalent of hjust to control how text annotation is aligned.
+
+Math.floor                                        -       gives the closest integer: Math.floor(3.7) gives 3
+
+Javascript as object types as well. If I have like "23300" -> then it is not a number!
+
+concept of dot notation                           -       in Javascript we can use object.property, like console.log, or d.columnName
+
+select(".bar")                                    -       this will select the FIRST element that has the class bar
+selectAll(".bar")                                 -       this will select all elements with the bar class.
+
+.enter()										  -       If I got 4 divs and 5 data items, then I have no space left for 1. this data is available in the enter() selection. When I load data for the first time with no DOM element preexisting, I have to enter all of them!
+
+update()										  -       We call update the selection that is present in the DOM. They have a chair!
+
+.exit()											  -  	  Opposite of enter: remove the DOM elements that are not used by data. Usually it is just usefull to do selection.exit().remove() --> delete the unneeded chair
+
+
+(d) => d.routeTag)   equivalent of function(d){ return d.routeTag}
+
+
+
+
+
+
+
+
+AXIS
+--------------
+
+domain                                            -       From what value to what values the data goes, like 0 to 100 for a %
+range                                             -       From where to where the svg element goes in the viewport in pixel
+
+Different type of scale:
+  - d3.scalePoint()
+  - d3.scaleLinear() -> scatterplot
+  - d3.scaleBand() -> barplot, make bands
+  - d3.scaleOrdinal()
+  - d3.scale.threshold() --> for colors
+
+Custom scale:
+  - .padding([.9]) -> add space between the axis and the first element. between 0 and 1. Does not work for scaleLinear
+  -
+
+
+
+
+OBJECT
+----------------
+an object use named indexes: each part has a name.
+var person = {firstName:"John", lastName:"Doe"}       -       This is an OBJECT with 2 properties. Note the curly braces
+person.firstName   <- same as -> person["firstName"]  -       2 ways of accessing object property
+
+
+
+ARRAYS
+--------------
+an array is a special type of object. It is composed by several elements. It is NOT possible to give name to elements, they are just number 0, 1, 2...
+var cars = ["Saab", "Volvo", "BMW"]               -       This is an ARRAY with 3 elements.
+cars[0]                                           -       First element of the array, javascript starts counting at 0.
+cars[0] = "Opel"                                  -       Change the first element of the list
+cars.length                                		    -       Get the length
+cars.sort()                               		    -       Sort the array alphabetically
+cars.reverse()                                    -       reverse order of elements
+data.col1                                         -       can also be written data["col1"]
+cars.slice(1)                                     -       remove the first n elements
+cars.push("newelement")                           -       Add new element to the array
+cars.pop()                                        -       remove last element
+
+an array element can be an object
+
+Array.forEach()                                   -       calls a function once for each array elements
+Array.map()                                       -       return a new array by performing a function on each elements
+    var numbers1 = [4, 9, 16, 25];
+    var numbers2 = numbers1.map(function(d){return d*2});     --> multiply each element by 2
+    var numbers3 = numbers1.map(function(d,i){return d*i});   --> I can also use i: the index: 0 to length.
+
+Array.filter()                                    -        creates new array with elements that pass a animateFirstStep
+    var numbers4 = numbers1.filter(function(d){return d>8})
+
+Array.every()                                      -       Check if every elements pass a test:
+    var numbers5 = numbers1.every(function(d){return d>8})
+
+Array.some()                                      -       Check if some elements pass a test:
+
+numbers1.indexOf(25)                              -       return the index of the number 25. See also
+numbers1.lastIndexOf()
+
+
+
+
+
+CALCULATION
+--------------
+var data = [12, 14, 29]
+  d3.min(data)
+  d3.max(data)
+  data.sort(d3.ascending)
+  d3.quantile(data_sorted, 0.25)
+NOTE: if I have a csv file and not an array, I need to transform the column to array with the map function
+
+d3.nest() --> Allows to do like group_by() in dplyr.
+
+d3.stack() --> Allow to stack variables
+Basic example:
+          var data = [
+            {time: 1, A: 10, B: 20},
+            {time: 2, A: 5, B: 10}
+          ];
+          console.log(data)
+          var series = d3.stack()
+              .keys(["A","B"])
+              (data);
+          console.log(series)
+
+d3.hexbin() --> group data in hexbin.
+
+
+
+
+
+READ TABLE
+--------------
+** WAY 1 **
+d3.csv("data.csv", function(d) {
+  return {
+    city : d.city,
+    state : d.state,
+  };
+})
+
+** WAY 2 **
+d3.tsv("data/data-alt.tsv", function(error, data) {
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+        d.close = +d.close;
+    });
+
+
+--> For JSON: d3.json()
+--> For TSV: D3.tsv()
+
+Compute the mean of a column in a csv:
+d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris_wide.csv", function(data) {
+  mean = d3.mean(data,function(d) { return +d.virginica})
+})
+
+Get column names:
+d3.csv("file.csv", function(data) {
+  var keys = data.columns
+}
+
+
+
+
+
+COLOR SCALE
+--------------
+Several color scale exist. They allow to map a value to a color:
+
+var colorScale = d3.scale.quantile()
+              .domain([0, nb_bucket, max_of_colorscale)
+              .range(col1, col2, col3, col4);
+
+Once I've got my color scale, I can call it to fill an element with the proper color:
+.style("fill", function(d) { return colorScale(d.value); })
+
+Handy for a color scale on ordinal variable:
+var fill = d3.scale.ordinal()
+    .domain(d3.range(4))
+    .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
+
+
+
+
+CREATE DATA
+-------------
+d3.range(1000)				create an array from 0 to 1000
+
+
+
+
+
+BASIC FEATURE OF SVG OBJECT
+---------------------------
+A list of stuff you can "append" and the argument you can provide:
+  g      --> .attr = class, transform,
+  circle --> r, cx, cy
+  text   --> .attr = x, y, fill, text-anchor, font-weight | .text = text to display
+  line   --> x1, y1, x2, y2, stroke, stroke-width, fill
+  Path   --> d : it gives the way to follow for the path. Like d = "M150 0 L75 200 L225 200 Z" means I start at 0, I move to 150;0, Then I do a line until 75;200, Then another line until 225 200, then I close.  Other letters allow more complicated stuff like curve. D3 has some function to build Paths.
+  rect   --> x, y, height, width
+
+
+
+
+FUNCTION TO BUILD THESE SVG SHAPE MORE EASILY
+-------------------------
+See here: https://github.com/d3/d3-shape
+- d3.area()
+- d3.lineRadial()
+- d3.line()
+- d3.linkVertical()
+- d3.symbol()
+- d3.pie()
+- d3.entries()
+- d3.ribbon()
+- d3.chord()
+- d3.hexagon()
+
+
+
+
+
+
+ANIMATION FUNCTION
+----------------
+.transition()
+.delay(0) --> to wait a little bit, useful to wait for the first anim to be finished
+.duration()
+
+Easing function:
+  - .ease(d3.easeBounceOut)
+  - .ease(d3.easeBounceIn)
+  - .ease(d3.easeLinear)
+  - See all at https://bl.ocks.org/mbostock/248bac3b8e354a9103c4
+
+
+MOUSE RESPONSIVNESS:
+----------------------
+.on("mouseover", function(){d3.select(this).style("fill", "aliceblue");})
+.on("mouseout", function(){d3.select(this).style("fill", "white");})
+.on("mousedown", animateFirstStep);
