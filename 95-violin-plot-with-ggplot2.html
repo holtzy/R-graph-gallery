@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Most basic violin plot with ggplot2 &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Learn how to build a basic violin plot with R and ggplot2. Reproducible R code is provided, different input formats are considered.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Most basic violin plot with ggplot2" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="Learn how to build a basic violin plot with R and ggplot2. Reproducible R code is provided, different input formats are considered." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/chart/area_basic.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Most basic violin plot with ggplot2</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">A <a href="violin.html">violin plot</a> allows to compare the distribution of several groups by displaying their densities. See how to build it with <code>R</code> and <code>ggplot2</code> below. Learn more about violin chart theory in <a href="https://www.data-to-viz.com/graph/violin.html">data-to-viz</a>.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='violin.html'>Violin Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/violin.html'>Violin theory</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="basic-violin-plot">Basic violin plot</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Building a <a href="violin.html">violin plot</a> with <code>ggplot2</code> is pretty straightforward thanks to the dedicated <code>geom_violin()</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Library</span>
+<span class="kw">library</span>(ggplot2)
+
+<span class="co"># create a dataset</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">name=</span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>,<span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&#39;D&#39;</span>, <span class="dv">100</span>)  ),
+  <span class="dt">value=</span><span class="kw">c</span>( <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">10</span>, <span class="dv">5</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">13</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">18</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">4</span>), <span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">12</span>, <span class="dv">1</span>) )
+)
+
+<span class="co"># Most basic violin chart</span>
+p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>value, <span class="dt">fill=</span>name)) <span class="op">+</span><span class="st"> </span><span class="co"># fill=name allow to automatically dedicate a color for each group</span>
+<span class="st">  </span><span class="kw">geom_violin</span>()
+
+<span class="co">#p</span></code></pre></div>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="95-violin-plot-with-ggplot2_files/figure-html/unnamed-chunk-2-1.png" width="100%" /></p>
+</div>
+</div>
+<h1 id="note-on-input-format">Note on input format</h1>
+<hr />
+<p>Ggplot2 expects input data to be in a <em>long</em> format: each row is dedicated to <em>one</em> observation. Your input needs 2 column:<br />
+- a <em>categorical</em> variable for the X axis: it needs to be have the class <code>factor</code><br />
+- a <em>numeric</em> variable for the Y axis: it needs to have the class <code>numeric</code> <br></p>
+<div class="row">
+<div class="col-md-6 col-sm-12">
+<h3 id="from-long-format">→ From long format</h3>
+<p>You already have the good format. It’s going to be a breeze to plot it with <code>geom_violin()</code> as follow:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Library</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+
+<span class="co"># Create data</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">name=</span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>,<span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&#39;D&#39;</span>, <span class="dv">100</span>)  ),
+  <span class="dt">value=</span><span class="kw">c</span>( <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">10</span>, <span class="dv">5</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">13</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">18</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">4</span>), <span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">12</span>, <span class="dv">1</span>) ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>)
+)</code></pre></div>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+name
+</th>
+<th style="text-align:center;">
+value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+A
+</td>
+<td style="text-align:center;">
+18.64
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+A
+</td>
+<td style="text-align:center;">
+3.18
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+A
+</td>
+<td style="text-align:center;">
+10.81
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+A
+</td>
+<td style="text-align:center;">
+14.00
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Basic violin</span>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>value, <span class="dt">fill=</span>name)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_violin</span>()</code></pre></div>
+<p><img src="95-violin-plot-with-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="100%" /></p>
+</div>
+<div class="col-md-6 col-sm-12">
+<h3 id="from-wide-format">→ From wide format</h3>
+<p>In this case we need to reformat the input. This is possible thanks to the <code>gather()</code> function of the <code>tidyr</code> library that is part of the <code>tidyverse</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Let&#39;s use the iris dataset as an example:</span>
+data_wide &lt;-<span class="st"> </span>iris[ , <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>]</code></pre></div>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Sepal.Length
+</th>
+<th style="text-align:center;">
+Sepal.Width
+</th>
+<th style="text-align:center;">
+Petal.Length
+</th>
+<th style="text-align:center;">
+Petal.Width
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+5.1
+</td>
+<td style="text-align:center;">
+3.5
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.9
+</td>
+<td style="text-align:center;">
+3.0
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.7
+</td>
+<td style="text-align:center;">
+3.2
+</td>
+<td style="text-align:center;">
+1.3
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.6
+</td>
+<td style="text-align:center;">
+3.1
+</td>
+<td style="text-align:center;">
+1.5
+</td>
+<td style="text-align:center;">
+0.2
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyr)
+data_wide <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">gather</span>(<span class="dt">key=</span><span class="st">&quot;MesureType&quot;</span>, <span class="dt">value=</span><span class="st">&quot;Val&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>MesureType, <span class="dt">y=</span>Val, <span class="dt">fill=</span>MesureType)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_violin</span>()</code></pre></div>
+<p><img src="95-violin-plot-with-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="100%" /></p>
+</div>
+</div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Violin</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Histogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Boxplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Ridgeline</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+---
+title: "Most basic violin plot with ggplot2"
+descriptionMeta: "Learn how to build a basic violin plot with R and ggplot2. Reproducible R code is provided, different input formats are considered."
+descriptionTop: "A [violin plot](violin.html) allows to compare the distribution of several groups by displaying their densities. See how to build it with `R` and `ggplot2` below. Learn more about violin chart theory in [data-to-viz](https://www.data-to-viz.com/graph/violin.html)."
+sectionText: "Violin Section"
+sectionLink: "violin.html"
+DataToVizText: "Violin theory"
+DataToVizLink: "data-to-viz.com/graph/violin.html"
+url: "area_basic"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container">
+
+
+
+
+# Basic violin plot
+***
+  
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+Building a [violin plot](violin.html) with `ggplot2` is pretty straightforward thanks to the dedicated `geom_violin()` function.
+
+```{r}
+# Library
+library(ggplot2)
+
+# create a dataset
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) )
+)
+
+# Most basic violin chart
+p <- ggplot(data, aes(x=name, y=value, fill=name)) + # fill=name allow to automatically dedicate a color for each group
+  geom_violin()
+
+#p
+```
+
+</div>
+  
+<div class = "col-md-6  col-sm-12">
+```{r, warning=FALSE, echo=FALSE, out.width = "100%", fig.width=5, fig.height=5}
+p
+```
+</div>
+</div>
+
+
+
+# Note on input format
+***
+Ggplot2 expects input data to be in a *long* format: each row is dedicated to *one* observation. Your input needs 2 column:    
+- a *categorical* variable for the X axis: it needs to be have the class `factor`  
+- a *numeric* variable for the Y axis: it needs to have the class `numeric`
+<br>
+
+
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12">
+### &rarr; From long format
+You already have the good format. It's going to be a breeze to plot it with `geom_violin()` as follow:
+```{r, out.width = "100%"}
+# Library
+library(ggplot2)
+library(dplyr)
+
+# Create data
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) ) %>% round(2)
+)
+```
+
+
+```{r echo=FALSE}
+library(knitr)
+library(kableExtra)
+kable(head(data,4), align="c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F, position = "center")
+```
+
+
+
+```{r, out.width = "100%"}
+# Basic violin
+ggplot(data, aes(x=name, y=value, fill=name)) + 
+  geom_violin()
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+### &rarr; From wide format
+In this case we need to reformat the input. This is possible thanks to the `gather()` function of the `tidyr` library that is part of the `tidyverse`.
+```{r}
+# Let's use the iris dataset as an example:
+data_wide <- iris[ , 1:4]
+```
+
+```{r echo=FALSE}
+kable(head(data_wide,4), align="c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F, position = "center")
+```
+
+```{r, out.width = "100%"}
+library(tidyr)
+data_wide %>% 
+  gather(key="MesureType", value="Val") %>%
+  ggplot( aes(x=MesureType, y=Val, fill=MesureType)) +
+    geom_violin()
+```
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
+
+
+
+
+
+
+
