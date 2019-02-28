@@ -1,0 +1,213 @@
+---
+title: "Reorder a variable with ggplot2"
+descriptionMeta: "This post describes how to reorder a variable in a ggplot2 chart. Several methods are suggested, always providing examples with reproducible code chunks."
+descriptionTop: "This post describes how to reorder a variable in a <code>ggplot2</code> chart. Several methods are suggested, always providing examples with reproducible code chunks."
+sectionText: "Ggplot2 Section"
+sectionLink: "ggplot2.html"
+DataToVizText: "Why reorder?"
+DataToVizLink: "data-to-viz.com/caveat/order_data.html"
+url: "267-reorder-a-variable-in-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container" style="padding-top: 50px">
+
+
+Reordering groups in a `ggplot2` chart can be a struggle. This is due to the fact that ggplot2 takes into account the order of the `factor` levels, not the order you observe in your data frame. You can sort your input data frame with `sort()` or `arrange()`, it will never have any impact on your `ggplot2` output.  
+
+This post explains how to reorder the level of your factor through several examples. Examples are based on 2 dummy datasets:
+```{r}
+# Library
+library(ggplot2)
+library(dplyr)
+
+# Dataset 1: one value per group
+data <- data.frame(
+  name=c("north","south","south-east","north-west","south-west","north-east","west","east"),
+  val=sample(seq(1,10), 8 )
+)
+ 
+# Dataset 2: several values per group (natively provided in R)
+# mpg
+```
+
+
+
+# Method 1: the Forecats library
+***
+The [Forecats library](https://github.com/tidyverse/forcats) is a library from the [tidyverse](https://www.tidyverse.org/) especially made to handle factors in R. It provides a suite of useful tools that solve common problems with factors. The `fact_reorder()` function allows to reorder the factor (`data$name` for example) following the value of another column (`data$val` here).
+
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+# load the library
+library(forcats)
+
+# Reorder following the value of another column:
+data %>%
+  mutate(name = fct_reorder(name, val)) %>%
+  ggplot( aes(x=name, y=val)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+ 
+# Reverse side
+data %>%
+  mutate(name = fct_reorder(name, desc(val))) %>%
+  ggplot( aes(x=name, y=val)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+
+<br><br>
+If you have several values per level of your factor, you can specify which function to apply to determine the order. The default is to use the median, but you can use the number of data points per group to make the classification:
+
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+# Using median
+mpg %>%
+  mutate(class = fct_reorder(class, hwy, .fun='median')) %>%
+  ggplot( aes(x=reorder(class, hwy), y=hwy, fill=class)) + 
+    geom_boxplot() +
+    xlab("class") +
+    theme(legend.position="none") +
+    xlab("")
+ 
+# Using number of observation per group
+mpg %>%
+  mutate(class = fct_reorder(class, hwy, .fun='length' )) %>%
+  ggplot( aes(x=class, y=hwy, fill=class)) + 
+    geom_boxplot() +
+    xlab("class") +
+    theme(legend.position="none") +
+    xlab("") +
+    xlab("")
+```
+
+
+<br><br>
+
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+The last common operation is to provide a specific order to your levels, you can do so using the `fct_relevel()` function as follow:
+
+```{r, warning=FALSE}
+# Reorder following a precise order
+p <- data %>%
+  mutate(name = fct_relevel(name, 
+            "north", "north-east", "east", 
+            "south-east", "south", "south-west", 
+            "west", "north-west")) %>%
+  ggplot( aes(x=name, y=val)) +
+    geom_bar(stat="identity") +
+    xlab("")
+#p
+```
+
+</div>
+  
+<div class = "col-md-6  col-sm-12">
+```{r, warning=FALSE, echo=FALSE, out.width = "100%", fig.width=5, fig.height=5}
+p
+```
+</div>
+</div>
+
+
+
+
+
+# Method 2: using `Dplyr` only
+***
+
+The `mutate()` function of `dplyr` allows to create a new variable or modify an existing one. It is possible to use it to recreate a factor with a specific order. Here are 2 examples:  
+
+- The first use `arrange()` to sort your data frame, and reorder the factor following this desired order.  
+- The second specifies a custom order for the factor giving the levels one by one.
+
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+data %>%
+  arrange(val) %>%    # First sort by val. This sort the dataframe but NOT the factor levels
+  mutate(name=factor(name, levels=name)) %>%   # This trick update the factor levels
+  ggplot( aes(x=name, y=val)) +
+    geom_segment( aes(xend=name, yend=0)) +
+    geom_point( size=4, color="orange") +
+    coord_flip() +
+    theme_bw() +
+    xlab("")
+ 
+data %>%
+  arrange(val) %>%
+  mutate(name = factor(name, levels=c("north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"))) %>%
+  ggplot( aes(x=name, y=val)) +
+    geom_segment( aes(xend=name, yend=0)) +
+    geom_point( size=4, color="orange") +
+    theme_bw() +
+    xlab("")
+```
+
+
+
+
+
+
+# Method 3: the `reorder()` function of base R
+***
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+In case your an unconditional user of the good old R, here is how to control the order using the `reorder()` function inside a `with()` call:
+
+```{r, warning=FALSE}
+# reorder is close to order, but is made to change the order of the factor levels.
+mpg$class = with(mpg, reorder(class, hwy, median))
+
+p <- mpg %>%
+  ggplot( aes(x=class, y=hwy, fill=class)) + 
+    geom_boxplot() +
+    xlab("class") +
+    theme(legend.position="none") +
+    xlab("")
+#p
+```
+
+</div>
+  
+<div class = "col-md-6  col-sm-12">
+```{r, warning=FALSE, echo=FALSE, out.width = "100%", fig.width=5, fig.height=5}
+p
+```
+</div>
+</div>
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
