@@ -54,7 +54,7 @@ data <- data.frame(
 ***
 The [Forecats library](https://github.com/tidyverse/forcats) is a library from the [tidyverse](https://www.tidyverse.org/) especially made to handle factors in R. It provides a suite of useful tools that solve common problems with factors. The `fact_reorder()` function allows to reorder the factor (`data$name` for example) following the value of another column (`data$val` here).
 
-```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=4}
 # load the library
 library(forcats)
 
@@ -80,7 +80,7 @@ data %>%
 <br><br>
 If you have several values per level of your factor, you can specify which function to apply to determine the order. The default is to use the median, but you can use the number of data points per group to make the classification:
 
-```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=4}
 # Using median
 mpg %>%
   mutate(class = fct_reorder(class, hwy, .fun='median')) %>%
@@ -109,7 +109,7 @@ mpg %>%
 <div class = "col-md-6  col-sm-12 align-self-center">
 The last common operation is to provide a specific order to your levels, you can do so using the `fct_relevel()` function as follow:
 
-```{r, warning=FALSE}
+```{r}
 # Reorder following a precise order
 p <- data %>%
   mutate(name = fct_relevel(name, 
@@ -125,7 +125,7 @@ p <- data %>%
 </div>
   
 <div class = "col-md-6  col-sm-12">
-```{r, warning=FALSE, echo=FALSE, out.width = "100%", fig.width=5, fig.height=5}
+```{r, warning=FALSE, echo=FALSE, out.width = "100%", fig.width=5, fig.height=4}
 p
 ```
 </div>
@@ -143,7 +143,7 @@ The `mutate()` function of `dplyr` allows to create a new variable or modify an 
 - The first use `arrange()` to sort your data frame, and reorder the factor following this desired order.  
 - The second specifies a custom order for the factor giving the levels one by one.
 
-```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=5}
+```{r, out.width=c('50%', '50%'), fig.show='hold', fig.width=5, fig.height=4}
 data %>%
   arrange(val) %>%    # First sort by val. This sort the dataframe but NOT the factor levels
   mutate(name=factor(name, levels=name)) %>%   # This trick update the factor levels
@@ -176,13 +176,13 @@ data %>%
 <div class = "col-md-6  col-sm-12 align-self-center">
 In case your an unconditional user of the good old R, here is how to control the order using the `reorder()` function inside a `with()` call:
 
-```{r, warning=FALSE}
+```{r}
 # reorder is close to order, but is made to change the order of the factor levels.
 mpg$class = with(mpg, reorder(class, hwy, median))
 
 p <- mpg %>%
   ggplot( aes(x=class, y=hwy, fill=class)) + 
-    geom_boxplot() +
+    geom_violin() +
     xlab("class") +
     theme(legend.position="none") +
     xlab("")

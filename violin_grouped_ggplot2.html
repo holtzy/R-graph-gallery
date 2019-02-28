@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>$title$ &#8211; the R Graph Gallery</title>
+<title>Grouped violin chart with ggplot2 &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="$descriptionMeta$">
+<meta name="description" content="An implementation of a grouped violin plot in R using the ggplot2 library. Reproducible code and explanations provided.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="$title$" />
+<meta property="og:title" content="Grouped violin chart with ggplot2" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="$descriptionMeta$" />
-<meta property='og:url' content="https://www.r-graph-gallery.com/$url$.html" />
+<meta property="og:description" content="An implementation of a grouped violin plot in R using the ggplot2 library. Reproducible code and explanations provided." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/violin_grouped.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>$title$</h1></center>
+      <center><h1>Grouped violin chart with ggplot2</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,10 +141,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">$descriptionTop$</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">This is an extension of the classic <a href="violin%20plot.html">violin plot</a>. Here, data are organized in groups and subgroups, allowing to build a grouped violin chart. Chart is implemented using <code>R</code> and the <a href="ggplot2.html">ggplot2 library</a>.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='$sectionLink$'>$sectionText$</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.$DataToVizLink$'>$DataToVizText$</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='violin.html'>Violin Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/violin.html'>Violin theory</a>
       </div>
   </div>
 </header>
@@ -153,32 +153,6 @@
 
 
 
-$if(kable-scroll)$
-<style type="text/css">
-.kable-table {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  overflow: auto;
-  padding-left: 8px;
-  padding-right: 8px;
-  margin-bottom: 20px;
-  max-height: 350px;
-}
-
-.kable-table table {
-  margin-bottom: 0px;
-}
-
-.kable-table table>thead>tr>th {
-  border: none;
-  border-bottom: 2px solid #dddddd;
-}
-
-.kable-table table>thead {
-  background-color: #fff;
-}
-</style>
-$endif$
 
 
 
@@ -192,20 +166,102 @@ $endif$
 
 
 
-$body$
+<div class="container" style="padding-top: 100px">
+<p>A grouped <a href="violin.html">violin plot</a> displays the distribution of a numeric variable for groups and subgroups. Here, groups are days of the week, and subgroups are Males and Females. Ggplot2 allows this kind of representation thanks to the <code>position=&quot;dodge&quot;</code> option of the <code>geom_violin()</code> function. Groups must be provided to <code>x</code>, subgroups must be provided to <code>fill</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(forcats)
+<span class="kw">library</span>(hrbrthemes)
+<span class="kw">library</span>(viridis)
+
+<span class="co"># Load dataset from github</span>
+data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/10_OneNumSevCatSubgroupsSevObs.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;,&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">tip =</span> <span class="kw">round</span>(tip<span class="op">/</span>total_bill<span class="op">*</span><span class="dv">100</span>, <span class="dv">1</span>))
+  
+<span class="co"># Grouped</span>
+data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day =</span> <span class="kw">fct_reorder</span>(day, tip)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">day =</span> <span class="kw">factor</span>(day, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;Thur&quot;</span>, <span class="st">&quot;Fri&quot;</span>, <span class="st">&quot;Sat&quot;</span>, <span class="st">&quot;Sun&quot;</span>))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">fill=</span>sex, <span class="dt">y=</span>tip, <span class="dt">x=</span>day)) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_violin</span>(<span class="dt">position=</span><span class="st">&quot;dodge&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.5</span>, <span class="dt">outlier.colour=</span><span class="st">&quot;transparent&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete=</span>T, <span class="dt">name=</span><span class="st">&quot;&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_ipsum</span>()  <span class="op">+</span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;Tip (%)&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">ylim</span>(<span class="dv">0</span>,<span class="dv">40</span>)</code></pre></div>
+<p><img src="violin_grouped_files/figure-html/unnamed-chunk-1-1.png" width="90%" style="display: block; margin: auto;" /></p>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Violin</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Histogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Boxplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Ridgeline</div>
+    </div>
+  </div>
+
+</div>
+</section>
 
 
-$if(mathjax-url)$
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "$mathjax-url$";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-$endif$
 
 
 
@@ -277,39 +333,15 @@ $endif$
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $$('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
-$$(document).ready(function () {
+$(document).ready(function () {
   bootstrapStylePandocTables();
 });
 
-$if(kable-scroll)$
-$$(document).ready(function () {
-  $$('.knitsql-table').addClass('kable-table');
-  var container = $$('.kable-table');
-  container.each(function() {
-
-    // move the caption out of the table
-    var table = $$(this).children('table');
-    var caption = table.children('caption').detach();
-    caption.insertBefore($$(this)).css('display', 'inherit');
-  });
-});
-$endif$
 
 </script>
 
-$if(mathjax-url)$
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "$mathjax-url$";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-$endif$
 
 
 <!-- ============================ JAVASCRIPT SECTION ============================ -->

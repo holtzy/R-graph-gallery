@@ -1,0 +1,90 @@
+---
+title: "Violin plot with included boxplot and sample size in ggplot2"
+descriptionMeta: "An implementation of a violin plot with included boxplot and sample size provided on the X axis. R reproducible code provided, use of the ggplot2 library."
+descriptionTop: "It can be handy to include a [boxplot](boxplot.html) in the [violin plot](violin plot) to see both the distribution of the data and its summary statistics. Moreover, adding sample size of each group on the X axis is often a necessary step. Here is how to do it with <code>R</code> and [ggplot2](ggplot2.html)."
+sectionText: "Violin Section"
+sectionLink: "violin.html"
+DataToVizText: "Boxplot caveat"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "violin_and_boxplot_ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container" style="padding-top: 100px">
+
+
+Building a [violin plot](violin.html) with `ggplot2` is pretty straightforward thanks to the dedicated `geom_violin()` function. It is possible to use `geom_boxplot()` with a small `width` in addition to display a boxplot that provides summary statistics.
+
+Moreover, note a small trick that allows to provide sample size of each group on the X axis: a new column called `myaxis` is created and is then used for the X axis.
+
+```{r, warning=FALSE, out.width = "90%", fig.width=8, fig.height=5, fig.align="center"}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+
+# create a dataset
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) )
+)
+
+# sample size
+sample_size = data %>% group_by(name) %>% summarize(num=n())
+
+# Plot
+data %>%
+  left_join(sample_size) %>%
+  mutate(myaxis = paste0(name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=value, fill=name)) +
+    geom_violin(width=1.4) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.2) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("A Violin wrapping a boxplot") +
+    xlab("")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```

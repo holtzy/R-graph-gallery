@@ -1,0 +1,99 @@
+---
+title: "Horizontal violin plot with ggplot2"
+descriptionMeta: "Learn how to build an horizontal violin plot with R and ggplot2. Reproducible R code is provided, different input formats are considered."
+descriptionTop: "[violin plots](violin.html) are useful to compare the distribution of several groups. Since group labels need to be read, it makes sense to build an horizontal version: labels become much more [readable](https://www.data-to-viz.com/graph/violin.html). This document provide an R implementation using ggplot2."
+sectionText: "Violin Section"
+sectionLink: "violin.html"
+DataToVizText: "Violin theory"
+DataToVizLink: "data-to-viz.com/graph/violin.html"
+url: "violin_vertical_ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container" style="padding-top: 100px">
+
+
+Building a [violin plot](violin.html) with `ggplot2` is pretty straightforward thanks to the dedicated `geom_violin()` function. Here, calling `coord_flip()` allows to flip X and Y axis and thus get a horizontal version of the chart. Moreover, note the use of the `theme_ipsum` of the `hrbrthemes` library that improves general appearance.
+
+```{r, warning=FALSE, out.width = "90%", fig.width=8, fig.height=5, fig.align="center"}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(hrbrthemes)
+library(viridis)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/zonination/perceptions/master/probly.csv", header=TRUE, sep=",")
+
+# Data is at wide format, we need to make it 'tidy' or 'long'
+data <- data %>% 
+  gather(key="text", value="value") %>%
+  mutate(text = gsub("\\.", " ",text)) %>%
+  mutate(value = round(as.numeric(value),0)) %>%
+  filter(text %in% c("Almost Certainly","Very Good Chance","We Believe","Likely","About Even", "Little Chance", "Chances Are Slight", "Almost No Chance"))
+
+# Plot
+p <- data %>%
+  mutate(text = fct_reorder(text, value)) %>% # Reorder data
+  ggplot( aes(x=text, y=value, fill=text, color=text)) +
+    geom_violin(width=2.1, size=0.2) +
+    scale_fill_viridis(discrete=TRUE) +
+    scale_color_viridis(discrete=TRUE) +
+    theme_ipsum() +
+    theme(
+      legend.position="none"
+    ) +
+    coord_flip() + # This switch X and Y axis and allows to get the horizontal version
+    xlab("") +
+    ylab("Assigned Probability (%)")
+
+p
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
+
+
+
+
+
+
+

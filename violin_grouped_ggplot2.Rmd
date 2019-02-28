@@ -1,0 +1,80 @@
+---
+title: "Grouped violin chart with ggplot2"
+descriptionMeta: "An implementation of a grouped violin plot in R using the ggplot2 library. Reproducible code and explanations provided."
+descriptionTop: "This is an extension of the classic [violin plot](violin plot.html). Here, data are organized in groups and subgroups, allowing to build a grouped violin chart. Chart is implemented using <code>R</code> and  the [ggplot2 library](ggplot2.html)."
+sectionText: "Violin Section"
+sectionLink: "violin.html"
+DataToVizText: "Violin theory"
+DataToVizLink: "data-to-viz.com/graph/violin.html"
+url: "violin_grouped"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container" style="padding-top: 100px">
+
+
+A grouped [violin plot](violin.html) displays the distribution of a numeric variable for groups and subgroups. Here, groups are days of the week, and subgroups are Males and Females. Ggplot2 allows this kind of representation thanks to the `position="dodge"` option of the `geom_violin()` function. Groups must be provided to `x`, subgroups must be provided to `fill`.
+
+```{r, warning=FALSE, out.width = "90%", fig.width=8, fig.height=5, fig.align="center"}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(hrbrthemes)
+library(viridis)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/10_OneNumSevCatSubgroupsSevObs.csv", header=T, sep=",") %>%
+  mutate(tip = round(tip/total_bill*100, 1))
+  
+# Grouped
+data %>%
+  mutate(day = fct_reorder(day, tip)) %>%
+  mutate(day = factor(day, levels=c("Thur", "Fri", "Sat", "Sun"))) %>%
+  ggplot(aes(fill=sex, y=tip, x=day)) + 
+    geom_violin(position="dodge", alpha=0.5, outlier.colour="transparent") +
+    scale_fill_viridis(discrete=T, name="") +
+    theme_ipsum()  +
+    xlab("") +
+    ylab("Tip (%)") +
+    ylim(0,40)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```

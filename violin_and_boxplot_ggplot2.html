@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>$title$ &#8211; the R Graph Gallery</title>
+<title>Violin plot with included boxplot and sample size in ggplot2 &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="$descriptionMeta$">
+<meta name="description" content="An implementation of a violin plot with included boxplot and sample size provided on the X axis. R reproducible code provided, use of the ggplot2 library.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="$title$" />
+<meta property="og:title" content="Violin plot with included boxplot and sample size in ggplot2" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="$descriptionMeta$" />
-<meta property='og:url' content="https://www.r-graph-gallery.com/$url$.html" />
+<meta property="og:description" content="An implementation of a violin plot with included boxplot and sample size provided on the X axis. R reproducible code provided, use of the ggplot2 library." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/violin_and_boxplot_ggplot2.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>$title$</h1></center>
+      <center><h1>Violin plot with included boxplot and sample size in ggplot2</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,10 +141,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">$descriptionTop$</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">It can be handy to include a <a href="boxplot.html">boxplot</a> in the <a href="violin%20plot">violin plot</a> to see both the distribution of the data and its summary statistics. Moreover, adding sample size of each group on the X axis is often a necessary step. Here is how to do it with <code>R</code> and <a href="ggplot2.html">ggplot2</a>.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='$sectionLink$'>$sectionText$</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.$DataToVizLink$'>$DataToVizText$</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='violin.html'>Violin Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/caveat/boxplot.html'>Boxplot caveat</a>
       </div>
   </div>
 </header>
@@ -153,32 +153,6 @@
 
 
 
-$if(kable-scroll)$
-<style type="text/css">
-.kable-table {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  overflow: auto;
-  padding-left: 8px;
-  padding-right: 8px;
-  margin-bottom: 20px;
-  max-height: 350px;
-}
-
-.kable-table table {
-  margin-bottom: 0px;
-}
-
-.kable-table table>thead>tr>th {
-  border: none;
-  border-bottom: 2px solid #dddddd;
-}
-
-.kable-table table>thead {
-  background-color: #fff;
-}
-</style>
-$endif$
 
 
 
@@ -192,20 +166,111 @@ $endif$
 
 
 
-$body$
+<div class="container" style="padding-top: 100px">
+<p>Building a <a href="violin.html">violin plot</a> with <code>ggplot2</code> is pretty straightforward thanks to the dedicated <code>geom_violin()</code> function. It is possible to use <code>geom_boxplot()</code> with a small <code>width</code> in addition to display a boxplot that provides summary statistics.</p>
+<p>Moreover, note a small trick that allows to provide sample size of each group on the X axis: a new column called <code>myaxis</code> is created and is then used for the X axis.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(hrbrthemes)
+<span class="kw">library</span>(viridis)
+
+<span class="co"># create a dataset</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">name=</span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>,<span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>,<span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&#39;D&#39;</span>, <span class="dv">100</span>)  ),
+  <span class="dt">value=</span><span class="kw">c</span>( <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">10</span>, <span class="dv">5</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">13</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">500</span>, <span class="dv">18</span>, <span class="dv">1</span>), <span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">4</span>), <span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dv">12</span>, <span class="dv">1</span>) )
+)
+
+<span class="co"># sample size</span>
+sample_size =<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(name) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarize</span>(<span class="dt">num=</span><span class="kw">n</span>())
+
+<span class="co"># Plot</span>
+data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(sample_size) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">myaxis =</span> <span class="kw">paste0</span>(name, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="st">&quot;n=&quot;</span>, num)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>myaxis, <span class="dt">y=</span>value, <span class="dt">fill=</span>name)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_violin</span>(<span class="dt">width=</span><span class="fl">1.4</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_boxplot</span>(<span class="dt">width=</span><span class="fl">0.1</span>, <span class="dt">color=</span><span class="st">&quot;grey&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.2</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete =</span> <span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme</span>(
+      <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,
+      <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">11</span>)
+    ) <span class="op">+</span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;A Violin wrapping a boxplot&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<p><img src="violin_and_boxplot_ggplot2_files/figure-html/unnamed-chunk-1-1.png" width="90%" style="display: block; margin: auto;" /></p>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Violin</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Histogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Boxplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Ridgeline</div>
+    </div>
+  </div>
+
+</div>
+</section>
 
 
-$if(mathjax-url)$
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "$mathjax-url$";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-$endif$
 
 
 
@@ -277,39 +342,15 @@ $endif$
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $$('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
-$$(document).ready(function () {
+$(document).ready(function () {
   bootstrapStylePandocTables();
 });
 
-$if(kable-scroll)$
-$$(document).ready(function () {
-  $$('.knitsql-table').addClass('kable-table');
-  var container = $$('.kable-table');
-  container.each(function() {
-
-    // move the caption out of the table
-    var table = $$(this).children('table');
-    var caption = table.children('caption').detach();
-    caption.insertBefore($$(this)).css('display', 'inherit');
-  });
-});
-$endif$
 
 </script>
 
-$if(mathjax-url)$
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "$mathjax-url$";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-$endif$
 
 
 <!-- ============================ JAVASCRIPT SECTION ============================ -->
