@@ -1,0 +1,173 @@
+---
+title: "Basic histogram with ggplot2"
+descriptionMeta: "How to build a basic histogram with R and ggplot2: basic examples with explanations and code."
+descriptionTop: "A [histogram](https://www.data-to-viz.com/graph/histogram.html) is a representation of the distribution of a numeric variable. This document explains how to build it with R and the [ggplot2 package](ggplot2.html). You can find more examples in the [histogram section](histogram.html."
+sectionText: "Histogram Section"
+sectionLink: "histogram.html"
+DataToVizText: "About histogram"
+DataToVizLink: "data-to-viz.com/graph/histogram.html"
+url: "220-basic-ggplot2-histogram.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container">
+
+ 
+# Basic histogram with `geom_histogram` 
+***
+
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is relatively straightforward to build a histogram with `ggplot2` thanks to the `geom_histogram()` function. Only one numeric variable is needed in the input. Note that a warning message is triggered with this code: we need to take care of the bin width as explained in the next section.
+
+```{r}
+# library
+library(ggplot2)
+ 
+# dataset:
+data=data.frame(value=rnorm(100))
+
+# basic histogram
+p <- ggplot(data, aes(x=value)) + 
+  geom_histogram()
+
+#p
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+```{r, out.width=c('100%'), echo=FALSE}
+p
+```
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+# Control bin size with `binwidth` {#binSize}
+***
+
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A histogram takes as input a numeric variable and cuts it into several bins. Playing with the bin size is a very important step, since its value can have a big impact on the histogram appearance and thus on the message you're trying to convey. This concept is explained in depth in [data-to-viz](https://www.data-to-viz.com/caveat/bin_size.html).
+
+Ggplot2 makes it a breeze to change the bin size thanks to the `binwidth` argument of the `geom_histogram` function. See below the impact it can have on the output.
+
+</div>
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+```{r}
+# Libraries
+library(tidyverse)
+library(hrbrthemes)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/1_OneNum.csv", header=TRUE)
+
+# plot
+p <- data %>%
+  filter( price<300 ) %>%
+  ggplot( aes(x=price)) +
+    geom_histogram( binwidth=3, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+    ggtitle("Bin size = 3") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+#p
+```
+</div>
+</div>
+
+
+```{r, out.width=c('50%', '50%','50%','50%'), fig.show="hold", echo=FALSE}
+p
+
+data %>%
+  filter( price<300 ) %>%
+  ggplot( aes(x=price)) +
+    geom_histogram( binwidth=15, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+    ggtitle("Bin size = 15") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+
+data %>%
+  filter( price<300 ) %>%
+  ggplot( aes(x=price)) +
+    geom_histogram( binwidth=30, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+    ggtitle("Bin size = 30") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+
+data %>%
+  filter( price<300 ) %>%
+  ggplot( aes(x=price)) +
+    geom_histogram( binwidth=100, fill="#69b3a2", color="#e9ecef", alpha=0.9) +
+    ggtitle("Bin size = 100") +
+    theme_ipsum() +
+    theme(
+      plot.title = element_text(size=15)
+    )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
+
+
+
+
+
+
+
