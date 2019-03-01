@@ -1,0 +1,136 @@
+---
+title: "Mirror density chart with ggplot2"
+descriptionMeta: "Learn how to build a mirror density chart to compare the distribution of 2 numeric variables with ggplot2. Reproducible R code is provided."
+descriptionTop: "A [density plot](https://www.data-to-viz.com/graph/density.html) is a representation of the distribution of a numeric variable. Comparing the distribution of 2 variables is a common challenge that can be tackled with the mirror density chart: 2 [density charts](density.html) are put face to face what allows to efficiently compare them. Here is how to build it with [ggplot2](ggplot2.html) library."
+sectionText: "Density Section"
+sectionLink: "density.html"
+DataToVizText: "Density theory"
+DataToVizLink: "data-to-viz.com/graph/density.html"
+url: "density_mirror_ggplot2.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container">
+
+
+# Density with `geom_density`
+***
+
+<div class = "row">
+  
+<div class = "col-md-7  col-sm-12 align-self-center">
+
+
+A density chart is built thanks to the `geom_density` geom of ggplot2 (see a [basic example](21-distribution-plot-using-ggplot2.html)). It is possible to plot this density upside down by specifying `y = -..density..`. It is advised to use `geom_label` to indicate variable names.
+
+
+```{r}
+# Libraries
+library(ggplot2)
+library(hrbrthemes)
+
+# Dummy data
+data <- data.frame(
+  var1 = rnorm(1000), 
+  var2 = rnorm(1000, mean=2)
+)
+ 
+# Chart
+p <- ggplot(data, aes(x=x) ) + 
+  # Top
+  geom_density( aes(x = var1, y = ..density..), fill="#69b3a2" ) + 
+  geom_label( aes(x=4.5, y=0.25, label="variable1"), color="#69b3a2") +
+  # Bottom
+  geom_density( aes(x = var2, y = -..density..), fill= "#404080") +
+  geom_label( aes(x=4.5, y=-0.25, label="variable2"), color="#404080") +
+  theme_ipsum() +
+  xlab("value of x")
+
+#p
+```
+</div>
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+```{r, echo=FALSE, fig.align='center', fig.width=5, fig.height=5}
+p
+``````
+
+</div>
+</div>
+
+
+
+
+
+
+
+# Histogram with `geom_histogram`
+***
+
+<div class = "row">
+  
+<div class = "col-md-7  col-sm-12 align-self-center">
+
+Of course it is possible to apply exactly the same technique using `geom_histogram` instead of `geom_density` to get a mirror histogram:
+
+
+```{r}
+# Chart
+p <- ggplot(data, aes(x=x) ) + 
+  geom_histogram( aes(x = var1, y = ..density..), fill="#69b3a2" ) + 
+  geom_label( aes(x=4.5, y=0.25, label="variable1"), color="#69b3a2") +
+  geom_histogram( aes(x = var2, y = -..density..), fill= "#404080") +
+  geom_label( aes(x=4.5, y=-0.25, label="variable2"), color="#404080") +
+  theme_ipsum() +
+  xlab("value of x")
+
+#p
+```
+</div>
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+```{r, echo=FALSE, fig.align='center', fig.width=5, fig.height=5}
+p
+``````
+
+</div>
+</div>
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
+
+
+
+
+
+
+
