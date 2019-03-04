@@ -1,0 +1,93 @@
+---
+title: "Histogram with colored tail"
+descriptionMeta: "This post explains how to build a histogram with colored tails in Basic R."
+descriptionTop: "A [histogram](https://www.data-to-viz.com/graph/histogram.html) displays the distribution of a numeric variable. This posts explains how to color both tails of the distribution in Basic R, without any package. This can be useful to highlight a part of the distribution."
+sectionText: "Histogram Section"
+sectionLink: "histogram.html"
+DataToVizText: "About histogram"
+DataToVizLink: "data-to-viz.com/graph/histogram.html"
+url: "82-boxplot-on-top-of-histogram.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+
+<div class = "row">
+  
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This example demonstrates how to color parts of the [histogram](histogram.html). First of all, the `hist` function must be called without plotting the result using the `plot=F` option. It allows to store the position of each bin in an object (`my_hist` here).  
+
+Those bin borders are now available in the `$breaks` slot of the object, what allows to build a color vector using `ifelse` statements. Finally, this color vector can be used in a `plot` call.
+
+</div>
+
+  
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, out.width = "100%", fig.height=7}
+# Create data
+my_variable <- rnorm(2000, 0 , 10)
+ 
+# Calculate histogram, but do not draw it
+my_hist <- hist(my_variable , breaks=40  , plot=F)
+ 
+# Color vector
+my_color <- ifelse(my_hist$breaks < -10, rgb(0.2,0.8,0.5,0.5) , ifelse (my_hist$breaks >=10, "purple", rgb(0.2,0.2,0.2,0.2) ))
+ 
+# Final plot
+plot(my_hist, col=my_color , border=F , main="" , xlab="value of the variable", xlim=c(-40,40) )
+```
+</div>
+</div>
+
+
+```{r eval=FALSE}
+# Create data
+my_variable=rnorm(2000, 0 , 10)
+ 
+# Calculate histogram, but do not draw it
+my_hist=hist(my_variable , breaks=40  , plot=F)
+ 
+# Color vector
+my_color= ifelse(my_hist$breaks < -10, rgb(0.2,0.8,0.5,0.5) , ifelse (my_hist$breaks >=10, "purple", rgb(0.2,0.2,0.2,0.2) ))
+ 
+# Final plot
+plot(my_hist, col=my_color , border=F , main="" , xlab="value of the variable", xlim=c(-40,40) )
+```
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
+
+
+
+
+
+
+
