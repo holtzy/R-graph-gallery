@@ -1,0 +1,139 @@
+---
+title: "Grouped boxplot with ggplot2"
+descriptionMeta: "How to build a grouped boxplot with the ggplot2 R package: code and explanation"
+descriptionTop: "A [boxplot](boxplot.html) summarizes the distribution of a continuous variable for several categories. If categories are organized in groups and subgroups, it is possible to build a grouped boxplot. Here is an example with R and ggplot2."
+sectionText: "Boxplot Section"
+sectionLink: "boxplot.html"
+DataToVizText: "Boxplot pitfalls"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "265-grouped-boxplot-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" >
+
+
+# Grouped boxplot
+***
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A grouped boxplot is a [boxplot](boxplot.html) where categories are organized in groups and subgroups. 
+
+Here we visualize the distribution of 7 groups (called A to G) and 2 subgroups (called low and high). Note that the group must be called in the `X` argument of `ggplot2`. The subgroup is called in the `fill` argument.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+ 
+# create a data frame
+variety=rep(LETTERS[1:7], each=40)
+treatment=rep(c("high","low"),each=20)
+note=seq(1:280)+sample(1:150, 280, replace=T)
+data=data.frame(variety, treatment ,  note)
+ 
+# grouped boxplot
+ggplot(data, aes(x=variety, y=note, fill=treatment)) + 
+    geom_boxplot()
+
+```
+</div>
+</div>
+
+
+```{r eval=FALSE}
+# library
+library(ggplot2)
+ 
+# create a data frame
+variety=rep(LETTERS[1:7], each=40)
+treatment=rep(c("high","low"),each=20)
+note=seq(1:280)+sample(1:150, 280, replace=T)
+data=data.frame(variety, treatment ,  note)
+ 
+# grouped boxplot
+ggplot(data, aes(x=variety, y=note, fill=treatment)) + 
+    geom_boxplot()
+```
+
+
+
+# Using small multiple
+***
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+Note that an alternative to grouped boxplot is to use [faceting](223-faceting-with-ggplot2.html): each subgroup (left) or each group (right) is represented in a distinct panel.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r}
+# One box per treatment
+p1 <- ggplot(data, aes(x=variety, y=note, fill=treatment)) + 
+    geom_boxplot() +
+    facet_wrap(~treatment)
+# one box per variety
+p2 <- ggplot(data, aes(x=variety, y=note, fill=treatment)) + 
+    geom_boxplot() +
+    facet_wrap(~variety, scale="free")
+
+```
+</div>
+</div>
+<br><br>
+
+```{r, echo=FALSE, out.width=c('50%', '50%'),  fig.show='hold'}
+p1
+p2
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
