@@ -1,0 +1,112 @@
+---
+title: "Add color to specific groups of a boxplot"
+descriptionMeta: "How to build a boxplot with basic R, with custom color for each group."
+descriptionTop: "A [boxplot](boxplot.html) summarizes the distribution of a continuous variable for one or several groups. This example illustrates how to build it with basic R, coloring each group with a specific color."
+sectionText: "Boxplot Section"
+sectionLink: "boxplot.html"
+DataToVizText: "Boxplot pitfalls"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "23-add-colors-to-specific-groups-of-a-boxplot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A [boxplot](boxplot.html) summarizes the distribution of a numeric variable for one or several groups.
+
+It can be usefull to add colors to specific groups to highlight them. For exemple, positive and negative controls are likely to be in different colors.  
+
+The easiest way is to give a vector (`myColor` here) of colors when you call the `boxplot()` function. Use `ifelse` statements to add the color you want to a specific name.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, out.width = "100%", fig.height=7}
+#Create data
+names <- c(rep("Maestro", 20) , rep("Presto", 20) , 
+      rep("Nerak", 20), rep("Eskimo", 20), rep("Nairobi", 20), rep("Artiko", 20))
+value <- c(  sample(3:10, 20 , replace=T) , sample(2:5, 20 , replace=T) , 
+      sample(6:10, 20 , replace=T), sample(6:10, 20 , replace=T) , 
+      sample(1:7, 20 , replace=T), sample(3:10, 20 , replace=T) )
+data <- data.frame(names,value)
+
+# Prepare a vector of colors with specific color for Nairobi and Eskimo
+myColors <- ifelse(levels(data$names)=="Nairobi" , rgb(0.1,0.1,0.7,0.5) , 
+              ifelse(levels(data$names)=="Eskimo", rgb(0.8,0.1,0.3,0.6),
+              "grey90" ) )
+
+# Build the plot
+boxplot(data$value ~ data$names , 
+    col=myColors , 
+    ylab="disease" , xlab="- variety -")
+ 
+# Add a legend
+legend("bottomleft", legend = c("Positiv control","Negativ control") , 
+    col = c(rgb(0.1,0.1,0.7,0.5) , rgb(0.8,0.1,0.3,0.6)) , bty = "n", pch=20 , pt.cex = 3, cex = 1, horiz = FALSE, inset = c(0.03, 0.1))
+
+```
+</div>
+</div>
+
+
+
+```{r, eval=FALSE}
+#Create data
+names <- c(rep("Maestro", 20) , rep("Presto", 20) , 
+      rep("Nerak", 20), rep("Eskimo", 20), rep("Nairobi", 20), rep("Artiko", 20))
+value <- c(  sample(3:10, 20 , replace=T) , sample(2:5, 20 , replace=T) , 
+      sample(6:10, 20 , replace=T), sample(6:10, 20 , replace=T) , 
+      sample(1:7, 20 , replace=T), sample(3:10, 20 , replace=T) )
+data <- data.frame(names,value)
+
+# Prepare a vector of colors with specific color for Nairobi and Eskimo
+myColors <- ifelse(levels(data$names)=="Nairobi" , rgb(0.1,0.1,0.7,0.5) , 
+              ifelse(levels(data$names)=="Eskimo", rgb(0.8,0.1,0.3,0.6),
+              "grey90" ) )
+
+# Build the plot
+boxplot(data$value ~ data$names , 
+    col=myColors , 
+    ylab="disease" , xlab="- variety -")
+ 
+# Add a legend
+legend("bottomleft", legend = c("Positiv control","Negativ control") , 
+    col = c(rgb(0.1,0.1,0.7,0.5) , rgb(0.8,0.1,0.3,0.6)) , bty = "n", pch=20 , pt.cex = 3, cex = 1, horiz = FALSE, inset = c(0.03, 0.1))
+
+```
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
