@@ -1,0 +1,89 @@
+---
+title: "Boxplot with variable width"
+descriptionMeta: "How to make a boxplot with width proportional to category sample size in base R: code and explanation."
+descriptionTop: "This examples demonstrates how to build a [boxplot](boxplot.html) with variable width. It is useful to indicate what sample size is hidden behind each box. It is a base R implementation, see [here](266-ggplot2-boxplot-with-variable-width.html) for a ggplot2 version."
+sectionText: "Boxplot Section"
+sectionLink: "boxplot.html"
+DataToVizText: "Boxplot pitfalls"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "24-boxplot-with-variable-width"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+When the sample size behind each category is highly variable, it can be great to represent it through the box widths.
+
+First calculate the proportion of each level using the `table()` function. Using these proportions will make the box twice bigger if a level is twice more represented. Then give these proportions to the `width` argument when you call the `boxplot()` function.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, out.width = "100%", fig.height=7}
+# Dummy data
+names <- c(rep("A", 20) , rep("B", 8) , rep("C", 30), rep("D", 80))
+value <- c( sample(2:5, 20 , replace=T) , sample(4:10, 8 , replace=T), 
+       sample(1:7, 30 , replace=T), sample(3:8, 80 , replace=T) )
+data <- data.frame(names,value)
+ 
+# Calculate proportion of each level
+proportion <- table(data$names)/nrow(data)
+ 
+#Draw the boxplot, with the width proportionnal to the occurence !
+boxplot(data$value ~ data$names , width=proportion , col=c("orange" , "seagreen"))
+```
+</div>
+</div>
+
+
+
+```{r, eval=FALSE}
+# Dummy data
+names <- c(rep("A", 20) , rep("B", 8) , rep("C", 30), rep("D", 80))
+value <- c( sample(2:5, 20 , replace=T) , sample(4:10, 8 , replace=T), 
+       sample(1:7, 30 , replace=T), sample(3:8, 80 , replace=T) )
+data <- data.frame(names,value)
+ 
+ 
+# Calculate proportion of each level
+proportion <- table(data$names)/nrow(data)
+ 
+#Draw the boxplot, with the width proportionnal to the occurence !
+boxplot(data$value ~ data$names , width=proportion , col=c("orange" , "seagreen"))
+```
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```

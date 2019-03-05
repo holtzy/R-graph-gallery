@@ -1,0 +1,104 @@
+---
+title: "Add text over boxplot in basic R"
+descriptionMeta: "How to make a boxplot with category sample size written on top of each box in base R: code and explanation."
+descriptionTop: "This examples demonstrates how to build a [boxplot](boxplot.html) with sample size written on top of each box. It is useful to indicate what sample size is hidden behind each box. Basic R implementation."
+sectionText: "Boxplot Section"
+sectionLink: "boxplot.html"
+DataToVizText: "Boxplot pitfalls"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "26-add-text-over-a-boxplot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The first challenge here is to recover the position of the top part of each box. This is done by saving the `boxplot()` result in an object (called `boundaries` here). Now, typing `boundaries$stats` gives a dataframe with all information concerning boxes.
+
+Then, it is possible to use the `text` function to add labels on top of each box. This function takes 3 inputs:  
+
+- x axis positions of the labels. In our case, it will be 1,2,3,4 for 4 boxes.
+- y axis positions, available in the `boundaries$stats` object.
+- text of the labels : the number of value per group or whatever else.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, out.width = "100%", fig.height=7}
+# Dummy data
+names <- c(rep("A", 20) , rep("B", 8) , rep("C", 30), rep("D", 80))
+value <- c( sample(2:5, 20 , replace=T) , sample(4:10, 8 , replace=T), 
+       sample(1:7, 30 , replace=T), sample(3:8, 80 , replace=T) )
+data <- data.frame(names,value)
+ 
+# Draw the boxplot. Note result is also stored in a object called boundaries
+boundaries <- boxplot(data$value ~ data$names , col="#69b3a2" , ylim=c(1,11))
+# Now you can type boundaries$stats to get the boundaries of the boxes
+
+# Add sample size on top
+nbGroup <- nlevels(data$names)
+text( 
+  x=c(1:nbGroup), 
+  y=boundaries$stats[nrow(boundaries$stats),] + 0.5, 
+  paste("n = ",table(data$names),sep="")  
+)
+```
+</div>
+</div>
+
+
+
+```{r, eval=FALSE}
+# Dummy data
+names <- c(rep("A", 20) , rep("B", 8) , rep("C", 30), rep("D", 80))
+value <- c( sample(2:5, 20 , replace=T) , sample(4:10, 8 , replace=T), 
+       sample(1:7, 30 , replace=T), sample(3:8, 80 , replace=T) )
+data <- data.frame(names,value)
+ 
+# Draw the boxplot. Note result is also stored in a object called boundaries
+boundaries <- boxplot(data$value ~ data$names , col="#69b3a2" , ylim=c(1,11))
+# Now you can type boundaries$stats to get the boundaries of the boxes
+
+# Add sample size on top
+nbGroup <- nlevels(data$names)
+text( 
+  x=c(1:nbGroup), 
+  y=boundaries$stats[nrow(boundaries$stats),] + 0.5, 
+  paste("n = ",table(data$names),sep="")  
+)
+```
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
