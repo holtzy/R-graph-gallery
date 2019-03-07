@@ -1,0 +1,111 @@
+---
+title: "Linear model and confidence interval in ggplot2"
+descriptionMeta: "Display the result of a linear model and its confidence interval on top of a scatterplot. A ggplot2 implementation with reproducible code."
+descriptionTop: "Display the result of a linear model and its confidence interval on top of a [scatterplot](scatterplot.html). A [ggplot2](ggplot2.html) implementation with reproducible code."
+sectionText: "Scatter section"
+sectionLink: "scatterplot.html"
+DataToVizText: "About scatter"
+DataToVizLink: "data-to-viz.com/graph/scatter.html"
+url: "50-51-52-scatter-plot-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Linear trend
+***
+```{r thecode, echo=FALSE, out.width = c('33%', '33%', '33%'), fig.show="hold", fig.height=7}
+# Library
+library(ggplot2)
+library(hrbrthemes)
+
+# Create dummy data
+data <- data.frame(
+  cond = rep(c("condition_1", "condition_2"), each=10), 
+  my_x = 1:100 + rnorm(100,sd=9), 
+  my_y = 1:100 + rnorm(100,sd=16) 
+)
+
+# Basic scatter plot.
+p1 <- ggplot(data, aes(x=my_x, y=my_y)) + 
+  geom_point( color="#69b3a2") +
+  theme_ipsum()
+ 
+# with linear trend
+p2 <- ggplot(data, aes(x=my_x, y=my_y)) +
+  geom_point() +
+  geom_smooth(method=lm , color="red", se=FALSE) +
+  theme_ipsum()
+
+# linear trend + confidence interval
+p3 <- ggplot(data, aes(x=my_x, y=my_y)) +
+  geom_point() +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+```
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+```{r, out.width='100%', echo=FALSE, fig.height=7}
+p1
+```
+</div>
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+```{r, out.width='100%', echo=FALSE, fig.height=7}
+p2
+```
+</div>
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+```{r, out.width='100%', echo=FALSE, fig.height=7}
+p3
+```
+</div>
+</div>
+
+Adding a linear trend to a [scatterplot](scatterplot.html) helps the reader in seeing patterns. `ggplot2` provides the `geom_smooth()` function that allows to add the linear trend and the confidence interval around it if needed (option `se=TRUE`).
+
+<u>Note:</u>: the `method` argument allows to apply different smoothing method like glm, loess and more. See the [doc](https://ggplot2.tidyverse.org/reference/geom_smooth.html) for more.
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
