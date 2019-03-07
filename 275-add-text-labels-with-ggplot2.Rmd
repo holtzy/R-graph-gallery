@@ -1,0 +1,224 @@
+---
+title: "Add text labels with ggplot2"
+descriptionMeta: "This document is dedicated to text annotation with ggplot2. It provides several examples with reproducible code showing how to use function like geom_label, geom_text."
+descriptionTop: "This document is dedicated to text annotation with [ggplot2](ggplot2.html). It provides several examples with reproducible code showing how to use function like `geom_label` and `geom_text`."
+sectionText: "More annotation with ggplot2"
+sectionLink: "233-add-annotations-on-ggplot2-chart.html"
+DataToVizText: "Annotation, why?"
+DataToVizLink: "data-to-viz.com/caveat/annotation.html"
+url: "275-add-text-labels-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Adding text with `geom_text()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This example demonstrates how to use `geom_text()` to add text as markers. It works pretty much the same as `geom_point()`, but add text instead of circles. A few arguments must be provided:  
+
+- `label`: what text you want to display
+- `nudge_x` and `nudge_y`: shifts the text along X and Y axis
+- `check_overlap` tries to avoid text overlap. Note that a package called `ggrepel` extends this concept further
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+ 
+# Keep 30 first rows in the mtcars natively available dataset
+data=head(mtcars, 30)
+ 
+# 1/ add text with geom_text, use nudge to nudge the text
+ggplot(data, aes(x=wt, y=mpg)) +
+  geom_point() + # Show dots
+  geom_text(
+    label=rownames(data), 
+    nudge_x = 0.25, nudge_y = 0.25, 
+    check_overlap = T
+  )
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Add labels with `geom_label()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+`geom_label()` works pretty much the same way as `geom_text()`. However, text is wrapped in a rectangle that you can customize (see next example).
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+ 
+# Keep 30 first rows in the mtcars natively available dataset
+data=head(mtcars, 30)
+ 
+# 1/ add text with geom_text, use nudge to nudge the text
+ggplot(data, aes(x=wt, y=mpg)) +
+  geom_point() + # Show dots
+  geom_label(
+    label=rownames(data), 
+    nudge_x = 0.25, nudge_y = 0.25, 
+    check_overlap = T
+  )
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+# Add one text label only
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Of course, you don't have to label all dots on the chart. You can also add a piece of text on a specific position. Since we're here, note that you can custom the annotation of `geom_label` with `label.padding`, `label.size`, `color` and `fill` as described below:
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+ 
+# Keep 30 first rows in the mtcars natively available dataset
+data=head(mtcars, 30)
+ 
+# Add one annotation
+ggplot(data, aes(x=wt, y=mpg)) +
+  geom_point() + # Show dots
+  geom_label(
+    label="Look at this!", 
+    x=4.1,
+    y=20,
+    label.padding = unit(0.55, "lines"), # Rectangle size around label
+    label.size = 0.35,
+    color = "black",
+    fill="#69b3a2"
+  )
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+# Add labels for a selection of marker
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Last but not least, you can also select a group of marker and annotate them only. Here, only car with `mpg` > 20 and `wt` > 3 are annotated thanks to a data filtering in the `geom_label()` call.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+library(dplyr)
+library(tibble)
+
+# Keep 30 first rows in the mtcars natively available dataset
+data=head(mtcars, 30)
+
+# Change data rownames as a real column called 'carName'
+data <- data %>%
+  rownames_to_column(var="carName")
+  
+# Plot
+ggplot(data, aes(x=wt, y=mpg)) +
+  geom_point() + 
+  geom_label( 
+    data=data %>% filter(mpg>20 & wt>3), # Filter data first
+    aes(label=carName)
+  )
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
