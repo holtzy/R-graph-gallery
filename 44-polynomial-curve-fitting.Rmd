@@ -1,0 +1,95 @@
+---
+title: "Scatterplot with polynomial curve fitting"
+descriptionMeta: "Discover how to build a scatterplot with a polynomial curve drawn on top of it. Base R code provided."
+descriptionTop: "This example describes how to build a [scatterplot](scatterplot.html) with a polynomial curve drawn on top of it."
+sectionText: "Scatter section"
+sectionLink: "scatterplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/scatter.html"
+url: "44-polynomial-curve-fitting"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+First of all, a scatterplot is built using the native R `plot()` function. Then, a polynomial model is fit thanks to the `lm()` function. It is possible to have the estimated Y value for each step of the X axis using the `predict()` function, and plot it with `line()`.
+
+It is a good practice to add the equation of the model with `text()`.
+
+<u>Note:</u> You can also add a confidence interval around the model as described in [chart #45](45-confidence-interval-around-polynomial-curve-fitting).
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+x <- runif(300,  min=-10, max=10) 
+y <- 0.1*x^3 - 0.5 * x^2 - x + 10 + rnorm(length(x),0,8) 
+ 
+# plot of x and y :
+plot(x,y,col=rgb(0.4,0.4,0.8,0.6),pch=16 , cex=1.3) 
+ 
+# Can we find a polynome that fit this function ?
+model <- lm(y ~ x + I(x^2) + I(x^3))
+ 
+# I can get the features of this model :
+#summary(model)
+#model$coefficients
+#summary(model)$adj.r.squared
+ 
+# For each value of x, I can get the value of y estimated by the model, and add it to the current plot !
+myPredict <- predict( model ) 
+ix <- sort(x,index.return=T)$ix
+lines(x[ix], myPredict[ix], col=2, lwd=2 )  
+
+# I add the features of the model to the plot
+coeff <- round(model$coefficients , 2)
+text(3, -70 , paste("Model : ",coeff[1] , " + " , coeff[2] , "*x"  , "+" , coeff[3] , "*x^2" , "+" , coeff[4] , "*x^3" , "\n\n" , "P-value adjusted = ",round(summary(model)$adj.r.squared,2)))
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
