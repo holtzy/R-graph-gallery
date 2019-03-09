@@ -209,18 +209,54 @@ data &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(mtcars)
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># No dendrogram nor reordering for neither column or row</span>
 <span class="kw">heatmap</span>(data, <span class="dt">Colv =</span> <span class="ot">NA</span>, <span class="dt">Rowv =</span> <span class="ot">NA</span>, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>)</code></pre></div>
-<h1 id="normalization-1">Normalization</h1>
+<h1 id="color-palette">Color palette</h1>
+<hr />
+<p><img src="215-the-heatmap-function_files/figure-html/thecode4-1.png" width="30%" /><img src="215-the-heatmap-function_files/figure-html/thecode4-2.png" width="30%" /><img src="215-the-heatmap-function_files/figure-html/thecode4-3.png" width="30%" /></p>
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>There are several ways to custom the color palette:</p>
+<ul>
+<li>use the native palettes of R: <code>terrain.color()</code>, <code>rainbow()</code>, <code>heat.colors()</code>, <code>topo.colors()</code> or <code>cm.colors()</code></li>
+<li>use the palettes proposed by <code>RColorBrewer</code>. See list of available palettes <a href="38-rcolorbrewers-palettes.html">here</a>.</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1: native palette from R</span>
+<span class="kw">heatmap</span>(data, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>, <span class="dt">col =</span> <span class="kw">cm.colors</span>(<span class="dv">256</span>))
+<span class="kw">heatmap</span>(data, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>, <span class="dt">col =</span> <span class="kw">terrain.colors</span>(<span class="dv">256</span>))
+ 
+<span class="co"># 2: Rcolorbrewer palette</span>
+<span class="kw">library</span>(RColorBrewer)
+coul &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;PiYG&quot;</span>))(<span class="dv">25</span>)
+<span class="kw">heatmap</span>(data, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>, <span class="dt">col =</span> coul)</code></pre></div>
+</div>
+</div>
+<h1 id="custom-layout">Custom Layout</h1>
+<hr />
+<p><img src="215-the-heatmap-function_files/figure-html/thecode5-1.png" width="50%" /><img src="215-the-heatmap-function_files/figure-html/thecode5-2.png" width="50%" /></p>
+<p>You can custom title &amp; axis titles with the usual <code>main</code> and <code>xlab</code>/<code>ylab</code> arguments (left).</p>
+<p>You can also change labels with <code>labRow</code>/<code>colRow</code> and their size with <code>cexRow</code>/<code>cexCol</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Add classic arguments like main title and axis title</span>
+<span class="kw">heatmap</span>(data, <span class="dt">Colv =</span> <span class="ot">NA</span>, <span class="dt">Rowv =</span> <span class="ot">NA</span>, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>, <span class="dt">col =</span> coul, <span class="dt">xlab=</span><span class="st">&quot;variable&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;car&quot;</span>, <span class="dt">main=</span><span class="st">&quot;heatmap&quot;</span>)
+ 
+<span class="co"># Custom x and y labels with cexRow and labRow (col respectively)</span>
+<span class="kw">heatmap</span>(data, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>, <span class="dt">cexRow=</span><span class="fl">1.5</span>, <span class="dt">labRow=</span><span class="kw">paste</span>(<span class="st">&quot;new_&quot;</span>, <span class="kw">rownames</span>(data),<span class="dt">sep=</span><span class="st">&quot;&quot;</span>), <span class="dt">col=</span> <span class="kw">colorRampPalette</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;Blues&quot;</span>))(<span class="dv">25</span>))</code></pre></div>
+<h1 id="add-color-beside-heatmap">Add color beside heatmap</h1>
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>Normalizing the matrix is done using the <code>scale</code> argument of the <code>heatmap()</code> function. It can be applied to <code>row</code> or to <code>column</code>. Here the <code>column</code> option is chosen, since we need to absorb the variation between column.</p>
+<p>Often, heatmap intends to compare the observed structure with an expected one.</p>
+<p>You can add a vector of color beside the heatmap to represents the expected structure using the <code>RowSideColors</code> argument.</p>
 </div>
 <div class="col-md-6 col-sm-12">
-<p><img src="215-the-heatmap-function_files/figure-html/thecode4-1.png" width="100%" /></p>
+<p><img src="215-the-heatmap-function_files/figure-html/thecode6-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use &#39;scale&#39; to normalize</span>
-<span class="kw">heatmap</span>(data, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Example: grouping from the first letter:</span>
+my_group &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">as.factor</span>(<span class="kw">substr</span>(<span class="kw">rownames</span>(data), <span class="dv">1</span> , <span class="dv">1</span>)))
+colSide &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Set1&quot;</span>)[my_group]
+colMain &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;Blues&quot;</span>))(<span class="dv">25</span>)
+<span class="kw">heatmap</span>(data, <span class="dt">Colv =</span> <span class="ot">NA</span>, <span class="dt">Rowv =</span> <span class="ot">NA</span>, <span class="dt">scale=</span><span class="st">&quot;column&quot;</span> , <span class="dt">RowSideColors=</span>colSide, <span class="dt">col=</span>colMain   )</code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->

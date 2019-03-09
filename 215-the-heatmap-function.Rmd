@@ -140,33 +140,112 @@ heatmap(data, Colv = NA, Rowv = NA, scale="column")
 
 
 
-# Normalization
+# Color palette
 ***
+
+
+```{r thecode4, echo=FALSE, out.width = c("30%","30%","30%"), fig.height=7, fig.show="hold"}
+# 1: native palette from R
+heatmap(data, scale="column", col = cm.colors(256))
+heatmap(data, scale="column", col = terrain.colors(256))
+ 
+# 2: Rcolorbrewer palette
+library(RColorBrewer)
+coul <- colorRampPalette(brewer.pal(8, "PiYG"))(25)
+heatmap(data, scale="column", col = coul)
+```
+
+
 
 <div class = "row">
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-Normalizing the matrix is done using the `scale` argument of the `heatmap()` function. It can be applied to `row` or to `column`. Here the `column` option is chosen, since we need to absorb the variation between column.
+There are several ways to custom the color palette:  
 
+- use the native palettes of R: `terrain.color()`, `rainbow()`, `heat.colors()`, `topo.colors()` or `cm.colors()`
+- use the palettes proposed by `RColorBrewer`. See list of available palettes [here](38-rcolorbrewers-palettes.html).
 
 </div>
 
 
 <div class = "col-md-6  col-sm-12">
 
-```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
-# Use 'scale' to normalize
-heatmap(data, scale="column")
-```
-</div>
-</div>
-
-
 
 ```{r thecode4, eval=FALSE}
 ```
 
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+# Custom Layout
+***
+
+
+```{r thecode5, echo=FALSE, out.width = c("50%","50%"), fig.height=7, fig.show="hold"}
+# Add classic arguments like main title and axis title
+heatmap(data, Colv = NA, Rowv = NA, scale="column", col = coul, xlab="variable", ylab="car", main="heatmap")
+ 
+# Custom x and y labels with cexRow and labRow (col respectively)
+heatmap(data, scale="column", cexRow=1.5, labRow=paste("new_", rownames(data),sep=""), col= colorRampPalette(brewer.pal(8, "Blues"))(25))
+```
+
+
+
+
+You can custom title & axis titles with the usual `main` and `xlab`/`ylab` arguments (left). 
+
+You can also change labels with `labRow`/`colRow` and their size with `cexRow`/`cexCol`.
+
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Add color beside heatmap
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Often, heatmap intends to compare the observed structure with an expected one. 
+
+You can add a vector of color beside the heatmap to represents the expected structure using the `RowSideColors` argument.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode6, echo=FALSE, out.width = "100%", fig.height=7}
+# Example: grouping from the first letter:
+my_group <- as.numeric(as.factor(substr(rownames(data), 1 , 1)))
+colSide <- brewer.pal(9, "Set1")[my_group]
+colMain <- colorRampPalette(brewer.pal(8, "Blues"))(25)
+heatmap(data, Colv = NA, Rowv = NA, scale="column" , RowSideColors=colSide, col=colMain   )
+```
+</div>
+</div>
+
+
+
+```{r thecode6, eval=FALSE}
+```
 
 
 
