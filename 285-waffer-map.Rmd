@@ -1,0 +1,252 @@
+---
+title: "Waffer map"
+descriptionMeta: "A wafer map is used to visualize the performance of a semiconductor device on a substrate. Learn how to draw it with R and the tidyverse."
+descriptionTop: "A wafer map is used to visualize the performance of a semiconductor device on a substrate. Learn how to draw it with `R` and the [tidyverse](ggplot2.html)."
+sectionText: "Heatmap section"
+sectionLink: "heatmap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/heatmap.html"
+url: "285-waffer-map"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Basis use of levelplot()
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `lattice` package allows to build [heatmaps](heatmap.html) thanks to the `levelplot()` function.
+
+<u>Input data</u>: here input is a data frame with 3 columns prividing the X and Y coordinate of the cell and its value. (<u>Long</u> format).
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# load data
+madeUp=read.table("madeUp.csv.gz", sep=",", header=T)
+ 
+# load libraries
+library(tidyverse)
+ 
+# Prepare data 
+theData <- madeUp %>% 
+ group_by(X.Axis, Y.Axis, Group) %>% 
+ dplyr::summarize(statistic=mean(randVals, na.rm = TRUE))
+ 
+# plot
+ggplot(theData, aes(X.Axis, Y.Axis)) +
+	
+	coord_cartesian(xlim = c(0,20), ylim = c(0,20)) +
+	scale_x_continuous(breaks = seq(0,20)) +
+	scale_y_continuous(breaks = seq(0,20))+
+	
+	geom_tile(aes(fill=statistic))+
+	guides(fill=guide_legend(title='Legend'))+
+	
+	theme(
+		panel.background = element_rect(fill= 'white', color = 'white'),
+		panel.grid.major = element_line(color='#E0E0E0'),
+		panel.grid.minor = element_line(color='#E0E0E0')
+		)+
+		
+	ggtitle('Wafer Map')+
+	facet_wrap(~Group)+
+	scale_fill_gradientn(colors = rainbow(100))
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+# From wide input matrix
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Previous example of this document was based on a data frame at the long format. Here, a square matrix is used instead. It is the second format understood by the `levelplot()` function.
+
+<u>Note</u>: here row and column order isn't respected in the heatmap.
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Load the library
+library("lattice")
+
+# Dummy data
+data <- matrix(runif(100, 0, 5) , 10 , 10)
+colnames(data) <- letters[c(1:10)]
+rownames(data) <- paste( rep("row",10) , c(1:10) , sep=" ")
+
+# plot it flipping the axis
+levelplot(data)
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# Flip and reorder axis
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `t()` function of R allows to transpose the input matrix, and thus to flip X and Y coordinates.
+
+Moreover, you can reverse matrix order as shown below to reverse order in the heatmap as well. Now the heatmap is organized exactly as the input matrix.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Load the library
+library("lattice")
+
+# Dummy data
+data <- matrix(runif(100, 0, 5) , 10 , 10)
+colnames(data) <- letters[c(1:10)]
+rownames(data) <- paste( rep("row",10) , c(1:10) , sep=" ")
+
+# plot it flipping the axis
+levelplot( t(data[c(nrow(data):1) , ]),
+           col.regions=heat.colors(100))
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Custom colors
+***
+
+
+```{r thecode4, echo=FALSE, out.width = c("30%","30%","30%"), fig.height=9, fig.show="hold"}
+# Lattice package
+require(lattice)
+
+# The volcano dataset is provided, it looks like that:
+#head(volcano)
+
+# 1: native palette from R
+levelplot(volcano, col.regions = terrain.colors(100)) # try cm.colors() or terrain.colors()
+
+# 2: Rcolorbrewer palette
+library(RColorBrewer)
+coul <- colorRampPalette(brewer.pal(8, "PiYG"))(25)
+levelplot(volcano, col.regions = coul) # try cm.colors() or terrain.colors()
+
+# 3: Viridis
+library(viridisLite)
+coul <- viridis(100)
+levelplot(volcano, col.regions = coul)
+#levelplot(volcano, col.regions = magma(100))
+```
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+There are several ways to custom the color palette:  
+
+- native palettes of R: `terrain.color()`, `rainbow()`, `heat.colors()`, `topo.colors()` or `cm.colors()`
+- palettes of `RColorBrewer`. See list of available palettes [here](38-rcolorbrewers-palettes.html).
+- palettes of `Viridis`: viridis, magma, inferno, plasma.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, fig.width=5, fig.height=3, fig.align="center"}
+levelplot(volcano, col.regions = magma(100))
+```
+
+
+</div>
+</div>
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
