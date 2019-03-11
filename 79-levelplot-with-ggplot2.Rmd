@@ -1,0 +1,260 @@
+---
+title: "ggplot2 heatmap"
+descriptionMeta: "This document provides several examples of heatmaps built with R and ggplot2. It describes the main customization you can apply, with explanation and reproducible code."
+descriptionTop: "This document provides several examples of [heatmaps](heatmap.html) built with `R` and [ggplot2](ggplot2.html). It describes the main customization you can apply, with explanation and reproducible code.<br><u>Note:</u> The native [heatmap() function](215-the-heatmap-function.html) provides more options for data normalization and clustering. Consider it as a valuable option."
+sectionText: "Heatmap section"
+sectionLink: "heatmap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/heatmap.html"
+url: "79-levelplot-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic heatmap with `ggplot2`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This is the most basic heatmap you can build with `R` and `ggplot2`, using the `geom_tile()` function.  
+
+Input data must be a long format where each row provides an observation. At least 3 variables are needed per observation:
+
+- `x`: position on the X axis
+- `y`: position on the Y axis
+- `fill`: the numeric value that will be translated in a color
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(ggplot2)
+
+# Dummy data
+x <- LETTERS[1:20]
+y <- paste0("var", seq(1,20))
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
+ 
+# Heatmap 
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile()
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+# Control color palette
+***
+
+```{r thecode2, echo=FALSE, out.width = c("33%","33%","33%"), fig.height=7, fig.show='hold'}
+# Library
+library(ggplot2)
+library(hrbrthemes)
+
+# Dummy data
+x <- LETTERS[1:20]
+y <- paste0("var", seq(1,20))
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
+ 
+# Give extreme colors:
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="blue") +
+  theme_ipsum()
+
+# Color Brewer palette
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile() +
+  scale_fill_distiller(palette = "RdPu") +
+  theme_ipsum()
+
+# Color Brewer palette
+library(viridis)
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE) +
+  theme_ipsum()
+```
+
+
+Color palette can be changed like in any [ggplot2](ggplot2.html) chart. Above are 3 examples using different methods:
+
+- `scale_fill_gradient()` to provide extreme colors of the palette
+- `scale_fill_distiller)` to provide a [ColorBrewer](38-rcolorbrewers-palettes.html) palette
+- `scale_fill_viridis()` to use Viridis. Do not forget `discrete=FALSE` for a continuous variable.
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# From wide input format
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is a common issue to have a wide matrix as input, as for the `volcano` dataset. In this case, you need to tidy it with the `gather()` function of the `tidyr` package to visualize it with [ggplot](ggplot2.html).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(ggplot2)
+library(tidyr)
+library(tibble)
+library(hrbrthemes)
+library(dplyr)
+
+# Volcano dataset
+#volcano
+
+# Heatmap 
+volcano %>%
+  
+  # Data wrangling
+  as_tibble() %>%
+  rowid_to_column(var="X") %>%
+  gather(key="Y", value="Z", -1) %>%
+  
+  # Change Y to numeric
+  mutate(Y=as.numeric(gsub("V","",Y))) %>%
+
+  # Viz
+  ggplot(aes(X, Y, fill= Z)) + 
+    geom_tile() +
+    theme_ipsum() +
+    theme(legend.position="none")
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+# Turn it interactive with `plotly`
+***
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+One of the nice feature of [ggplot2](ggplot2.html) is that charts can be turned interactive in seconds thanks to `plotly`. You just need to wrap your chart in an object and call it in the `ggplotly()` function. 
+
+Often, it is a good practice to custom the text available in the tooltip.
+
+<u>Note: </u>try to hover cells to see the tooltip, select an area to zoom in.
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+<center><iframe src="HtmlWidget/ggplotlyHeatmap.html" height="700" width="700" style="border:none;"></iframe></center>
+</div>
+</div>
+
+
+```{r, echo=TRUE, eval=FALSE}
+# Library
+library(ggplot2)
+library(hrbrthemes)
+library(plotly)
+
+# Dummy data
+x <- LETTERS[1:20]
+y <- paste0("var", seq(1,20))
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
+ 
+# new column: text for tooltip:
+data <- data %>%
+  mutate(text = paste0("x: ", x, "\n", "y: ", y, "\n", "Value: ",round(Z,2), "\n", "What else?"))
+
+# classic ggplot, with text in aes
+p <- ggplot(data, aes(X, Y, fill= Z, text=text)) + 
+  geom_tile() +
+  theme_ipsum()
+
+ggplotly(p, tooltip="text")
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(pp, file=paste0( getwd(), "/HtmlWidget/ggplotlyHeatmap.html"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
