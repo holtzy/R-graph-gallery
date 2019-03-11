@@ -37,23 +37,27 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The `plot()` function of R allows to build a [scatterplot](scatterplot.html). Both numeric variables of the input dataframe must be specified in the `x` and `y` argument.
+The `lattice` package allows to build [heatmaps](heatmap.html) thanks to the `levelplot()` function. 
 
-
+<u>Input data</u>: here input is a data frame with 3 columns prividing the X and Y coordinate of the cell and its value. (<u>Long</u> format).
 </div>
 
 
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
-# Create data
-data = data.frame(
-  x=seq(1:100) + 0.1*seq(1:100)*sample(c(1:10) , 100 , replace=T),
-  y=seq(1:100) + 0.2*seq(1:100)*sample(c(1:10) , 100 , replace=T)
-)
+# Load the lattice package
+library("lattice")
+ 
+# Dummy data
+x <- seq(1,10, length.out=20)
+y <- seq(1,10, length.out=20)
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
 
-# Basic scatterplot
-plot(x=data$x, y=data$y)
+## Try it out
+levelplot(Z ~ X*Y, data=data  ,xlab="X",
+          main="")
 ```
 </div>
 </div>
@@ -66,22 +70,60 @@ plot(x=data$x, y=data$y)
 
 
 
-# Customizations
+
+
+# From wide input matrix
 ***
 
 <div class = "row">
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-Here is a description of the most common customization:  
+Previous example of this document was based on a data frame at the long format. Here, a square matrix is used instead. It is the second format understood by the `levelplot()` function.
 
-- `cex`: circle size
-- `xlim` and `ylim`: limits of the X and Y axis
-- `pch`: shape of markers. See all [here](6-graph-parameters-reminder.html).
-- `xlab` and `ylab`: X and Y axis labels
-- `col`: marker color
-- `main`: chart title
+<u>Note</u>: here row and column order isn't respected in the heatmap.
 
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Load the library
+library("lattice")
+ 
+# Dummy data
+data <- matrix(runif(100, 0, 5) , 10 , 10)
+colnames(data) <- letters[c(1:10)]
+rownames(data) <- paste( rep("row",10) , c(1:10) , sep=" ")
+ 
+# plot it flipping the axis
+levelplot(data)
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# Flip and reorder axis
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `t()` function of R allows to transpose the input matrix, and thus to flip X and Y coordinates.
+
+Moreover, you can reverse matrix order as shown below to reverse order in the heatmap as well. Now the heatmap is organized exactly as the input matrix.
 
 </div>
 
@@ -89,21 +131,17 @@ Here is a description of the most common customization:
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
-# Create data
-data = data.frame(
-  x=seq(1:100) + 0.1*seq(1:100)*sample(c(1:10) , 100 , replace=T),
-  y=seq(1:100) + 0.2*seq(1:100)*sample(c(1:10) , 100 , replace=T)
-)
-
-# Basic scatterplot
-plot(data$x, data$y,
-     xlim=c(0,250) , ylim=c(0,250), 
-     pch=18, 
-     cex=2, 
-     col="#69b3a2",
-     xlab="value of X", ylab="value of Y",
-     main="A simple scatterplot"
-     )
+# Load the library
+library("lattice")
+ 
+# Dummy data
+data <- matrix(runif(100, 0, 5) , 10 , 10)
+colnames(data) <- letters[c(1:10)]
+rownames(data) <- paste( rep("row",10) , c(1:10) , sep=" ")
+ 
+# plot it flipping the axis
+levelplot( t(data[c(nrow(data):1) , ]),
+           col.regions=heat.colors(100))
 ```
 </div>
 </div>
@@ -113,6 +151,70 @@ plot(data$x, data$y,
 ```{r thecode2, eval=FALSE}
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+# Custom colors
+***
+
+
+```{r thecode4, echo=FALSE, out.width = c("30%","30%","30%"), fig.height=9, fig.show="hold"}
+# Lattice package
+require(lattice)
+
+# The volcano dataset is provided, it looks like that:
+#head(volcano)
+
+# 1: native palette from R
+levelplot(volcano, col.regions = terrain.colors(100)) # try cm.colors() or terrain.colors()
+
+# 2: Rcolorbrewer palette
+library(RColorBrewer)
+coul <- colorRampPalette(brewer.pal(8, "PiYG"))(25)
+levelplot(volcano, col.regions = coul) # try cm.colors() or terrain.colors()
+
+# 3: Viridis
+library(viridisLite)
+coul <- viridis(100)
+levelplot(volcano, col.regions = coul) 
+#levelplot(volcano, col.regions = magma(100)) 
+```
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+There are several ways to custom the color palette:  
+
+- native palettes of R: `terrain.color()`, `rainbow()`, `heat.colors()`, `topo.colors()` or `cm.colors()`
+- palettes of `RColorBrewer`. See list of available palettes [here](38-rcolorbrewers-palettes.html).
+- palettes of `Viridis`: viridis, magma, inferno, plasma.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, echo=FALSE, fig.width=5, fig.height=3, fig.align="center"}
+levelplot(volcano, col.regions = magma(100)) 
+```
+
+
+</div>
+</div>
+
+```{r thecode4, eval=FALSE}
+```
 
 
 

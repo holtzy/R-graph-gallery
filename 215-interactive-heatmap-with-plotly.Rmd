@@ -1,0 +1,148 @@
+---
+title: "Plotly heatmap"
+descriptionMeta: "Plotly allows to build quality interactive heatmaps. This document provides several examples with reproducible code"
+descriptionTop: "`Plotly` allows to build quality interactive [heatmaps](heatmap.html). This document provides several examples with reproducible code"
+sectionText: "Heatmap section"
+sectionLink: "heatmap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/heatmap.html"
+url: "215-interactive-heatmap-with-plotly"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic heatmap with `plotly`
+***
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+The plotly package allows to build interactive charts with the `plot_ly()` function. You can build heatmaps specifying heatmap in the `type` argument. You have to provide a square matrix.
+
+<u>Try</u>: to zoom, to hover, to export to png and to slide axis. Double click to re-initialize.
+
+<u>Note</u>: You probably need to use the `layout()` function to increase the left margin (`l` for left). Otherwise row labels will be cut.
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+<center><iframe src="HtmlWidget/plotlyHeatmap1.html" height="600" width="700" style="border:none;"></iframe></center>
+</div>
+</div>
+
+
+```{r, echo=TRUE, eval=FALSE}
+# Load the plotly package
+library(plotly)
+
+# Data: mtcars:
+data <- as.matrix(mtcars)
+
+# basic heatmap
+p <- plot_ly(x=colnames(data), y=rownames(data), z = data, type = "heatmap") %>%
+    layout(margin = list(l=120))
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/plotlyHeatmap1.html"))
+
+```
+
+
+
+
+
+
+
+
+
+
+# Normalization and color scale
+***
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+<u>Normalization</u>: `Plotly` does not allow to normalize the data automatically. You need it to do it yourself. Here is a suggestion using the `apply` function. Data are normalized by column: cell values are divided by the column mean.
+
+<u>Color:</u>: Several ways are available to custom color. Here the provided `Earth` color palette is used. You can also pick a gradient color with `colorRamp(c("red", "yellow"))`
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+<center><iframe src="HtmlWidget/plotlyHeatmap2.html" height="600" width="700" style="border:none;"></iframe></center>
+</div>
+</div>
+
+
+```{r, echo=TRUE, eval=FALSE}
+# Load the plotly package
+library(plotly)
+
+# Data: mtcars:
+data <- as.matrix(mtcars)
+
+# Normalize data
+data <- apply(data, 2, function(x){x/mean(x)})
+
+# Heatmap
+p <- plot_ly(x=colnames(data), y=rownames(data), 
+            z = data, 
+            type = "heatmap", 
+            colorscale= "Earth",
+            showscale = F) %>%
+    layout(margin = list(l=120))
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/plotlyHeatmap2.html"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

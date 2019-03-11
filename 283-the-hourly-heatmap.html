@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>Heatmap with lattice and levelplot() &#8211; the R Graph Gallery</title>
+<title>The hourly heatmap &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This document explains how to use the levelplot() function of the lattice R package to build heatmaps.">
+<meta name="description" content="A heatmap used to display time series with R and ggplot2. A submission by John MacKintosh with reproducible code.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Heatmap with lattice and levelplot()" />
+<meta property="og:title" content="The hourly heatmap" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This document explains how to use the levelplot() function of the lattice R package to build heatmaps." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/27-levelplot-with-lattice.html" />
+<meta property="og:description" content="A heatmap used to display time series with R and ggplot2. A submission by John MacKintosh with reproducible code." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/215-interactive-heatmap-with-plotly.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Heatmap with lattice and levelplot()</h1></center>
+      <center><h1>The hourly heatmap</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,7 +141,7 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This document explains how to use the <code>levelplot()</code> function of the <code>lattice</code> R package to build <a href="heatmap.html">heatmaps</a>.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">A <a href="heatmap.html">heatmap</a> used to display time series with R and <a href="ggplot2.html">ggplot2</a>. A submission by <a href="http://johnmackintosh.com/">John MacKintosh</a> with reproducible code.</p></center>
       <div style="text-align:center">
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='heatmap.html'>Heatmap section</a>
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/heatmap.html'>Data to Viz</a>
@@ -166,108 +166,83 @@
 
 
 
-<div class="container">
-<h1 id="basis-use-of-levelplot">Basis use of levelplot()</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The <code>lattice</code> package allows to build <a href="heatmap.html">heatmaps</a> thanks to the <code>levelplot()</code> function.</p>
-<p><u>Input data</u>: here input is a data frame with 3 columns prividing the X and Y coordinate of the cell and its value. (<u>Long</u> format).</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the lattice package</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
+<div class="container" style="padding-top: 100px">
+<p><img src="283-the-hourly-heatmap_files/figure-html/thecode-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>A submission by <a href="http://johnmackintosh.com/">John MacKintosh</a> who visualized meteorological data using a heatmap built with <a href="ggplot2.html">ggplot2</a>. Initial code is stored on <a href="https://gist.github.com/johnmackintosh/520643a1f82a0c7df00cf949ba98a4e9">github</a> and displayed below:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr) <span class="co"># easier data wrangling </span>
+<span class="kw">library</span>(viridis) <span class="co"># colour blind friendly palette, works in B&amp;W also</span>
+<span class="kw">library</span>(Interpol.T) <span class="co">#  will generate a large dataset on initial load</span>
+<span class="kw">library</span>(lubridate) <span class="co"># for easy date manipulation</span>
+<span class="kw">library</span>(ggExtra) <span class="co"># because remembering ggplot theme options is beyond me</span>
+<span class="kw">library</span>(tidyr) 
  
-<span class="co"># Dummy data</span>
-x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>, <span class="dt">length.out=</span><span class="dv">20</span>)
-y &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>, <span class="dt">length.out=</span><span class="dv">20</span>)
-data &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">X=</span>x, <span class="dt">Y=</span>y)
-data<span class="op">$</span>Z &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">400</span>, <span class="dv">0</span>, <span class="dv">5</span>)
-
-## Try it out
-<span class="kw">levelplot</span>(Z <span class="op">~</span><span class="st"> </span>X<span class="op">*</span>Y, <span class="dt">data=</span>data  ,<span class="dt">xlab=</span><span class="st">&quot;X&quot;</span>,
-          <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
-<h1 id="from-wide-input-matrix">From wide input matrix</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>Previous example of this document was based on a data frame at the long format. Here, a square matrix is used instead. It is the second format understood by the <code>levelplot()</code> function.</p>
-<p><u>Note</u>: here row and column order isn’t respected in the heatmap.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode3-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the library</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
  
-<span class="co"># Dummy data</span>
-data &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">5</span>) , <span class="dv">10</span> , <span class="dv">10</span>)
-<span class="kw">colnames</span>(data) &lt;-<span class="st"> </span>letters[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)]
-<span class="kw">rownames</span>(data) &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">rep</span>(<span class="st">&quot;row&quot;</span>,<span class="dv">10</span>) , <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) , <span class="dt">sep=</span><span class="st">&quot; &quot;</span>)
+data &lt;-<span class="st"> </span><span class="kw">data</span>(Trentino_hourly_T,<span class="dt">package =</span> <span class="st">&quot;Interpol.T&quot;</span>)
  
-<span class="co"># plot it flipping the axis</span>
-<span class="kw">levelplot</span>(data)</code></pre></div>
-<h1 id="flip-and-reorder-axis">Flip and reorder axis</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The <code>t()</code> function of R allows to transpose the input matrix, and thus to flip X and Y coordinates.</p>
-<p>Moreover, you can reverse matrix order as shown below to reverse order in the heatmap as well. Now the heatmap is organized exactly as the input matrix.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode2-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the library</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
+<span class="kw">names</span>(h_d_t)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]&lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;stationid&quot;</span>,<span class="st">&quot;date&quot;</span>,<span class="st">&quot;hour&quot;</span>,<span class="st">&quot;temp&quot;</span>,<span class="st">&quot;flag&quot;</span>)
+df &lt;-<span class="st"> </span><span class="kw">tbl_df</span>(h_d_t) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(stationid <span class="op">==</span><span class="st">&quot;T0001&quot;</span>)
  
-<span class="co"># Dummy data</span>
-data &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">5</span>) , <span class="dv">10</span> , <span class="dv">10</span>)
-<span class="kw">colnames</span>(data) &lt;-<span class="st"> </span>letters[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)]
-<span class="kw">rownames</span>(data) &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">rep</span>(<span class="st">&quot;row&quot;</span>,<span class="dv">10</span>) , <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) , <span class="dt">sep=</span><span class="st">&quot; &quot;</span>)
+df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">year</span>(date),
+                  <span class="dt">month =</span> <span class="kw">month</span>(date, <span class="dt">label=</span><span class="ot">TRUE</span>),
+                  <span class="dt">day =</span> <span class="kw">day</span>(date))
+  
+df<span class="op">$</span>date&lt;-<span class="kw">ymd</span>(df<span class="op">$</span>date) <span class="co"># not necessary for plot but </span>
+<span class="co">#useful if you want to do further work with the data</span>
  
-<span class="co"># plot it flipping the axis</span>
-<span class="kw">levelplot</span>( <span class="kw">t</span>(data[<span class="kw">c</span>(<span class="kw">nrow</span>(data)<span class="op">:</span><span class="dv">1</span>) , ]),
-           <span class="dt">col.regions=</span><span class="kw">heat.colors</span>(<span class="dv">100</span>))</code></pre></div>
-<h1 id="custom-colors">Custom colors</h1>
-<hr />
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode4-1.png" width="30%" /><img src="27-levelplot-with-lattice_files/figure-html/thecode4-2.png" width="30%" /><img src="27-levelplot-with-lattice_files/figure-html/thecode4-3.png" width="30%" /></p>
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>There are several ways to custom the color palette:</p>
-<ul>
-<li>native palettes of R: <code>terrain.color()</code>, <code>rainbow()</code>, <code>heat.colors()</code>, <code>topo.colors()</code> or <code>cm.colors()</code></li>
-<li>palettes of <code>RColorBrewer</code>. See list of available palettes <a href="38-rcolorbrewers-palettes.html">here</a>.</li>
-<li>palettes of <code>Viridis</code>: viridis, magma, inferno, plasma.</li>
-</ul>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Lattice package</span>
-<span class="kw">require</span>(lattice)
-
-<span class="co"># The volcano dataset is provided, it looks like that:</span>
-<span class="co">#head(volcano)</span>
-
-<span class="co"># 1: native palette from R</span>
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> <span class="kw">terrain.colors</span>(<span class="dv">100</span>)) <span class="co"># try cm.colors() or terrain.colors()</span>
-
-<span class="co"># 2: Rcolorbrewer palette</span>
-<span class="kw">library</span>(RColorBrewer)
-coul &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;PiYG&quot;</span>))(<span class="dv">25</span>)
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> coul) <span class="co"># try cm.colors() or terrain.colors()</span>
-
-<span class="co"># 3: Viridis</span>
-<span class="kw">library</span>(viridisLite)
-coul &lt;-<span class="st"> </span><span class="kw">viridis</span>(<span class="dv">100</span>)
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> coul) 
-<span class="co">#levelplot(volcano, col.regions = magma(100)) </span></code></pre></div>
+<span class="co">#cleanup</span>
+<span class="kw">rm</span>(<span class="dt">list=</span><span class="kw">c</span>(<span class="st">&quot;h_d_t&quot;</span>,<span class="st">&quot;mo_bias&quot;</span>,<span class="st">&quot;Tn&quot;</span>,<span class="st">&quot;Tx&quot;</span>,
+          <span class="st">&quot;Th_int_list&quot;</span>,<span class="st">&quot;calibration_l&quot;</span>,
+          <span class="st">&quot;calibration_shape&quot;</span>,<span class="st">&quot;Tm_list&quot;</span>))
+ 
+ 
+<span class="co">#create plotting df</span>
+df &lt;-df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(stationid,day,hour,month,year,temp)<span class="op">%&gt;%</span>
+<span class="st">        </span><span class="kw">fill</span>(temp) <span class="co">#optional - see note below</span>
+ 
+<span class="co"># Re: use of fill</span>
+<span class="co"># This code is for demonstrating a visualisation technique</span>
+<span class="co"># There are 5 missing hourly values in the dataframe.</span>
+ 
+<span class="co"># see the original plot here (from my ggplot demo earlier this year) to see the white spaces where the missing values occcur:</span>
+<span class="co"># https://github.com/johnmackintosh/ggplotdemo/blob/master/temp8.png </span>
+ 
+<span class="co"># I used &#39;fill&#39; from  tidyr to take the prior value for each missing value and replace the NA</span>
+<span class="co"># This is a quick fix for the blog post only - _do not_ do this with your real world data</span>
+ 
+<span class="co"># Should really use either use replace_NA or complete(with fill)in tidyr </span>
+<span class="co"># OR </span>
+<span class="co"># Look into more specialist way of replacing these missing values -e.g. imputation.</span>
+ 
+ 
+ 
+statno &lt;-<span class="kw">unique</span>(df<span class="op">$</span>stationid)
+ 
+ 
+ 
+######## Plotting starts here#####################
+p &lt;-<span class="kw">ggplot</span>(df,<span class="kw">aes</span>(day,hour,<span class="dt">fill=</span>temp))<span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>(<span class="dt">color=</span> <span class="st">&quot;white&quot;</span>,<span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_fill_viridis</span>(<span class="dt">name=</span><span class="st">&quot;Hrly Temps C&quot;</span>,<span class="dt">option =</span><span class="st">&quot;C&quot;</span>)
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">facet_grid</span>(year<span class="op">~</span>month)
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">scale_y_continuous</span>(<span class="dt">trans =</span> <span class="st">&quot;reverse&quot;</span>, <span class="dt">breaks =</span> <span class="kw">unique</span>(df<span class="op">$</span>hour))
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">31</span>))
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>(<span class="dt">base_size =</span> <span class="dv">8</span>)
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">labs</span>(<span class="dt">title=</span> <span class="kw">paste</span>(<span class="st">&quot;Hourly Temps - Station&quot;</span>,statno), <span class="dt">x=</span><span class="st">&quot;Day&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Hour Commencing&quot;</span>)
+p &lt;-p <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.title=</span><span class="kw">element_text</span>(<span class="dt">size =</span> <span class="dv">14</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.y=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">6</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">strip.background =</span> <span class="kw">element_rect</span>(<span class="dt">colour=</span><span class="st">&quot;white&quot;</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.title=</span><span class="kw">element_text</span>(<span class="dt">hjust=</span><span class="dv">0</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.ticks=</span><span class="kw">element_blank</span>())<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">7</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.title=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">8</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.text=</span><span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">6</span>))<span class="op">+</span>
+<span class="st">  </span><span class="kw">removeGrid</span>()<span class="co">#ggExtra</span>
+ 
+<span class="co"># you will want to expand your plot screen before this bit!</span>
+p <span class="co">#awesomeness</span></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->

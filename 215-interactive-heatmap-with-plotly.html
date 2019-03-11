@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>Heatmap with lattice and levelplot() &#8211; the R Graph Gallery</title>
+<title>Plotly heatmap &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This document explains how to use the levelplot() function of the lattice R package to build heatmaps.">
+<meta name="description" content="Plotly allows to build quality interactive heatmaps. This document provides several examples with reproducible code">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Heatmap with lattice and levelplot()" />
+<meta property="og:title" content="Plotly heatmap" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This document explains how to use the levelplot() function of the lattice R package to build heatmaps." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/27-levelplot-with-lattice.html" />
+<meta property="og:description" content="Plotly allows to build quality interactive heatmaps. This document provides several examples with reproducible code" />
+<meta property='og:url' content="https://www.r-graph-gallery.com/215-interactive-heatmap-with-plotly.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Heatmap with lattice and levelplot()</h1></center>
+      <center><h1>Plotly heatmap</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,7 +141,7 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This document explains how to use the <code>levelplot()</code> function of the <code>lattice</code> R package to build <a href="heatmap.html">heatmaps</a>.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px"><code>Plotly</code> allows to build quality interactive <a href="heatmap.html">heatmaps</a>. This document provides several examples with reproducible code</p></center>
       <div style="text-align:center">
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='heatmap.html'>Heatmap section</a>
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/heatmap.html'>Data to Viz</a>
@@ -167,107 +167,70 @@
 
 
 <div class="container">
-<h1 id="basis-use-of-levelplot">Basis use of levelplot()</h1>
+<h1 id="most-basic-heatmap-with-plotly">Most basic heatmap with <code>plotly</code></h1>
 <hr />
 <div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The <code>lattice</code> package allows to build <a href="heatmap.html">heatmaps</a> thanks to the <code>levelplot()</code> function.</p>
-<p><u>Input data</u>: here input is a data frame with 3 columns prividing the X and Y coordinate of the cell and its value. (<u>Long</u> format).</p>
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>The plotly package allows to build interactive charts with the <code>plot_ly()</code> function. You can build heatmaps specifying heatmap in the <code>type</code> argument. You have to provide a square matrix.</p>
+<p><u>Try</u>: to zoom, to hover, to export to png and to slide axis. Double click to re-initialize.</p>
+<p><u>Note</u>: You probably need to use the <code>layout()</code> function to increase the left margin (<code>l</code> for left). Otherwise row labels will be cut.</p>
 </div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode-1.png" width="100%" /></p>
+<div class="col-md-7 col-sm-12">
+<center>
+<iframe src="HtmlWidget/plotlyHeatmap1.html" height="600" width="700" style="border:none;">
+</iframe>
+</center>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the lattice package</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
- 
-<span class="co"># Dummy data</span>
-x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>, <span class="dt">length.out=</span><span class="dv">20</span>)
-y &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>, <span class="dt">length.out=</span><span class="dv">20</span>)
-data &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">X=</span>x, <span class="dt">Y=</span>y)
-data<span class="op">$</span>Z &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">400</span>, <span class="dv">0</span>, <span class="dv">5</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the plotly package</span>
+<span class="kw">library</span>(plotly)
 
-## Try it out
-<span class="kw">levelplot</span>(Z <span class="op">~</span><span class="st"> </span>X<span class="op">*</span>Y, <span class="dt">data=</span>data  ,<span class="dt">xlab=</span><span class="st">&quot;X&quot;</span>,
-          <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
-<h1 id="from-wide-input-matrix">From wide input matrix</h1>
+<span class="co"># Data: mtcars:</span>
+data &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(mtcars)
+
+<span class="co"># basic heatmap</span>
+p &lt;-<span class="st"> </span><span class="kw">plot_ly</span>(<span class="dt">x=</span><span class="kw">colnames</span>(data), <span class="dt">y=</span><span class="kw">rownames</span>(data), <span class="dt">z =</span> data, <span class="dt">type =</span> <span class="st">&quot;heatmap&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">layout</span>(<span class="dt">margin =</span> <span class="kw">list</span>(<span class="dt">l=</span><span class="dv">120</span>))
+p
+
+<span class="co"># save the widget</span>
+<span class="co"># library(htmlwidgets)</span>
+<span class="co"># saveWidget(p, file=paste0( getwd(), &quot;/HtmlWidget/plotlyHeatmap1.html&quot;))</span></code></pre></div>
+<h1 id="normalization-and-color-scale">Normalization and color scale</h1>
 <hr />
 <div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>Previous example of this document was based on a data frame at the long format. Here, a square matrix is used instead. It is the second format understood by the <code>levelplot()</code> function.</p>
-<p><u>Note</u>: here row and column order isn’t respected in the heatmap.</p>
+<div class="col-md-5 col-sm-12 align-self-center">
+<p><u>Normalization</u>: <code>Plotly</code> does not allow to normalize the data automatically. You need it to do it yourself. Here is a suggestion using the <code>apply</code> function. Data are normalized by column: cell values are divided by the column mean.</p>
+<p><u>Color:</u>: Several ways are available to custom color. Here the provided <code>Earth</code> color palette is used. You can also pick a gradient color with <code>colorRamp(c(&quot;red&quot;, &quot;yellow&quot;))</code></p>
 </div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode3-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the library</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
- 
-<span class="co"># Dummy data</span>
-data &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">5</span>) , <span class="dv">10</span> , <span class="dv">10</span>)
-<span class="kw">colnames</span>(data) &lt;-<span class="st"> </span>letters[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)]
-<span class="kw">rownames</span>(data) &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">rep</span>(<span class="st">&quot;row&quot;</span>,<span class="dv">10</span>) , <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) , <span class="dt">sep=</span><span class="st">&quot; &quot;</span>)
- 
-<span class="co"># plot it flipping the axis</span>
-<span class="kw">levelplot</span>(data)</code></pre></div>
-<h1 id="flip-and-reorder-axis">Flip and reorder axis</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The <code>t()</code> function of R allows to transpose the input matrix, and thus to flip X and Y coordinates.</p>
-<p>Moreover, you can reverse matrix order as shown below to reverse order in the heatmap as well. Now the heatmap is organized exactly as the input matrix.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode2-1.png" width="100%" /></p>
+<div class="col-md-7 col-sm-12">
+<center>
+<iframe src="HtmlWidget/plotlyHeatmap2.html" height="600" width="700" style="border:none;">
+</iframe>
+</center>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the library</span>
-<span class="kw">library</span>(<span class="st">&quot;lattice&quot;</span>)
- 
-<span class="co"># Dummy data</span>
-data &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">5</span>) , <span class="dv">10</span> , <span class="dv">10</span>)
-<span class="kw">colnames</span>(data) &lt;-<span class="st"> </span>letters[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)]
-<span class="kw">rownames</span>(data) &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">rep</span>(<span class="st">&quot;row&quot;</span>,<span class="dv">10</span>) , <span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) , <span class="dt">sep=</span><span class="st">&quot; &quot;</span>)
- 
-<span class="co"># plot it flipping the axis</span>
-<span class="kw">levelplot</span>( <span class="kw">t</span>(data[<span class="kw">c</span>(<span class="kw">nrow</span>(data)<span class="op">:</span><span class="dv">1</span>) , ]),
-           <span class="dt">col.regions=</span><span class="kw">heat.colors</span>(<span class="dv">100</span>))</code></pre></div>
-<h1 id="custom-colors">Custom colors</h1>
-<hr />
-<p><img src="27-levelplot-with-lattice_files/figure-html/thecode4-1.png" width="30%" /><img src="27-levelplot-with-lattice_files/figure-html/thecode4-2.png" width="30%" /><img src="27-levelplot-with-lattice_files/figure-html/thecode4-3.png" width="30%" /></p>
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>There are several ways to custom the color palette:</p>
-<ul>
-<li>native palettes of R: <code>terrain.color()</code>, <code>rainbow()</code>, <code>heat.colors()</code>, <code>topo.colors()</code> or <code>cm.colors()</code></li>
-<li>palettes of <code>RColorBrewer</code>. See list of available palettes <a href="38-rcolorbrewers-palettes.html">here</a>.</li>
-<li>palettes of <code>Viridis</code>: viridis, magma, inferno, plasma.</li>
-</ul>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="27-levelplot-with-lattice_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
-</div>
-</div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Lattice package</span>
-<span class="kw">require</span>(lattice)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the plotly package</span>
+<span class="kw">library</span>(plotly)
 
-<span class="co"># The volcano dataset is provided, it looks like that:</span>
-<span class="co">#head(volcano)</span>
+<span class="co"># Data: mtcars:</span>
+data &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(mtcars)
 
-<span class="co"># 1: native palette from R</span>
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> <span class="kw">terrain.colors</span>(<span class="dv">100</span>)) <span class="co"># try cm.colors() or terrain.colors()</span>
+<span class="co"># Normalize data</span>
+data &lt;-<span class="st"> </span><span class="kw">apply</span>(data, <span class="dv">2</span>, <span class="cf">function</span>(x){x<span class="op">/</span><span class="kw">mean</span>(x)})
 
-<span class="co"># 2: Rcolorbrewer palette</span>
-<span class="kw">library</span>(RColorBrewer)
-coul &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(<span class="kw">brewer.pal</span>(<span class="dv">8</span>, <span class="st">&quot;PiYG&quot;</span>))(<span class="dv">25</span>)
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> coul) <span class="co"># try cm.colors() or terrain.colors()</span>
+<span class="co"># Heatmap</span>
+p &lt;-<span class="st"> </span><span class="kw">plot_ly</span>(<span class="dt">x=</span><span class="kw">colnames</span>(data), <span class="dt">y=</span><span class="kw">rownames</span>(data), 
+            <span class="dt">z =</span> data, 
+            <span class="dt">type =</span> <span class="st">&quot;heatmap&quot;</span>, 
+            <span class="dt">colorscale=</span> <span class="st">&quot;Earth&quot;</span>,
+            <span class="dt">showscale =</span> F) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">layout</span>(<span class="dt">margin =</span> <span class="kw">list</span>(<span class="dt">l=</span><span class="dv">120</span>))
+p
 
-<span class="co"># 3: Viridis</span>
-<span class="kw">library</span>(viridisLite)
-coul &lt;-<span class="st"> </span><span class="kw">viridis</span>(<span class="dv">100</span>)
-<span class="kw">levelplot</span>(volcano, <span class="dt">col.regions =</span> coul) 
-<span class="co">#levelplot(volcano, col.regions = magma(100)) </span></code></pre></div>
+<span class="co"># save the widget</span>
+<span class="co"># library(htmlwidgets)</span>
+<span class="co"># saveWidget(p, file=paste0( getwd(), &quot;/HtmlWidget/plotlyHeatmap2.html&quot;))</span></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
