@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Correlation matrix with ggally &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post explains how to build a correlogram with the ggally R package. It provides several reproducible examples with explanation and R code.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Correlation matrix with ggally" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="This post explains how to build a correlogram with the ggally R package. It provides several reproducible examples with explanation and R code." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/199-correlation-matrix-with-ggally.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Correlation matrix with ggally</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build a <a href="correlogram.html">correlogram</a> with the <code>ggally</code> R package. It provides several reproducible examples with explanation and <code>R</code> code.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='correlogram.html'>Correlogram section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/correlogram.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="scatterplot-matrix-with-ggpairs">Scatterplot matrix with <code>ggpairs()</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>ggpairs()</code> function of the <code>GGally</code> package allows to build a great <a href="correlogram.html">scatterplot matrix</a>.</p>
+<p><a href="scatterplot.html">Scatterplots</a> of each pair of numeric variable are drawn on the left part of the figure. Pearson correlation is displayed on the right. Variable distribution is available on the diagonal.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="199-correlation-matrix-with-ggally_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables </span>
+<span class="kw">library</span>(GGally)
+ 
+<span class="co"># Create data </span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="dt">var1 =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>,<span class="dt">sd=</span><span class="dv">20</span>), <span class="dt">v2 =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>,<span class="dt">sd=</span><span class="dv">27</span>), <span class="dt">v3 =</span> <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">sd =</span> <span class="dv">1</span>)) 
+data<span class="op">$</span>v4 =<span class="st"> </span>data<span class="op">$</span>var1 <span class="op">**</span><span class="st"> </span><span class="dv">2</span> 
+data<span class="op">$</span>v5 =<span class="st"> </span><span class="op">-</span>(data<span class="op">$</span>var1 <span class="op">**</span><span class="st"> </span><span class="dv">2</span>) 
+ 
+<span class="co"># Check correlations (as scatterplots), distribution and print corrleation coefficient </span>
+<span class="kw">ggpairs</span>(data, <span class="dt">title=</span><span class="st">&quot;correlogram with ggpairs()&quot;</span>) </code></pre></div>
+<h1 id="visualize-correlation-with-ggcorr">Visualize correlation with <code>ggcorr()</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>ggcorr()</code> function allows to visualize the correlation of each pair of variable as a square. Note that the <code>method</code> argument allows to pick the correlation type you desire.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="199-correlation-matrix-with-ggally_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables </span>
+<span class="kw">library</span>(GGally)
+ 
+<span class="co"># Create data </span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="dt">var1 =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>,<span class="dt">sd=</span><span class="dv">20</span>), <span class="dt">v2 =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>,<span class="dt">sd=</span><span class="dv">27</span>), <span class="dt">v3 =</span> <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">100</span>) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">sd =</span> <span class="dv">1</span>)) 
+data<span class="op">$</span>v4 =<span class="st"> </span>data<span class="op">$</span>var1 <span class="op">**</span><span class="st"> </span><span class="dv">2</span> 
+data<span class="op">$</span>v5 =<span class="st"> </span><span class="op">-</span>(data<span class="op">$</span>var1 <span class="op">**</span><span class="st"> </span><span class="dv">2</span>) 
+ 
+<span class="co"># Check correlation between variables</span>
+<span class="co">#cor(data) </span>
+ 
+<span class="co"># Nice visualization of correlations</span>
+<span class="kw">ggcorr</span>(data, <span class="dt">method =</span> <span class="kw">c</span>(<span class="st">&quot;everything&quot;</span>, <span class="st">&quot;pearson&quot;</span>)) </code></pre></div>
+<h1 id="category">Split by group</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>It is possible to use <a href="ggplot2.html">ggplot2</a> aesthetics on the chart, for instance to color each category.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="199-correlation-matrix-with-ggally_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables </span>
+<span class="kw">library</span>(GGally)
+ 
+<span class="co"># From the help page:</span>
+<span class="kw">data</span>(flea)
+<span class="kw">ggpairs</span>(flea, <span class="dt">columns =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">4</span>, ggplot2<span class="op">::</span><span class="kw">aes</span>(<span class="dt">colour=</span>species)) </code></pre></div>
+<h1 id="change-plot-types">Change plot types</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+Change the type of plot used on each part of the <a href="correlogram.html">correlogram</a>. This is done with the <code>upper</code> and <code>lower</code> argument.
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="199-correlation-matrix-with-ggally_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables </span>
+<span class="kw">library</span>(GGally)
+ 
+<span class="co"># From the help page:</span>
+<span class="kw">data</span>(tips, <span class="dt">package =</span> <span class="st">&quot;reshape&quot;</span>)
+<span class="kw">ggpairs</span>(
+  tips[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>)],
+  <span class="dt">upper =</span> <span class="kw">list</span>(<span class="dt">continuous =</span> <span class="st">&quot;density&quot;</span>, <span class="dt">combo =</span> <span class="st">&quot;box_no_facet&quot;</span>),
+  <span class="dt">lower =</span> <span class="kw">list</span>(<span class="dt">continuous =</span> <span class="st">&quot;points&quot;</span>, <span class="dt">combo =</span> <span class="st">&quot;dot_no_facet&quot;</span>)
+)</code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="scatter.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterPlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="heatmap.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Heatmap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Heatmap</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="correlogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Correlogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Correlogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubblePlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="connectedscatter.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterConnected150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connected scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata">
+      <a class="portfolio-link"  href="density2d.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/2dDensity150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density 2d</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+---
+title: "Correlation matrix with ggally"
+descriptionMeta: "This post explains how to build a correlogram with the ggally R package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to build a [correlogram](correlogram.html) with the `ggally` R package. It provides several reproducible examples with explanation and `R` code."
+sectionText: "Correlogram section"
+sectionLink: "correlogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/correlogram.html"
+url: "199-correlation-matrix-with-ggally"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Scatterplot matrix with `ggpairs()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggpairs()` function of the `GGally` package allows to build a great [scatterplot matrix](correlogram.html). 
+
+[Scatterplots](scatterplot.html) of each pair of numeric variable are drawn on the left part of the figure. Pearson correlation is displayed on the right. Variable distribution is available on the diagonal.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+ 
+# Create data 
+data <- data.frame( var1 = 1:100 + rnorm(100,sd=20), v2 = 1:100 + rnorm(100,sd=27), v3 = rep(1, 100) + rnorm(100, sd = 1)) 
+data$v4 = data$var1 ** 2 
+data$v5 = -(data$var1 ** 2) 
+ 
+# Check correlations (as scatterplots), distribution and print corrleation coefficient 
+ggpairs(data, title="correlogram with ggpairs()") 
+
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Visualize correlation with `ggcorr()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggcorr()` function allows to visualize the correlation of each pair of variable as a square. Note that the `method` argument allows to pick the correlation type you desire.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+ 
+# Create data 
+data <- data.frame( var1 = 1:100 + rnorm(100,sd=20), v2 = 1:100 + rnorm(100,sd=27), v3 = rep(1, 100) + rnorm(100, sd = 1)) 
+data$v4 = data$var1 ** 2 
+data$v5 = -(data$var1 ** 2) 
+ 
+# Check correlation between variables
+#cor(data) 
+ 
+# Nice visualization of correlations
+ggcorr(data, method = c("everything", "pearson")) 
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# Split by group {#category}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is possible to use [ggplot2](ggplot2.html) aesthetics on the chart, for instance to color each category.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+ 
+# From the help page:
+data(flea)
+ggpairs(flea, columns = 2:4, ggplot2::aes(colour=species)) 
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# Change plot types 
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Change the type of plot used on each part of the [correlogram](correlogram.html). This is done with the `upper` and `lower` argument.</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Quick display of two cabapilities of GGally, to assess the distribution and correlation of variables 
+library(GGally)
+ 
+# From the help page:
+data(tips, package = "reshape")
+ggpairs(
+  tips[, c(1, 3, 4, 2)],
+  upper = list(continuous = "density", combo = "box_no_facet"),
+  lower = list(continuous = "points", combo = "dot_no_facet")
+)
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
