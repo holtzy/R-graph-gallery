@@ -1,0 +1,120 @@
+---
+title: "Interactive bubble chart"
+descriptionMeta: "This post explains how to build an interactive bubble chart with R, using ggplot2 and the ggplotly() function of the plotly packages."
+descriptionTop: "This post explains how to build an interactive [bubble chart](bubble-chart.html) with R, using `ggplot2` and the `ggplotly()` function of the plotly package."
+sectionText: "Bubble section"
+sectionLink: "bubble-chart.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/bubble.html"
+url: "bubble_chart_interactive_ggplotly"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic bubble chart with `geom_point()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This post follows the previous [step by step description](320-the-basis-of-bubble-plot.html) of building [bubble chart](bubble-chart.html) with [ggplot2](ggplot2.html).
+
+The idea is to turn the chart interactive:
+
+- You can zoom by selecting an area of interest
+- Hover a circle to get information about it
+- Export to png
+- Slide axis
+- Double click to re-initialize.
+
+This is done thanks to the `ggplotly()` function of the `plotly` package that turn any ggplot2 chart object interactive. Note the little trick to custom the tooltip content.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/ggplotlyBubblechart.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(viridis)
+library(hrbrthemes)
+
+# The dataset is provided in the gapminder library
+library(gapminder)
+data <- gapminder %>% filter(year=="2007") %>% dplyr::select(-year)
+
+# Interactive version
+p <- data %>%
+  mutate(gdpPercap=round(gdpPercap,0)) %>%
+  mutate(pop=round(pop/1000000,2)) %>%
+  mutate(lifeExp=round(lifeExp,1)) %>%
+  
+  # Reorder countries to having big bubbles on top
+  arrange(desc(pop)) %>%
+  mutate(country = factor(country, country)) %>%
+  
+  # prepare text for tooltip
+  mutate(text = paste("Country: ", country, "\nPopulation (M): ", pop, "\nLife Expectancy: ", lifeExp, "\nGdp per capita: ", gdpPercap, sep="")) %>%
+  
+  # Classic ggplot
+  ggplot( aes(x=gdpPercap, y=lifeExp, size = pop, color = continent, text=text)) +
+    geom_point(alpha=0.7) +
+    scale_size(range = c(1.4, 19), name="Population (M)") +
+    scale_color_viridis(discrete=TRUE, guide=FALSE) +
+    theme_ipsum() +
+    theme(legend.position="none")
+
+# turn ggplot interactive with plotly
+pp <- ggplotly(p, tooltip="text")
+pp
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(pp, file=paste0( getwd(), "/HtmlWidget/ggplotlyBubblechart.html"))
+```
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
