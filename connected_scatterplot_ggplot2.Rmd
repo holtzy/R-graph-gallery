@@ -1,0 +1,266 @@
+---
+title: "Connected scatterplot with R and ggplot2"
+descriptionMeta: "This post explains how to build a basic connected scatterplot with R and ggplot2. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to build a basic [connected scatterplot](connected-scatterplot.html) with R and [ggplot2](ggplot2.html). It provides several reproducible examples with explanation and R code."
+sectionText: "Connected scatter section"
+sectionLink: "connected-scatterplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "connected_scatterplot_ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic connected scatterplot: `geom_point()` and `geom_line()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A [connected scatterplot](connected-scatterplot.html) is basically a hybrid between a [scatterplot](scatterplot.html) and a [line plot](line-plot.html). Thus, you just have to add a `geom_point()` on top of the `geom_line()` to build it.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# Plot
+data %>%
+  tail(10) %>%
+  ggplot( aes(x=date, y=value)) +
+    geom_line() +
+    geom_point()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Customize the connected scatterplot
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Custom the general theme with the `theme_ipsum()` function of the `hrbrthemes` package. Add a title with `ggtitle()`. Custom circle and line with arguments like `shape`, `size`, `color` and more.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# Plot
+data %>%
+  tail(10) %>%
+  ggplot( aes(x=date, y=value)) +
+    geom_line( color="grey") +
+    geom_point(shape=21, color="black", fill="#69b3a2", size=6) +
+    theme_ipsum() +
+    ggtitle("Evolution of bitcoin price")
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+# Connected scatterplot to show an evolution
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The [connected scatterplot](connected-scatter.html) can also be a powerfull technique to tell a story about the evolution of 2 variables. Let???s consider a dataset composed of 3 columns:
+
+- Year
+- Number of baby born called Amanda this year
+- Number of baby born called Ashley
+
+The scatterplot beside allows to understand the evolution of these 2 names. Note that the code is pretty different in this case. `geom_segment()` is used of `geom_line()`. This is because `geom_line()` automatically sort data points depending on their X position to link them.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(babynames)
+library(ggrepel)
+library(tidyr)
+
+# data
+data <- babynames %>% 
+  filter(name %in% c("Ashley", "Amanda")) %>%
+  filter(sex=="F") %>%
+  filter(year>1970) %>%
+  select(year, name, n) %>%
+  spread(key = name, value=n, -1)
+
+# plot
+data %>% 
+  ggplot(aes(x=Amanda, y=Ashley, label=year)) +
+     geom_point() +
+     geom_segment(aes(
+                    xend=c(tail(Amanda, n=-1), NA), 
+                    yend=c(tail(Ashley, n=-1), NA)
+                  )
+      ) 
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It makes sense to add arrows and labels to guide the reader in the chart:
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(babynames)
+library(ggrepel)
+library(tidyr)
+
+# data
+data <- babynames %>% 
+  filter(name %in% c("Ashley", "Amanda")) %>%
+  filter(sex=="F") %>%
+  filter(year>1970) %>%
+  select(year, name, n) %>%
+  spread(key = name, value=n, -1)
+
+# Select a few date to label the chart
+tmp_date <- data %>% sample_frac(0.3)
+
+# plot 
+data %>% 
+  ggplot(aes(x=Amanda, y=Ashley, label=year)) +
+     geom_point(color="#69b3a2") +
+     geom_text_repel(data=tmp_date) +
+     geom_segment(color="#69b3a2", 
+                  aes(
+                    xend=c(tail(Amanda, n=-1), NA), 
+                    yend=c(tail(Ashley, n=-1), NA)
+                  ),
+                  arrow=arrow(length=unit(0.3,"cm"))
+      ) +
+      theme_ipsum()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

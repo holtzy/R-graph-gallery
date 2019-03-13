@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>Interactive bubble chart &#8211; the R Graph Gallery</title>
+<title>Connected scatterplot with R and ggplot2 &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build an interactive bubble chart with R, using ggplot2 and the ggplotly() function of the plotly packages.">
+<meta name="description" content="This post explains how to build a basic connected scatterplot with R and ggplot2. It provides several reproducible examples with explanation and R code.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Interactive bubble chart" />
+<meta property="og:title" content="Connected scatterplot with R and ggplot2" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This post explains how to build an interactive bubble chart with R, using ggplot2 and the ggplotly() function of the plotly packages." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/bubble_chart_interactive_ggplotly.html" />
+<meta property="og:description" content="This post explains how to build a basic connected scatterplot with R and ggplot2. It provides several reproducible examples with explanation and R code." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/connected_scatterplot_ggplot2.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Interactive bubble chart</h1></center>
+      <center><h1>Connected scatterplot with R and ggplot2</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,10 +141,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build an interactive <a href="bubble-chart.html">bubble chart</a> with R, using <code>ggplot2</code> and the <code>ggplotly()</code> function of the plotly package.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build a basic <a href="connected-scatterplot.html">connected scatterplot</a> with R and <a href="ggplot2.html">ggplot2</a>. It provides several reproducible examples with explanation and R code.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='bubble-chart.html'>Bubble section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/bubble.html'>Data to Viz</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='connected-scatterplot.html'>Connected scatter section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/connectedscatter.html'>Data to Viz</a>
       </div>
   </div>
 </header>
@@ -167,72 +167,138 @@
 
 
 <div class="container">
-
-
-
-
-<div id="most-basic-bubble-chart-with-geom_point" class="section level1">
-<h1>Most basic bubble chart with <code>geom_point()</code></h1>
+<h1 id="most-basic-connected-scatterplot-geom_point-and-geom_line">Most basic connected scatterplot: <code>geom_point()</code> and <code>geom_line()</code></h1>
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>This post follows the previous <a href="320-the-basis-of-bubble-plot.html">step by step description</a> of building <a href="bubble-chart.html">bubble chart</a> with <a href="ggplot2.html">ggplot2</a>.</p>
-<p>The idea is to turn the chart interactive:</p>
-<ul>
-<li>You can zoom by selecting an area of interest</li>
-<li>Hover a circle to get information about it</li>
-<li>Export to png</li>
-<li>Slide axis</li>
-<li>Double click to re-initialize.</li>
-</ul>
-<p>This is done thanks to the <code>ggplotly()</code> function of the <code>plotly</code> package that turn any ggplot2 chart object interactive. Note the little trick to custom the tooltip content.</p>
+<p>A <a href="connected-scatterplot.html">connected scatterplot</a> is basically a hybrid between a <a href="scatterplot.html">scatterplot</a> and a <a href="line-plot.html">line plot</a>. Thus, you just have to add a <code>geom_point()</code> on top of the <code>geom_line()</code> to build it.</p>
 </div>
 <div class="col-md-6 col-sm-12">
-<center>
-<iframe src="HtmlWidget/ggplotlyBubblechart.html" height="700" width="700" style="border:none;">
-</iframe>
-</center>
+<p><img src="connected_scatterplot_ggplot2_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
 <span class="kw">library</span>(ggplot2)
 <span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(plotly)
-<span class="kw">library</span>(viridis)
+
+<span class="co"># Load dataset from github</span>
+data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv&quot;</span>, <span class="dt">header=</span>T)
+data<span class="op">$</span>date &lt;-<span class="st"> </span><span class="kw">as.Date</span>(data<span class="op">$</span>date)
+
+<span class="co"># Plot</span>
+data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">tail</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>value)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>()</code></pre></div>
+<h1 id="customize-the-connected-scatterplot">Customize the connected scatterplot</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Custom the general theme with the <code>theme_ipsum()</code> function of the <code>hrbrthemes</code> package. Add a title with <code>ggtitle()</code>. Custom circle and line with arguments like <code>shape</code>, <code>size</code>, <code>color</code> and more.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="connected_scatterplot_ggplot2_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(hrbrthemes)
 
-<span class="co"># The dataset is provided in the gapminder library</span>
-<span class="kw">library</span>(gapminder)
-data &lt;-<span class="st"> </span>gapminder <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(year<span class="op">==</span><span class="st">&quot;2007&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>year)
+<span class="co"># Load dataset from github</span>
+data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv&quot;</span>, <span class="dt">header=</span>T)
+data<span class="op">$</span>date &lt;-<span class="st"> </span><span class="kw">as.Date</span>(data<span class="op">$</span>date)
 
-<span class="co"># Interactive version</span>
-p &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gdpPercap=</span><span class="kw">round</span>(gdpPercap,<span class="dv">0</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pop=</span><span class="kw">round</span>(pop<span class="op">/</span><span class="dv">1000000</span>,<span class="dv">2</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">lifeExp=</span><span class="kw">round</span>(lifeExp,<span class="dv">1</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span>
-<span class="st">  </span><span class="co"># Reorder countries to having big bubbles on top</span>
-<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(pop)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">country =</span> <span class="kw">factor</span>(country, country)) <span class="op">%&gt;%</span>
-<span class="st">  </span>
-<span class="st">  </span><span class="co"># prepare text for tooltip</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">text =</span> <span class="kw">paste</span>(<span class="st">&quot;Country: &quot;</span>, country, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">Population (M): &quot;</span>, pop, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">Life Expectancy: &quot;</span>, lifeExp, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">Gdp per capita: &quot;</span>, gdpPercap, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span>
-<span class="st">  </span><span class="co"># Classic ggplot</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>gdpPercap, <span class="dt">y=</span>lifeExp, <span class="dt">size =</span> pop, <span class="dt">color =</span> continent, <span class="dt">text=</span>text)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">alpha=</span><span class="fl">0.7</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">scale_size</span>(<span class="dt">range =</span> <span class="kw">c</span>(<span class="fl">1.4</span>, <span class="dv">19</span>), <span class="dt">name=</span><span class="st">&quot;Population (M)&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>, <span class="dt">guide=</span><span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="co"># Plot</span>
+data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">tail</span>(<span class="dv">10</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>date, <span class="dt">y=</span>value)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_line</span>( <span class="dt">color=</span><span class="st">&quot;grey&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">shape=</span><span class="dv">21</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">size=</span><span class="dv">6</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>)
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Evolution of bitcoin price&quot;</span>)</code></pre></div>
+<h1 id="connected-scatterplot-to-show-an-evolution">Connected scatterplot to show an evolution</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <a href="connected-scatter.html">connected scatterplot</a> can also be a powerfull technique to tell a story about the evolution of 2 variables. Let???s consider a dataset composed of 3 columns:</p>
+<ul>
+<li>Year</li>
+<li>Number of baby born called Amanda this year</li>
+<li>Number of baby born called Ashley</li>
+</ul>
+<p>The scatterplot beside allows to understand the evolution of these 2 names. Note that the code is pretty different in this case. <code>geom_segment()</code> is used of <code>geom_line()</code>. This is because <code>geom_line()</code> automatically sort data points depending on their X position to link them.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="connected_scatterplot_ggplot2_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(babynames)
+<span class="kw">library</span>(ggrepel)
+<span class="kw">library</span>(tidyr)
 
-<span class="co"># turn ggplot interactive with plotly</span>
-pp &lt;-<span class="st"> </span><span class="kw">ggplotly</span>(p, <span class="dt">tooltip=</span><span class="st">&quot;text&quot;</span>)
-pp
+<span class="co"># data</span>
+data &lt;-<span class="st"> </span>babynames <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(name <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ashley&quot;</span>, <span class="st">&quot;Amanda&quot;</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;F&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(year<span class="op">&gt;</span><span class="dv">1970</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(year, name, n) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">spread</span>(<span class="dt">key =</span> name, <span class="dt">value=</span>n, <span class="op">-</span><span class="dv">1</span>)
 
-<span class="co"># save the widget</span>
-<span class="co"># library(htmlwidgets)</span>
-<span class="co"># saveWidget(pp, file=paste0( getwd(), &quot;/HtmlWidget/ggplotlyBubblechart.html&quot;))</span></code></pre></div>
+<span class="co"># plot</span>
+data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>Amanda, <span class="dt">y=</span>Ashley, <span class="dt">label=</span>year)) <span class="op">+</span>
+<span class="st">     </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">     </span><span class="kw">geom_segment</span>(<span class="kw">aes</span>(
+                    <span class="dt">xend=</span><span class="kw">c</span>(<span class="kw">tail</span>(Amanda, <span class="dt">n=</span><span class="op">-</span><span class="dv">1</span>), <span class="ot">NA</span>), 
+                    <span class="dt">yend=</span><span class="kw">c</span>(<span class="kw">tail</span>(Ashley, <span class="dt">n=</span><span class="op">-</span><span class="dv">1</span>), <span class="ot">NA</span>)
+                  )
+      ) </code></pre></div>
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>It makes sense to add arrows and labels to guide the reader in the chart:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="connected_scatterplot_ggplot2_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(babynames)
+<span class="kw">library</span>(ggrepel)
+<span class="kw">library</span>(tidyr)
+
+<span class="co"># data</span>
+data &lt;-<span class="st"> </span>babynames <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(name <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ashley&quot;</span>, <span class="st">&quot;Amanda&quot;</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(sex<span class="op">==</span><span class="st">&quot;F&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(year<span class="op">&gt;</span><span class="dv">1970</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(year, name, n) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">spread</span>(<span class="dt">key =</span> name, <span class="dt">value=</span>n, <span class="op">-</span><span class="dv">1</span>)
+
+<span class="co"># Select a few date to label the chart</span>
+tmp_date &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">sample_frac</span>(<span class="fl">0.3</span>)
+
+<span class="co"># plot </span>
+data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>Amanda, <span class="dt">y=</span>Ashley, <span class="dt">label=</span>year)) <span class="op">+</span>
+<span class="st">     </span><span class="kw">geom_point</span>(<span class="dt">color=</span><span class="st">&quot;#69b3a2&quot;</span>) <span class="op">+</span>
+<span class="st">     </span><span class="kw">geom_text_repel</span>(<span class="dt">data=</span>tmp_date) <span class="op">+</span>
+<span class="st">     </span><span class="kw">geom_segment</span>(<span class="dt">color=</span><span class="st">&quot;#69b3a2&quot;</span>, 
+                  <span class="kw">aes</span>(
+                    <span class="dt">xend=</span><span class="kw">c</span>(<span class="kw">tail</span>(Amanda, <span class="dt">n=</span><span class="op">-</span><span class="dv">1</span>), <span class="ot">NA</span>), 
+                    <span class="dt">yend=</span><span class="kw">c</span>(<span class="kw">tail</span>(Ashley, <span class="dt">n=</span><span class="op">-</span><span class="dv">1</span>), <span class="ot">NA</span>)
+                  ),
+                  <span class="dt">arrow=</span><span class="kw">arrow</span>(<span class="dt">length=</span><span class="kw">unit</span>(<span class="fl">0.3</span>,<span class="st">&quot;cm&quot;</span>))
+      ) <span class="op">+</span>
+<span class="st">      </span><span class="kw">theme_ipsum</span>()</code></pre></div>
+<!-- Close container -->
+</div>
 <!-- ============================ RELATED SECTION ============================ -->
 <section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
 
@@ -311,7 +377,6 @@ pp
 
 </div>
 </section>
-</div>
 
 
 
