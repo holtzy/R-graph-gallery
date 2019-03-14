@@ -1,0 +1,86 @@
+---
+title: "Custom dygraphs time series example"
+descriptionMeta: "This post shows what is possible to do for time series visualization with the dygraphs package, using a good amount of customization. Reproducible code is provided."
+descriptionTop: "This post shows what is possible to do for [time series](time-series.html) visualization with the `dygraphs` package, using a good amount of customization. Reproducible code is provided."
+sectionText: "Time series section"
+sectionLink: "time-series.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "318-custom-dygraphs-time-series-example"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+<center><iframe src="HtmlWidget/dygraphs318.html" height="500" width="1000" style="border:none;"></iframe></center>
+
+The chart [#316](316-possible-inputs-for-the-dygraphs-library.html) and [#317](317-time-series-with-the-dygraphs-library.html) gives an introduction to [time series](time-series.html) representation with the `dygraphs` library. 
+
+This page gives a more custom example based on real data (number of bikes located per day). Here is the graph and the code that allows to make it!
+
+
+
+```{r thecode, eval=FALSE}
+# Library
+library(dygraphs)
+library(xts)          # To make the convertion data-frame / xts format
+library(tidyverse)
+library(lubridate)
+ 
+# Read the data (hosted on the gallery website)
+data <- read.table("https://python-graph-gallery.com/wp-content/uploads/bike.csv", header=T, sep=",") %>% head(300)
+
+# Check type of variable
+# str(data)
+ 
+# Since my time is currently a factor, I have to convert it to a date-time format!
+data$datetime <- ymd_hms(data$datetime)
+ 
+# Then you can create the xts necessary to use dygraph
+don <- xts(x = data$count, order.by = data$datetime)
+
+# Finally the plot
+p <- dygraph(don) %>%
+  dyOptions(labelsUTC = TRUE, fillGraph=TRUE, fillAlpha=0.1, drawGrid = FALSE, colors="#D8AE5A") %>%
+  dyRangeSelector() %>%
+  dyCrosshair(direction = "vertical") %>%
+  dyHighlight(highlightCircleSize = 5, highlightSeriesBackgroundAlpha = 0.2, hideOnMouseOut = FALSE)  %>%
+  dyRoller(rollPeriod = 1)
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs318.html"))
+
+```
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
