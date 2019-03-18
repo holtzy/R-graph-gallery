@@ -1,0 +1,251 @@
+---
+title: "Basic barplot with ggplot2"
+descriptionMeta: "This post explains how to draw barplots with R and ggplot2, using the geom_bar() function. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to draw barplots with `R` and [ggplot2](ggplot2.html), using the `geom_bar()` function. It starts with the most basic example and describes a few possible customizations."
+sectionText: "Barchart section"
+sectionLink: "barplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/barplot.html"
+url: "218-basic-barplots-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic barplot with `geom_bar()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This is the most basic barplot you can build using the [ggplot2](ggplot2.html) package. It follows those steps:
+
+- always start by calling the `ggplot()` function.
+- then specify the `data` object. It has to be a data frame. And it needs one numeric and one categorical variable.
+- then come thes aesthetics, set in the `aes()` function: set the categoric variable for the X axis, use the numeric for the Y axis
+- finally call `geom_bar()`. You have to specify `stat="identity"` for this kind of dataset.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Load ggplot2
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
+
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity")
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Control bar color {#color}
+***
+
+```{r thecode2, echo=FALSE, out.width = c("20%","20%","20%","20%","20%"), fig.height=7, fig.show="hold"}
+# Libraries
+library(ggplot2)
+
+# 1: uniform color. Color is for the border, fill is for the inside
+ggplot(mtcars, aes(x=as.factor(cyl) )) +
+  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) )
+ 
+# 2: Using Hue
+ggplot(mtcars, aes(x=as.factor(cyl), fill=as.factor(cyl) )) + 
+  geom_bar( ) +
+  scale_fill_hue(c = 40) +
+  theme(legend.position="none")
+ 
+# 3: Using RColorBrewer
+ggplot(mtcars, aes(x=as.factor(cyl), fill=as.factor(cyl) )) + 
+  geom_bar( ) +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position="none")
+
+ 
+# 4: Using greyscale:
+ggplot(mtcars, aes(x=as.factor(cyl), fill=as.factor(cyl) )) + 
+  geom_bar( ) +
+  scale_fill_grey(start = 0.25, end = 0.75) +
+  theme(legend.position="none")
+
+ 
+# 5: Set manualy
+ggplot(mtcars, aes(x=as.factor(cyl), fill=as.factor(cyl) )) +  
+  geom_bar( ) +
+  scale_fill_manual(values = c("red", "green", "blue") ) +
+  theme(legend.position="none")
+```
+
+
+Here are a few different methods to control bar colors. Note that using a legend in this case is not necessary since names are already displayed on the X axis. You can remove it with `theme(legend.position="none")`.
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Horizontal barplot with `coord_flip()`  {#horiz}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It often makes sense to turn your [barplot](barplot.html) horizontal. Indeed, it makes the group labels much easier to read. 
+
+Fortunately, the `coord_flip()` function makes it a breeze.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Load ggplot2
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
+
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Control bar width with `width`  {#width}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `width` argument of the `geom_bar()` function allows to control the bar width. It ranges between 0 and 1, 1 being full width.
+
+See how this can be used to make bar charts with [variable width](81-barplot-with-variable-width.html).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Load ggplot2
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
+
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity", width=0.2) 
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+# What's next?
+***
+
+This post was an overview of ggplot2 [barplots](barplot.html), showing the basic options of `geom_barplot()`. Visit the barplot section for more:
+
+- how to [reorder](267-reorder-a-variable-in-ggplot2.html) your barplot
+- how to use [variable bar width](81-barplot-with-variable-width.html)
+- what about [error bars](4-barplot-with-error-bar.html)
+- circular [barplots](circular-barplot.html)
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
