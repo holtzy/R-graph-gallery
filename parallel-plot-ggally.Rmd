@@ -1,0 +1,340 @@
+---
+title: "Parallel coordinates chart with ggally"
+descriptionMeta: "ggally is a ggplot2 extension. It allows to build parallel coordinates chart thanks to the ggparcoord() function. Check several reproducible examples in this post."
+descriptionTop: "`ggally` is a `ggplot2` extension. It allows to build [parallel coordinates charts](parallel-plot.html) thanks to the `ggparcoord()` function. Check several reproducible examples in this post."
+sectionText: "Parallel coord section"
+sectionLink: "parallel-plot.html"
+DataToVizText: "About parallel coord. charts"
+DataToVizLink: "data-to-viz.com/graph/parallel.html"
+url: "parallel-plot-ggally"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This is the most basic parallel coordinates chart you can build with `R`, the `ggally` packages and its `ggparcoord()` function.
+
+The input dataset must be a data frame with several numeric variables, each being used as a vertical axis on the chart. Columns number of these variables are specified in the `columns` argument of the function.
+
+<u>Note</u>: here, a categoric variable is used to color lines, as specified in the `groupColumn` variable.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=6}
+# Libraries
+library(GGally)
+
+# Data set is provided by R natively
+data <- iris
+
+# Plot
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5
+    ) 
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Custom color, theme, general appearance {#custom}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This is pretty much the same chart as te previous one, except for the following customizations:
+
+- color palette is improved thanks to the `viridis` package
+- title is added with `title`, and customized in `theme`
+- dots are added with `showPoints`
+- a bit of transparency is applied to lines with `alphaLines`
+- `theme_ipsum()` is used for the general appearance
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=6}
+# Libraries
+library(hrbrthemes)
+library(GGally)
+library(viridis)
+
+# Data set is provided by R natively
+data <- iris
+
+# Plot
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    showPoints = TRUE, 
+    title = "Parallel Coordinate Plot for the Iris Data",
+    alphaLines = 0.3
+    ) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme_ipsum()+
+  theme(
+    plot.title = element_text(size=10)
+  )
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Scaling {#scale}
+***
+
+Scaling transforms the raw data to a new scale that is common with other variables. It is a crucial step to compare variables that do not have the same unit, but can also help otherwise as shown in the example below.
+
+The `ggally` package offers a `scale` argument. Four possible options are applied on the same dataset below:
+
+- `globalminmax` &rarr; No scaling
+- `uniminmax` &rarr; Standardize to Min = 0 and Max = 1
+- `std` &rarr; Normalize univariately (substract mean & divide by sd)
+- `center` &rarr; Standardize and center variables
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode31, echo=FALSE, out.width = c("100%"), fig.height=5}
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    scale="globalminmax",
+    showPoints = TRUE, 
+    title = "No scaling",
+    alphaLines = 0.3
+    ) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme_ipsum()+
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=13)
+  ) +
+  xlab("")
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode32, echo=FALSE, out.width = c("100%"), fig.height=5}
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    scale="uniminmax",
+    showPoints = TRUE, 
+    title = "Standardize to Min = 0 and Max = 1",
+    alphaLines = 0.3
+    ) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme_ipsum()+
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=13)
+  ) +
+  xlab("")
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode33, echo=FALSE, out.width = c("100%"), fig.height=5}
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    scale="std",
+    showPoints = TRUE, 
+    title = "Normalize univariately (substract mean & divide by sd)",
+    alphaLines = 0.3
+    ) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme_ipsum()+
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=13)
+  ) +
+  xlab("")
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode34, echo=FALSE, out.width = c("100%"), fig.height=5}
+ggparcoord(data,
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    scale="center",
+    showPoints = TRUE, 
+    title = "Standardize and center variables",
+    alphaLines = 0.3
+    ) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme_ipsum()+
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=13)
+  ) +
+  xlab("")
+```
+
+</div>
+</div>
+
+
+
+
+```{r thecode31, eval=FALSE}
+```
+
+```{r thecode32, eval=FALSE}
+```
+
+```{r thecode33, eval=FALSE}
+```
+
+```{r thecode34, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Highlight a group {#highlight}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Data visualization aims to highlight a story in the data. If you are interested in a specific group, you can highlight it as follow:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=6}
+# Libraries
+library(GGally)
+library(dplyr)
+
+# Data set is provided by R natively
+data <- iris
+
+# Plot
+data %>%
+  arrange(desc(Species)) %>%
+  ggparcoord(
+    columns = 1:4, groupColumn = 5, order = "anyClass",
+    showPoints = TRUE, 
+    title = "Original",
+    alphaLines = 1
+    ) + 
+  scale_color_manual(values=c( "#69b3a2", "#E8E8E8", "#E8E8E8") ) +
+  theme_ipsum()+
+  theme(
+    legend.position="Default",
+    plot.title = element_text(size=10)
+  ) +
+  xlab("")
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```

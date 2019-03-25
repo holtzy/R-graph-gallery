@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Parallel coordinates chart with ggally &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="ggally is a ggplot2 extension. It allows to build parallel coordinates chart thanks to the ggparcoord() function. Check several reproducible examples in this post.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Parallel coordinates chart with ggally" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="ggally is a ggplot2 extension. It allows to build parallel coordinates chart thanks to the ggparcoord() function. Check several reproducible examples in this post." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/parallel-plot-ggally.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Parallel coordinates chart with ggally</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px"><code>ggally</code> is a <code>ggplot2</code> extension. It allows to build <a href="parallel-plot.html">parallel coordinates charts</a> thanks to the <code>ggparcoord()</code> function. Check several reproducible examples in this post.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='parallel-plot.html'>Parallel coord section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/parallel.html'>About parallel coord. charts</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="most-basic">Most basic</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>This is the most basic parallel coordinates chart you can build with <code>R</code>, the <code>ggally</code> packages and its <code>ggparcoord()</code> function.</p>
+<p>The input dataset must be a data frame with several numeric variables, each being used as a vertical axis on the chart. Columns number of these variables are specified in the <code>columns</code> argument of the function.</p>
+<p><u>Note</u>: here, a categoric variable is used to color lines, as specified in the <code>groupColumn</code> variable.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(GGally)
+
+<span class="co"># Data set is provided by R natively</span>
+data &lt;-<span class="st"> </span>iris
+
+<span class="co"># Plot</span>
+<span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>
+    ) </code></pre></div>
+<h1 id="custom">Custom color, theme, general appearance</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>This is pretty much the same chart as te previous one, except for the following customizations:</p>
+<ul>
+<li>color palette is improved thanks to the <code>viridis</code> package</li>
+<li>title is added with <code>title</code>, and customized in <code>theme</code></li>
+<li>dots are added with <code>showPoints</code></li>
+<li>a bit of transparency is applied to lines with <code>alphaLines</code></li>
+<li><code>theme_ipsum()</code> is used for the general appearance</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(hrbrthemes)
+<span class="kw">library</span>(GGally)
+<span class="kw">library</span>(viridis)
+
+<span class="co"># Data set is provided by R natively</span>
+data &lt;-<span class="st"> </span>iris
+
+<span class="co"># Plot</span>
+<span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;Parallel Coordinate Plot for the Iris Data&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="fl">0.3</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>)
+  )</code></pre></div>
+<h1 id="scale">Scaling</h1>
+<hr />
+<p>Scaling transforms the raw data to a new scale that is common with other variables. It is a crucial step to compare variables that do not have the same unit, but can also help otherwise as shown in the example below.</p>
+<p>The <code>ggally</code> package offers a <code>scale</code> argument. Four possible options are applied on the same dataset below:</p>
+<ul>
+<li><code>globalminmax</code> → No scaling</li>
+<li><code>uniminmax</code> → Standardize to Min = 0 and Max = 1</li>
+<li><code>std</code> → Normalize univariately (substract mean &amp; divide by sd)</li>
+<li><code>center</code> → Standardize and center variables</li>
+</ul>
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode31-1.png" width="100%" /></p>
+</div>
+<div class="col-md-6 col-sm-12 align-self-center">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode32-1.png" width="100%" /></p>
+</div>
+<div class="col-md-6 col-sm-12 align-self-center">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode33-1.png" width="100%" /></p>
+</div>
+<div class="col-md-6 col-sm-12 align-self-center">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode34-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">scale=</span><span class="st">&quot;globalminmax&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;No scaling&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="fl">0.3</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">13</span>)
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">scale=</span><span class="st">&quot;uniminmax&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;Standardize to Min = 0 and Max = 1&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="fl">0.3</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">13</span>)
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">scale=</span><span class="st">&quot;std&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;Normalize univariately (substract mean &amp; divide by sd)&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="fl">0.3</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">13</span>)
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggparcoord</span>(data,
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">scale=</span><span class="st">&quot;center&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;Standardize and center variables&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="fl">0.3</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_viridis</span>(<span class="dt">discrete=</span><span class="ot">TRUE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">13</span>)
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<h1 id="highlight">Highlight a group</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Data visualization aims to highlight a story in the data. If you are interested in a specific group, you can highlight it as follow:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="parallel-plot-ggally_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(GGally)
+<span class="kw">library</span>(dplyr)
+
+<span class="co"># Data set is provided by R natively</span>
+data &lt;-<span class="st"> </span>iris
+
+<span class="co"># Plot</span>
+data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(Species)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggparcoord</span>(
+    <span class="dt">columns =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">groupColumn =</span> <span class="dv">5</span>, <span class="dt">order =</span> <span class="st">&quot;anyClass&quot;</span>,
+    <span class="dt">showPoints =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">title =</span> <span class="st">&quot;Original&quot;</span>,
+    <span class="dt">alphaLines =</span> <span class="dv">1</span>
+    ) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values=</span><span class="kw">c</span>( <span class="st">&quot;#69b3a2&quot;</span>, <span class="st">&quot;#E8E8E8&quot;</span>, <span class="st">&quot;#E8E8E8&quot;</span>) ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_ipsum</span>()<span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position=</span><span class="st">&quot;Default&quot;</span>,
+    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">10</span>)
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular_barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
