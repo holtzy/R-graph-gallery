@@ -1,0 +1,132 @@
+---
+title: "Highlight a group in a lollipop chart"
+descriptionMeta: "This post describes how to build a lollipop chart with R and ggplot2. It shows how to highlight one or several groups of interest to convey your message more efficiently."
+descriptionTop: "This post describes how to build a [lollipop chart](lollipop-plot.html) with `R` and `ggplot2`. It shows how to highlight one or several groups of interest to convey your message more efficiently."
+sectionText: "Lollipop section"
+sectionLink: "lollipop-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/lollipop.html"
+url: "304-highlight-a-group-in-lollipop"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+[Annotation is key](https://www.data-to-viz.com/caveat/annotation.html) in data visualization: it allows the reader to focus on the main message you want to convey.
+
+If one or a few groups specifically interest you, it is a good practice to highlight them on the plot. Your reader will understand quicker what the story behind the chart is.
+
+To do so, you can use an `ifelse` statement to change `size`, `color`, `alpha` or any other aesthetics. Moreover, it is even more insightful to add text annotation directly on the chart. 
+
+Learn more about ggplot2 annotation [here](https://www.r-graph-gallery.com/233-add-annotations-on-ggplot2-chart/) and more generally in the [ggplot2](ggplot2.html) section.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+
+# Create data
+set.seed(1000)
+data <- data.frame(
+  x=LETTERS[1:26], 
+  y=abs(rnorm(26))
+)
+ 
+# Reorder the data
+data <- data %>%
+  arrange(y) %>%
+  mutate(x=factor(x,x))
+  
+# Plot
+p <- ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=0, yend=y ), color=ifelse(data$x %in% c("A","D"), "orange", "grey"), size=ifelse(data$x %in% c("A","D"), 1.3, 0.7) ) +
+  geom_point( color=ifelse(data$x %in% c("A","D"), "orange", "grey"), size=ifelse(data$x %in% c("A","D"), 5, 2) ) +
+  theme_ipsum() +
+  coord_flip() +
+  theme(
+    legend.position="none"
+  ) +
+  xlab("") +
+  ylab("Value of Y") +
+  ggtitle("How did groups A and D perform?")
+
+# Add annotation
+p + annotate("text", x=grep("D", data$x), y=data$y[which(data$x=="D")]*1.2, 
+           label="Group D is very impressive", 
+           color="orange", size=4 , angle=0, fontface="bold", hjust=0) + 
+  
+    annotate("text", x = grep("A", data$x), y = data$y[which(data$x=="A")]*1.2, 
+           label = paste("Group A is not too bad\n (val=",data$y[which(data$x=="A")] %>% round(2),")",sep="" ) , 
+           color="orange", size=4 , angle=0, fontface="bold", hjust=0) 
+  
+
+
+data <- data.frame(
+  x=seq(10,100),
+  y=seq(10,100)/2+rnorm(90)
+)
+ggplot(data, aes(x=x, y=y)) +
+  geom_line() +
+  scale_y_log10( breaks=c(1,5,10,20,50,100), limits=c(1,100) )
+
+```
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+# What's next
+***
+
+The lollipop chart is one of my favourite. There is so much to do with it and it is under-utilized in favor of barplot. Visit the [dedicated section](lollipop-plot.html) for more examples produced with `R`, or [data-to-viz](https://www.data-to-viz.com/graph/lollipop.html) to learn about the available variations and caveats to avoid.
+
+<a class="btn btn-secondary" href="lollipop-plot.html">Lollipop section</a>
+<a class="btn btn-secondary" href="https://www.data-to-viz.com/graph/lollipop.html">Data to Viz</a>
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```

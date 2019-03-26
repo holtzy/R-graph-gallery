@@ -1,0 +1,114 @@
+---
+title: "Lollipop chart with 2 groups"
+descriptionMeta: "A lollipop chart can be used to compare 2 categories, linking them with a segment to stress out their difference. This post explains how to do it with R and ggplot2."
+descriptionTop: "A [lollipop chart](lollipop-plot.html) can be used to compare 2 categories, linking them with a segment to stress out their difference. This post explains how to do it with `R` and [ggplot2](ggplot2.html)."
+sectionText: "Lollipop section"
+sectionLink: "lollipop-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/lollipop.html"
+url: "303-lollipop-plot-with-2-values"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+[Lollipop plots](lollipop-plot.html) can be very appropriate when it comes to compare 2 values for several entities. 
+
+For each entity, one point is drawn for each variable, with a different color. Their difference is then highlighted using a segment. This type of visualisation is also called [Cleveland dot plots](https://www.data-to-viz.com/graph/lollipop.html). 
+
+As usual, it is advised to [order your individuals](267-reorder-a-variable-in-ggplot2.html) by mean, median, or group difference to give even more insight to the figure. 
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+
+# Create data
+value1 <- abs(rnorm(26))*2
+data <- data.frame(
+  x=LETTERS[1:26], 
+  value1=value1, 
+  value2=value1+1+rnorm(26, sd=1) 
+)
+ 
+# Reorder data using average? Learn more about reordering in chart #267
+data <- data %>% 
+  rowwise() %>% 
+  mutate( mymean = mean(c(value1,value2) )) %>% 
+  arrange(mymean) %>% 
+  mutate(x=factor(x, x))
+ 
+# Plot
+ggplot(data) +
+  geom_segment( aes(x=x, xend=x, y=value1, yend=value2), color="grey") +
+  geom_point( aes(x=x, y=value1), color=rgb(0.2,0.7,0.1,0.5), size=3 ) +
+  geom_point( aes(x=x, y=value2), color=rgb(0.7,0.2,0.1,0.5), size=3 ) +
+  coord_flip()+
+  theme_ipsum() +
+  theme(
+    legend.position = "none",
+  ) +
+  xlab("") +
+  ylab("Value of Y")
+```
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+# What's next
+***
+
+The lollipop chart is one of my favourite. There is so much to do with it and it is under-utilized in favor of barplot. Visit the [dedicated section](lollipop-plot.html) for more examples produced with `R`, or [data-to-viz](https://www.data-to-viz.com/graph/lollipop.html) to learn about the available variations and caveats to avoid.
+
+<a class="btn btn-secondary" href="lollipop-plot.html">Lollipop section</a>
+<a class="btn btn-secondary" href="https://www.data-to-viz.com/graph/lollipop.html">Data to Viz</a>
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```

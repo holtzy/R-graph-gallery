@@ -1,0 +1,313 @@
+---
+title: "Custom lollipop chart"
+descriptionMeta: "A lollipop chart is constituted of a circle (made with geom_point) and a segment (made by geom_segment). This page explains how to customize the chart appearance with R and ggplot2."
+descriptionTop: "A [lollipop chart](lollipop-plot.html) is constituted of a circle (made with `geom_point()`) and a segment (made with `geom_segment()`). This page explains how to customize the chart appearance with `R` and `ggplot2`."
+sectionText: "Lollipop section"
+sectionLink: "lollipop-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/lollipop.html"
+url: "301-custom-lollipop-chart"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Marker
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A [lollipop plot](lollipop-plot.html) is constituted of a marker and a stem. You can customize the marker as usual with [ggplot2](ggplot2.html):
+
+- `size`, `color`
+- `alpha` &rarr; transparency
+- `shape` &rarr; see list of available shape [here](6-graph-parameters-reminder.html)
+- `stroke` and `fill` &rarr; only for shapes that have stroke, like the `21`
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(tidyverse)
+ 
+# Create data
+data <- data.frame(
+  x=LETTERS[1:26],
+  y=abs(rnorm(26))
+)
+ 
+# plot
+ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=0, yend=y)) +
+  geom_point( size=5, color="red", fill=alpha("orange", 0.3), alpha=0.7, shape=21, stroke=2) 
+```
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Stem {#stem}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The stem is built using `geom_segment()` and can be customized as well:
+
+- `size`, `color`
+- `linetype` &rarr; can be an integer (see [list](6-graph-parameters-reminder.html)), a word like `dotted`, `dashed`, `dotdash` and more (type `help(linetype)`)
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  x=LETTERS[1:26],
+  y=abs(rnorm(26))
+)
+
+# Plot
+ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=0, yend=y) , size=1, color="blue", linetype="dotdash" ) +
+  geom_point()
+```
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+# General appearance with `theme()`  {#general}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+As usual, you can customize the general appearance of the chart using the `theme()` function.
+
+<u>Note</u>: another solution is to use the pre-built `theme_ipsum()` offered in the `hrbrthemes` package.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  x=LETTERS[1:26],
+  y=abs(rnorm(26))
+)
+
+# Plot
+ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=0, yend=y), color="grey") +
+  geom_point( color="orange", size=4) +
+  theme_light() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank()
+  ) +
+  xlab("") +
+  ylab("Value of Y")
+```
+
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Horizontal version  {#horiz}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is pretty straightforward to flip the chart using the `coord_flip()` function.
+
+It makes sense to do so if you have long labels &rarr; they will be much easier to read.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  x=LETTERS[1:26],
+  y=abs(rnorm(26))
+)
+
+# Horizontal version
+ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=0, yend=y), color="skyblue") +
+  geom_point( color="blue", size=4, alpha=0.6) +
+  theme_light() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Baseline  {#baseline}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Lastly, you can easily change the baseline of the chart. It gives more insight to the figure if there is a specific threshold in the data that interests you. 
+
+You just have to change the `y` argument in the `geom_segment()` call.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode5, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+
+# Create data
+data <- data.frame(
+  x=LETTERS[1:26],
+  y=abs(rnorm(26))
+)
+
+# Change baseline
+ggplot(data, aes(x=x, y=y)) +
+  geom_segment( aes(x=x, xend=x, y=1, yend=y), color="grey") +
+  geom_point( color="orange", size=4) +
+  theme_light() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.x = element_blank()
+  ) +
+  xlab("") +
+  ylab("Value of Y")
+
+```
+
+</div>
+</div>
+
+
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+# What's next
+***
+
+The lollipop chart is one of my favourite. There is so much to do with it and it is under-utilized in favor of barplot. Visit the [dedicated section](lollipop-plot.html) for more examples produced with `R`, or [data-to-viz](https://www.data-to-viz.com/graph/lollipop.html) to learn about the available variations and caveats to avoid.
+
+<a class="btn btn-secondary" href="lollipop-plot.html">Lollipop section</a>
+<a class="btn btn-secondary" href="https://www.data-to-viz.com/graph/lollipop.html">Data to Viz</a>
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
