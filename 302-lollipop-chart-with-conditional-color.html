@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>Highlight a group in a lollipop chart &#8211; the R Graph Gallery</title>
+<title>Lollipop chart with conditional color &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post describes how to build a lollipop chart with R and ggplot2. It shows how to highlight one or several groups of interest to convey your message more efficiently.">
+<meta name="description" content="If your lollipop plot goes on both side of an interesting threshold, you probably want to change the color of its components conditionally. Here is how using R and ggplot2">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Highlight a group in a lollipop chart" />
+<meta property="og:title" content="Lollipop chart with conditional color" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This post describes how to build a lollipop chart with R and ggplot2. It shows how to highlight one or several groups of interest to convey your message more efficiently." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/304-highlight-a-group-in-lollipop.html" />
+<meta property="og:description" content="If your lollipop plot goes on both side of an interesting threshold, you probably want to change the color of its components conditionally. Here is how using R and ggplot2" />
+<meta property='og:url' content="https://www.r-graph-gallery.com/302-lollipop-chart-with-conditional-color.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Highlight a group in a lollipop chart</h1></center>
+      <center><h1>Lollipop chart with conditional color</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,7 +141,7 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post describes how to build a <a href="lollipop-plot.html">lollipop chart</a> with <code>R</code> and <code>ggplot2</code>. It shows how to highlight one or several groups of interest to convey your message more efficiently.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">If your <a href="lollipop-plot.html">lollipop plot</a> goes on both side of an interesting threshold, you probably want to change the color of its components conditionally. Here is how using <code>R</code> and <a href="ggplot2.html">ggplot2</a></p></center>
       <div style="text-align:center">
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='lollipop-plot.html'>Lollipop section</a>
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/lollipop.html'>Data to Viz</a>
@@ -166,56 +166,46 @@
 
 
 
-<div class="container" style="padding-top: 100px">
+<div class="container">
+<h1 id="marker">Marker</h1>
+<hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p><a href="https://www.data-to-viz.com/caveat/annotation.html">Annotation is key</a> in data visualization: it allows the reader to focus on the main message you want to convey.</p>
-<p>If one or a few groups specifically interest you, it is a good practice to highlight them on the plot. Your reader will understand quicker what the story behind the chart is.</p>
-<p>To do so, you can use an <code>ifelse</code> statement to change <code>size</code>, <code>color</code>, <code>alpha</code> or any other aesthetics. Moreover, it is even more insightful to add text annotation directly on the chart.</p>
-<p>Learn more about ggplot2 annotation <a href="https://www.r-graph-gallery.com/233-add-annotations-on-ggplot2-chart/">here</a> and more generally in the <a href="ggplot2.html">ggplot2</a> section.</p>
+<p>Here is the process to use conditional color on your <code>ggplot2</code> chart:</p>
+<ul>
+<li>add a new column to your dataframe specifying if you are over or under the threshold (use an <code>ifelse</code> statement)</li>
+<li>give this column to the <code>color</code> aesthetic</li>
+</ul>
 </div>
 <div class="col-md-6 col-sm-12">
-<p><img src="304-highlight-a-group-in-lollipop_files/figure-html/thecode-1.png" width="100%" /></p>
+<p><img src="302-lollipop-chart-with-conditional-color_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Library</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
 <span class="kw">library</span>(ggplot2)
 <span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(hrbrthemes)
 
-<span class="co"># Create data</span>
-<span class="kw">set.seed</span>(<span class="dv">1000</span>)
+<span class="co"># Create data (this takes more sense with a numerical X axis)</span>
+x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>pi, <span class="dt">length.out=</span><span class="dv">100</span>)
 data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
-  <span class="dt">x=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">26</span>], 
-  <span class="dt">y=</span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">26</span>))
+  <span class="dt">x=</span>x, 
+  <span class="dt">y=</span><span class="kw">sin</span>(x) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">sd=</span><span class="fl">0.2</span>)
 )
  
-<span class="co"># Reorder the data</span>
-data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(y) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">x=</span><span class="kw">factor</span>(x,x))
-  
-<span class="co"># Plot</span>
-p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>y)) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">xend=</span>x, <span class="dt">y=</span><span class="dv">0</span>, <span class="dt">yend=</span>y ), <span class="dt">color=</span><span class="kw">ifelse</span>(data<span class="op">$</span>x <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>), <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;grey&quot;</span>), <span class="dt">size=</span><span class="kw">ifelse</span>(data<span class="op">$</span>x <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>), <span class="fl">1.3</span>, <span class="fl">0.7</span>) ) <span class="op">+</span>
-<span class="st">  </span><span class="kw">geom_point</span>( <span class="dt">color=</span><span class="kw">ifelse</span>(data<span class="op">$</span>x <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>), <span class="st">&quot;orange&quot;</span>, <span class="st">&quot;grey&quot;</span>), <span class="dt">size=</span><span class="kw">ifelse</span>(data<span class="op">$</span>x <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>), <span class="dv">5</span>, <span class="dv">2</span>) ) <span class="op">+</span>
-<span class="st">  </span><span class="kw">theme_ipsum</span>() <span class="op">+</span>
-<span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span>
+<span class="co"># Add a column with your condition for the color</span>
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mycolor =</span> <span class="kw">ifelse</span>(y<span class="op">&gt;</span><span class="dv">0</span>, <span class="st">&quot;type1&quot;</span>, <span class="st">&quot;type2&quot;</span>))
+ 
+<span class="co"># plot</span>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>y)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">xend=</span>x, <span class="dt">y=</span><span class="dv">0</span>, <span class="dt">yend=</span>y, <span class="dt">color=</span>mycolor), <span class="dt">size=</span><span class="fl">1.3</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme</span>(
-    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>
+    <span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>,
+    <span class="dt">panel.border =</span> <span class="kw">element_blank</span>(),
   ) <span class="op">+</span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Value of Y&quot;</span>) <span class="op">+</span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;How did groups A and D perform?&quot;</span>)
-
-<span class="co"># Add annotation</span>
-p <span class="op">+</span><span class="st"> </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="dt">x=</span><span class="kw">grep</span>(<span class="st">&quot;D&quot;</span>, data<span class="op">$</span>x), <span class="dt">y=</span>data<span class="op">$</span>y[<span class="kw">which</span>(data<span class="op">$</span>x<span class="op">==</span><span class="st">&quot;D&quot;</span>)]<span class="op">*</span><span class="fl">1.2</span>, 
-           <span class="dt">label=</span><span class="st">&quot;Group D is very impressive&quot;</span>, 
-           <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">size=</span><span class="dv">4</span> , <span class="dt">angle=</span><span class="dv">0</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>, <span class="dt">hjust=</span><span class="dv">0</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span>
-<span class="st">    </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="dt">x =</span> <span class="kw">grep</span>(<span class="st">&quot;A&quot;</span>, data<span class="op">$</span>x), <span class="dt">y =</span> data<span class="op">$</span>y[<span class="kw">which</span>(data<span class="op">$</span>x<span class="op">==</span><span class="st">&quot;A&quot;</span>)]<span class="op">*</span><span class="fl">1.2</span>, 
-           <span class="dt">label =</span> <span class="kw">paste</span>(<span class="st">&quot;Group A is not too bad</span><span class="ch">\n</span><span class="st"> (val=&quot;</span>,data<span class="op">$</span>y[<span class="kw">which</span>(data<span class="op">$</span>x<span class="op">==</span><span class="st">&quot;A&quot;</span>)] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>),<span class="st">&quot;)&quot;</span>,<span class="dt">sep=</span><span class="st">&quot;&quot;</span> ) , 
-           <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>, <span class="dt">size=</span><span class="dv">4</span> , <span class="dt">angle=</span><span class="dv">0</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>, <span class="dt">hjust=</span><span class="dv">0</span>) </code></pre></div>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Value of Y&quot;</span>)</code></pre></div>
 <h1 id="whats-next">What’s next</h1>
 <hr />
 <p>The lollipop chart is one of my favourite. There is so much to do with it and it is under-utilized in favor of barplot. Visit the <a href="lollipop-plot.html">dedicated section</a> for more examples produced with <code>R</code>, or <a href="https://www.data-to-viz.com/graph/lollipop.html">data-to-viz</a> to learn about the available variations and caveats to avoid.</p>
