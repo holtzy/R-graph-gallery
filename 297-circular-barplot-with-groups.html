@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Circular barplot with groups &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="How to build a grouped circular barchart with R and ggplot2. Gap is build between groups, bars are labeled, group names are annotated.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Circular barplot with groups" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="How to build a grouped circular barchart with R and ggplot2. Gap is build between groups, bars are labeled, group names are annotated." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/297-circular-barplot-with-groups.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Circular barplot with groups</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build a <a href="circular-barplot.html">circular barchart</a> with groups. A gap is added between groups to highlight them. Bars are labeled, group names are annotated</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='circular-barplot.html'>Circular bar section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/circularbarplot.html'>Warning</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="add-a-gap-in-the-circle">Add a gap in the circle</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>A <a href="circular-barplot.html">circular barplot</a> is a <a href="barplot.html">barplot</a> where bars are displayed along a circle instead of a line. This page aims to teach you how to make a circular barplot with groups.</p>
+<p>Since this kind of chart is a bit tricky, I strongly advise to understand <a href="295-basic-circular-barplot.html">graph #295</a> and <a href="296-add-labels-to-circular-barplot.html">#296</a> that will teach you the basics.</p>
+<p>The first step is to build a circular barplot with a break in the circle. Actually, I just added a few empty lines at the end of the initial data frame:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="297-circular-barplot-with-groups_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
+<span class="kw">library</span>(tidyverse)
+ 
+<span class="co"># Create dataset</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">individual=</span><span class="kw">paste</span>( <span class="st">&quot;Mister &quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">60</span>), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>),
+  <span class="dt">value=</span><span class="kw">sample</span>( <span class="kw">seq</span>(<span class="dv">10</span>,<span class="dv">100</span>), <span class="dv">60</span>, <span class="dt">replace=</span>T)
+)
+ 
+<span class="co"># Set a number of &#39;empty bar&#39;</span>
+empty_bar &lt;-<span class="st"> </span><span class="dv">10</span>
+ 
+<span class="co"># Add lines to the initial dataset</span>
+to_add &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, empty_bar, <span class="kw">ncol</span>(data))
+<span class="kw">colnames</span>(to_add) &lt;-<span class="st"> </span><span class="kw">colnames</span>(data)
+data &lt;-<span class="st"> </span><span class="kw">rbind</span>(data, to_add)
+data<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(data))
+ 
+<span class="co"># Get the name and the y position of each label</span>
+label_data &lt;-<span class="st"> </span>data
+number_of_bar &lt;-<span class="st"> </span><span class="kw">nrow</span>(label_data)
+angle &lt;-<span class="st"> </span><span class="dv">90</span> <span class="op">-</span><span class="st"> </span><span class="dv">360</span> <span class="op">*</span><span class="st"> </span>(label_data<span class="op">$</span>id<span class="op">-</span><span class="fl">0.5</span>) <span class="op">/</span>number_of_bar     <span class="co"># I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)</span>
+label_data<span class="op">$</span>hjust &lt;-<span class="st"> </span><span class="kw">ifelse</span>( angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, <span class="dv">1</span>, <span class="dv">0</span>)
+label_data<span class="op">$</span>angle &lt;-<span class="st"> </span><span class="kw">ifelse</span>(angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, angle<span class="op">+</span><span class="dv">180</span>, angle)
+ 
+<span class="co"># Make the plot</span>
+p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(id), <span class="dt">y=</span>value)) <span class="op">+</span><span class="st">       </span><span class="co"># Note that id is a factor. If x is numeric, there is some space between the first bar</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="kw">alpha</span>(<span class="st">&quot;green&quot;</span>, <span class="fl">0.3</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylim</span>(<span class="op">-</span><span class="dv">100</span>,<span class="dv">120</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">axis.text =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">axis.title =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">4</span>), <span class="st">&quot;cm&quot;</span>) 
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>(<span class="dt">start =</span> <span class="dv">0</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>label_data, <span class="kw">aes</span>(<span class="dt">x=</span>id, <span class="dt">y=</span>value<span class="op">+</span><span class="dv">10</span>, <span class="dt">label=</span>individual, <span class="dt">hjust=</span>hjust), <span class="dt">color=</span><span class="st">&quot;black&quot;</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>,<span class="dt">alpha=</span><span class="fl">0.6</span>, <span class="dt">size=</span><span class="fl">2.5</span>, <span class="dt">angle=</span> label_data<span class="op">$</span>angle, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) 
+ 
+p</code></pre></div>
+<h1 id="space-between-groups">Space between groups</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>This concept can now be used to add space between each group of the dataset. I add <code>n</code> lines with only <code>NA</code> at the bottom of each group.</p>
+<p>This chart is far more insightful since it allows one to quickly compare the different groups, and to compare the value of items within each group.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="297-circular-barplot-with-groups_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
+<span class="kw">library</span>(tidyverse)
+ 
+<span class="co"># Create dataset</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">individual=</span><span class="kw">paste</span>( <span class="st">&quot;Mister &quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">60</span>), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>),
+  <span class="dt">group=</span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="st">&#39;A&#39;</span>, <span class="dv">10</span>), <span class="kw">rep</span>(<span class="st">&#39;B&#39;</span>, <span class="dv">30</span>), <span class="kw">rep</span>(<span class="st">&#39;C&#39;</span>, <span class="dv">14</span>), <span class="kw">rep</span>(<span class="st">&#39;D&#39;</span>, <span class="dv">6</span>)) ,
+  <span class="dt">value=</span><span class="kw">sample</span>( <span class="kw">seq</span>(<span class="dv">10</span>,<span class="dv">100</span>), <span class="dv">60</span>, <span class="dt">replace=</span>T)
+)
+ 
+<span class="co"># Set a number of &#39;empty bar&#39; to add at the end of each group</span>
+empty_bar &lt;-<span class="st"> </span><span class="dv">4</span>
+to_add &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="kw">matrix</span>(<span class="ot">NA</span>, empty_bar<span class="op">*</span><span class="kw">nlevels</span>(data<span class="op">$</span>group), <span class="kw">ncol</span>(data)) )
+<span class="kw">colnames</span>(to_add) &lt;-<span class="st"> </span><span class="kw">colnames</span>(data)
+to_add<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">levels</span>(data<span class="op">$</span>group), <span class="dt">each=</span>empty_bar)
+data &lt;-<span class="st"> </span><span class="kw">rbind</span>(data, to_add)
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(group)
+data<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(data))
+ 
+<span class="co"># Get the name and the y position of each label</span>
+label_data &lt;-<span class="st"> </span>data
+number_of_bar &lt;-<span class="st"> </span><span class="kw">nrow</span>(label_data)
+angle &lt;-<span class="st"> </span><span class="dv">90</span> <span class="op">-</span><span class="st"> </span><span class="dv">360</span> <span class="op">*</span><span class="st"> </span>(label_data<span class="op">$</span>id<span class="op">-</span><span class="fl">0.5</span>) <span class="op">/</span>number_of_bar     <span class="co"># I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)</span>
+label_data<span class="op">$</span>hjust &lt;-<span class="st"> </span><span class="kw">ifelse</span>( angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, <span class="dv">1</span>, <span class="dv">0</span>)
+label_data<span class="op">$</span>angle &lt;-<span class="st"> </span><span class="kw">ifelse</span>(angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, angle<span class="op">+</span><span class="dv">180</span>, angle)
+ 
+<span class="co"># Make the plot</span>
+p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(id), <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st">       </span><span class="co"># Note that id is a factor. If x is numeric, there is some space between the first bar</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylim</span>(<span class="op">-</span><span class="dv">100</span>,<span class="dv">120</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>,
+    <span class="dt">axis.text =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">axis.title =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">4</span>), <span class="st">&quot;cm&quot;</span>) 
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>label_data, <span class="kw">aes</span>(<span class="dt">x=</span>id, <span class="dt">y=</span>value<span class="op">+</span><span class="dv">10</span>, <span class="dt">label=</span>individual, <span class="dt">hjust=</span>hjust), <span class="dt">color=</span><span class="st">&quot;black&quot;</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>,<span class="dt">alpha=</span><span class="fl">0.6</span>, <span class="dt">size=</span><span class="fl">2.5</span>, <span class="dt">angle=</span> label_data<span class="op">$</span>angle, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) 
+ 
+p</code></pre></div>
+<h1 id="order-bars">Order bars</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Here observations are sorted by bar height within each group. It can be useful if your goal is to understand what are the highest / lowest observations within and across groups.</p>
+<p>The method used to order groups in ggplot2 is extensively described in this <a href="267-reorder-a-variable-in-ggplot2.html">dedicated page</a>. Basically, you just have to add the following piece of code right after the data frame creation:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="297-circular-barplot-with-groups_files/figure-html/unnamed-chunk-1-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Order data:</span>
+data =<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(group, value)</code></pre></div>
+<h1 id="circular-barchart-customization">Circular barchart customization</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Last but not least, it is highly advisable to add some customisation to your chart. Here we add group names (A, B, C and D), and we add a scale to help compare the sizes of the bars. Voila! The code is a bit long, but the result is quite worth it in my opinion!</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="297-circular-barplot-with-groups_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
+<span class="kw">library</span>(tidyverse)
+ 
+<span class="co"># Create dataset</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">individual=</span><span class="kw">paste</span>( <span class="st">&quot;Mister &quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">60</span>), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>),
+  <span class="dt">group=</span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="st">&#39;A&#39;</span>, <span class="dv">10</span>), <span class="kw">rep</span>(<span class="st">&#39;B&#39;</span>, <span class="dv">30</span>), <span class="kw">rep</span>(<span class="st">&#39;C&#39;</span>, <span class="dv">14</span>), <span class="kw">rep</span>(<span class="st">&#39;D&#39;</span>, <span class="dv">6</span>)) ,
+  <span class="dt">value=</span><span class="kw">sample</span>( <span class="kw">seq</span>(<span class="dv">10</span>,<span class="dv">100</span>), <span class="dv">60</span>, <span class="dt">replace=</span>T)
+)
+ 
+<span class="co"># Set a number of &#39;empty bar&#39; to add at the end of each group</span>
+empty_bar &lt;-<span class="st"> </span><span class="dv">3</span>
+to_add &lt;-<span class="st"> </span><span class="kw">data.frame</span>( <span class="kw">matrix</span>(<span class="ot">NA</span>, empty_bar<span class="op">*</span><span class="kw">nlevels</span>(data<span class="op">$</span>group), <span class="kw">ncol</span>(data)) )
+<span class="kw">colnames</span>(to_add) &lt;-<span class="st"> </span><span class="kw">colnames</span>(data)
+to_add<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">levels</span>(data<span class="op">$</span>group), <span class="dt">each=</span>empty_bar)
+data &lt;-<span class="st"> </span><span class="kw">rbind</span>(data, to_add)
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">arrange</span>(group)
+data<span class="op">$</span>id &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(data))
+ 
+<span class="co"># Get the name and the y position of each label</span>
+label_data &lt;-<span class="st"> </span>data
+number_of_bar &lt;-<span class="st"> </span><span class="kw">nrow</span>(label_data)
+angle &lt;-<span class="st"> </span><span class="dv">90</span> <span class="op">-</span><span class="st"> </span><span class="dv">360</span> <span class="op">*</span><span class="st"> </span>(label_data<span class="op">$</span>id<span class="op">-</span><span class="fl">0.5</span>) <span class="op">/</span>number_of_bar     <span class="co"># I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)</span>
+label_data<span class="op">$</span>hjust &lt;-<span class="st"> </span><span class="kw">ifelse</span>( angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, <span class="dv">1</span>, <span class="dv">0</span>)
+label_data<span class="op">$</span>angle &lt;-<span class="st"> </span><span class="kw">ifelse</span>(angle <span class="op">&lt;</span><span class="st"> </span><span class="op">-</span><span class="dv">90</span>, angle<span class="op">+</span><span class="dv">180</span>, angle)
+ 
+<span class="co"># prepare a data frame for base lines</span>
+base_data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(group) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">start=</span><span class="kw">min</span>(id), <span class="dt">end=</span><span class="kw">max</span>(id) <span class="op">-</span><span class="st"> </span>empty_bar) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">title=</span><span class="kw">mean</span>(<span class="kw">c</span>(start, end)))
+ 
+<span class="co"># prepare a data frame for grid (scales)</span>
+grid_data &lt;-<span class="st"> </span>base_data
+grid_data<span class="op">$</span>end &lt;-<span class="st"> </span>grid_data<span class="op">$</span>end[ <span class="kw">c</span>( <span class="kw">nrow</span>(grid_data), <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(grid_data)<span class="op">-</span><span class="dv">1</span>)] <span class="op">+</span><span class="st"> </span><span class="dv">1</span>
+grid_data<span class="op">$</span>start &lt;-<span class="st"> </span>grid_data<span class="op">$</span>start <span class="op">-</span><span class="st"> </span><span class="dv">1</span>
+grid_data &lt;-<span class="st"> </span>grid_data[<span class="op">-</span><span class="dv">1</span>,]
+ 
+<span class="co"># Make the plot</span>
+p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(id), <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st">       </span><span class="co"># Note that id is a factor. If x is numeric, there is some space between the first bar</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(id), <span class="dt">y=</span>value, <span class="dt">fill=</span>group), <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="co"># Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data=</span>grid_data, <span class="kw">aes</span>(<span class="dt">x =</span> end, <span class="dt">y =</span> <span class="dv">80</span>, <span class="dt">xend =</span> start, <span class="dt">yend =</span> <span class="dv">80</span>), <span class="dt">colour =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">size=</span><span class="fl">0.3</span> , <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data=</span>grid_data, <span class="kw">aes</span>(<span class="dt">x =</span> end, <span class="dt">y =</span> <span class="dv">60</span>, <span class="dt">xend =</span> start, <span class="dt">yend =</span> <span class="dv">60</span>), <span class="dt">colour =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">size=</span><span class="fl">0.3</span> , <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data=</span>grid_data, <span class="kw">aes</span>(<span class="dt">x =</span> end, <span class="dt">y =</span> <span class="dv">40</span>, <span class="dt">xend =</span> start, <span class="dt">yend =</span> <span class="dv">40</span>), <span class="dt">colour =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">size=</span><span class="fl">0.3</span> , <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data=</span>grid_data, <span class="kw">aes</span>(<span class="dt">x =</span> end, <span class="dt">y =</span> <span class="dv">20</span>, <span class="dt">xend =</span> start, <span class="dt">yend =</span> <span class="dv">20</span>), <span class="dt">colour =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">size=</span><span class="fl">0.3</span> , <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="co"># Add text showing the value of each 100/75/50/25 lines</span>
+<span class="st">  </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="dt">x =</span> <span class="kw">rep</span>(<span class="kw">max</span>(data<span class="op">$</span>id),<span class="dv">4</span>), <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">60</span>, <span class="dv">80</span>), <span class="dt">label =</span> <span class="kw">c</span>(<span class="st">&quot;20&quot;</span>, <span class="st">&quot;40&quot;</span>, <span class="st">&quot;60&quot;</span>, <span class="st">&quot;80&quot;</span>) , <span class="dt">color=</span><span class="st">&quot;grey&quot;</span>, <span class="dt">size=</span><span class="dv">3</span> , <span class="dt">angle=</span><span class="dv">0</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>, <span class="dt">hjust=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.factor</span>(id), <span class="dt">y=</span>value, <span class="dt">fill=</span>group), <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ylim</span>(<span class="op">-</span><span class="dv">100</span>,<span class="dv">120</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(
+    <span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>,
+    <span class="dt">axis.text =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">axis.title =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),
+    <span class="dt">plot.margin =</span> <span class="kw">unit</span>(<span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>,<span class="dv">4</span>), <span class="st">&quot;cm&quot;</span>) 
+  ) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>label_data, <span class="kw">aes</span>(<span class="dt">x=</span>id, <span class="dt">y=</span>value<span class="op">+</span><span class="dv">10</span>, <span class="dt">label=</span>individual, <span class="dt">hjust=</span>hjust), <span class="dt">color=</span><span class="st">&quot;black&quot;</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>,<span class="dt">alpha=</span><span class="fl">0.6</span>, <span class="dt">size=</span><span class="fl">2.5</span>, <span class="dt">angle=</span> label_data<span class="op">$</span>angle, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> ) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="co"># Add base line information</span>
+<span class="st">  </span><span class="kw">geom_segment</span>(<span class="dt">data=</span>base_data, <span class="kw">aes</span>(<span class="dt">x =</span> start, <span class="dt">y =</span> <span class="op">-</span><span class="dv">5</span>, <span class="dt">xend =</span> end, <span class="dt">yend =</span> <span class="op">-</span><span class="dv">5</span>), <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.8</span>, <span class="dt">size=</span><span class="fl">0.6</span> , <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span> )  <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>base_data, <span class="kw">aes</span>(<span class="dt">x =</span> title, <span class="dt">y =</span> <span class="op">-</span><span class="dv">18</span>, <span class="dt">label=</span>group), <span class="dt">hjust=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">alpha=</span><span class="fl">0.8</span>, <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">fontface=</span><span class="st">&quot;bold&quot;</span>, <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>)
+ 
+p</code></pre></div>
+<h1 id="whats-next">What’s next?</h1>
+<hr />
+<p>Last step: a circular stacked grouped barplot described in <a href="299-circular-stacked-barplot.html">graph #299</a>. Or check the circular barplot <a href="circular-barplot.html">section</a> for more examples.</p>
+<p><a class="btn btn-secondary" href="299-circular-stacked-barplot.html">Stacked grouped barplot</a> <a class="btn btn-secondary" href="circular-barplot.html">See all examples</a></p>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

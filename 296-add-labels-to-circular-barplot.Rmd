@@ -1,0 +1,141 @@
+---
+title: "Add labels to circular barplot"
+descriptionMeta: "This post explains how to add labels on a circular barchart, on top of each bar. It uses R and ggplot2, and reproducible code is provided."
+descriptionTop: "This post explains how to add labels on a [ggplot2](ggplot2.html) circular barchart, on top of each bar. It follows the previous most basic circular barchart."
+sectionText: "Circular bar section"
+sectionLink: "circular-barplot.html"
+DataToVizText: "Warning"
+DataToVizLink: "data-to-viz.com/graph/circularbarplot.html"
+url: "296-add-labels-to-circular-barplot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The [chart #295](295-basic-circular-barplot/.html) explains how to make a basic [circular barplot](circular-barplot.html). The next step is to add labels to each bar, to give insight to the graphic.
+ 
+Here I suggest a method to add label at the top of each bar, using the same angle that the central part of the bar. In the code below, a short section creates a dataframe with the feature of each label, that we can then call in `geom_text()`. 
+
+Note that labels are always in an angle that allows to read them easily, what requires a 180 degrees flip for some of them.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(tidyverse)
+ 
+# Create dataset
+data <- data.frame(
+  id=seq(1,60),
+  individual=paste( "Mister ", seq(1,60), sep=""),
+  value=sample( seq(10,100), 60, replace=T)
+)
+ 
+# ----- This section prepare a dataframe for labels ---- #
+# Get the name and the y position of each label
+label_data <- data
+ 
+# calculate the ANGLE of the labels
+number_of_bar <- nrow(label_data)
+angle <-  90 - 360 * (label_data$id-0.5) /number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+ 
+# calculate the alignment of labels: right or left
+# If I am on the left part of the plot, my labels have currently an angle < -90
+label_data$hjust<-ifelse( angle < -90, 1, 0)
+ 
+# flip angle BY to make them readable
+label_data$angle<-ifelse(angle < -90, angle+180, angle)
+# ----- ------------------------------------------- ---- #
+ 
+ 
+# Start the plot
+p <- ggplot(data, aes(x=as.factor(id), y=value)) +       # Note that id is a factor. If x is numeric, there is some space between the first bar
+  
+  # This add the bars with a blue color
+  geom_bar(stat="identity", fill=alpha("skyblue", 0.7)) +
+  
+  # Limits of the plot = very important. The negative value controls the size of the inner circle, the positive one is useful to add size over each bar
+  ylim(-100,120) +
+  
+  # Custom the theme: no axis title and no cartesian grid
+  theme_minimal() +
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    plot.margin = unit(rep(-1,4), "cm")      # Adjust the margin to make in sort labels are not truncated!
+  ) +
+  
+  # This makes the coordinate polar instead of cartesian.
+  coord_polar(start = 0) +
+  
+  # Add the labels, using the label_data dataframe that we have created before
+  geom_text(data=label_data, aes(x=id, y=value+10, label=individual, hjust=hjust), color="black", fontface="bold",alpha=0.6, size=2.5, angle= label_data$angle, inherit.aes = FALSE ) 
+ 
+p
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# What's next?
+***
+
+Have a look to [graph #297](297-circular-barplot-with-groups.html) for a grouped barplot, or check the circular barplot [section](circular-barplot.html) for more examples.
+
+<a class="btn btn-secondary" href="297-circular-barplot-with-groups.html">Grouped barplot</a>
+<a class="btn btn-secondary" href="circular-barplot.html">See all examples</a>
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
