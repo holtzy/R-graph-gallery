@@ -1,0 +1,107 @@
+---
+title: "Interactive Treemap in R"
+descriptionMeta: "With a big amount of data, a treemap can get cluttered and unreadable. Interactivity allows to keep a clean an insightful figure. Learn how to in R."
+descriptionTop: "With a big amount of data, a [treemap](treemap.html) can get cluttered and unreadable. Interactivity allows to keep a clean an insightful figure. This post shows how to build an interactive treemap with `R` and the `d3treeR` package"
+sectionText: "Treemap section"
+sectionLink: "treemap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/treemap.html"
+url: "237-interactive-treemap"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+This post follows the previous chart [#234](234-a-very-basic-treemap.html), [#235](235-treemap-with-subgroups.html) and [#236](236-custom-your-treemap.html) that describe how to build and customize [treemaps](treemap.html) with the `treemap` package.
+
+The idea is to turn the chart interactive: you can now click on a group to zoom in and show its subgroups. Click on the group name on top to unzoom and come back to the previous state.
+
+This is done thanks to the `d3treeR` package:
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/interactiveTreemap.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# library
+library(treemap)
+library(d3treeR)
+ 
+# dataset
+group <- c(rep("group-1",4),rep("group-2",2),rep("group-3",3))
+subgroup <- paste("subgroup" , c(1,2,3,4,1,2,1,2,3), sep="-")
+value <- c(13,5,22,12,11,7,3,1,23)
+data <- data.frame(group,subgroup,value)
+ 
+# basic treemap
+p <- treemap(data,
+            index=c("group","subgroup"),
+            vSize="value",
+            type="index",
+            palette = "Set2",
+            bg.labels=c("white"),
+            align.labels=list(
+              c("center", "center"), 
+              c("right", "bottom")
+            )  
+          )            
+ 
+# make it interactive ("rootname" becomes the title of the plot):
+inter <- d3tree2( p ,  rootname = "General" )
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(inter, file=paste0( getwd(), "/HtmlWidget/interactiveTreemap.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
