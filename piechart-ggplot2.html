@@ -8,19 +8,19 @@
 
 <head>
 <meta charset="utf-8">
-<title>Treemap with subgroups &#8211; the R Graph Gallery</title>
+<title>ggplot2 Piechart &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build a treemap with subgroups in R. It uses the treemap package, provides reproducible code and explains how input data must be formatted.">
+<meta name="description" content="How to build a pie chart with ggplot2 to visualize the proportion of a set of groups. Several examples with reproducible code provided.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Treemap with subgroups" />
+<meta property="og:title" content="ggplot2 Piechart" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This post explains how to build a treemap with subgroups in R. It uses the treemap package, provides reproducible code and explains how input data must be formatted." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/235-treemap-with-subgroups.html" />
+<meta property="og:description" content="How to build a pie chart with ggplot2 to visualize the proportion of a set of groups. Several examples with reproducible code provided." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/piechart-ggplot2.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +116,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Treemap with subgroups</h1></center>
+      <center><h1>ggplot2 Piechart</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,10 +141,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build a <a href="treemap.html">treemap</a> with subgroups in <code>R</code>. It uses the <code>treemap</code> package, provides reproducible code and explains how input data must be formatted.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">A <a href="pie-plot.html">pie chart</a> is a circle divided into sectors that each represent a proportion of the whole. This page explains how to build one with the <code>ggplot2</code> package.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='treemap.html'>Treemap section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/treemap.html'>Data to Viz</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='pie-plot.html'>Pie Chart section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/caveat/pie.html'>Why you should not do it</a>
       </div>
   </div>
 </header>
@@ -167,32 +167,100 @@
 
 
 <div class="container" style="padding-top: 100px">
+<h1 id="most-basic-pie-chart">Most basic pie chart</h1>
+<hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>This is a <a href="treemap.html">treemap</a> with several levels. We have 3 groups, each containing several subgroups. Each subgroup has a value which we map to an area.</p>
-<p>In the <code>index</code> argument, you need to specify levels in the order of importance: group &gt; subgroup &gt; sub-subgroup.</p>
-<p><u>Note</u>: If you have one level of grouping only, see chart <a href="234-a-very-basic-treemap.html">#234</a></p>
-<p><u>Note</u>: Showing more than 2 levels often result in a cluttered and unredable figure. Why not considering an <a href="237-interactive-treemap.html">interactive version</a>?</p>
+<p><code>ggplot2</code> does not offer any specific geom to build piecharts. The trick is the following:</p>
+<ul>
+<li>input data frame has 2 columns: the group names (<code>group</code> here) and its value (<code>value</code> here)</li>
+<li>build a stacked barchart with one bar only using the <code>geom_bar()</code> function.</li>
+<li>Make it circular with <code>coord_polar()</code></li>
+</ul>
+<p>The result is far from optimal yet, keep reading for improvements.</p>
 </div>
 <div class="col-md-6 col-sm-12">
-<p><img src="235-treemap-with-subgroups_files/figure-html/thecode-1.png" width="100%" /></p>
+<p><img src="piechart-ggplot2_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(treemap)
- 
-<span class="co"># Build Dataset</span>
-group &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;group-1&quot;</span>,<span class="dv">4</span>),<span class="kw">rep</span>(<span class="st">&quot;group-2&quot;</span>,<span class="dv">2</span>),<span class="kw">rep</span>(<span class="st">&quot;group-3&quot;</span>,<span class="dv">3</span>))
-subgroup &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;subgroup&quot;</span> , <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="dt">sep=</span><span class="st">&quot;-&quot;</span>)
-value &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">5</span>,<span class="dv">22</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">7</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">23</span>)
-data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(group,subgroup,value)
- 
-<span class="co"># treemap</span>
-<span class="kw">treemap</span>(data,
-            <span class="dt">index=</span><span class="kw">c</span>(<span class="st">&quot;group&quot;</span>,<span class="st">&quot;subgroup&quot;</span>),
-            <span class="dt">vSize=</span><span class="st">&quot;value&quot;</span>,
-            <span class="dt">type=</span><span class="st">&quot;index&quot;</span>
-            ) </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load ggplot2</span>
+<span class="kw">library</span>(ggplot2)
+
+<span class="co"># Create Data</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],
+  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)
+)
+
+<span class="co"># Basic piechart</span>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>)</code></pre></div>
+<h1 id="improve-appearance">Improve appearance</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Previous version looks pretty bad. We need to:</p>
+<ul>
+<li>remove useless numeric labels</li>
+<li>remove grid and grey background</li>
+</ul>
+<p>It’s better now, just need to add labels directly on chart.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="piechart-ggplot2_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load ggplot2</span>
+<span class="kw">library</span>(ggplot2)
+
+<span class="co"># Create Data</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],
+  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)
+)
+
+<span class="co"># Basic piechart</span>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="kw">theme_void</span>() <span class="co"># remove background, grid, numeric labels</span></code></pre></div>
+<h1 id="adding-labels-with-geom_text">Adding labels with <code>geom_text()</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The tricky part is to compute the y position of labels using this weird <code>coord_polar</code> transformation.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="piechart-ggplot2_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load ggplot2</span>
+<span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(dplyr)
+
+<span class="co"># Create Data</span>
+data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],
+  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)
+)
+
+<span class="co"># Compute the position of labels</span>
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(group)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop =</span> value <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(data<span class="op">$</span>value) <span class="op">*</span><span class="dv">100</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ypos =</span> <span class="kw">cumsum</span>(prop)<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>prop )
+
+<span class="co"># Basic piechart</span>
+<span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>prop, <span class="dt">fill=</span>group)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ypos, <span class="dt">label =</span> group), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">size=</span><span class="dv">6</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette=</span><span class="st">&quot;Set1&quot;</span>)</code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
