@@ -1,0 +1,110 @@
+---
+title: "Basic circle packing with one level"
+descriptionMeta: "This page aims to describe how to build a basic circle packing chart with only one level of hierarchy. It uses the packcircle package for circle position, and ggplot2 for drawing."
+descriptionTop: "This page aims to describe how to build a basic [circle packing](circle-packing.html) chart with only one level of hierarchy. It uses the `packcircle` package for circle position, and `ggplot2` for drawing."
+sectionText: "Circle Packing section"
+sectionLink: "circle-packing.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/circularpacking.html"
+url: "305-basic-circle-packing-with-one-level"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This page aims to describe how to build a basic [circle packing](circle-packing.html) chart with only one level of hierarchy. Basically, you just represent each entity or individual of your dataset with a circle, its size depending on a provided value.
+ 
+It is like a [barplot](barplot.html), but you use circle size instead of bar length. It is close to a [bubble plot](bubble-chart.html), but X and Y positions do not mean anything. It is a circle version of a [treemap](treemap.html).
+ 
+Calculating the arrangement of dots is not a trivial problem. The `packcircles` library solves it and output coordinates of every points of the circle edges. 
+
+Finally, ggplot2 allows to draw shapes thanks to `geom_polygon()`.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(packcircles)
+library(ggplot2)
+ 
+# Create data
+data <- data.frame(group=paste("Group", letters[1:20]), value=sample(seq(1,100),20)) 
+ 
+# Generate the layout. This function return a dataframe with one line per bubble. 
+# It gives its center (x and y) and its radius, proportional of the value
+packing <- circleProgressiveLayout(data$value, sizetype='area')
+ 
+# We can add these packing information to the initial data frame
+data <- cbind(data, packing)
+ 
+# Check that radius is proportional to value. We don't want a linear relationship, since it is the AREA that must be proportionnal to the value
+# plot(data$radius, data$value)
+ 
+# The next step is to go from one center + a radius to the coordinates of a circle that
+# is drawn by a multitude of straight lines.
+dat.gg <- circleLayoutVertices(packing, npoints=50)
+ 
+# Make the plot
+ggplot() + 
+  
+  # Make the bubbles
+  geom_polygon(data = dat.gg, aes(x, y, group = id, fill=as.factor(id)), colour = "black", alpha = 0.6) +
+  
+  # Add text in the center of each bubble + control its size
+  geom_text(data = data, aes(x, y, size=value, label = group)) +
+  scale_size_continuous(range = c(1,4)) +
+  
+  # General theme:
+  theme_void() + 
+  theme(legend.position="none") +
+  coord_equal()
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

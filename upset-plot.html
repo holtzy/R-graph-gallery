@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Upset plot &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="An Upset plot is an alternative to the Venn Diagram used to deal with more than 3 sets. It is built in R thanks to the upSetR package.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Upset plot" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="An Upset plot is an alternative to the Venn Diagram used to deal with more than 3 sets. It is built in R thanks to the upSetR package." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/upset-plot.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Upset plot</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">An Upset plot is an alternative to the <a href="venn-diagramm.html">Venn Diagram</a> used to deal with more than 3 sets. It is built in <code>R</code> thanks to the <code>upSetR</code> package.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='venn-diagram.html'>Venn diagram section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/venn.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="most-basic">Most basic</h1>
+<hr />
+<p><img src="upset-plot_files/figure-html/theCode-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To visualize the intersection between more than 3 sets, the best option is to use an UpSet plot.</p>
+<p>Here is an example provided by the <code>UpsetR</code> package that displays information concerning the Banana genome.</p>
+<p>The total size of each set is represented on the left barplot. Every possible intersection is represented by the bottom plot, and their occurence is shown on the top barplot.</p>
+<p><u>Source</u>: the <a href="https://github.com/hms-dbmi/UpSetR">upSetR documentation</a></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specific library</span>
+<span class="kw">library</span>(UpSetR)
+
+<span class="co"># Dataset</span>
+input &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="dt">M.acuminata =</span> <span class="dv">759</span>,
+  <span class="dt">P.dactylifera =</span> <span class="dv">769</span>,
+  <span class="dt">A.thaliana =</span> <span class="dv">1187</span>,
+  <span class="dt">O.sativa =</span> <span class="dv">1246</span>,
+  <span class="dt">S.bicolor =</span> <span class="dv">827</span>,
+  <span class="dt">B.distachyon =</span> <span class="dv">387</span>,
+  <span class="st">&quot;P.dactylifera&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">467</span>,
+  <span class="st">&quot;O.sativa&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">29</span>,
+  <span class="st">&quot;A.thaliana&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">6</span>,
+  <span class="st">&quot;S.bicolor&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">9</span>,
+  <span class="st">&quot;O.sativa&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">32</span>,
+  <span class="st">&quot;S.bicolor&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">49</span>,
+  <span class="st">&quot;S.bicolor&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">49</span>,
+  <span class="st">&quot;B.distachyon&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">547</span>,
+  <span class="st">&quot;S.bicolor&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">1151</span>,
+  <span class="st">&quot;B.distachyon&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">10</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">9</span>,
+  <span class="st">&quot;B.distachyon&amp;S.bicolor&quot;</span> =<span class="st"> </span><span class="dv">402</span>,
+  <span class="st">&quot;M.acuminata&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">155</span>,
+  <span class="st">&quot;A.thaliana&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">105</span>,
+  <span class="st">&quot;B.distachyon&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">25</span>,
+  <span class="st">&quot;S.bicolor&amp;O.sativa&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">42</span>,
+  <span class="st">&quot;B.distachyon&amp;O.sativa&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">12</span>,
+  <span class="st">&quot;S.bicolor&amp;O.sativa&amp;B.distachyon&quot;</span> =<span class="st"> </span><span class="dv">2809</span>,
+  <span class="st">&quot;B.distachyon&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">18</span>,
+  <span class="st">&quot;S.bicolor&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">40</span>,
+  <span class="st">&quot;S.bicolor&amp;B.distachyon&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">14</span>,
+  <span class="st">&quot;O.sativa&amp;B.distachyon&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">28</span>,
+  <span class="st">&quot;S.bicolor&amp;B.distachyon&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">13</span>,
+  <span class="st">&quot;O.sativa&amp;M.acuminata&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">35</span>,
+  <span class="st">&quot;M.acuminata&amp;S.bicolor&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">21</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">7</span>,
+  <span class="st">&quot;O.sativa&amp;M.acuminata&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">13</span>,
+  <span class="st">&quot;M.acuminata&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">206</span>,
+  <span class="st">&quot;P.dactylifera&amp;A.thaliana&amp;S.bicolor&quot;</span> =<span class="st"> </span><span class="dv">4</span>,
+  <span class="st">&quot;O.sativa&amp;A.thaliana&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">6</span>,
+  <span class="st">&quot;S.bicolor&amp;O.sativa&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">64</span>,
+  <span class="st">&quot;S.bicolor&amp;M.acuminata&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">19</span>,
+  <span class="st">&quot;B.distachyon&amp;A.thaliana&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">3</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">12</span>,
+  <span class="st">&quot;B.distachyon&amp;S.bicolor&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">23</span>,
+  <span class="st">&quot;M.acuminata&amp;B.distachyon&amp;S.bicolor&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">54</span>,
+  <span class="st">&quot;P.dactylifera&amp;S.bicolor&amp;O.sativa&amp;M.acuminata&quot;</span> =<span class="st"> </span><span class="dv">62</span>,
+  <span class="st">&quot;B.distachyon&amp;O.sativa&amp;M.acuminata&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">18</span>,
+  <span class="st">&quot;S.bicolor&amp;B.distachyon&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">206</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">29</span>,
+  <span class="st">&quot;O.sativa&amp;M.acuminata&amp;A.thaliana&amp;S.bicolor&quot;</span> =<span class="st"> </span><span class="dv">71</span>,
+  <span class="st">&quot;M.acuminata&amp;O.sativa&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">28</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">7</span>,
+  <span class="st">&quot;B.distachyon&amp;S.bicolor&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">11</span>,
+  <span class="st">&quot;B.distachyon&amp;O.sativa&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">5</span>,
+  <span class="st">&quot;A.thaliana&amp;P.dactylifera&amp;S.bicolor&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">21</span>,
+  <span class="st">&quot;M.acuminata&amp;S.bicolor&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">23</span>,
+  <span class="st">&quot;M.acuminata&amp;B.distachyon&amp;S.bicolor&amp;P.dactylifera&quot;</span> =<span class="st"> </span><span class="dv">24</span>,
+  <span class="st">&quot;M.acuminata&amp;O.sativa&amp;S.bicolor&amp;B.distachyon&quot;</span> =<span class="st"> </span><span class="dv">368</span>,
+  <span class="st">&quot;P.dactylifera&amp;B.distachyon&amp;S.bicolor&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">190</span>,
+  <span class="st">&quot;P.dactylifera&amp;B.distachyon&amp;S.bicolor&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">258</span>,
+  <span class="st">&quot;P.dactylifera&amp;M.acuminata&amp;S.bicolor&amp;B.distachyon&amp;O.sativa&quot;</span> =<span class="st"> </span><span class="dv">685</span>,
+  <span class="st">&quot;M.acuminata&amp;S.bicolor&amp;B.distachyon&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">1458</span>,
+  <span class="st">&quot;S.bicolor&amp;M.acuminata&amp;P.dactylifera&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">149</span>,
+  <span class="st">&quot;B.distachyon&amp;M.acuminata&amp;P.dactylifera&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">80</span>,
+  <span class="st">&quot;M.acuminata&amp;S.bicolor&amp;B.distachyon&amp;P.dactylifera&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">113</span>,
+  <span class="st">&quot;M.acuminata&amp;S.bicolor&amp;B.distachyon&amp;P.dactylifera&amp;O.sativa&amp;A.thaliana&quot;</span> =<span class="st"> </span><span class="dv">7674</span>
+)
+
+<span class="co"># Plot</span>
+<span class="kw">upset</span>(<span class="kw">fromExpression</span>(input), 
+      <span class="dt">nintersects =</span> <span class="dv">40</span>, 
+      <span class="dt">nsets =</span> <span class="dv">6</span>, 
+      <span class="dt">order.by =</span> <span class="st">&quot;freq&quot;</span>, 
+      <span class="dt">decreasing =</span> T, 
+      <span class="dt">mb.ratio =</span> <span class="kw">c</span>(<span class="fl">0.6</span>, <span class="fl">0.4</span>),
+      <span class="dt">number.angles =</span> <span class="dv">0</span>, 
+      <span class="dt">text.scale =</span> <span class="fl">1.1</span>, 
+      <span class="dt">point.size =</span> <span class="fl">2.8</span>, 
+      <span class="dt">line.size =</span> <span class="dv">1</span>
+      )</code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-barplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="treemap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Tree150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Treemap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="donut.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Doughnut</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="pie-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Pie150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Pie chart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="dendrogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Dendrogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="circularpacking.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Circular packing</div>
+      </div>
+      <!-- <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="sunburst.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Sunburst150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Sunburst</div>
+      </div> -->
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Venn Diagram &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="A Venn diagram shows all possible logical relationships between several sets of data. This page explains how to build one with R and the VennDiagram package, with reproducible code provided.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Venn Diagram" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="A Venn diagram shows all possible logical relationships between several sets of data. This page explains how to build one with R and the VennDiagram package, with reproducible code provided." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/14-venn-diagramm.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Venn Diagram</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">A <a href="venn-diagram.html">Venn diagram</a> shows all possible logical relationships between several sets of data. This page explains how to build one with <code>R</code> and the <code>VennDiagram</code> package, with reproducible code provided.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='venn-diagram.html'>Venn diagram section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/venn.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="most-basic">Most basic</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>VennDiagram</code> package allows to build Venn Diagrams thanks to its <code>venn.diagram()</code> function. It takes as input a list of vector. Each vector providing words.</p>
+<p>The function starts bycounting how many words are common between each pair of list. It then draws the result, showing each set as a circle.</p>
+<p>The output is available as a <code>.png</code> file in your current working directory.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<center>
+<img src="img/graph/14-venn-diagramm1.png" width="80%">
+</center>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load library</span>
+<span class="kw">library</span>(VennDiagram)
+ 
+<span class="co"># Generate 3 sets of 200 words</span>
+set1 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+set2 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+set3 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+ 
+<span class="co"># Chart</span>
+<span class="kw">venn.diagram</span>(
+  <span class="dt">x =</span> <span class="kw">list</span>(set1, set2, set3),
+  <span class="dt">category.names =</span> <span class="kw">c</span>(<span class="st">&quot;Set 1&quot;</span> , <span class="st">&quot;Set 2 &quot;</span> , <span class="st">&quot;Set 3&quot;</span>),
+  <span class="dt">filename =</span> <span class="st">&#39;#14_venn_diagramm.png&#39;</span>,
+  <span class="dt">output=</span><span class="ot">TRUE</span>
+)</code></pre></div>
+<h1 id="custom">Customize it</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>venn.diagram()</code> function offers several option to customize the output. Those options allow to customize the circles, the set names, and the intersection values.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<center>
+<img src="img/graph/14-venn-diagramm2.png" width="80%">
+</center>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load library</span>
+<span class="kw">library</span>(VennDiagram)
+ 
+<span class="co"># Generate 3 sets of 200 words</span>
+set1 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+set2 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+set3 &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">rep</span>(<span class="st">&quot;word_&quot;</span> , <span class="dv">200</span>) , <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>) , <span class="dv">200</span> , <span class="dt">replace=</span>F) , <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+
+<span class="co"># Prepare a palette of 3 colors with R colorbrewer:</span>
+<span class="kw">library</span>(RColorBrewer)
+myCol &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">3</span>, <span class="st">&quot;Pastel2&quot;</span>)
+
+<span class="co"># Chart</span>
+<span class="kw">venn.diagram</span>(
+        <span class="dt">x =</span> <span class="kw">list</span>(set1, set2, set3),
+        <span class="dt">category.names =</span> <span class="kw">c</span>(<span class="st">&quot;Set 1&quot;</span> , <span class="st">&quot;Set 2 &quot;</span> , <span class="st">&quot;Set 3&quot;</span>),
+        <span class="dt">filename =</span> <span class="st">&#39;#14_venn_diagramm.png&#39;</span>,
+        <span class="dt">output=</span><span class="ot">TRUE</span>,
+        
+        <span class="co"># Output features</span>
+        <span class="dt">imagetype=</span><span class="st">&quot;png&quot;</span> ,
+        <span class="dt">height =</span> <span class="dv">480</span> , 
+        <span class="dt">width =</span> <span class="dv">480</span> , 
+        <span class="dt">resolution =</span> <span class="dv">300</span>,
+        <span class="dt">compression =</span> <span class="st">&quot;lzw&quot;</span>,
+        
+        <span class="co"># Circles</span>
+        <span class="dt">lwd =</span> <span class="dv">2</span>,
+        <span class="dt">lty =</span> <span class="st">&#39;blank&#39;</span>,
+        <span class="dt">fill =</span> myCol,
+        
+        <span class="co"># Numbers</span>
+        <span class="dt">cex =</span> .<span class="dv">6</span>,
+        <span class="dt">fontface =</span> <span class="st">&quot;bold&quot;</span>,
+        <span class="dt">fontfamily =</span> <span class="st">&quot;sans&quot;</span>,
+        
+        <span class="co"># Set names</span>
+        <span class="dt">cat.cex =</span> <span class="fl">0.6</span>,
+        <span class="dt">cat.fontface =</span> <span class="st">&quot;bold&quot;</span>,
+        <span class="dt">cat.default.pos =</span> <span class="st">&quot;outer&quot;</span>,
+        <span class="dt">cat.pos =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">27</span>, <span class="dv">27</span>, <span class="dv">135</span>),
+        <span class="dt">cat.dist =</span> <span class="kw">c</span>(<span class="fl">0.055</span>, <span class="fl">0.055</span>, <span class="fl">0.085</span>),
+        <span class="dt">cat.fontfamily =</span> <span class="st">&quot;sans&quot;</span>,
+        <span class="dt">rotation =</span> <span class="dv">1</span>
+)</code></pre></div>
+<h1 id="rap">Application on rap Lyrics</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Here is an example showing the number of shared words in the lyrics of 3 famous french singers: (Nekfeu, Booba) and Georges Brassens.</p>
+<p>This example is extensively described in this <a href="https://www.data-to-viz.com/story/SeveralIndepLists.html">dedicated post</a>.</p>
+<p>Note the use of both the <code>col</code> and <code>fill</code> options to make the circle border color different darker.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<center>
+<img src="img/graph/14-venn-diagramm3.png" width="80%">
+</center>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Libraries</span>
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(hrbrthemes)
+<span class="kw">library</span>(tm)
+<span class="kw">library</span>(proustr)
+
+<span class="co"># Load dataset from github</span>
+data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/14_SeveralIndepLists.csv&quot;</span>, <span class="dt">header=</span><span class="ot">TRUE</span>) 
+to_remove &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;_|[0-9]|</span><span class="ch">\\</span><span class="st">.|function|^id|script|var|div|null|typeof|opts|if|^r$|undefined|false|loaded|true|settimeout|eval|else|artist&quot;</span>)
+data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">grepl</span>(to_remove, word)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="op">!</span>word <span class="op">%in%</span><span class="st"> </span><span class="kw">stopwords</span>(<span class="st">&#39;fr&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="op">!</span>word <span class="op">%in%</span><span class="st"> </span><span class="kw">proust_stopwords</span>()<span class="op">$</span>word)
+
+<span class="co"># library</span>
+<span class="kw">library</span>(VennDiagram)
+ 
+<span class="co">#Make the plot</span>
+<span class="kw">venn.diagram</span>(
+  <span class="dt">x =</span> <span class="kw">list</span>(
+    data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(artist<span class="op">==</span><span class="st">&quot;booba&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(word) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>() , 
+    data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(artist<span class="op">==</span><span class="st">&quot;nekfeu&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(word) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>() , 
+    data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(artist<span class="op">==</span><span class="st">&quot;georges-brassens&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(word) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()
+    ),
+  <span class="dt">category.names =</span> <span class="kw">c</span>(<span class="st">&quot;Booba (1995)&quot;</span> , <span class="st">&quot;Nekfeu (663)&quot;</span> , <span class="st">&quot;Brassens (471)&quot;</span>),
+  <span class="dt">filename =</span> <span class="st">&#39;IMG/venn.png&#39;</span>,
+  <span class="dt">output =</span> <span class="ot">TRUE</span> ,
+          <span class="dt">imagetype=</span><span class="st">&quot;png&quot;</span> ,
+          <span class="dt">height =</span> <span class="dv">480</span> , 
+          <span class="dt">width =</span> <span class="dv">480</span> , 
+          <span class="dt">resolution =</span> <span class="dv">300</span>,
+          <span class="dt">compression =</span> <span class="st">&quot;lzw&quot;</span>,
+          <span class="dt">lwd =</span> <span class="dv">1</span>,
+          <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;#440154ff&quot;</span>, <span class="st">&#39;#21908dff&#39;</span>, <span class="st">&#39;#fde725ff&#39;</span>),
+          <span class="dt">fill =</span> <span class="kw">c</span>(<span class="kw">alpha</span>(<span class="st">&quot;#440154ff&quot;</span>,<span class="fl">0.3</span>), <span class="kw">alpha</span>(<span class="st">&#39;#21908dff&#39;</span>,<span class="fl">0.3</span>), <span class="kw">alpha</span>(<span class="st">&#39;#fde725ff&#39;</span>,<span class="fl">0.3</span>)),
+          <span class="dt">cex =</span> <span class="fl">0.5</span>,
+          <span class="dt">fontfamily =</span> <span class="st">&quot;sans&quot;</span>,
+          <span class="dt">cat.cex =</span> <span class="fl">0.3</span>,
+          <span class="dt">cat.default.pos =</span> <span class="st">&quot;outer&quot;</span>,
+          <span class="dt">cat.pos =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">27</span>, <span class="dv">27</span>, <span class="dv">135</span>),
+          <span class="dt">cat.dist =</span> <span class="kw">c</span>(<span class="fl">0.055</span>, <span class="fl">0.055</span>, <span class="fl">0.085</span>),
+          <span class="dt">cat.fontfamily =</span> <span class="st">&quot;sans&quot;</span>,
+          <span class="dt">cat.col =</span> <span class="kw">c</span>(<span class="st">&quot;#440154ff&quot;</span>, <span class="st">&#39;#21908dff&#39;</span>, <span class="st">&#39;#fde725ff&#39;</span>),
+          <span class="dt">rotation =</span> <span class="dv">1</span>
+        )</code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-barplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="treemap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Tree150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Treemap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="donut.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Doughnut</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="pie-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Pie150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Pie chart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="dendrogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Dendrogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="circularpacking.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Circular packing</div>
+      </div>
+      <!-- <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="sunburst.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Sunburst150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Sunburst</div>
+      </div> -->
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
