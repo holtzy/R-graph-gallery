@@ -1,0 +1,96 @@
+---
+title: "Change streamgraph color"
+descriptionMeta: "The streamgraph package offers several options to control the color palette in use. Both R Color Brewer and custom color palette are supported."
+descriptionTop: "The `streamgraph` package offers several options to control the color palette in use. Both R Color Brewer and custom color palette are supported."
+sectionText: "Streamgraph section"
+sectionLink: "streamgraph.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/streamgraph.html"
+url: "158-change-color-in-interactive-streamgraph"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+<div class="row">
+
+<div class="col-md-4">
+<iframe src="HtmlWidget/streamgraphColor1.html" height="440" width="100%" style="border:none;"></iframe>
+</div>
+
+<div class="col-md-4">
+<iframe src="HtmlWidget/streamgraphColor2.html" height="440" width="100%" style="border:none;"></iframe>
+</div>
+
+<div class="col-md-4">
+<iframe src="HtmlWidget/streamgraphColor3.html" height="440" width="100%" style="border:none;"></iframe>
+</div>
+
+</div>
+
+The `streamgraph` package offers a few options to customize the chart color:
+
+- `scale_fill_brewer()`: use one of the [R ColorBrewer]() palette, both continuous and categorical.
+- `scale_fill_manual()`: buid a custom color palette: just provide a vector containing the chosen colors.
+
+<u>Note</u>: you can save the chart as a html file using the `saveWidget()` function of the `htmlwidgets` package, as suggested in the commented code below.
+
+```{r, eval=FALSE}
+# Library
+library(streamgraph)
+
+# Create data:
+data <- data.frame(
+  year=rep(seq(1990,2016) , each=10),
+  name=rep(letters[1:10] , 27),
+  value=sample( seq(0,1,0.0001) , 270)
+)
+
+# Graph 1: choose a RColorBrewer palette -> continuous
+p1 <- streamgraph(data, key="name", value="value", date="year",
+    width="400px", height="300px"
+    ) %>%
+  sg_fill_brewer("Blues")
+
+# Graph 2: choose a RColorBrewer palette -> categorical
+p2 <- streamgraph(data, key="name", value="value", date="year",
+    width="400px", height="300px"
+    ) %>%
+  sg_fill_brewer("Pastel1")
+
+# Graph 3: choose color manually with number, color name, rgb ...
+p3 <- streamgraph(data, key="name", value="value", date="year"  ,
+    width="400px", height="300px"
+    ) %>%
+  sg_fill_manual(c(1:10))
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p1, file=paste0( getwd(), "/HtmlWidget/streamgraphColor1.html"))
+# saveWidget(p2, file=paste0( getwd(), "/HtmlWidget/streamgraphColor2.html"))
+# saveWidget(p3, file=paste0( getwd(), "/HtmlWidget/streamgraphColor3.html"))
+```
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```
