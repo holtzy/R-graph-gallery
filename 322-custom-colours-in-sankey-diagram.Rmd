@@ -1,0 +1,209 @@
+---
+title: "Customize colors in Sankey Diagram"
+descriptionMeta: "Sankey Diagram can be built in R using the networkD3 package. This post explains how to customioze the node colors used on the chart."
+descriptionTop: "[Sankey Diagram](sankey-diagram.html) can be built in `R` using the `networkD3` package. This post explains how to customioze the node colors used on the chart."
+sectionText: "Sankey section"
+sectionLink: "sankey-diagram.html"
+DataToVizText: "About Sankey"
+DataToVizLink: "data-to-viz.com/graph/sankey.html"
+url: "322-custom-colours-in-sankey-diagram"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+This page follows the [graph #321](321-introduction-to-interactive-sankey-diagram-2.html) that describes how to make an interactive [Sankey diagram](sankey-diagram.html) with the `networkD3` library. 
+
+Now that you know what kind of input allows to work with this library, you probably want to control the color of your nodes and connections. This is a bit tricky since you have to call it in `Javascript`, as described in the code below.
+
+
+# Custom color of individual nodes
+***
+
+<div class="row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+The first step is to create a colour links Javascript object. 
+
+For each node, attribute a color. Then call this object in the `colourScale` argument of `networkD3`.
+
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/sankeyColor1.html" height="440" width="100%" style="border:none;"></iframe></center>
+
+</div>
+
+</div>
+
+```{r, eval=FALSE}
+# Library
+library(networkD3)
+library(dplyr)
+
+# Make a connection data frame
+links <- data.frame(
+  source=c("group_A","group_A", "group_B", "group_C", "group_C", "group_E"), 
+  target=c("group_C","group_D", "group_E", "group_F", "group_G", "group_H"), 
+  value=c(2,3, 2, 3, 1, 3)
+)
+ 
+# From these flows we need to create a node data frame: it lists every entities involved in the flow
+nodes <- data.frame(
+  name=c(as.character(links$source), as.character(links$target)) %>% 
+    unique()
+)
+
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+ 
+# prepare color scale: I give one specific color for each node.
+my_color <- 'd3.scaleOrdinal() .domain(["group_A", "group_B","group_C", "group_D", "group_E", "group_F", "group_G", "group_H"]) .range(["blue", "blue" , "blue", "red", "red", "yellow", "purple", "purple"])'
+ 
+# Make the Network. I call my colour scale with the colourScale argument
+p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
+              Value = "value", NodeID = "name", colourScale=my_color)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyColor1.html"))
+```
+
+
+
+
+
+
+
+
+
+# Set color for groups of nodes
+***
+
+<div class="row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+You can color nodes following their attribution to a group. 
+
+Usually this information is stored in a column of the `node` data frame. You can use this information to create a JavaScript color attribution object and call it using the `Nodegroup` argument.
+
+
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/sankeyColor2.html" height="440" width="100%" style="border:none;"></iframe></center>
+
+</div>
+
+</div>
+
+```{r, eval=FALSE}
+# Add a 'group' column to the nodes data frame:
+nodes$group <- as.factor(c("a","a","a","a","a","b","b","b"))
+ 
+# Give a color for each group:
+my_color <- 'd3.scaleOrdinal() .domain(["a", "b"]) .range(["#69b3a2", "steelblue"])'
+ 
+# Make the Network
+p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
+              Value = "value", NodeID = "name", 
+              colourScale=my_color, NodeGroup="group")
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyColor2.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+# Set color of connections
+***
+
+<div class="row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+Following the same principle, you can control the color of each flows of your diagram:
+
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/sankeyColor3.html" height="440" width="100%" style="border:none;"></iframe></center>
+
+</div>
+
+</div>
+
+```{r, eval=FALSE}
+# Add a 'group' column to each connection:
+links$group <- as.factor(c("type_a","type_a","type_a","type_b","type_b","type_b"))
+ 
+# Add a 'group' column to each node. Here I decide to put all of them in the same group to make them grey
+nodes$group <- as.factor(c("my_unique_group"))
+ 
+# Give a color for each group:
+my_color <- 'd3.scaleOrdinal() .domain(["type_a", "type_b", "my_unique_group"]) .range(["#69b3a2", "steelblue", "grey"])'
+ 
+# Make the Network
+p <- sankeyNetwork(Links = links, Nodes = nodes, Source = "IDsource", Target = "IDtarget", 
+                   Value = "value", NodeID = "name", 
+                   colourScale=my_color, LinkGroup="group", NodeGroup="group")
+
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyColor3.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```

@@ -1,0 +1,184 @@
+---
+title: "Most basic Sankey Diagram"
+descriptionMeta: "Sankey Diagram can be built in R using the networkD3 package. This posts displays basic example, focusing on the different input formats that can be used."
+descriptionTop: "[Sankey Diagram](sankey-diagram.html) can be built in `R` using the `networkD3` package. This posts displays basic example, focusing on the different input formats that can be used."
+sectionText: "Sankey section"
+sectionLink: "sankey-diagram.html"
+DataToVizText: "About Sankey"
+DataToVizLink: "data-to-viz.com/graph/sankey.html"
+url: "321-introduction-to-interactive-sankey-diagram-2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+
+A [Sankey diagram](sankey-diagram.html) represents flows, i.e. weigthed connections going from one node to another. Input data can be stored in 2 different formats:
+
+- connection data frame (3 columns)
+- incidence matrix (square matrix)
+
+This post describes how to build a basic Sankey diagram from these 2 types of input.
+
+
+
+# From connection data frame
+***
+
+<div class="row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+A connection data frame lists all the connections one by one in a data frame. 
+
+Usually you have a `source` and a `target` column. You can add a third column that gives further information for each connection, like the value of the flow. 
+
+This is the format you need to use the `networkD3` library. Let’s build a connection data frame and represent it as a Sankey diagram:
+
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/sankeyBasic1.html" height="440" width="100%" style="border:none;"></iframe></center>
+
+</div>
+
+</div>
+
+```{r, eval=FALSE}
+# Library
+library(networkD3)
+library(dplyr)
+ 
+# A connection data frame is a list of flows with intensity for each flow
+links <- data.frame(
+  source=c("group_A","group_A", "group_B", "group_C", "group_C", "group_E"), 
+  target=c("group_C","group_D", "group_E", "group_F", "group_G", "group_H"), 
+  value=c(2,3, 2, 3, 1, 3)
+  )
+ 
+# From these flows we need to create a node data frame: it lists every entities involved in the flow
+nodes <- data.frame(
+  name=c(as.character(links$source), 
+  as.character(links$target)) %>% unique()
+)
+ 
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+ 
+# Make the Network
+p <- sankeyNetwork(Links = links, Nodes = nodes,
+              Source = "IDsource", Target = "IDtarget",
+              Value = "value", NodeID = "name", 
+              sinksRight=FALSE)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyBasic1.html"))
+```
+
+
+
+
+
+
+
+
+
+# From incidence matrix
+***
+
+<div class="row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+An incidence matrix is square or rectangle. 
+
+Row and column names are node names. The item in row x and column y represents the flow between x and y. In the Sankey diagram we represent all flows that are over 0. 
+
+Since the `networkD3` library expects a connection data frame, we will fist convert the dataset, and then re-use the code from above.
+
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+<center><iframe src="HtmlWidget/sankeyBasic2.html" height="440" width="100%" style="border:none;"></iframe></center>
+
+</div>
+
+</div>
+
+```{r, eval=FALSE}
+# Library
+library(networkD3)
+library(dplyr)
+ 
+# Create an incidence matrix. Usually the flow goes from the row names to the column names.
+# Remember that our connection are directed since we are working with a flow.
+set.seed(1)
+data <- matrix(sample( seq(0,40), 49, replace=T ), 7, 7)
+data[data < 35] <- 0
+colnames(data) = rownames(data) = c("group_A", "group_B", "group_C", "group_D", "group_E", "group_F", "group_G")
+
+# Transform it to connection data frame with tidyr from the tidyverse:
+links <- data %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var="source") %>% 
+  gather(key="target", value="value", -1) %>%
+  filter(value != 0)
+ 
+# From these flows we need to create a node data frame: it lists every entities involved in the flow
+nodes <- data.frame(
+  name=c(as.character(links$source), as.character(links$target)) %>% 
+    unique()
+  )
+ 
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+ 
+# Make the Network
+p <- sankeyNetwork(Links = links, Nodes = nodes,
+                     Source = "IDsource", Target = "IDtarget",
+                     Value = "value", NodeID = "name", 
+                     sinksRight=FALSE)
+
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyBasic2.html"))
+```
+
+
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```

@@ -1,0 +1,74 @@
+---
+title: "Sankey Diagram for energy consumption"
+descriptionMeta: "A great Sankey Diagram built with R and the networkD3 package. Show the flow of energy. Reproducible code provided"
+descriptionTop: "A great [Sankey Diagram](sankey-diagram.html) built with `R` and the `networkD3` package. Shows the flow of energy.  Chart is interactive: move nodes if necessary, hover links for more information."
+sectionText: "Sankey section"
+sectionLink: "sankey-diagram.html"
+DataToVizText: "About Sankey"
+DataToVizLink: "data-to-viz.com/graph/sankey.html"
+url: "323-sankey-diagram-with-the-networkd3-library"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 50px">
+
+
+
+<center><iframe src="HtmlWidget/sankeyEnergy.html" height="640" width="100%" style="border:none;"></iframe></center>
+
+
+Here is an example of [Sankey diagram](sankey-diagram.html) applied to a real data set. Original dataset is available [here](https://cdn.rawgit.com/christophergandrud/networkD3/master/JSONdata/energy.json). 
+
+This chart is made using the [networkD3 library](sankey-diagram.html), and comes from its [documentation](https://christophergandrud.github.io/networkD3/).
+
+
+```{r, eval=FALSE}
+# Load package
+library(networkD3)
+ 
+# Load energy projection data
+URL <- "https://cdn.rawgit.com/christophergandrud/networkD3/master/JSONdata/energy.json"
+Energy <- jsonlite::fromJSON(URL)
+
+ 
+# Now we have 2 data frames: a 'links' data frame with 3 columns (from, to, value), and a 'nodes' data frame that gives the name of each node.
+head( Energy$links )
+head( Energy$nodes )
+ 
+# Thus we can plot it
+p <- sankeyNetwork(Links = Energy$links, Nodes = Energy$nodes, Source = "source",
+              Target = "target", Value = "value", NodeID = "name",
+              units = "TWh", fontSize = 12, nodeWidth = 30)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/sankeyEnergy.html"))
+```
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```
