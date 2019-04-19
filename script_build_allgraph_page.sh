@@ -1,5 +1,5 @@
 ##
-# A script that parse all the pages of the d3 graph gallery to build the all graph page
+# A script that parse all the pages of the R graph gallery to build the all graph page
 ##
 
 
