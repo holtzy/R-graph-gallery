@@ -14,17 +14,17 @@
     </script>
 
     <meta charset="utf-8">
-    <title>Hierarchical edge bundling &#124; the D3 Graph Gallery</title>
+    <title>Hierarchical edge bundling &#124; the R Graph Gallery</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Hierarchical edge bundling with Javascript and D3.js: from the most basic example to highly customized examples.">
-    <meta name="keywords" content="Data,Dataviz,Datavisualization,Javascript,D3,D3.js,sankey, flow chart">
+    <meta name="description" content="How to build hierarchical edge bundling with R and the ggraph package: a set of basic examples with explanation and reproducible code.">
+    <meta name="keywords" content="Data,Dataviz,Datavisualization,R,Hierarchical,Edge,bundling">
     <meta name="author" content="Yan Holtz">
     <link rel="icon" href="img/logo/R_single_small.png">
 
-    <meta property="og:title" content="Area Chart &#124; the D3 Graph Gallery">
+    <meta property="og:title" content="Hierarchical edge bundling &#124; the R Graph Gallery">
     <meta property="og:image" content="img/overview_RGG.png">
-    <meta property="og:description" content="Hierarchical edge bundling with Javascript and D3.js: from the most basic example to highly customized examples.">
+    <meta property="og:description" content="How to build hierarchical edge bundling with R and the ggraph package: a set of basic examples with explanation and reproducible code.">
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -94,7 +94,7 @@ $(function(){
         </li>
       </ul>
       <br><br>
-      <p style="max-width: 700px; margin: auto"><a href="https://www.data-to-viz.com/graph/edge_bundling.html">Hierarchical edge bundling</a> allows to visualize <u>adjacency relations</u> between entities organized in a <u>hierarchy</u>. The idea is to <u>bundle</u> the adjacency edges together to <u>decrease the clutter</u> usually observed in complex networks. Learn more about this kind of chart in <a href="https://www.data-to-viz.com/graph/edge_bundling.html">data-to-viz.com</a>, or visit the examples below to implement it in d3.js.</p>
+      <p style="max-width: 700px; margin: auto"><a href="https://www.data-to-viz.com/graph/edge_bundling.html">Hierarchical edge bundling</a> allows to visualize <u>adjacency relations</u> between entities organized in a <u>hierarchy</u>. The idea is to <u>bundle</u> the adjacency edges together to <u>decrease the clutter</u> usually observed in complex networks. The <code>ggraph</code> package is the best tool to build this kind of chart in R.</p>
   </div>
 </header>
 
@@ -122,43 +122,79 @@ $(function(){
 <section class="bg" id="portfolio" style="padding-top: 10px">
   <div class="container">
 
-    <div class="mySeryTitle">Step by step</div>
+    <div class="mySeryTitle">What is hierarchical edge bundling.</div>
     <hr>
     <p>Before trying to implement hierarchical edge bundling, it is crucial to know <a href="https://www.data-to-viz.com/graph/edge_bundling.html">how this kind of chart works</a>. It is crucial to understand that input data is composed by i/ a hierary and ii/ a list of links between elements of the hierarchy.</p>
     <div id="portfolio-items" class="row">
+      <div class="col-md-4 col-sm-6 portfolio-item">
+        <a class="portfolio-link" href="309-intro-to-hierarchical-edge-bundling.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <p>Start with a hierarchical network</p>
+              <hr>
+              <p class="explanation_portfolio">Hierarchical Edge Bundling is based on a hierarchy. An original node gives underlying nodes and so on. Final nodes are called leaves, displayed around the circle. </p>
+            </div>
+          </div>
+          <img class="img-fluid  imgOfPortfolio" src="img/graph/309-intro-to-hierarchical-edge-bundling.png" alt="">
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6 portfolio-item">
+        <a class="portfolio-link" href="309-intro-to-hierarchical-edge-bundling.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <p>Draw a connection</p>
+              <hr>
+              <p class="explanation_portfolio">The second required level is connection, stored in another dataset. Leaves are connected with curves instead of straight lines.</p>
+            </div>
+          </div>
+          <img class="img-fluid  imgOfPortfolio" src="img/graph/309-intro-to-hierarchical-edge-bundling2.png" alt="">
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6 portfolio-item">
+        <a class="portfolio-link" href="309-intro-to-hierarchical-edge-bundling.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <p>Most Basic Edge Bundling</p>
+              <hr>
+              <p class="explanation_portfolio">This is the most basic hierarchical edge bundling you can build. It displays many connection between leaves.</p>
+            </div>
+          </div>
+          <img class="img-fluid  imgOfPortfolio" src="img/graph/309-intro-to-hierarchical-edge-bundling3.png" alt="">
+        </a>
+      </div>
     </div>
 
-    <br><br>
+    <br><br><br>
 
-    <div class="mySeryTitle">Selection of blocks</div>
+    <div class="mySeryTitle">Input data.</div>
     <hr>
-    <p>A few blocks with more complicated codes to showcase what's possible to do with hierarchical edge bundling.</a>
-    <div id="portfolio-items" class="row">
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="https://bl.ocks.org/d3noob/06e72deea99e7b4859841f305f63ba85">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Application to the flare dataset</p>
-              <hr>
-              <p class="explanation_portfolio">Probably the most famous example of hierarchical edge bundling.</p>
-            </div>
-          </div>
-          <img class="img-fluid showBlock" src="img/block/block_hierarchicaledgebundlingFlare.png" alt="Hierarchical edge bundling">
-        </a>
+    <div class = "row">
+      <div class = "col-md-4  col-sm-12"><p>You need at least 2 inputs for hierarchical edge bundling: </p>
+        <ul>
+          <li>A hierarchical network structure, also called tree</li>
+          <li>An adjacency matrix that describes connections between some nodes of the tree</li>
+        </ul>
       </div>
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="https://bl.ocks.org/sjengle/2e58e83685f6d854aa40c7bc546aeb24">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Flight Paths Edge Bundling</p>
-              <hr>
-              <p class="explanation_portfolio">Apply edge bundling technique on a connection map.</p>
-            </div>
-          </div>
-          <img class="img-fluid showBlock" src="img/block/block_connectionmapBundle.png" alt="Hierarchical edge bundling">
-        </a>
+      <div class = "col-md-4  col-sm-12">
+        <p>Hierarchical network data frame:</p>
+        <img src="img/other/Adjacency_Connection_2col.png"></img>
+      </div>
+      <div class = "col-md-4  col-sm-12 align-self-center">
+        <p>Connections data frame:</p>
+        <img src="img/other/Hierarchical_network_2col.png"></img>
       </div>
     </div>
+
+    <br><br><br>
+
+    <div class="mySeryTitle">Node and Connection color</div>
+    <hr>
+
+
+    <br><br><br>
+
+    <div class="mySeryTitle">Leave labels</div>
+    <hr>
 
 
  </div>
@@ -227,7 +263,7 @@ $(function(){
       <div class="captionPortfolio">Arc diagram</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bundle.html">
+      <a class="portfolio-link"  href="hierarchical-edge-bundling">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
