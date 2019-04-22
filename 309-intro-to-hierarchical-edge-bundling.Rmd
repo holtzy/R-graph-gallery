@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Hierarchical Edge Bundling with R"
 descriptionMeta: "This post defines what hierarchical edge bundling is. It provides a basic implementation using R and the ggraph library."
-descriptionTop: "This post defines what [hierarchical edge bundling](hierarchical-edge-bundling.html) is. It provides a basic implementation using `R` and the `ggraph` library."
+descriptionTop: "This post defines what [hierarchical edge bundling](hierarchical-edge-bundling.html) is. It provides a basic implementation using `R` and the `ggraph` library. For an in depth explanation, visit [data-to-viz.com](https://www.data-to-viz.com/caveat/overplotting.html)"
 sectionText: "More examples"
 sectionLink: "hierarchical-edge-bundling.html"
 DataToVizText: "Data to viz"
@@ -36,8 +36,9 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 <div class = "row">
 
-<div class = "col-md-4  col-sm-12">
+<div class = "col-md-4  col-sm-12" align-self-center>
 
+<br>
 
 - A hierarchical network structure, also called tree
 - An adjacency matrix that describes connections between some nodes of the tree
@@ -47,18 +48,18 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 <div class = "col-md-4  col-sm-12">
 
-Hierarchical network data frame:
+<span>Hierarchical network data frame:</span>
 
-<img src="img/other/Adjacency_Connection_2col.png"></img>
+<img src="img/other/Adjacency_Connection_2col.png" style="padding-top:0px; margin-top:0px"></img>
 
 </div>
 
-
-<div class = "col-md-4  col-sm-12 align-self-center">
+  
+<div class = "col-md-4  col-sm-12">
 
 Connections data frame:
 
-<img src="img/other/Hierarchical_network_2col.png"></img>
+<img src="img/other/Hierarchical_network_2col.png" style="padding-top:0px; margin-top:0px"></img>
 
 </div>
 
@@ -93,7 +94,7 @@ vertices <- data.frame(name = unique(c(as.character(hierarchy$from), as.characte
 
 <br><br>
 
-A hierarchic-al structure is a network structure. Thus, we can visualise it with the `igraph` or the `ggraph` library quite easily, like described in the [network section](network.html) of the gallery.
+A hierarchical structure is a network structure. Thus, we can visualise it with the `igraph` or the `ggraph` library quite easily, like described in the [network section](network.html) of the gallery.
 
 ```{r out.width = c("33%", "33%", "33%"), fig.height=7, fig.show='hold'}
 # Create a graph object with the igraph library
@@ -119,15 +120,21 @@ ggraph(mygraph, layout = 'dendrogram', circular = TRUE) +
 # Add a few connections
 ***
 
-Now, let’s add a second input to our data: connections. Suppose that your nodes 18, 20 and 30 are connected to the nodes 19, 50 and 70 respectively. An obvious solution to represent this link could be to add a straight line (left). The hierarchical edge bundling method does almost that. But it curves the lines to make in sort it follows the edges of our structure (right). This method proposes a ‘tension’ parameters which controls how much we want to curve the lines.
+Now, let’s add a second input to our data: connections. Suppose that nodes 18, 20 and 30 are connected to nodes 19, 50 and 70 respectively. 
+
+An obvious solution to represent this link could be to add a straight line (left). The hierarchical edge bundling method does almost that. But it curves the lines to make thelm follow the edges of our structure (right). 
+
+This method offers a `tension` parameters which controls how much we want to curve the lines.
 
 
 ```{r out.width = c("50%", "50%"), fig.height=7, fig.show='hold'}
+# left: What happens if connections are represented with straight lines
 ggraph(mygraph, layout = 'dendrogram', circular = TRUE) + 
   geom_edge_diagonal(alpha=0.1) +
   geom_conn_bundle(data = get_con(from = c(18,20,30), to = c(19, 50, 70)), alpha=1, width=1, colour="skyblue", tension = 0) +
   theme_void()
  
+# right: using the bundle method (tension = 1)
 ggraph(mygraph, layout = 'dendrogram', circular = TRUE) + 
   geom_edge_diagonal(alpha=0.1) +
   geom_conn_bundle(data = get_con(from = c(18,20,30), to = c(19, 50, 70)), alpha=1, width=1, colour="skyblue", tension = 1) +
@@ -137,15 +144,23 @@ ggraph(mygraph, layout = 'dendrogram', circular = TRUE) +
 
 # Hierarchical Edge Bundling
 ***
+Usually connections are stored in another data frame, here called `connect`. We have to pass it to `ggraph` to automatically plot all the connections. You get a hierarchical edge bundling chart.
+
+<u>Note</u>: `ggraph` expect nodes to be called following their id. Thus, it is necessary to get them using the `match()` function.
 
 ```{r out.width = c("50%", "50%"), fig.height=7, fig.show='hold'}
 # create a dataframe with connection between leaves (individuals)
-all_leaves=paste("subgroup", seq(1,100), sep="_")
-connect=rbind( data.frame( from=sample(all_leaves, 100, replace=T) , to=sample(all_leaves, 100, replace=T)), data.frame( from=sample(head(all_leaves), 30, replace=T) , to=sample( tail(all_leaves), 30, replace=T)), data.frame( from=sample(all_leaves[25:30], 30, replace=T) , to=sample( all_leaves[55:60], 30, replace=T)), data.frame( from=sample(all_leaves[75:80], 30, replace=T) , to=sample( all_leaves[55:60], 30, replace=T)) )
+all_leaves <- paste("subgroup", seq(1,100), sep="_")
+connect <- rbind( 
+  data.frame( from=sample(all_leaves, 100, replace=T) , to=sample(all_leaves, 100, replace=T)), 
+  data.frame( from=sample(head(all_leaves), 30, replace=T) , to=sample( tail(all_leaves), 30, replace=T)), 
+  data.frame( from=sample(all_leaves[25:30], 30, replace=T) , to=sample( all_leaves[55:60], 30, replace=T)), 
+  data.frame( from=sample(all_leaves[75:80], 30, replace=T) , to=sample( all_leaves[55:60], 30, replace=T)) 
+  )
  
 # The connection object must refer to the ids of the leaves:
-from = match( connect$from, vertices$name)
-to = match( connect$to, vertices$name)
+from <- match( connect$from, vertices$name)
+to <- match( connect$to, vertices$name)
  
 # plot
 ggraph(mygraph, layout = 'dendrogram', circular = TRUE) + 
@@ -165,7 +180,7 @@ ggraph(mygraph, layout = 'dendrogram', circular = TRUE) +
 # Conclusion
 ***
 
-Here we are, that’s a good first hierarchical edge bundling visualisation! Now, go to the next level and learn how to custom this figure.
+This blogpost defined what hierarchical edge bundling is, and demonstrates how to build a basic one with `R` and `ggraph`. Now, go to the next level and learn how to [customize](hierarchical-edge-bundling.html) this figure.
 
 
 <!-- Close container -->

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
+
+
+
+
 <head>
 <meta charset="utf-8">
 <title>Introduction to Hierarchical Edge Bundling with R &#8211; the R Graph Gallery</title>
@@ -35,9 +40,7 @@
 </head>
 
 
-<style>
-  code > span.kw { color: #007020 !important; font-weight: bold; } /* Keyword */
-</style>
+
 
 
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
@@ -140,7 +143,7 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post defines what <a href="hierarchical-edge-bundling.html">hierarchical edge bundling</a> is. It provides a basic implementation using <code>R</code> and the <code>ggraph</code> library.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">This post defines what <a href="hierarchical-edge-bundling.html">hierarchical edge bundling</a> is. It provides a basic implementation using <code>R</code> and the <code>ggraph</code> library. For an in depth explanation, visit <a href="https://www.data-to-viz.com/caveat/overplotting.html">data-to-viz.com</a></p></center>
       <div style="text-align:center">
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='hierarchical-edge-bundling.html'>More examples</a>
          <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/caveat/overplotting.html'>Data to viz</a>
@@ -170,19 +173,20 @@
 <hr />
 <p><a href="hierarchical-edge-bundling.html">Hierarchical Edge Bundling</a> is a data visualisation method allowing to check connections between leaves of a hierarchical network. It requires two inputs:</p>
 <div class="row">
-<div class="col-md-4 col-sm-12">
+<div class="col-md-4 col-sm-12" align-self-center="">
+<p><br></p>
 <ul>
 <li>A hierarchical network structure, also called tree</li>
 <li>An adjacency matrix that describes connections between some nodes of the tree</li>
 </ul>
 </div>
 <div class="col-md-4 col-sm-12">
-<p>Hierarchical network data frame:</p>
-<p><img src="img/other/Adjacency_Connection_2col.png"></img></p>
+<p><span>Hierarchical network data frame:</span></p>
+<p><img src="img/other/Adjacency_Connection_2col.png" style="padding-top:0px; margin-top:0px"></img></p>
 </div>
-<div class="col-md-4 col-sm-12 align-self-center">
+<div class="col-md-4 col-sm-12">
 <p>Connections data frame:</p>
-<p><img src="img/other/Hierarchical_network_2col.png"></img></p>
+<p><img src="img/other/Hierarchical_network_2col.png" style="padding-top:0px; margin-top:0px"></img></p>
 </div>
 </div>
 <h1 id="visualizing-the-hierarchy">Visualizing the hierarchy</h1>
@@ -202,7 +206,7 @@
 <a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># create a vertices data.frame. One line per object of our hierarchy, giving features of nodes.</span></a>
 <a class="sourceLine" id="cb1-12" data-line-number="12">vertices &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">name =</span> <span class="kw">unique</span>(<span class="kw">c</span>(<span class="kw">as.character</span>(hierarchy<span class="op">$</span>from), <span class="kw">as.character</span>(hierarchy<span class="op">$</span>to))) ) </a></code></pre></div>
 <p><br><br></p>
-<p>A hierarchic-al structure is a network structure. Thus, we can visualise it with the <code>igraph</code> or the <code>ggraph</code> library quite easily, like described in the <a href="network.html">network section</a> of the gallery.</p>
+<p>A hierarchical structure is a network structure. Thus, we can visualise it with the <code>igraph</code> or the <code>ggraph</code> library quite easily, like described in the <a href="network.html">network section</a> of the gallery.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Create a graph object with the igraph library</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">mygraph &lt;-<span class="st"> </span><span class="kw">graph_from_data_frame</span>( hierarchy, <span class="dt">vertices=</span>vertices )</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># This is a network object, you visualize it as a network like shown in the network section!</span></a>
@@ -221,42 +225,53 @@
 <p><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-2-1.png" width="33%" /><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-2-2.png" width="33%" /><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-2-3.png" width="33%" /></p>
 <h1 id="add-a-few-connections">Add a few connections</h1>
 <hr />
-<p>Now, let’s add a second input to our data: connections. Suppose that your nodes 18, 20 and 30 are connected to the nodes 19, 50 and 70 respectively. An obvious solution to represent this link could be to add a straight line (left). The hierarchical edge bundling method does almost that. But it curves the lines to make in sort it follows the edges of our structure (right). This method proposes a ‘tension’ parameters which controls how much we want to curve the lines.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> <span class="kw">c</span>(<span class="dv">18</span>,<span class="dv">20</span>,<span class="dv">30</span>), <span class="dt">to =</span> <span class="kw">c</span>(<span class="dv">19</span>, <span class="dv">50</span>, <span class="dv">70</span>)), <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">0</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_void</span>()</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"> </a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> <span class="kw">c</span>(<span class="dv">18</span>,<span class="dv">20</span>,<span class="dv">30</span>), <span class="dt">to =</span> <span class="kw">c</span>(<span class="dv">19</span>, <span class="dv">50</span>, <span class="dv">70</span>)), <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<p>Now, let’s add a second input to our data: connections. Suppose that nodes 18, 20 and 30 are connected to nodes 19, 50 and 70 respectively.</p>
+<p>An obvious solution to represent this link could be to add a straight line (left). The hierarchical edge bundling method does almost that. But it curves the lines to make thelm follow the edges of our structure (right).</p>
+<p>This method offers a <code>tension</code> parameters which controls how much we want to curve the lines.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># left: What happens if connections are represented with straight lines</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> <span class="kw">c</span>(<span class="dv">18</span>,<span class="dv">20</span>,<span class="dv">30</span>), <span class="dt">to =</span> <span class="kw">c</span>(<span class="dv">19</span>, <span class="dv">50</span>, <span class="dv">70</span>)), <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">0</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_void</span>()</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># right: using the bundle method (tension = 1)</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> <span class="kw">c</span>(<span class="dv">18</span>,<span class="dv">20</span>,<span class="dv">30</span>), <span class="dt">to =</span> <span class="kw">c</span>(<span class="dv">19</span>, <span class="dv">50</span>, <span class="dv">70</span>)), <span class="dt">alpha=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_void</span>()</a></code></pre></div>
 <p><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-3-1.png" width="50%" /><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-3-2.png" width="50%" /></p>
 <h1 id="hierarchical-edge-bundling">Hierarchical Edge Bundling</h1>
 <hr />
+<p>Usually connections are stored in another data frame, here called <code>connect</code>. We have to pass it to <code>ggraph</code> to automatically plot all the connections. You get a hierarchical edge bundling chart.</p>
+<p><u>Note</u>: <code>ggraph</code> expect nodes to be called following their id. Thus, it is necessary to get them using the <code>match()</code> function.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># create a dataframe with connection between leaves (individuals)</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">all_leaves=<span class="kw">paste</span>(<span class="st">&quot;subgroup&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">100</span>), <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">connect=<span class="kw">rbind</span>( <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves, <span class="dv">100</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>(all_leaves, <span class="dv">100</span>, <span class="dt">replace=</span>T)), <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(<span class="kw">head</span>(all_leaves), <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( <span class="kw">tail</span>(all_leaves), <span class="dv">30</span>, <span class="dt">replace=</span>T)), <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves[<span class="dv">25</span><span class="op">:</span><span class="dv">30</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( all_leaves[<span class="dv">55</span><span class="op">:</span><span class="dv">60</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T)), <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves[<span class="dv">75</span><span class="op">:</span><span class="dv">80</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( all_leaves[<span class="dv">55</span><span class="op">:</span><span class="dv">60</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T)) )</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"> </a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># The connection object must refer to the ids of the leaves:</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">from =<span class="st"> </span><span class="kw">match</span>( connect<span class="op">$</span>from, vertices<span class="op">$</span>name)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">to =<span class="st"> </span><span class="kw">match</span>( connect<span class="op">$</span>to, vertices<span class="op">$</span>name)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"> </a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co"># plot</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> from, <span class="dt">to =</span> to), <span class="dt">alpha=</span><span class="fl">0.2</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">0</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.05</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.05</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">  </span><span class="kw">theme_void</span>()</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"> </a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co"># plot</span></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> from, <span class="dt">to =</span> to), <span class="dt">alpha=</span><span class="fl">0.2</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="fl">0.9</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.05</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.05</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="st">  </span><span class="kw">theme_void</span>()</a></code></pre></div>
+<a class="sourceLine" id="cb4-2" data-line-number="2">all_leaves &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;subgroup&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">100</span>), <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">connect &lt;-<span class="st"> </span><span class="kw">rbind</span>( </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves, <span class="dv">100</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>(all_leaves, <span class="dv">100</span>, <span class="dt">replace=</span>T)), </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(<span class="kw">head</span>(all_leaves), <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( <span class="kw">tail</span>(all_leaves), <span class="dv">30</span>, <span class="dt">replace=</span>T)), </a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves[<span class="dv">25</span><span class="op">:</span><span class="dv">30</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( all_leaves[<span class="dv">55</span><span class="op">:</span><span class="dv">60</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T)), </a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  <span class="kw">data.frame</span>( <span class="dt">from=</span><span class="kw">sample</span>(all_leaves[<span class="dv">75</span><span class="op">:</span><span class="dv">80</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T) , <span class="dt">to=</span><span class="kw">sample</span>( all_leaves[<span class="dv">55</span><span class="op">:</span><span class="dv">60</span>], <span class="dv">30</span>, <span class="dt">replace=</span>T)) </a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  )</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co"># The connection object must refer to the ids of the leaves:</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">from &lt;-<span class="st"> </span><span class="kw">match</span>( connect<span class="op">$</span>from, vertices<span class="op">$</span>name)</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">to &lt;-<span class="st"> </span><span class="kw">match</span>( connect<span class="op">$</span>to, vertices<span class="op">$</span>name)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"> </a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># plot</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> from, <span class="dt">to =</span> to), <span class="dt">alpha=</span><span class="fl">0.2</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="dv">0</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.05</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.05</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="st">  </span><span class="kw">theme_void</span>()</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19"> </a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="co"># plot</span></a>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="st">  </span><span class="kw">geom_conn_bundle</span>(<span class="dt">data =</span> <span class="kw">get_con</span>(<span class="dt">from =</span> from, <span class="dt">to =</span> to), <span class="dt">alpha=</span><span class="fl">0.2</span>, <span class="dt">colour=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">tension =</span> <span class="fl">0.9</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.05</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.05</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24"><span class="st">  </span><span class="kw">theme_void</span>()</a></code></pre></div>
 <p><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-4-1.png" width="50%" /><img src="309-intro-to-hierarchical-edge-bundling_files/figure-html/unnamed-chunk-4-2.png" width="50%" /></p>
 <h1 id="conclusion">Conclusion</h1>
 <hr />
-<p>Here we are, that’s a good first hierarchical edge bundling visualisation! Now, go to the next level and learn how to custom this figure.</p>
+<p>This blogpost defined what hierarchical edge bundling is, and demonstrates how to build a basic one with <code>R</code> and <code>ggraph</code>. Now, go to the next level and learn how to <a href="hierarchical-edge-bundling.html">customize</a> this figure.</p>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
