@@ -1,0 +1,41 @@
+// Return the alias of the query, if it exists. Return null otherwise.
+getAlias(index) {
+    var myKey = Object.keys(this.metadata)[index];
+    console.log('myKey is: ');
+    console.log(myKey);
+    var alias = this.metadata[Object.keys(this.metadata)[index]].alias;
+    console.log('alias is:');
+    console.log(alias);
+    return alias;
+
+    // return this.metadata &&
+    //     this.metadata[this.preTemplateQuery] &&
+    //     this.metadata[this.preTemplateQuery].alias
+    //     ? this.metadata[this.preTemplateQuery].alias
+    //     : null;
+}
+
+
+
+
+
+
+let countsOnly = true;
+typedTimeseriesData.forEach((tsData, tsIndex) => {
+    flatSeries = flatSeries.concat(tsData.seriesMetaData);
+    const timeIndex = tsData.getTimestampIndex(timeForValue);
+    if (tsData.dataType !== BAR_DATA) {
+        countsOnly = false;
+    }
+    //const alias = tsData.getAlias();
+    tsData.seriesMetaData.forEach((s, index) => {
+        const { key } = s;
+        keyToStats.set(key, tsData.getSeriesStats(index));
+        keyToValue.set(key, tsData.getSeriesValue(index, timeIndex));
+        keyToTSDataIndex.set(key, tsIndex);
+        const alias = tsData.getAlias(index);
+        if (alias) {
+            keyToAlias.set(key, alias);
+        }
+    });
+});
