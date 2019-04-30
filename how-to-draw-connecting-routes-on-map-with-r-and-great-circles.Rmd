@@ -1,0 +1,445 @@
+---
+title: "How to draw connecting routes on map with R"
+descriptionMeta: "This post explains how to draw connection lines between several locations on a map, using R. Method relies on the gcIntermediate function from the geosphere package. Instead of making straight lines, it draws the shortest routes, using great circles."
+descriptionTop: "This post explains how to draw connection lines between several locations on a map, using `R`. Method relies on the `gcIntermediate` function from the `geosphere` package. Instead of making straight lines, it draws the shortest routes, using [great circles](https://en.wikipedia.org/wiki/Great_circle)."
+sectionText: "Cartogram section"
+sectionLink: "cartogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/cartogram.html"
+url: "how-to-draw-connecting-routes-on-map-with-r-and-great-circles"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Draw an empty map
+***
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+Let's start by drawing a world map backgroud. Fortunately, the world shape is provided by the `maps` library. It can easily be plotted using the `map()` function that accepts a few arguments for customization.
+
+<u>Note</u>: visit the [background map](map.html) section if you want to discover more options to build map in `R`.
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode1, echo=FALSE, out.width = "100%", fig.height=4}
+# World map is available in the maps package
+library(maps)
+
+# No margin
+par(mar=c(0,0,0,0))
+
+# World map
+map('world',
+    col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,
+    mar=rep(0,4),border=0, ylim=c(-80,80) 
+)
+```
+
+</div>
+</div>
+
+```{r thecode1, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Add 3 cities
+***
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It's relatively straightforward to add circles at specific positions using the `points()` function. The hardest part is probably to find out the longitute and latitude of the cities you are interested in.
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=4}
+# Dplyr for data wrangling and pipe function
+library(dplyr)
+
+# Cities
+Buenos_aires <- c(-58,-34)
+Paris <- c(2,49)
+Melbourne <- c(145,-38)
+
+# Data frame
+data <- rbind(Buenos_aires, Paris, Melbourne) %>% 
+  as.data.frame()
+colnames(data) <- c("long","lat")
+
+# Show the cities on the map
+map('world',
+    col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,
+    mar=rep(0,4),border=0, ylim=c(-80,80) 
+)
+points(x=data$long, y=data$lat, col="slateblue", cex=3, pch=20)
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+#  Show connection between cities
+***
+
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+Now we can connect cities drawing the shortest route between them. This is done using great circles, what gives a better visualization than using straight lines. 
+
+The `geosphere` package provides the `gcIntermediate()` function that computes the path. This path can then be plotted using the `lines()` function.
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=4}
+# Load geosphere
+library(geosphere)
+
+# Background map
+map('world',
+    col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,
+    mar=rep(0,4),border=0, ylim=c(-80,80) 
+)
+
+# Dot for cities
+points(x=data$long, y=data$lat, col="slateblue", cex=3, pch=20)
+
+# Compute the connection between Buenos Aires and Paris
+inter <- gcIntermediate(Paris,  Buenos_aires, n=50, addStartEnd=TRUE, breakAtDateLine=F)
+
+# Show this connection
+lines(inter, col="slateblue", lwd=2)
+ 
+# Between Paris and Melbourne
+inter <- gcIntermediate(Melbourne,  Paris, n=50, addStartEnd=TRUE, breakAtDateLine=F)             
+lines(inter, col="slateblue", lwd=2)
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Correcting gcIntermediate
+***
+
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+Using the exact same method between Melbourne and Buenos Aires gives a pretty disapointing result as shown here. 
+
+Indeed, there is a long horizontal line that appears, when we expect the connection to be done on the other side of the globe (and thus invisible)
+
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
+# Load geosphere
+library(geosphere)
+
+# Background map
+map('world',
+    col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,
+    mar=rep(0,4),border=0, ylim=c(-80,80) 
+)
+
+# Dot for cities
+points(x=data$long, y=data$lat, col="slateblue", cex=3, pch=20)
+
+# Compute the connection between Buenos Aires and Paris
+inter <- gcIntermediate(Melbourne,  Buenos_aires, n=50, addStartEnd=TRUE, breakAtDateLine=F)
+
+# Show this connection
+lines(inter, col="slateblue", lwd=2)
+ 
+```
+</div>
+</div>
+
+
+
+
+
+What happens is that `gcintermediate` follows the shortest path, which means it will go east from Australia until the date line, break the line and come back heading East from the pacific to South America. 
+
+Because we do not want to see the horizontal line, we need to plot this connection in 2 steps. To do so we can use the following function, which breaks the line in 2 sections when the distance between 2 points is longer than 180 degrees:
+
+```{r}
+# A function to plot connections
+plot_my_connection=function( dep_lon, dep_lat, arr_lon, arr_lat, ...){
+	inter <- gcIntermediate(c(dep_lon, dep_lat), c(arr_lon, arr_lat), n=50, addStartEnd=TRUE, breakAtDateLine=F)             
+	inter=data.frame(inter)
+	diff_of_lon=abs(dep_lon) + abs(arr_lon)
+	if(diff_of_lon > 180){
+		lines(subset(inter, lon>=0), ...)
+		lines(subset(inter, lon<0), ...)
+	}else{
+		lines(inter, ...)
+		}
+	}
+```
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+Let's apply this function to plot the link between Melbourne and Buenos Aires. Better, isn't it?
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode5, echo=FALSE, out.width = "100%", fig.height=4}
+
+# Background map
+map('world',col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,mar=rep(0,4),border=0, ylim=c(-80,80) )
+
+# Circles for cities
+points(x=data$long, y=data$lat, col="slateblue", cex=3, pch=20)
+ 
+# Connections
+plot_my_connection(Paris[1], Paris[2], Melbourne[1], Melbourne[2], col="slateblue", lwd=2)
+plot_my_connection(Buenos_aires[1], Buenos_aires[2], Melbourne[1], Melbourne[2], col="slateblue", lwd=2)
+plot_my_connection(Buenos_aires[1], Buenos_aires[2], Paris[1], Paris[2], col="slateblue", lwd=2)
+
+```
+</div>
+</div>
+
+
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  Apply it to several pairs of cities
+***
+
+
+If we want to plot many connections, it is totally doable to build a `for` loop that draws them one by one. 
+
+Moreover, note the use of the `text` function to add city names.
+
+
+```{r thecode6, echo=FALSE, out.width = "80%", fig.height=4, fig.align="center"}
+# Create dataset
+data <- rbind(
+	Buenos_aires=c(-58,-34),
+	Paris=c(2,49),
+	Melbourne=c(145,-38),
+	Saint.Petersburg=c(30.32, 59.93),
+	Abidjan=c(-4.03, 5.33),
+	Montreal=c(-73.57, 45.52),
+	Nairobi=c(36.82, -1.29),
+	Salvador=c(-38.5, -12.97)
+	)  %>% as.data.frame()
+colnames(data)=c("long","lat")
+
+# Generate all pairs of coordinates
+all_pairs <- cbind(t(combn(data$long, 2)), t(combn(data$lat, 2))) %>% as.data.frame()
+colnames(all_pairs) <- c("long1","long2","lat1","lat2")
+
+# background map
+par(mar=c(0,0,0,0))
+map('world',col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,mar=rep(0,4),border=0, ylim=c(-80,80) )
+ 
+# add every connections:
+for(i in 1:nrow(all_pairs)){
+	plot_my_connection(all_pairs$long1[i], all_pairs$lat1[i], all_pairs$long2[i], all_pairs$lat2[i], col="skyblue", lwd=1)
+	}
+ 
+# add points and names of cities
+points(x=data$long, y=data$lat, col="slateblue", cex=2, pch=20)
+text(rownames(data), x=data$long, y=data$lat,  col="slateblue", cex=1, pos=4)
+
+```
+
+
+
+```{r thecode6, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# An alternative using the greatCircle function
+***
+
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+This is the method suggested by the [Simply Statistics](http://simplystatistics.tumblr.com/post/14568185310/an-r-function-to-map-your-twitter-followers) Blog to draw a twitter connection map. 
+
+The idea is to calculate the whole great circle, and keep only the part that stays in front of the map, never going behind it.
+
+</div>
+
+
+<div class = "col-md-7  col-sm-12">
+
+```{r thecode7, echo=FALSE, out.width = "100%", fig.height=4}
+# A function that keeps the good part of the great circle, by Jeff Leek:
+getGreatCircle <- function(userLL,relationLL){
+  tmpCircle = greatCircle(userLL,relationLL, n=200)
+  start = which.min(abs(tmpCircle[,1] - data.frame(userLL)[1,1]))
+  end = which.min(abs(tmpCircle[,1] - relationLL[1]))
+  greatC = tmpCircle[start:end,]
+  return(greatC)
+}
+ 
+# background map
+map('world',col="#f2f2f2", fill=TRUE, bg="white", lwd=0.05,mar=rep(0,4),border=0, ylim=c(-80,80) )
+
+# map 3 connections:
+great <- getGreatCircle(Paris, Melbourne)
+lines(great, col="skyblue", lwd=2)
+great <- getGreatCircle(Buenos_aires, Melbourne)
+lines(great, col="skyblue", lwd=2)
+great <- getGreatCircle(Paris, Buenos_aires)
+lines(great, col="skyblue", lwd=2)
+
+# City names and dots
+points(x=data$long, y=data$lat, col="slateblue", cex=3, pch=20)
+text(rownames(data), x=data$long, y=data$lat,  col="slateblue", cex=1, pos=4)
+```
+</div>
+</div>
+
+
+
+```{r thecode7, eval=FALSE}
+```
+
+
+
+
+
+
+# Conclusion
+***
+
+Note that the [R graph gallery](https://www.r-graph-gallery.com) offers heaps of other [map examples](map.html) made with `R`. It also offers a whole section dedicated to [connection maps](connection-map.html).
+
+You can follow the gallery on [Twitter](https://twitter.com/R_Graph_Gallery) to be aware or recent updates.
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
