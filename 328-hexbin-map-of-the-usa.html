@@ -197,13 +197,12 @@
 <a class="sourceLine" id="cb1-15" data-line-number="15"></a>
 <a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># Show it</span></a>
 <a class="sourceLine" id="cb1-17" data-line-number="17"><span class="kw">plot</span>(spdf)</a></code></pre></div>
-<h1 id="ggplot-and-state-name"><code>ggplot</code> and state name</h1>
+<h1 id="ggplot2-and-state-name"><code>ggplot2</code> and state name</h1>
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>The geospatial object has a <strong>data slot</strong>: an attached data frame that provides several information for each region. It is called <code>spdf@data</code> here.</p>
-<p>We need to add a new column to this data frame. This column will provide the population per state, available at <code>.csv</code> format <a href="https://www.r-graph-gallery.com/wp-content/uploads/2018/01/pop_US.csv">here</a>.</p>
-<p>We can thus use the <code>cartogram</code> library to distort the size of each state (=hexagon), proportionally to this column. The new geospatial object we get can be drawn with the same <code>plot</code> function.</p>
+<p>It is totally doable to plot this geospatial object using <code>ggplot2</code> and its <code>geom_polygon()</code> function, but we first need to <code>fortify</code> it using the <code>broom</code> package.</p>
+<p>Moreover, the <code>rgeos</code> package is used here to compute the centroid of each region thanks to the <code>gCentroid</code> function.</p>
 </div>
 <div class="col-md-6 col-sm-12">
 <p><img src="328-hexbin-map-of-the-usa_files/figure-html/thecode2-1.png" width="100%" /></p>
@@ -224,6 +223,82 @@
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>centers, <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>y, <span class="dt">label=</span>id)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb2-14" data-line-number="14"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre></div>
+<h1 id="basic-choropleth">Basic choropleth</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Now you probably want to adjust the color of each hexagon, according to the value of a specific variable (we call it a <a href="chloropleth-map.html">choropleth map</a>).</p>
+<p>In this post I suggest to represent the number of wedding per thousand people. The data have been found <a href="https://www.cdc.gov/nchs/nvss/marriage-divorce.html">here</a>, and stored on a clean format <a href="https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv">here</a>.</p>
+<p>Let’s start by loading this information and represent its distribution:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="328-hexbin-map-of-the-usa_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Load mariage data</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;,&quot;</span>, <span class="dt">na.strings=</span><span class="st">&quot;---&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># Distribution of the marriage rate?</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">data <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>y_<span class="dv">2015</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;#69b3a2&#39;</span>, <span class="dt">color=</span><span class="st">&#39;white&#39;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">30</span>))</a></code></pre></div>
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Most of the state have between 5 and 10 weddings per 1000 inhabitants, but there are 2 outliers with high values (16 and 32).</p>
+<p>Let’s represent this information on a map. We have a column with the state id in both the geospatial and the numerical datasets. So we can merge both information and plot it.</p>
+<p>Note the use of the <code>trans = &quot;log&quot;</code> option in the color scale to decrease the effect of the 2 outliers.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="328-hexbin-map-of-the-usa_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Merge geospatial and numerical information</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">spdf_fortified &lt;-<span class="st"> </span>spdf_fortified <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">left_join</span>(. , data, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>=<span class="st">&quot;state&quot;</span>)) </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"> </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Make a first chloropleth map</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span>  y_<span class="dv">2015</span>, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">trans =</span> <span class="st">&quot;log&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre></div>
+<h1 id="customized-hexbin-choropleth-map">Customized hexbin choropleth map</h1>
+<hr />
+<p>Here is a final version after applying a few customization:</p>
+<ul>
+<li>Use handmade binning for the colorscale with <code>scale_fill_manual</code></li>
+<li>Use <code>viridis</code> for the color palette</li>
+<li>Add custom legend and title</li>
+<li>Change background color</li>
+</ul>
+<p><img src="328-hexbin-map-of-the-usa_files/figure-html/thecode5-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Prepare binning</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">spdf_fortified<span class="op">$</span>bin &lt;-<span class="st"> </span><span class="kw">cut</span>( spdf_fortified<span class="op">$</span>y_<span class="dv">2015</span> , <span class="dt">breaks=</span><span class="kw">c</span>(<span class="kw">seq</span>(<span class="dv">5</span>,<span class="dv">10</span>), <span class="ot">Inf</span>), <span class="dt">labels=</span><span class="kw">c</span>(<span class="st">&quot;5-6&quot;</span>, <span class="st">&quot;6-7&quot;</span>, <span class="st">&quot;7-8&quot;</span>, <span class="st">&quot;8-9&quot;</span>, <span class="st">&quot;9-10&quot;</span>, <span class="st">&quot;10+&quot;</span> ), <span class="dt">include.lowest =</span> <span class="ot">TRUE</span> )</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># Prepare a color scale coming from the viridis color palette</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="kw">library</span>(viridis)</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">my_palette &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">magma</span>(<span class="dv">8</span>))[<span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>,<span class="op">-</span><span class="dv">8</span>)]</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"> </a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co"># plot</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> bin, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data=</span>centers, <span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>y, <span class="dt">label=</span>id), <span class="dt">color=</span><span class="st">&quot;white&quot;</span>, <span class="dt">size=</span><span class="dv">3</span>, <span class="dt">alpha=</span><span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">scale_fill_manual</span>( </a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    <span class="dt">values=</span>my_palette, </a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    <span class="dt">name=</span><span class="st">&quot;Wedding per 1000 people in 2015&quot;</span>, </a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">    <span class="dt">guide =</span> <span class="kw">guide_legend</span>( <span class="dt">keyheight =</span> <span class="kw">unit</span>(<span class="dv">3</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">keywidth=</span><span class="kw">unit</span>(<span class="dv">12</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">label.position =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">title.position =</span> <span class="st">&#39;top&#39;</span>, <span class="dt">nrow=</span><span class="dv">1</span>) </a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="st">  </span><span class="kw">ggtitle</span>( <span class="st">&quot;A map of marriage rates, state by state&quot;</span> ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">    <span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>),</a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">    <span class="dt">text =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">&quot;#22211d&quot;</span>),</a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">    <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>), </a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">    <span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>), </a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">    <span class="dt">legend.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">22</span>, <span class="dt">hjust=</span><span class="fl">0.5</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.4</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">  )</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
