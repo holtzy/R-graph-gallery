@@ -1,0 +1,151 @@
+---
+title: "Hexbin map in R: an example with US states"
+descriptionMeta: "This post describes how to build a hexbin map, with input data available at geojson format. It provides a ste-by-step explanation and reproducible code."
+descriptionTop: "This post describes how to build a [hexbin map](hexbin-map.html). It is based on a `geojson` file providing the boundaries of us states as hexagons."
+sectionText: "Hexbin map section"
+sectionLink: "hexbin-map.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/hexbinmap.html"
+url: "328-hexbin-map-of-the-usa"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Basic hexbin map
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The first step is to build a basic [hexbin map](hexbin-map.html) of the US. Note that the gallery dedicates a [whole section](hexbin-map.html) to this kind of map.
+
+Hexagones boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `geojson_read()` function. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(tidyverse)
+library(geojsonio)
+library(RColorBrewer)
+library(rgdal)
+
+# Download the Hexagones boundaries at geojson format here: https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
+
+# Load this file. (Note: I stored in a folder called DATA)
+spdf <- geojson_read("DATA/us_states_hexgrid.geojson.json",  what = "sp")
+
+# Bit of reformating
+spdf@data = spdf@data %>%
+  mutate(google_name = gsub(" \\(United States\\)", "", google_name))
+
+# Show it
+plot(spdf)
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# `ggplot` and state name
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The geospatial object has a **data slot**: an attached data frame that provides several information for each region. It is called `spdf@data` here.
+
+We need to add a new column to this data frame. This column will provide the population per state, available at `.csv` format [here](https://www.r-graph-gallery.com/wp-content/uploads/2018/01/pop_US.csv).
+
+We can thus use the `cartogram` library to distort the size of each state (=hexagon), proportionally to this column. The new geospatial object we get can be drawn with the same `plot` function.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+
+# I need to 'fortify' the data to be able to show it with ggplot2 (we need a data frame format)
+library(broom)
+spdf@data = spdf@data %>% mutate(google_name = gsub(" \\(United States\\)", "", google_name))
+spdf_fortified <- tidy(spdf, region = "google_name")
+
+# Calculate the centroid of each hexagon to add the label:
+library(rgeos)
+centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+ 
+# Now I can plot this shape easily as described before:
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="skyblue", color="white") +
+  geom_text(data=centers, aes(x=x, y=y, label=id)) +
+  theme_void() +
+  coord_map()
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
