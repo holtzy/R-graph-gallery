@@ -86,19 +86,67 @@ plot(spdf)
 
 
 
-# `ggplot` and state name
+# `ggplot2` and state name
 ***
 
 <div class = "row">
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The geospatial object has a **data slot**: an attached data frame that provides several information for each region. It is called `spdf@data` here.
+It is totally doable to plot this geospatial object using `ggplot2` and its `geom_polygon()` function, but we first need to `fortify` it using the `broom` package.
 
-We need to add a new column to this data frame. This column will provide the population per state, available at `.csv` format [here](https://www.r-graph-gallery.com/wp-content/uploads/2018/01/pop_US.csv).
+Moreover, the `rgeos` package is used here to compute the centroid of each region thanks to the `gCentroid` function.
 
-We can thus use the `cartogram` library to distort the size of each state (=hexagon), proportionally to this column. The new geospatial object we get can be drawn with the same `plot` function.
+</div>
 
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+
+# I need to 'fortify' the data to be able to show it with ggplot2 (we need a data frame format)
+library(broom)
+spdf@data = spdf@data %>% mutate(google_name = gsub(" \\(United States\\)", "", google_name))
+spdf_fortified <- tidy(spdf, region = "google_name")
+
+# Calculate the centroid of each hexagon to add the label:
+library(rgeos)
+centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+ 
+# Now I can plot this shape easily as described before:
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="skyblue", color="white") +
+  geom_text(data=centers, aes(x=x, y=y, label=id)) +
+  theme_void() +
+  coord_map()
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Basic choropleth
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Now you probably want to adjust the color of each hexagon, according to the value of a specific variable (we call it a [choropleth map](chloropleth-map.html)). 
+
+In this post I propose to represent the number of wedding per thousand people. The data have been found here, and stored in the gallery. Let’s start by loading this information and represent its distribution:
 </div>
 
 
