@@ -1,0 +1,215 @@
+---
+title: "Geospatial data manipulation in R"
+descriptionMeta: "Map data are stored in a very specific geospatial format in R. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
+descriptionTop: "[Map data](maps.html) are stored in a very specific geospatial format in `R`. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
+sectionText: "Background map section"
+sectionLink: "map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/map.html"
+url: "169-170-basic-manipulation-of-shapefiles"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Get a geospatial object
+***
+
+The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [map](maps.html) section for possibilities.
+
+Let's get a geospatial object from a shape file available [here](http://thematicmapping.org/downloads/world_borders.php). This step is extensively described in [this post](168-load-a-shape-file-into-r.html) in case you're not familiar with it.
+
+```{r, eval=FALSE}
+# Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
+# You now have it in your current working directory, have a look!
+
+# Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
+system("unzip DATA/world_shape_file.zip")
+#  -- > You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)
+```
+
+<br>
+
+And let's load it in R
+
+```{r}
+# Read this shape file with the rgdal library. 
+library(rgdal)
+my_spdf <- readOGR( 
+  dsn= paste0(getwd(),"/DATA/world_shape_file/") , 
+  layer="TM_WORLD_BORDERS_SIMPL-0.3",
+  verbose=FALSE
+)
+
+# -- > Now you have a Spdf object (spatial polygon data frame). You can start doing maps!
+```
+
+
+
+
+
+
+
+
+
+
+
+# Select a region {#select}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+You can filter the geospatial object to plot only a subset of the regions. The following code keeps only Africa and plot it.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
+# Keep only data concerning Africa
+africa <- my_spdf[my_spdf@data$REGION==2 , ]
+
+# Plot africa
+par(mar=c(0,0,0,0))
+plot(africa , xlim=c(-20,60) , ylim=c(-40,35), col="steelblue", lwd=0.5 )
+```
+
+</div>
+</div>
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+# Simplify the geospatial object {#simplify}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It's a common task to *simplify* the geospatial object. Basically, it decreases the border precision which results in a lighter object that will be plotted faster.
+
+The `rgeos` package offers the `gSimplify()` function to makes the simplification. Play with the `tol` argument to control simplification rate.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode6, echo=FALSE, out.width = "100%", fig.height=4}
+# Simplification with rgeos
+library("rgeos")
+africaSimple <- gSimplify(africa, tol = 4, topologyPreserve = TRUE)
+
+# Plot it
+par(mar=c(0,0,0,0))
+plot(africaSimple , xlim=c(-20,60) , ylim=c(-40,35), col="#59b2a3", lwd=0.5 )
+```
+
+</div>
+</div>
+
+```{r thecode6, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Compute region centroid  {#centroid}
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Another common task is to compute the centroid of each region to add labels. This is doable using the `gCentroid()` function of the `rgeos` package.
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode7, echo=FALSE, out.width = "100%", fig.height=4}
+# Load the rgeos library
+library(rgeos)
+
+# The gCentroid function computes the centroid of each region:
+# gCentroid(africa, byid=TRUE)
+
+# select big countries only
+africaBig <- africa[which(africa@data$AREA>75000), ]
+
+# Small manipulation to put it in a dataframe:
+centers <- cbind.data.frame(data.frame(gCentroid(africaBig, byid=TRUE), id=africaBig@data$FIPS))
+
+# Show it on the map?
+par(mar=c(0,0,0,0))
+plot(africa , xlim=c(-20,60) , ylim=c(-40,35), lwd=0.5 )
+text(centers$x, centers$y, centers$id, cex=.9, col="#69b3a2")
+```
+
+</div>
+</div>
+
+```{r thecode7, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```

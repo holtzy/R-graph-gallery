@@ -1,0 +1,169 @@
+---
+title: "Open and Plot Geojson files in R"
+descriptionMeta: "Geojson files are a common way to store geospatial data. This post explains how to read it with R and the geojsonio package, and how to plot it in base R or with ggplot2."
+descriptionTop: "Geojson files are a common way to store geospatial data. This post explains how to read it with `R` and the `geojsonio` package, and how to plot it in base R or with `ggplot2`."
+sectionText: "Background map section"
+sectionLink: "map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/map.html"
+url: "325-background-map-from-geojson-format-in-r"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+
+
+
+If you did not find the geospatial data you need in existing R packages (see the [map section](maps.html)), you need to find this information elsewhere on the web. 
+
+It will often be stored as a `.geomJSON` format. This post explains how to read it.
+
+<u>Note</u>: if you found a `shapefile`, read [this post](168-load-a-shape-file-into-r.html) instead.
+
+
+
+
+
+
+
+
+
+
+# Find and download a `.geoJSON` file
+***
+
+You need to dig the internet to find the geoJSON file you are interested in. For instance, [this URL](https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson) provides a file containing french region boundaries.
+
+You can load it in R with:
+
+```{r, cache=TRUE}
+# Let's read the jeoJson file that is stored on the web with the geojsonio library:
+library(geojsonio)
+spdf <- geojson_read("https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson",  what = "sp")
+```
+
+<br>
+
+That's it! You now have a geospatial object called `spdf`. I strongly advise to read [this post](169-170-basic-manipulation-of-shapefiles) to learn how to manipulate it.
+
+Just in case, here is how to plot it in base R and with `ggplot2`.
+
+
+
+
+
+
+
+# Plot it with `base R`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The basic `plot()` function knows how to plot a geospatial object. Thus you just need to pass it `spdf` and add a couple of options to customize the output.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
+# Select only the region #6
+spdf@data$mystate = substr( spdf@data$code, 1, 2)
+spdf_region_6 = spdf[ spdf@data$mystate == "06" , ]
+
+# plot the selected are with sp
+library(sp)
+par(mar=c(0,0,0,0))
+plot(spdf_region_6, col="grey")
+```
+
+</div>
+</div>
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Plot it with `ggplot2`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is totally possible (and advised imo) to build the map with [ggplot2](ggplot2.html). However, ggplot2 takes as input data frames, not geospatial data.
+
+The geospatial object thus needs to be transformed using the `tidy()` function of the `broom` package.
+
+Once the data frame is created, it is plotted using the `geom_polygon()` function as described below.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode5, echo=FALSE, out.width = "100%", fig.height=4}
+# 'fortify' the data to get a dataframe format required by ggplot2
+library(broom)
+spdf_fortified <- tidy(spdf_region_6)
+
+# Plot it
+library(ggplot2)
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="#69b3a2", color="white") +
+  theme_void() +
+  coord_map()
+```
+</div>
+</div>
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
