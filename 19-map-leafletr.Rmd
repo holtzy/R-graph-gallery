@@ -1,0 +1,101 @@
+---
+title: "Interactive bubble map with R and leaflet"
+descriptionMeta: "This post explains how to build a bubble map with R and the leaflet package. It shows a set of earthquakes and their intensity in the Pacific Ocean. Reproducible code is provided."
+descriptionTop: "This post explains how to build a [bubble map](bubble-map.html) with R and the `leaflet` package. It shows a set of earthquakes and their intensity in the Pacific Ocean."
+sectionText: "Bubble map section"
+sectionLink: "bubble-map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/bubblemap.html"
+url: "19-map-leafletr"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 50px" >
+
+
+
+`leaflet` is a R package allowing to build interactive maps. This post follows the [leaflet introduction](179-show-a-map-with-leaflet-r.html) and explain how to build a [bubble map](bubble-map.html).
+
+The input required to build such a map is a list of GPS coordinates, with a numeric value attributed to each location to control the bubble size and color.
+
+Markers are added using the `addCircleMarkers()` function, and bubble color is mapped to a color scale build with binning.
+
+<br>
+
+<center><iframe src="./HtmlWidget/bubblemapQuakes.html" height="400" width="100%" style="border:none;"></iframe></center>
+
+<br>
+
+```{r, eval=FALSE}
+# Library
+library(leaflet)
+
+# load example data (Fiji Earthquakes) + keep only 100 first lines
+data(quakes)
+quakes <-  head(quakes, 100)
+
+# Create a color palette with handmade bins.
+mybins <- seq(4, 6.5, by=0.5)
+mypalette <- colorBin( palette="YlOrBr", domain=quakes$mag, na.color="transparent", bins=mybins)
+
+# Prepare the text for the tooltip:
+mytext <- paste(
+   "Depth: ", quakes$depth, "<br/>", 
+   "Stations: ", quakes$stations, "<br/>", 
+   "Magnitude: ", quakes$mag, sep="") %>%
+  lapply(htmltools::HTML)
+
+# Final Map
+m <- leaflet(quakes) %>% 
+  addTiles()  %>% 
+  setView( lat=-27, lng=170 , zoom=4) %>%
+  addProviderTiles("Esri.WorldImagery") %>%
+  addCircleMarkers(~long, ~lat, 
+    fillColor = ~mypalette(mag), fillOpacity = 0.7, color="white", radius=8, stroke=FALSE,
+    label = mytext,
+    labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")
+  ) %>%
+  addLegend( pal=mypalette, values=~mag, opacity=0.9, title = "Magnitude", position = "bottomright" )
+
+m 
+
+# save the widget in a html file if needed.
+# library(htmlwidgets)
+# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/bubblemapQuakes.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```

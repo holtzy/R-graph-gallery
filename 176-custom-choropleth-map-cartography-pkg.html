@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Customized choropleth map with the Cartography package &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="The cartography package is a great alternative to make maps with R. This post explains how to build a customized choropleth map using it, with explanation and reproducible code.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Customized choropleth map with the Cartography package" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="The cartography package is a great alternative to make maps with R. This post explains how to build a customized choropleth map using it, with explanation and reproducible code." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/176-custom-choropleth-map-cartography-pkg.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Customized choropleth map with the Cartography package</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">The <code>cartography</code> package is a great alternative to make maps with R. This post explains how to build a customized <a href="choropleth-map.html">choropleth</a> map using it, with explanation and reproducible code.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='choropleth-map.html'>Choropleth section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/choropleth.html'>About Maps</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container" style="padding-top: 80px">
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>cartography</code> package is a very good alternative to the <a href="bubble-map.html">other tools</a> presented in the gallery for building maps.</p>
+<p>It notably allows to:</p>
+<ul>
+<li>display a legend with embedded circles</li>
+<li>add data sources on the bottom of the chart</li>
+<li>show north / south</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["emp2008"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["act2008"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["unemp2008"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["birth_2008"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["death_2008"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["gdppps1999"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["gdppps2008"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["pop1999"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["pop2008"],"name":[10],"type":["dbl"],"align":["right"]}],"data":[{"1":"AT11","2":"137.0","3":"142.1","4":"5.1","5":"2215","6":"3067","7":"4139","8":"5695","9":"276732","10":"281185","_rn_":"383"},{"1":"AT12","2":"792.3","3":"820.3","4":"28.0","5":"14085","6":"15616","7":"28799","8":"40998","9":"1530745","10":"1596538","_rn_":"384"},{"1":"AT13","2":"784.6","3":"841.4","4":"56.7","5":"17375","6":"15702","7":"51431","8":"68722","9":"1542252","10":"1674909","_rn_":"385"},{"1":"AT21","2":"263.4","3":"272.8","4":"9.4","5":"4718","6":"5385","7":"10886","8":"14632","9":"560938","10":"560322","_rn_":"789"},{"1":"AT22","2":"586.5","3":"607.0","4":"20.5","5":"10255","6":"11725","7":"23436","8":"32457","9":"1183374","10":"1204947","_rn_":"1192"},{"1":"AT31","2":"714.1","3":"733.4","4":"19.2","5":"13540","6":"11966","7":"30468","8":"43300","9":"1366578","10":"1406664","_rn_":"368"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><img src="176-custom-choropleth-map-cartography-pkg_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Cartography Library</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(cartography)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(sp)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Upload data attached with the package.</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">data</span>(nuts2006)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"> </a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co"># Now we have a spdf file (shape file) called nuts2.spdf with shape of european regions.</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># We also have a dataframe with information concerning every region.Both object have a first column &quot;id&quot; that makes the link between them.</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">head</span>(nuts2.df)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"> </a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co"># Annual growth per region</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">nuts2.df<span class="op">$</span>cagr &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span>(((nuts2.df<span class="op">$</span>pop2008<span class="op">/</span>nuts2.df<span class="op">$</span>pop1999)<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">9</span>)) <span class="op">-</span><span class="st">  </span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"> </a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="co"># Build a color palette</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">cols &lt;-<span class="st"> </span><span class="kw">carto.pal</span>(<span class="dt">pal1 =</span> <span class="st">&quot;green.pal&quot;</span>, <span class="dt">n1 =</span> <span class="dv">2</span>, <span class="dt">pal2 =</span> <span class="st">&quot;red.pal&quot;</span>, <span class="dt">n2 =</span> <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"> </a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="co"># plot backgroud shapes (sea and world)</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="kw">plot</span>(nuts0.spdf, <span class="dt">border =</span> <span class="ot">NA</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">bg =</span> <span class="st">&quot;#A6CAE0&quot;</span>)</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="kw">plot</span>(world.spdf, <span class="dt">col =</span> <span class="st">&quot;#E3DEBF&quot;</span>, <span class="dt">border =</span> <span class="ot">NA</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"> </a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="co"># Add annual growth</span></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="kw">choroLayer</span>(<span class="dt">spdf =</span> nuts2.spdf, <span class="dt">df =</span> nuts2.df, <span class="dt">var =</span> <span class="st">&quot;cagr&quot;</span>, </a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    <span class="dt">breaks =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">2.43</span>, <span class="dv">-1</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fl">3.1</span>), <span class="dt">col =</span> cols, </a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">    <span class="dt">border =</span> <span class="st">&quot;grey40&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">legend.pos =</span> <span class="st">&quot;right&quot;</span>, </a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">    <span class="dt">legend.title.txt =</span> <span class="st">&quot;taux de croissance</span><span class="ch">\n</span><span class="st">annuel moyen&quot;</span>, </a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">    <span class="dt">legend.values.rnd =</span> <span class="dv">2</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28"> </a>
+<a class="sourceLine" id="cb1-29" data-line-number="29"><span class="co"># Add borders</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"><span class="kw">plot</span>(nuts0.spdf, <span class="dt">border =</span> <span class="st">&quot;grey20&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb1-31" data-line-number="31"> </a>
+<a class="sourceLine" id="cb1-32" data-line-number="32"><span class="co"># Add titles, legend ...</span></a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"><span class="kw">layoutLayer</span>(<span class="dt">title =</span> <span class="st">&quot;Growth rate in Europe&quot;</span>, </a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">    <span class="dt">author =</span> <span class="st">&quot;cartography&quot;</span>, <span class="dt">sources =</span> <span class="st">&quot;Eurostat, 2008&quot;</span>, </a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">    <span class="dt">frame =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">scale =</span> <span class="ot">NULL</span>, <span class="dt">coltitle =</span> <span class="st">&quot;black&quot;</span>, </a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">    <span class="dt">south =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="chloropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

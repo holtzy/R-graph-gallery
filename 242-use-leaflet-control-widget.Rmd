@@ -1,0 +1,96 @@
+---
+title: "Use leaflet control widget"
+descriptionMeta: "This post explains how to build a bubble map with R and the leaflet package. It shows a set of earthquakes and their intensity in the Pacific Ocean. Reproducible code is provided."
+descriptionTop: "This post explains how to build a [bubble map](bubble-map.html) with R and the `leaflet` package. It shows a set of earthquakes and their intensity in the Pacific Ocean."
+sectionText: "Bubble map section"
+sectionLink: "bubble-map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/bubblemap.html"
+url: "242-use-leaflet-control-widget"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 50px" >
+
+
+
+`leaflet` is a R package allowing to build interactive maps. This post follows the [leaflet introduction](179-show-a-map-with-leaflet-r.html) and explain how to build a [bubble map](bubble-map.html).
+
+The input required to build such a map is a list of GPS coordinates, with a numeric value attributed to each location to control the bubble size and color.
+
+Markers are added using the `addCircleMarkers()` function, and bubble color is mapped to a color scale build with binning.
+
+<br>
+
+<center><iframe src="./HtmlWidget/bubblemapControl.html" height="400" width="100%" style="border:none;"></iframe></center>
+
+<br>
+
+```{r, eval=FALSE}
+# Load libraries
+library(leaflet)
+
+# Make data with several positions
+data_red <- data.frame(LONG=42+rnorm(10), LAT=23+rnorm(10), PLACE=paste("Red_place_",seq(1,10)))
+data_blue <- data.frame(LONG=42+rnorm(10), LAT=23+rnorm(10), PLACE=paste("Blue_place_",seq(1,10)))
+
+# Initialize the leaflet map:
+m <- leaflet() %>% 
+  setView(lng=42, lat=23, zoom=6 ) %>%
+
+  # Add two tiles
+  addProviderTiles("Esri.WorldImagery", group="background 1") %>%
+  addTiles(options = providerTileOptions(noWrap = TRUE), group="background 2") %>%
+
+  # Add 2 marker groups
+  addCircleMarkers(data=data_red, lng=~LONG , lat=~LAT, radius=8 , color="black",
+                   fillColor="red", stroke = TRUE, fillOpacity = 0.8, group="Red") %>%
+  addCircleMarkers(data=data_blue, lng=~LONG , lat=~LAT, radius=8 , color="black",
+                   fillColor="blue", stroke = TRUE, fillOpacity = 0.8, group="Blue") %>%
+
+  # Add the control widget
+  addLayersControl(overlayGroups = c("Red","Blue") , baseGroups = c("background 1","background 2"), 
+                   options = layersControlOptions(collapsed = FALSE))
+
+m
+
+# save the widget in a html file if needed.
+# library(htmlwidgets)
+# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/bubblemapControl.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```

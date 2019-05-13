@@ -1,0 +1,113 @@
+---
+title: "Customized choropleth map with the Cartography package"
+descriptionMeta: "The cartography package is a great alternative to make maps with R. This post explains how to build a customized choropleth map using it, with explanation and reproducible code."
+descriptionTop: "The `cartography` package is a great alternative to make maps with R. This post explains how to build a customized [choropleth](choropleth-map.html) map using it, with explanation and reproducible code."
+sectionText: "Choropleth section"
+sectionLink: "choropleth-map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/choropleth.html"
+url: "176-custom-choropleth-map-cartography-pkg"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `cartography` package is a very good alternative to the [other tools](bubble-map.html) presented in the gallery for building maps.
+
+It notably allows to:
+
+- display a legend with embedded circles
+- add data sources on the bottom of the chart
+- show north / south
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, fig.show="hold", fig.height=7, out.width="100%"}
+# Cartography Library
+library(cartography)
+library(sp)
+
+# Upload data attached with the package.
+data(nuts2006)
+ 
+# Now we have a spdf file (shape file) called nuts2.spdf with shape of european regions.
+# We also have a dataframe with information concerning every region.Both object have a first column "id" that makes the link between them.
+head(nuts2.df)
+ 
+# Annual growth per region
+nuts2.df$cagr <- 100 * (((nuts2.df$pop2008/nuts2.df$pop1999)^(1/9)) -  1)
+ 
+# Build a color palette
+cols <- carto.pal(pal1 = "green.pal", n1 = 2, pal2 = "red.pal", n2 = 4)
+ 
+# plot backgroud shapes (sea and world)
+plot(nuts0.spdf, border = NA, col = NA, bg = "#A6CAE0")
+plot(world.spdf, col = "#E3DEBF", border = NA, add = TRUE)
+ 
+# Add annual growth
+choroLayer(spdf = nuts2.spdf, df = nuts2.df, var = "cagr", 
+    breaks = c(-2.43, -1, 0, 0.5, 1, 2, 3.1), col = cols, 
+    border = "grey40", lwd = 0.5, legend.pos = "right", 
+    legend.title.txt = "taux de croissance\nannuel moyen", 
+    legend.values.rnd = 2, add = TRUE)
+ 
+# Add borders
+plot(nuts0.spdf, border = "grey20", lwd = 0.75, add = TRUE)
+ 
+# Add titles, legend ...
+layoutLayer(title = "Growth rate in Europe", 
+    author = "cartography", sources = "Eurostat, 2008", 
+    frame = TRUE, col = NA, scale = NULL, coltitle = "black", 
+    south = TRUE)
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```

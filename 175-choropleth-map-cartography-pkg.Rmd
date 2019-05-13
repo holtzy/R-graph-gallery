@@ -1,0 +1,140 @@
+---
+title: "Basic choropleth map with the Cartography package"
+descriptionMeta: "The cartography package is a great alternative to make maps with R. This post explains how to build a basic choropleth map using it, with explanation and reproducible code."
+descriptionTop: "The `cartography` package is a great alternative to make maps with R. This post explains how to build a basic [choropleth](choropleth-map.html) map using it, with explanation and reproducible code."
+sectionText: "Choropleth section"
+sectionLink: "choropleth-map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/choropleth.html"
+url: "175-choropleth-map-cartography-pkg"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+# Data provided in the library
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `cartography` package is a very good alternative to the [other tools](bubble-map.html) presented in the gallery for building maps.
+
+It notably allows to:
+
+- display a legend with embedded circles
+- add data sources on the bottom of the chart
+- show north / south
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, fig.show="hold", fig.height=6, out.width="100%"}
+# Use the cartography library to do the choropleth map
+library(cartography)
+
+# Load data
+data(nuts2006)
+
+# Build a choropleth
+choroLayer(spdf = nuts2.spdf, df = nuts2.df, var = "pop2008" , legend.pos = "right")
+title("Population in 2008")
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Data provided in a shape file
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `cartography` package is a very good alternative to the [other tools](bubble-map.html) presented in the gallery for building maps.
+
+It notably allows to:
+
+- display a legend with embedded circles
+- add data sources on the bottom of the chart
+- show north / south
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = c("100%"), fig.height=6}
+# Download the shape file from the web and unzip it:
+# download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="world_shape_file.zip")
+# system("unzip world_shape_file.zip")
+
+# Load it as a geospatial object in R
+library(rgdal)
+my_spdf <- readOGR( dsn= getwd() , layer="TM_WORLD_BORDERS_SIMPL-0.3", verbose=FALSE) 
+africa <- my_spdf[my_spdf@data$REGION==2 , ]
+
+africa@data$POP2005 <- as.numeric(africa@data$POP2005)
+
+# Use the cartography library to do the choropleth map
+library(cartography)
+choroLayer(spdf = africa, df = africa@data, var = "POP2005")
+title("Number of people living in Africa in 2005")
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
