@@ -1,0 +1,182 @@
+---
+title: "Dual Y axis in R"
+descriptionMeta: "This post explains how to build a line chart with dual Y axis with R. It show the evolution of 2 series, each line having its own Y axis. Reproducible code provided."
+descriptionTop: "This post explains how to build a [line chart](line-plot.html) with dual Y axis with R. It show the evolution of 2 series, each line having its own Y axis. Reproducible code provided."
+sectionText: "Line chart Section"
+sectionLink: "line-plot.html"
+DataToVizText: "About line chart"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "145-two-different-y-axis-on-the-same-plot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Warning
+***
+<p><b><span style="color: red;">Warning</span></b>: a dual Y axis line chart represents the evolution of 2 series, each plotted according to its own Y scale. This kind of chart <u>must</u> be avoided, since playing with Y axis limits can lead to completely different conclusions. Visit <a href="https://www.data-to-viz.com/caveats.html">data-to-viz</a> for more info.</p>
+
+
+# Usual line chart
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Let's start with an usual line chart displaying the evolution of 2 numeric variables.
+
+This kind of chart can be built using the `line()` function. But here the `xyplot` from the `latticeExtra` package is used (we'll need it later on.)
+
+One would argue that the exact evolution of the blue variable is hard to read. Another axis could be displayed to zoom on it. This is why the dual axis was born.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+#library
+library(latticeExtra)
+ 
+# create data
+set.seed(1)
+x <- 1:100
+var1 <- cumsum(rnorm(100))
+var2 <- var1^2
+data <- data.frame(x,var1,var2)
+ 
+ 
+# usual line chart
+xyplot(var1 + var2 ~ x, data, type = "l", col=c("steelblue", "#69b3a2") , lwd=2)
+ 
+```
+
+</div>
+</div>
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+# Dual Y axis line chart
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `doubleYScale()` function of the `latticeExtra` package can take 2 outputs of the `xyplot()` function to build a dual Y axis line chart.
+
+This chart is truly misleading: it is easy to conclude that both variables follow the same pattern what is totally wrong. Always double check what axis trully are on dual axis chart.
+
+Conclusion: don't do it!
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+#library
+library(latticeExtra)
+ 
+# create data
+set.seed(1)
+x <- 1:100
+var1 <- cumsum(rnorm(100))
+var2 <- var1^2
+data <- data.frame(x,var1,var2)
+ 
+ 
+# --> construct separate plots for each series
+obj1 <- xyplot(var1 ~ x, data, type = "l" , lwd=2, col="steelblue")
+obj2 <- xyplot(var2 ~ x, data, type = "l", lwd=2, col="#69b3a2")
+ 
+# --> Make the plot with second y axis:
+doubleYScale(obj1, obj2, add.ylab2 = TRUE, use.style=FALSE )
+
+```
+
+</div>
+</div>
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Add legend
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+If you stick to it, here is how to add a legend to the chart:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+#library
+library(latticeExtra)
+ 
+# create data
+set.seed(1)
+x <- 1:100
+var1 <- cumsum(rnorm(100))
+var2 <- var1^2
+data <- data.frame(x,var1,var2)
+ 
+ 
+# --> construct separate plots for each series
+obj1 <- xyplot(var1 ~ x, data, type = "l" , lwd=2)
+obj2 <- xyplot(var2 ~ x, data, type = "l", lwd=2)
+ 
+# --> Make the plot with second y axis AND legend:
+doubleYScale(obj1, obj2, text = c("obj1", "obj2") , add.ylab2 = TRUE)
+```
+
+</div>
+</div>
+
+
+```{r thecode3, eval=FALSE}
+```
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

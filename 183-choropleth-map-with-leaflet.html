@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Interactive choropleth map with R and leaflet &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post explains how to build an interactive choropleth map with R and the leaflet package.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Interactive choropleth map with R and leaflet" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="This post explains how to build an interactive choropleth map with R and the leaflet package." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/183-choropleth-map-with-leaflet.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Interactive choropleth map with R and leaflet</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build an interactive <a href="choropleth-map.html">choropleth map</a> with R and the <code>leaflet</code> package. A tooltip is available for each region on hover, and the map is zoomable.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='choropleth-map.html'>Choropleth section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/choropleth.html'>About Maps</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container" style="padding-top: 50px">
+<p><code>leaflet</code> is a R package allowing to build interactive maps. If you’re not familiar to it, have a look to this <a href="179-show-a-map-with-leaflet-r.html">leaflet introduction</a>. This post is a step-by-step tutorial leading to the following <a href="choropleth-map.html">choropleth map</a>. <br></p>
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet5.html" height="400" width="100%" style="border:none;">
+</iframe>
+</center>
+<p><br></p>
+<h1 id="find-download-and-load-geospatial-data">Find, Download and Load geospatial data</h1>
+<hr />
+<p><u>Note</u>: this step is described in detail <a href="168-load-a-shape-file-into-r.html">here</a>. Read it if you are not familiar with geospatial data management in R.</p>
+<p>The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from <a href="168-load-a-shape-file-into-r.html">shapefiles</a>, <a href="325-background-map-from-geojson-format-in-r.html">geojson files</a> or provided in a <a href="278-the-maps-library.html">R package</a>. See the <a href="maps.html">background map</a> section for possibilities.</p>
+<p>This tutorial uses a geospatial object stored in a shape file available <a href="http://thematicmapping.org/downloads/world_borders.php">here</a>. Start by downloading the file:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span> , <span class="dt">destfile=</span><span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># You now have it in your current working directory, have a look!</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre></div>
+<p><br></p>
+<p>And load it in R</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(rgdal)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">world_spdf &lt;-<span class="st"> </span><span class="kw">readOGR</span>( </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dsn=</span> <span class="kw">paste0</span>(<span class="kw">getwd</span>(),<span class="st">&quot;/DATA/world_shape_file/&quot;</span>) , </a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">layer=</span><span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3&quot;</span>,</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">verbose=</span><span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># Clean the data object</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005[ <span class="kw">which</span>(world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005 <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)] =<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005 &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">as.character</span>(world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005)) <span class="op">/</span><span class="st"> </span><span class="dv">1000000</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre></div>
+<h1 id="default-choropleth">Default choropleth</h1>
+<hr />
+<p>It is now possible to draw a first <a href="choropleth-map.html">choropleth map</a>. Here are the main steps to follow:</p>
+<ul>
+<li>create a color palette thanks to the <code>colorNumeric()</code> function</li>
+<li>make the background map with <code>leaflet()</code>, <code>addTiles()</code> and <code>setView()</code></li>
+<li>use <code>addPolygons()</code> to add the shape of all country, with a color representing the number of people in the country.</li>
+</ul>
+<p>The resulting map is quite disapointing: China and India having very numerous population, all the variation between other countries gets hard to observe on the map.</p>
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet1.html" height="400" width="100%" style="border:none;">
+</iframe>
+</center>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Library</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(leaflet)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># Create a color palette for the map:</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">mypalette &lt;-<span class="st"> </span><span class="kw">colorNumeric</span>( <span class="dt">palette=</span><span class="st">&quot;viridis&quot;</span>, <span class="dt">domain=</span>world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005, <span class="dt">na.color=</span><span class="st">&quot;transparent&quot;</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">mypalette</span>(<span class="kw">c</span>(<span class="dv">45</span>,<span class="dv">43</span>))</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># Basic choropleth with leaflet?</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">m &lt;-<span class="st"> </span><span class="kw">leaflet</span>(world_spdf) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">  </span><span class="kw">addTiles</span>()  <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">  </span><span class="kw">setView</span>( <span class="dt">lat=</span><span class="dv">10</span>, <span class="dt">lng=</span><span class="dv">0</span> , <span class="dt">zoom=</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">  </span><span class="kw">addPolygons</span>( <span class="dt">fillColor =</span> <span class="op">~</span><span class="kw">mypalette</span>(POP2005), <span class="dt">stroke=</span><span class="ot">FALSE</span> )</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">m</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="co"># save the widget in a html file if needed.</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co"># library(htmlwidgets)</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co"># saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet1.html&quot;))</span></a></code></pre></div>
+<h1 id="visualize-the-numeric-variable">Visualize the numeric variable</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>In a choropleth map, each region has a color that represents the value of a numeric variable (population here).</p>
+<p>It is a good practice to check the distribution of this variable to understand what kind of color scale should be used. Using a <a href="hitsogram.html">histogram</a> is often a good option for that:</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="183-choropleth-map-with-leaflet_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># load ggplot2</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># Distribution of the population per country?</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">world_spdf<span class="op">@</span>data <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.numeric</span>(POP2005))) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;#69b3a2&#39;</span>, <span class="dt">color=</span><span class="st">&#39;white&#39;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Population (M)&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">theme_bw</span>()</a></code></pre></div>
+<h1 id="change-color-scale">Change color scale</h1>
+<hr />
+<p>There are several ways to translate a numeric variable to a palette of color. Leaflet offers 3 options:</p>
+<ul>
+<li>quantile with <code>colorQuantile</code></li>
+<li>numeric with <code>colorNumeric</code></li>
+<li>bin with <code>colorBin</code></li>
+</ul>
+<p>Results can be very different and the best option usually depends on the distribution of your input data.</p>
+Quantile
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet2.html" height="200" width="100%" style="border:none;">
+</iframe>
+</center>
+Numeric
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet3.html" height="200" width="100%" style="border:none;">
+</iframe>
+</center>
+Bins
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet4.html" height="200" width="100%" style="border:none;">
+</iframe>
+</center>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Color by quantile</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">m &lt;-<span class="st"> </span><span class="kw">leaflet</span>(world_spdf)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">addTiles</span>()  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">setView</span>( <span class="dt">lat=</span><span class="dv">10</span>, <span class="dt">lng=</span><span class="dv">0</span> , <span class="dt">zoom=</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">addPolygons</span>( <span class="dt">stroke =</span> <span class="ot">FALSE</span>, <span class="dt">fillOpacity =</span> <span class="fl">0.5</span>, <span class="dt">smoothFactor =</span> <span class="fl">0.5</span>, <span class="dt">color =</span> <span class="op">~</span><span class="kw">colorQuantile</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005) )</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">m</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"> </a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># Numeric palette</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">m &lt;-<span class="st"> </span><span class="kw">leaflet</span>(world_spdf)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">addTiles</span>()  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">setView</span>( <span class="dt">lat=</span><span class="dv">10</span>, <span class="dt">lng=</span><span class="dv">0</span> , <span class="dt">zoom=</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="st">  </span><span class="kw">addPolygons</span>( <span class="dt">stroke =</span> <span class="ot">FALSE</span>, <span class="dt">fillOpacity =</span> <span class="fl">0.5</span>, <span class="dt">smoothFactor =</span> <span class="fl">0.5</span>, <span class="dt">color =</span> <span class="op">~</span><span class="kw">colorNumeric</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005) )</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">m</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"> </a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="co"># Bin</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">m &lt;-<span class="st"> </span><span class="kw">leaflet</span>(world_spdf)<span class="op">%&gt;%</span><span class="st"> </span><span class="kw">addTiles</span>()  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">setView</span>( <span class="dt">lat=</span><span class="dv">10</span>, <span class="dt">lng=</span><span class="dv">0</span> , <span class="dt">zoom=</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">addPolygons</span>( <span class="dt">stroke =</span> <span class="ot">FALSE</span>, <span class="dt">fillOpacity =</span> <span class="fl">0.5</span>, <span class="dt">smoothFactor =</span> <span class="fl">0.5</span>, <span class="dt">color =</span> <span class="op">~</span><span class="kw">colorBin</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005) )</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">m</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="co"># save the widget in a html file if needed.</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="co"># library(htmlwidgets)</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co"># saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet2.html&quot;))</span></a></code></pre></div>
+<h1 id="customizied-leaflet-choropleth-map">Customizied leaflet choropleth map</h1>
+<hr />
+<p>In order to get a quality choropleth map, there are several improvements we need to apply:</p>
+<ul>
+<li>Add a legend with <code>addLegend()</code></li>
+<li>Change the color scale: binning is a good option here since it avoids to put too much weight on China and India</li>
+<li>Add a tooltip with <code>labelOptions</code>. When you hover a specific region, a box appears with custom text. This is very handy to add additional information to your map.</li>
+</ul>
+<p>Here is the result and the code:</p>
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet5.html" height="400" width="100%" style="border:none;">
+</iframe>
+</center>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># Create a color palette with handmade bins.</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">library</span>(RColorBrewer)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">mybins &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">50</span>,<span class="dv">100</span>,<span class="dv">500</span>,<span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">mypalette &lt;-<span class="st"> </span><span class="kw">colorBin</span>( <span class="dt">palette=</span><span class="st">&quot;YlOrBr&quot;</span>, <span class="dt">domain=</span>world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005, <span class="dt">na.color=</span><span class="st">&quot;transparent&quot;</span>, <span class="dt">bins=</span>mybins)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"> </a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co"># Prepare the text for tooltips:</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">mytext &lt;-<span class="st"> </span><span class="kw">paste</span>(</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="st">&quot;Country: &quot;</span>, world_spdf<span class="op">@</span>data<span class="op">$</span>NAME,<span class="st">&quot;&lt;br/&gt;&quot;</span>, </a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="st">&quot;Area: &quot;</span>, world_spdf<span class="op">@</span>data<span class="op">$</span>AREA, <span class="st">&quot;&lt;br/&gt;&quot;</span>, </a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="st">&quot;Population: &quot;</span>, <span class="kw">round</span>(world_spdf<span class="op">@</span>data<span class="op">$</span>POP2005, <span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">    <span class="dt">sep=</span><span class="st">&quot;&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="st">  </span><span class="kw">lapply</span>(htmltools<span class="op">::</span>HTML)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"> </a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co"># Final Map</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="kw">leaflet</span>(world_spdf) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="st">  </span><span class="kw">addTiles</span>()  <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="st">  </span><span class="kw">setView</span>( <span class="dt">lat=</span><span class="dv">10</span>, <span class="dt">lng=</span><span class="dv">0</span> , <span class="dt">zoom=</span><span class="dv">2</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="st">  </span><span class="kw">addPolygons</span>( </a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">    <span class="dt">fillColor =</span> <span class="op">~</span><span class="kw">mypalette</span>(POP2005), </a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">    <span class="dt">stroke=</span><span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">    <span class="dt">fillOpacity =</span> <span class="fl">0.9</span>, </a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">    <span class="dt">color=</span><span class="st">&quot;white&quot;</span>, </a>
+<a class="sourceLine" id="cb6-23" data-line-number="23">    <span class="dt">weight=</span><span class="fl">0.3</span>,</a>
+<a class="sourceLine" id="cb6-24" data-line-number="24">    <span class="dt">label =</span> mytext,</a>
+<a class="sourceLine" id="cb6-25" data-line-number="25">    <span class="dt">labelOptions =</span> <span class="kw">labelOptions</span>( </a>
+<a class="sourceLine" id="cb6-26" data-line-number="26">      <span class="dt">style =</span> <span class="kw">list</span>(<span class="st">&quot;font-weight&quot;</span> =<span class="st"> &quot;normal&quot;</span>, <span class="dt">padding =</span> <span class="st">&quot;3px 8px&quot;</span>), </a>
+<a class="sourceLine" id="cb6-27" data-line-number="27">      <span class="dt">textsize =</span> <span class="st">&quot;13px&quot;</span>, </a>
+<a class="sourceLine" id="cb6-28" data-line-number="28">      <span class="dt">direction =</span> <span class="st">&quot;auto&quot;</span></a>
+<a class="sourceLine" id="cb6-29" data-line-number="29">    )</a>
+<a class="sourceLine" id="cb6-30" data-line-number="30">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-31" data-line-number="31"><span class="st">  </span><span class="kw">addLegend</span>( <span class="dt">pal=</span>mypalette, <span class="dt">values=</span><span class="op">~</span>POP2005, <span class="dt">opacity=</span><span class="fl">0.9</span>, <span class="dt">title =</span> <span class="st">&quot;Population (M)&quot;</span>, <span class="dt">position =</span> <span class="st">&quot;bottomleft&quot;</span> )</a>
+<a class="sourceLine" id="cb6-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb6-33" data-line-number="33">m  </a>
+<a class="sourceLine" id="cb6-34" data-line-number="34">  </a>
+<a class="sourceLine" id="cb6-35" data-line-number="35"><span class="co"># save the widget in a html file if needed.</span></a>
+<a class="sourceLine" id="cb6-36" data-line-number="36"><span class="co"># library(htmlwidgets)</span></a>
+<a class="sourceLine" id="cb6-37" data-line-number="37"><span class="co"># saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet5.html&quot;))</span></a></code></pre></div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="chloropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
