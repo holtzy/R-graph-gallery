@@ -1,0 +1,98 @@
+---
+title: "Line chart with error envelop: ggplot2 and geom_ribbon()"
+descriptionMeta: "This post explains how to add an error envelop around a line chart using ggplot2 and the geom_ribbon() function."
+descriptionTop: "This post explains how to add an error envelop around a [line chart](line-plot.html) using `ggplot2` and the `geom_ribbon()` function."
+sectionText: "Line chart Section"
+sectionLink: "line-plot.html"
+DataToVizText: "About line chart"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "104-plot-lines-with-error-envelopes-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Basic line chart with `ggplot2` and `geom_line()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This graph has been made by [Alastair Sanderson](http://www.alastairsanderson.com/). You can have a look to his gallery [here](http://www.sr.bham.ac.uk/~ajrs/R/r-gallery.html).
+
+It shows mean temperature profiles and their error envelopes, using the [ggplot2](ggplot2.html) package and its `geom_ribbon()` function. 
+
+Note that `geom_ribbon` is used since upper and lower values of the envelop are available in the input data. As an alternative, the [geom_smooth](50-51-52-scatter-plot-with-ggplot2.html) function autamatically draw an error envelop using different statistical models.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=6}
+library(ggplot2)
+ 
+# Get the data from the web !
+CC <- read.table("http://www.sr.bham.ac.uk/~ajrs/papers/sanderson06/mean_Tprofile-CC.txt" ,  header=TRUE)
+nCC <- read.table("http://www.sr.bham.ac.uk/~ajrs/papers/sanderson06/mean_Tprofile-nCC.txt" , header=TRUE)
+CC$type <- "Cool core"
+nCC$type <- "Non-cool core"
+A <- rbind(CC, nCC)
+ 
+ 
+# Make the plot
+ggplot(data=A, aes(x=r.r500, y=sckT, ymin=sckT.lo, ymax=sckT.up, fill=type, linetype=type)) + 
+ geom_line() + 
+ geom_ribbon(alpha=0.5) + 
+ scale_x_log10() + 
+ scale_y_log10() + 
+ xlab(as.expression(expression( paste("Radius (", R[500], ")") ))) + 
+ ylab("Scaled Temperature")
+
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

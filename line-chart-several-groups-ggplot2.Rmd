@@ -1,0 +1,166 @@
+---
+title: "Multi groups line chart with ggplot2"
+descriptionMeta: "This post explains how to build a line chart that represents several groups with ggplot2. It provides several examples with explanation and reproducible code."
+descriptionTop: "This post explains how to build a [line chart](line-plot.html) that represents several groups with [ggplot2](ggplot2.html). It provides several examples with explanation and reproducible code."
+sectionText: "Line chart Section"
+sectionLink: "line-plot.html"
+DataToVizText: "About line chart"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "line-chart-several-groups-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Basic version
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+If you're not familiar with the `geom_line()` function, you should probably have a look to the [most basic line chart](line-chart-ggplot2.html) first.
+
+Here, the input data frame is composed by 3 columns:
+
+- An *ordered* numeric variable for the X axis
+- Another numeric variable for the Y axis
+- A categorical variable that specify the group of the observation
+
+The idea is to draw one line per group. This is doable by specifying a different color to each group with the `color` argument of `ggplot2`.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=6}
+# Libraries
+library(ggplot2)
+library(babynames) # provide the dataset: a dataframe called babynames
+library(dplyr)
+
+# Keep only 3 names
+don <- babynames %>% 
+  filter(name %in% c("Ashley", "Patricia", "Helen")) %>%
+  filter(sex=="F")
+  
+# Plot
+don %>%
+  ggplot( aes(x=year, y=n, group=name, color=name)) +
+    geom_line()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Customize the grouped line chart
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Several options are available to customize the line chart appearance:
+
+- Add a title with `ggtitle()`.
+- Change line style with arguments like `shape`, `size`, `color` and more.
+- Use the `viridis` package to get a nice color palette.
+- Custom the general theme with the `theme_ipsum()` function of the `hrbrthemes` package.
+
+More generally, visit the [ggplot2 section] for more ggplot2 related stuff.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=6}
+# Libraries
+library(ggplot2)
+library(babynames) # provide the dataset: a dataframe called babynames
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+
+# Keep only 3 names
+don <- babynames %>% 
+  filter(name %in% c("Ashley", "Patricia", "Helen")) %>%
+  filter(sex=="F")
+  
+# Plot
+don %>%
+  ggplot( aes(x=year, y=n, group=name, color=name)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Popularity of American names in the previous 30 years") +
+    theme_ipsum() +
+    ylab("Number of babies born")
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+# Notes
+***
+
+- Read more about line charts theory [here](https://www.data-to-viz.com/graph/line.html)
+- Be careful: a line chart with too many groups results in a [spaghetti chart](https://www.data-to-viz.com/caveat/spaghetti.html), which is a [bad practice](https://www.data-to-viz.com/caveats.html).
+- Visit [data-to-viz](https://www.data-to-viz.com) for line chart alternatives.
+ 
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
