@@ -8,21 +8,21 @@
 
 <head>
 <meta charset="utf-8">
-<title>Line chart with error envelop: ggplot2 and geom_ribbon() &#8211; the R Graph Gallery</title>
+<title>Area chart with base R &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to add an error envelop around a line chart using ggplot2 and the geom_ribbon() function.">
+<meta name="description" content="This post describes how to build an area chart using base R and the polygon function. Reproducible code is provided.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
 <link rel="icon" href="img/logo/R_single_small.png">
 
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Line chart with error envelop: ggplot2 and geom_ribbon()" />
+<meta property="og:title" content="Area chart with base R" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="This post explains how to add an error envelop around a line chart using ggplot2 and the geom_ribbon() function." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/104-plot-lines-with-error-envelopes-ggplot2.html" />
+<meta property="og:description" content="This post describes how to build an area chart using base R and the polygon function. Reproducible code is provided." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/165-basic-area-chart.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -118,7 +118,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Line chart with error envelop: ggplot2 and geom_ribbon()</h1></center>
+      <center><h1>Area chart with base R</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -143,10 +143,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to add an error envelop around a <a href="line-plot.html">line chart</a> using <code>ggplot2</code> and the <code>geom_ribbon()</code> function.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">This post describes how to build an <a href="area-chart.html">area chart</a> using base R and the <code>polygon()</code> function. See the <a href="area-chart.html">area chart</a> section for a <code>ggplot2</code> implementation.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='line-plot.html'>Line chart Section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/line.html'>About line chart</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='area-chart.html'>Area chart Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/area.html'>About area chart</a>
       </div>
   </div>
 </header>
@@ -173,32 +173,28 @@
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>This graph has been made by <a href="http://www.alastairsanderson.com/">Alastair Sanderson</a>. You can have a look to his gallery <a href="http://www.sr.bham.ac.uk/~ajrs/R/r-gallery.html">here</a>.</p>
-<p>It shows mean temperature profiles and their error envelopes, using the <a href="ggplot2.html">ggplot2</a> package and its <code>geom_ribbon()</code> function.</p>
-<p>Note that <code>geom_ribbon</code> is used since upper and lower values of the envelop are available in the input data. As an alternative, the <a href="50-51-52-scatter-plot-with-ggplot2.html">geom_smooth</a> function autamatically draw an error envelop using different statistical models.</p>
+<p>Base R also allows to build area charts thanks to the <code>polygon()</code> function. This functions requires 2 inputs: <code>x</code> and <code>y</code>.</p>
+<p>Note that extreme values of both are added at the beginning and at the end of each vectors to make sure the polygon is closed.</p>
 </div>
 <div class="col-md-6 col-sm-12">
-<p><img src="104-plot-lines-with-error-envelopes-ggplot2_files/figure-html/thecode-1.png" width="100%" /></p>
+<p><img src="165-basic-area-chart_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"> </a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># Get the data from the web !</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">CC &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;http://www.sr.bham.ac.uk/~ajrs/papers/sanderson06/mean_Tprofile-CC.txt&quot;</span> ,  <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">nCC &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;http://www.sr.bham.ac.uk/~ajrs/papers/sanderson06/mean_Tprofile-nCC.txt&quot;</span> , <span class="dt">header=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">CC<span class="op">$</span>type &lt;-<span class="st"> &quot;Cool core&quot;</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">nCC<span class="op">$</span>type &lt;-<span class="st"> &quot;Non-cool core&quot;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">A &lt;-<span class="st"> </span><span class="kw">rbind</span>(CC, nCC)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"> </a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"> </a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># Make the plot</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">ggplot</span>(<span class="dt">data=</span>A, <span class="kw">aes</span>(<span class="dt">x=</span>r.r500, <span class="dt">y=</span>sckT, <span class="dt">ymin=</span>sckT.lo, <span class="dt">ymax=</span>sckT.up, <span class="dt">fill=</span>type, <span class="dt">linetype=</span>type)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="st"> </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="st"> </span><span class="kw">geom_ribbon</span>(<span class="dt">alpha=</span><span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="st"> </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="st"> </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="st"> </span><span class="kw">xlab</span>(<span class="kw">as.expression</span>(<span class="kw">expression</span>( <span class="kw">paste</span>(<span class="st">&quot;Radius (&quot;</span>, R[<span class="dv">500</span>], <span class="st">&quot;)&quot;</span>) ))) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;Scaled Temperature&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create data</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="dt">x=</span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>), </a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="dt">y=</span><span class="kw">sample</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">15</span>),<span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Add line on top</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">plot</span>( data<span class="op">$</span>x , data<span class="op">$</span>y , <span class="dt">col=</span><span class="kw">rgb</span>(<span class="fl">0.2</span>,<span class="fl">0.1</span>,<span class="fl">0.5</span>,<span class="fl">0.9</span>) , <span class="dt">type=</span><span class="st">&quot;o&quot;</span> , <span class="dt">lwd=</span><span class="dv">3</span> , <span class="dt">xlab=</span><span class="st">&quot;&quot;</span> , <span class="dt">ylab=</span><span class="st">&quot;size&quot;</span> , <span class="dt">pch=</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Fill the area</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">polygon</span>( </a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  <span class="kw">c</span>(<span class="kw">min</span>(data<span class="op">$</span>x), data<span class="op">$</span>x , <span class="kw">max</span>(data<span class="op">$</span>x)) , </a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="kw">c</span>( <span class="kw">min</span>(data<span class="op">$</span>y) , data<span class="op">$</span>y , <span class="kw">min</span>(data<span class="op">$</span>y)) , </a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="dt">col=</span><span class="kw">rgb</span>(<span class="fl">0.2</span>,<span class="fl">0.1</span>,<span class="fl">0.5</span>,<span class="fl">0.2</span>) , <span class="dt">border=</span>F</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">)</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
