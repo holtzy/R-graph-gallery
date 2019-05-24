@@ -1,0 +1,166 @@
+---
+title: "Interactive area chart with R and plotly"
+descriptionMeta: "The plotly package allows to build interactive charts directly from R. Here is a application to area chart, with explanation and reproducible code."
+descriptionTop: "The `plotly` package allows to build interactive charts directly from `R`. Here is a application to [area chart](area-chart.html), using both the `plot_ly()` and `ggplotly()` functions."
+sectionText: "Area chart Section"
+sectionLink: "area-chart.html"
+DataToVizText: "About area chart"
+DataToVizLink: "data-to-viz.com/graph/area.html"
+url: "163-interactive-area-chart-plotly"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Using the `ggplotly()` function
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This post follows the previous [basic area chart](164-area-chart-ggplot2.html) built with [ggplot2](ggplot2.html).
+
+The idea is to turn the chart interactive:
+
+- You can zoom by selecting an area of interest
+- Hover the line to get exact time and value
+- Export to png
+- Slide axis
+- Double click to re-initialize.
+
+This is done thanks to the `ggplotly()` function of the `plotly` package that turn any `ggplot2` chart object interactive. 
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/ggplotlyAreachart.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# Usual area chart
+p <- data %>%
+  ggplot( aes(x=date, y=value)) +
+    geom_area(fill="#69b3a2", alpha=0.5) +
+    geom_line(color="#69b3a2") +
+    ggtitle("Evolution of Bitcoin price") +
+    ylab("bitcoin price ($)") +
+    theme_ipsum()
+
+# Turn it interactive with ggplotly
+p <- ggplotly(p)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/ggplotlyAreachart.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Using `plot_ly()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggplotly()` function above takes as input a ggplot2 chart and turn it interactive.
+
+But the `plotly` package also allows to build interactive charts using its own function: `plot_ly()`.
+
+<u>Pro</u>: it will allows a greater control of chart style. See the whole [API](https://plot.ly/r/reference/) for customization.
+
+<u>Con</u>: you have to learn a new API, although you probably already know `ggplot2`
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/plotlyAreachart.html" height="600" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# library
+library(plotly)
+ 
+# Create data
+var1 <- seq(1,8)
+var2 <- c(0,1,4,1,8,7,5,4)
+var3 <- c(7,8,4,2,1,2,0,1)
+
+# Area chart with 2 groups
+p <- plot_ly(x = var1, y = var2, type="scatter", mode="markers", fill = "tozeroy")
+p <- add_trace(p, x = var1, y = var3, type="scatter", mode="markers", fill = "tonexty")
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/plotlyAreachart.html"))
+```
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
