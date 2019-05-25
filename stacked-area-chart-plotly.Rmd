@@ -1,0 +1,120 @@
+---
+title: "Interactive stacked area chart with R and plotly"
+descriptionMeta: "The plotly package allows to build interactive charts directly from R. Here is a application to stacked area chart, with explanation and reproducible code."
+descriptionTop: "The `plotly` package allows to build interactive charts directly from `R`. Here is a application to [stacked area chart](stacked-area-graph.html), using both the `plot_ly()` and `ggplotly()` functions."
+sectionText: "Stacked area section"
+sectionLink: "stacked-area-graph.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/stackedarea.html"
+url: "stacked-area-chart-plotly"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Using the `ggplotly()` function
+***
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+This post follows the previous [basic stacked area chart](136-stacked-area-chart.html) built with [ggplot2](ggplot2.html).
+
+The idea is to turn the chart interactive:
+
+- You can zoom by selecting an area of interest
+- Hover the line to get exact time and value
+- Export to png
+- Slide axis
+- Double click to re-initialize.
+
+This is done thanks to the `ggplotly()` function of the `plotly` package that turn any `ggplot2` chart object interactive.
+
+</div>
+
+
+<div class = "col-md-8  col-sm-12">
+
+<center><iframe src="HtmlWidget/ggplotlyStackedareachart.html" height="600" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(babynames)
+library(viridis)
+library(hrbrthemes)
+library(plotly)
+
+# Load dataset from github
+data <- babynames %>% 
+  filter(name %in% c("Ashley", "Amanda", "Jessica",    "Patricia", "Linda", "Deborah",   "Dorothy", "Betty", "Helen")) %>%
+  filter(sex=="F")
+
+# Plot
+p <- data %>% 
+  ggplot( aes(x=year, y=n, fill=name, text=name)) +
+    geom_area( ) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(legend.position="none") +
+    ggtitle("Popularity of American names in the previous 30 years") +
+    theme_ipsum() +
+    theme(legend.position="none")
+
+# Turn it interactive
+p <- ggplotly(p, tooltip="text")
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/ggplotlyStackedareachart.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
