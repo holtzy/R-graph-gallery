@@ -1,0 +1,235 @@
+---
+title: "Time series visualization with the dygraphs package"
+descriptionMeta: "This post describes the options offered by the dygraphs package for interactive time series visualization with R. It shows the different chart types available and how to customize them."
+descriptionTop: "This post describes the options offered by the `dygraphs` package for interactive [time series](time-series.html) visualization with R. It shows the different chart types available and how to customize them."
+sectionText: "Time series section"
+sectionLink: "time-series.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "317-time-series-with-the-dygraphs-library"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+The `dygraphs` R library is my favorite tool to plot [time series](time-series.html). The [chart #316](316-possible-inputs-for-the-dygraphs-library.html) describes extensively its basic utilisation, notably concerning the required input format. 
+This page aims to describe the chart types that this library offers. Remember you can zoom and hover on every following chart.
+
+
+
+
+# Connected scatterplot
+***
+Most of the chart types described in this post are called using the `dyOptions()` function. For connected scatterplots, use `drawPoints = TRUE`. Note that the gallery offers a [whole section](connected-scatterplot.html) on connected scatterplot.
+
+<center><iframe src="HtmlWidget/dygraphs317-1.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Library
+library(dygraphs)
+library(xts)          # To make the convertion data-frame / xts format
+ 
+# Create data 
+data <- data.frame(
+  time=seq(from=Sys.Date()-40, to=Sys.Date(), by=1 ), 
+  value=runif(41)
+)
+
+# Double check time is at the date format
+str(data$time)
+
+# Switch to XTS format
+data <- xts(x = data$value, order.by = data$time)
+ 
+# Default = line plot --> See chart #316
+ 
+# Add points
+p <- dygraph(data) %>%
+  dyOptions( drawPoints = TRUE, pointSize = 4 )
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-1.html"))
+```
+
+
+
+
+
+
+
+
+# Area chart
+***
+
+Area chart are built thanks to the `fillGraph = TRUE` option. See the [area chart](area-graph.html) section of the gallery.
+
+<center><iframe src="HtmlWidget/dygraphs317-2.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+p <- dygraph(data) %>%
+  dyOptions( fillGraph=TRUE )
+p
+
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-2.html"))
+```
+
+
+
+
+
+
+
+
+# Step chart
+***
+
+The step chart is made using the .. `stepPlot` option! Use it in conjunction with `fillGraph` to fill the area below the curve.
+
+
+<center><iframe src="HtmlWidget/dygraphs317-3.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+p <- dygraph(data) %>%
+  dyOptions( stepPlot=TRUE, fillGraph=TRUE)
+p
+
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-3.html"))
+```
+
+
+
+
+
+
+
+
+
+# Lollipop plot
+***
+
+Called using the `stemPlot` option. See the [lollipop plot](lollipop-plot.html) section of the gallery for more.
+
+<center><iframe src="HtmlWidget/dygraphs317-4.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+p <- dygraph(data) %>%
+  dyOptions( stemPlot=TRUE)
+p
+
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-4.html"))
+```
+
+
+
+
+
+
+
+
+
+
+# Candlestick chart
+***
+
+The candlestick chart represents 4 series and is widely used in finance. `dygraphs` offers the `dyCandlestick()` function that allows to build them in minutes.
+
+<center><iframe src="HtmlWidget/dygraphs317-5.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Create data (needs 4 data points per date stamp)
+trend <- sin(seq(1,41))+runif(41)
+data <- data.frame(
+  time=seq(from=Sys.Date()-40, to=Sys.Date(), by=1 ), 
+  value1=trend, 
+  value2=trend+rnorm(41), 
+  value3=trend+rnorm(41), 
+  value4=trend+rnorm(41) 
+)
+
+# switch to xts format
+data <- xts(x = data[,-1], order.by = data$time)
+
+# Plot it
+p <- dygraph(data) %>%
+  dyCandlestick()
+p
+
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-5.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+# Line chart with interval
+***
+
+This is very handy to represent confidence interval around your time series. Don with `dySeries()` that takes 3 columns as input: trend and upper and lower limits of the confidence interval.
+
+
+<center><iframe src="HtmlWidget/dygraphs317-6.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Create data
+trend <- sin(seq(1,41))+runif(41)
+data <- data.frame(
+  time=seq(from=Sys.Date()-40, to=Sys.Date(), by=1 ), 
+  trend=trend, 
+  max=trend+abs(rnorm(41)), 
+  min=trend-abs(rnorm(41, sd=1))
+)
+
+# switch to xts format
+data <- xts(x = data[,-1], order.by = data$time)
+
+# Plot
+p <- dygraph(data) %>%
+  dySeries(c("min", "trend", "max"))
+p
+
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs317-6.html"))
+```
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Advanced chord diagram with R and circlize &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Chord diagram is an efficient way to display flows between entities. This post shows how to build a customized version using the circlize package.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Advanced chord diagram with R and circlize" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="Chord diagram is an efficient way to display flows between entities. This post shows how to build a customized version using the circlize package." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/122-a-circular-plot-with-the-circlize-package.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Advanced chord diagram with R and circlize</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px"><a href="chord-diagram.html">Chord diagram</a> is an efficient way to display flows between entities. This post shows how to build a customized version using the circlize package.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='chord-diagram.html'>Chord section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/chord.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="chord-diagram-from-adjacency-matrix">Chord diagram from adjacency matrix</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The <code>circlize package</code> developped by <a href="https://github.com/jokergoo">Zuguang Gu</a> is the best way to build <a href="chord-diagram.html">chord diagram</a> in R. The chord diagram section of the gallery provides a step by step introduction to it.</p>
+<p>This example explains how to build a highly customized chord diagram, adding links manually thanks to the <code>circos.link()</code> function.</p>
+<p>Note that the library also offers a <code>chordDiagram()</code> functions that builds everything automatically, but offers less customization. (See it <a href="123-circular-plot-circlize-package-2">here</a>.)</p>
+<p><u>Important</u>: This example has been found on <a href="http://stackoverflow.com/questions/26292484/programming-in-r-bubble-chart-visualization">stackoverflow</a>, made by <a href="http://stackoverflow.com/users/3304471/jazzurro">Jazzuro</a>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="122-a-circular-plot-with-the-circlize-package_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">### You need several libraries</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(circlize)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(migest)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"> </a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">### Make data</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">m &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">order =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>,</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">            <span class="dt">country =</span> <span class="kw">c</span>(<span class="st">&quot;Ausralia&quot;</span>, <span class="st">&quot;India&quot;</span>, <span class="st">&quot;China&quot;</span>, <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;Thailand&quot;</span>, <span class="st">&quot;Malaysia&quot;</span>),</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">            <span class="dt">V3 =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">150000</span>, <span class="dv">90000</span>, <span class="dv">180000</span>, <span class="dv">15000</span>, <span class="dv">10000</span>),</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">            <span class="dt">V4 =</span> <span class="kw">c</span>(<span class="dv">35000</span>, <span class="dv">1</span>, <span class="dv">10000</span>, <span class="dv">12000</span>, <span class="dv">25000</span>, <span class="dv">8000</span>),</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">            <span class="dt">V5 =</span> <span class="kw">c</span>(<span class="dv">10000</span>, <span class="dv">7000</span>, <span class="dv">1</span>, <span class="dv">40000</span>, <span class="dv">5000</span>, <span class="dv">4000</span>),</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">            <span class="dt">V6 =</span> <span class="kw">c</span>(<span class="dv">7000</span>, <span class="dv">8000</span>, <span class="dv">175000</span>, <span class="dv">1</span>, <span class="dv">11000</span>, <span class="dv">18000</span>),</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">            <span class="dt">V7 =</span> <span class="kw">c</span>(<span class="dv">70000</span>, <span class="dv">30000</span>, <span class="dv">22000</span>, <span class="dv">120000</span>, <span class="dv">1</span>, <span class="dv">40000</span>),</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">            <span class="dt">V8 =</span> <span class="kw">c</span>(<span class="dv">60000</span>, <span class="dv">90000</span>, <span class="dv">110000</span>, <span class="dv">14000</span>, <span class="dv">30000</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">            <span class="dt">r =</span> <span class="kw">c</span>(<span class="dv">255</span>,<span class="dv">255</span>,<span class="dv">255</span>,<span class="dv">153</span>,<span class="dv">51</span>,<span class="dv">51</span>),</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">            <span class="dt">g =</span> <span class="kw">c</span>(<span class="dv">51</span>, <span class="dv">153</span>, <span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>),</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">            <span class="dt">b =</span> <span class="kw">c</span>(<span class="dv">51</span>, <span class="dv">51</span>, <span class="dv">51</span>, <span class="dv">51</span>, <span class="dv">51</span>, <span class="dv">153</span>),</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">            <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">df1 &lt;-<span class="st"> </span>m[, <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>, <span class="dv">9</span><span class="op">:</span><span class="dv">11</span>)]</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">m &lt;-<span class="st"> </span>m[,<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)]<span class="op">/</span><span class="fl">1e04</span></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">m &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(m[,<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>)])</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="kw">dimnames</span>(m) &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">orig =</span> df1<span class="op">$</span>country, <span class="dt">dest =</span> df1<span class="op">$</span>country)</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="co">#Sort order of data.frame and matrix for plotting in circos</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">df1 &lt;-<span class="st"> </span><span class="kw">arrange</span>(df1, order)</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">df1<span class="op">$</span>country &lt;-<span class="st"> </span><span class="kw">factor</span>(df1<span class="op">$</span>country, <span class="dt">levels =</span> df1<span class="op">$</span>country)</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">m &lt;-<span class="st"> </span>m[<span class="kw">levels</span>(df1<span class="op">$</span>country),<span class="kw">levels</span>(df1<span class="op">$</span>country)]</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"> </a>
+<a class="sourceLine" id="cb1-28" data-line-number="28"> </a>
+<a class="sourceLine" id="cb1-29" data-line-number="29"><span class="co">### Define ranges of circos sectors and their colors (both of the sectors and the links)</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">df1<span class="op">$</span>xmin &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">df1<span class="op">$</span>xmax &lt;-<span class="st"> </span><span class="kw">rowSums</span>(m) <span class="op">+</span><span class="st"> </span><span class="kw">colSums</span>(m)</a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">n &lt;-<span class="st"> </span><span class="kw">nrow</span>(df1)</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33">df1<span class="op">$</span>rcol&lt;-<span class="kw">rgb</span>(df1<span class="op">$</span>r, df1<span class="op">$</span>g, df1<span class="op">$</span>b, <span class="dt">max =</span> <span class="dv">255</span>)</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">df1<span class="op">$</span>lcol&lt;-<span class="kw">rgb</span>(df1<span class="op">$</span>r, df1<span class="op">$</span>g, df1<span class="op">$</span>b, <span class="dt">alpha=</span><span class="dv">200</span>, <span class="dt">max =</span> <span class="dv">255</span>)</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35"> </a>
+<a class="sourceLine" id="cb1-36" data-line-number="36"><span class="co">### Plot sectors (outer part)</span></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">4</span>))</a>
+<a class="sourceLine" id="cb1-38" data-line-number="38"><span class="kw">circos.clear</span>()</a>
+<a class="sourceLine" id="cb1-39" data-line-number="39"> </a>
+<a class="sourceLine" id="cb1-40" data-line-number="40"><span class="co">### Basic circos graphic parameters</span></a>
+<a class="sourceLine" id="cb1-41" data-line-number="41"><span class="kw">circos.par</span>(<span class="dt">cell.padding=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="dt">track.margin=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.15</span>), <span class="dt">start.degree =</span> <span class="dv">90</span>, <span class="dt">gap.degree =</span><span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb1-42" data-line-number="42"> </a>
+<a class="sourceLine" id="cb1-43" data-line-number="43"><span class="co">### Sector details</span></a>
+<a class="sourceLine" id="cb1-44" data-line-number="44"><span class="kw">circos.initialize</span>(<span class="dt">factors =</span> df1<span class="op">$</span>country, <span class="dt">xlim =</span> <span class="kw">cbind</span>(df1<span class="op">$</span>xmin, df1<span class="op">$</span>xmax))</a>
+<a class="sourceLine" id="cb1-45" data-line-number="45"> </a>
+<a class="sourceLine" id="cb1-46" data-line-number="46"><span class="co">### Plot sectors</span></a>
+<a class="sourceLine" id="cb1-47" data-line-number="47"><span class="kw">circos.trackPlotRegion</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">factors =</span> df1<span class="op">$</span>country, <span class="dt">track.height=</span><span class="fl">0.1</span>,</a>
+<a class="sourceLine" id="cb1-48" data-line-number="48">                      <span class="co">#panel.fun for each sector</span></a>
+<a class="sourceLine" id="cb1-49" data-line-number="49">                      <span class="dt">panel.fun =</span> <span class="cf">function</span>(x, y) {</a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">                      <span class="co">#select details of current sector</span></a>
+<a class="sourceLine" id="cb1-51" data-line-number="51">                      name =<span class="st"> </span><span class="kw">get.cell.meta.data</span>(<span class="st">&quot;sector.index&quot;</span>)</a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">                      i =<span class="st"> </span><span class="kw">get.cell.meta.data</span>(<span class="st">&quot;sector.numeric.index&quot;</span>)</a>
+<a class="sourceLine" id="cb1-53" data-line-number="53">                      xlim =<span class="st"> </span><span class="kw">get.cell.meta.data</span>(<span class="st">&quot;xlim&quot;</span>)</a>
+<a class="sourceLine" id="cb1-54" data-line-number="54">                      ylim =<span class="st"> </span><span class="kw">get.cell.meta.data</span>(<span class="st">&quot;ylim&quot;</span>)</a>
+<a class="sourceLine" id="cb1-55" data-line-number="55"> </a>
+<a class="sourceLine" id="cb1-56" data-line-number="56">                      <span class="co">#text direction (dd) and adjusmtents (aa)</span></a>
+<a class="sourceLine" id="cb1-57" data-line-number="57">                      theta =<span class="st"> </span><span class="kw">circlize</span>(<span class="kw">mean</span>(xlim), <span class="fl">1.3</span>)[<span class="dv">1</span>, <span class="dv">1</span>] <span class="op">%%</span><span class="st"> </span><span class="dv">360</span></a>
+<a class="sourceLine" id="cb1-58" data-line-number="58">                      dd &lt;-<span class="st"> </span><span class="kw">ifelse</span>(theta <span class="op">&lt;</span><span class="st"> </span><span class="dv">90</span> <span class="op">||</span><span class="st"> </span>theta <span class="op">&gt;</span><span class="st"> </span><span class="dv">270</span>, <span class="st">&quot;clockwise&quot;</span>, <span class="st">&quot;reverse.clockwise&quot;</span>)</a>
+<a class="sourceLine" id="cb1-59" data-line-number="59">                      aa =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb1-60" data-line-number="60">                      <span class="cf">if</span>(theta <span class="op">&lt;</span><span class="st"> </span><span class="dv">90</span> <span class="op">||</span><span class="st"> </span>theta <span class="op">&gt;</span><span class="st"> </span><span class="dv">270</span>)  aa =<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb1-61" data-line-number="61"> </a>
+<a class="sourceLine" id="cb1-62" data-line-number="62">                      <span class="co">#plot country labels</span></a>
+<a class="sourceLine" id="cb1-63" data-line-number="63">                      <span class="kw">circos.text</span>(<span class="dt">x=</span><span class="kw">mean</span>(xlim), <span class="dt">y=</span><span class="fl">1.7</span>, <span class="dt">labels=</span>name, <span class="dt">facing =</span> dd, <span class="dt">cex=</span><span class="fl">0.6</span>,  <span class="dt">adj =</span> aa)</a>
+<a class="sourceLine" id="cb1-64" data-line-number="64"> </a>
+<a class="sourceLine" id="cb1-65" data-line-number="65">                      <span class="co">#plot main sector</span></a>
+<a class="sourceLine" id="cb1-66" data-line-number="66">                      <span class="kw">circos.rect</span>(<span class="dt">xleft=</span>xlim[<span class="dv">1</span>], <span class="dt">ybottom=</span>ylim[<span class="dv">1</span>], <span class="dt">xright=</span>xlim[<span class="dv">2</span>], <span class="dt">ytop=</span>ylim[<span class="dv">2</span>], </a>
+<a class="sourceLine" id="cb1-67" data-line-number="67">                                  <span class="dt">col =</span> df1<span class="op">$</span>rcol[i], <span class="dt">border=</span>df1<span class="op">$</span>rcol[i])</a>
+<a class="sourceLine" id="cb1-68" data-line-number="68"> </a>
+<a class="sourceLine" id="cb1-69" data-line-number="69">                      <span class="co">#blank in part of main sector</span></a>
+<a class="sourceLine" id="cb1-70" data-line-number="70">                      <span class="kw">circos.rect</span>(<span class="dt">xleft=</span>xlim[<span class="dv">1</span>], <span class="dt">ybottom=</span>ylim[<span class="dv">1</span>], <span class="dt">xright=</span>xlim[<span class="dv">2</span>]<span class="op">-</span><span class="kw">rowSums</span>(m)[i], <span class="dt">ytop=</span>ylim[<span class="dv">1</span>]<span class="op">+</span><span class="fl">0.3</span>, </a>
+<a class="sourceLine" id="cb1-71" data-line-number="71">                                  <span class="dt">col =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>)</a>
+<a class="sourceLine" id="cb1-72" data-line-number="72"> </a>
+<a class="sourceLine" id="cb1-73" data-line-number="73">                      <span class="co">#white line all the way around</span></a>
+<a class="sourceLine" id="cb1-74" data-line-number="74">                      <span class="kw">circos.rect</span>(<span class="dt">xleft=</span>xlim[<span class="dv">1</span>], <span class="dt">ybottom=</span><span class="fl">0.3</span>, <span class="dt">xright=</span>xlim[<span class="dv">2</span>], <span class="dt">ytop=</span><span class="fl">0.32</span>, <span class="dt">col =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>)</a>
+<a class="sourceLine" id="cb1-75" data-line-number="75"> </a>
+<a class="sourceLine" id="cb1-76" data-line-number="76">                      <span class="co">#plot axis</span></a>
+<a class="sourceLine" id="cb1-77" data-line-number="77">                      <span class="kw">circos.axis</span>(<span class="dt">labels.cex=</span><span class="fl">0.6</span>, <span class="dt">direction =</span> <span class="st">&quot;outside&quot;</span>, <span class="dt">major.at=</span><span class="kw">seq</span>(<span class="dt">from=</span><span class="dv">0</span>,<span class="dt">to=</span><span class="kw">floor</span>(df1<span class="op">$</span>xmax)[i],<span class="dt">by=</span><span class="dv">5</span>), </a>
+<a class="sourceLine" id="cb1-78" data-line-number="78">                                  <span class="dt">minor.ticks=</span><span class="dv">1</span>, <span class="dt">labels.away.percentage =</span> <span class="fl">0.15</span>)</a>
+<a class="sourceLine" id="cb1-79" data-line-number="79">                    })</a>
+<a class="sourceLine" id="cb1-80" data-line-number="80"> </a>
+<a class="sourceLine" id="cb1-81" data-line-number="81"><span class="co">### Plot links (inner part)</span></a>
+<a class="sourceLine" id="cb1-82" data-line-number="82"><span class="co">### Add sum values to df1, marking the x-position of the first links</span></a>
+<a class="sourceLine" id="cb1-83" data-line-number="83"><span class="co">### out (sum1) and in (sum2). Updated for further links in loop below.</span></a>
+<a class="sourceLine" id="cb1-84" data-line-number="84">df1<span class="op">$</span>sum1 &lt;-<span class="st"> </span><span class="kw">colSums</span>(m)</a>
+<a class="sourceLine" id="cb1-85" data-line-number="85">df1<span class="op">$</span>sum2 &lt;-<span class="st"> </span><span class="kw">numeric</span>(n)</a>
+<a class="sourceLine" id="cb1-86" data-line-number="86"> </a>
+<a class="sourceLine" id="cb1-87" data-line-number="87"><span class="co">### Create a data.frame of the flow matrix sorted by flow size, to allow largest flow plotted first</span></a>
+<a class="sourceLine" id="cb1-88" data-line-number="88">df2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">as.data.frame</span>(m),<span class="dt">orig=</span><span class="kw">rownames</span>(m),  <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb1-89" data-line-number="89">df2 &lt;-<span class="st"> </span><span class="kw">reshape</span>(df2, <span class="dt">idvar=</span><span class="st">&quot;orig&quot;</span>, <span class="dt">varying=</span><span class="kw">list</span>(<span class="dv">1</span><span class="op">:</span>n), <span class="dt">direction=</span><span class="st">&quot;long&quot;</span>,</a>
+<a class="sourceLine" id="cb1-90" data-line-number="90">           <span class="dt">timevar=</span><span class="st">&quot;dest&quot;</span>, <span class="dt">time=</span><span class="kw">rownames</span>(m),  <span class="dt">v.names =</span> <span class="st">&quot;m&quot;</span>)</a>
+<a class="sourceLine" id="cb1-91" data-line-number="91">df2 &lt;-<span class="st"> </span><span class="kw">arrange</span>(df2,<span class="kw">desc</span>(m))</a>
+<a class="sourceLine" id="cb1-92" data-line-number="92"> </a>
+<a class="sourceLine" id="cb1-93" data-line-number="93"><span class="co">### Keep only the largest flows to avoid clutter</span></a>
+<a class="sourceLine" id="cb1-94" data-line-number="94">df2 &lt;-<span class="st"> </span><span class="kw">subset</span>(df2, m <span class="op">&gt;</span><span class="st"> </span><span class="kw">quantile</span>(m,<span class="fl">0.6</span>))</a>
+<a class="sourceLine" id="cb1-95" data-line-number="95"> </a>
+<a class="sourceLine" id="cb1-96" data-line-number="96"><span class="co">### Plot links</span></a>
+<a class="sourceLine" id="cb1-97" data-line-number="97"><span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(df2)){</a>
+<a class="sourceLine" id="cb1-98" data-line-number="98">    <span class="co">#i,j reference of flow matrix</span></a>
+<a class="sourceLine" id="cb1-99" data-line-number="99">    i&lt;-<span class="kw">match</span>(df2<span class="op">$</span>orig[k],df1<span class="op">$</span>country)</a>
+<a class="sourceLine" id="cb1-100" data-line-number="100">    j&lt;-<span class="kw">match</span>(df2<span class="op">$</span>dest[k],df1<span class="op">$</span>country)</a>
+<a class="sourceLine" id="cb1-101" data-line-number="101"> </a>
+<a class="sourceLine" id="cb1-102" data-line-number="102"><span class="co">#plot link</span></a>
+<a class="sourceLine" id="cb1-103" data-line-number="103"><span class="kw">circos.link</span>(<span class="dt">sector.index1=</span>df1<span class="op">$</span>country[i], <span class="dt">point1=</span><span class="kw">c</span>(df1<span class="op">$</span>sum1[i], df1<span class="op">$</span>sum1[i] <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(m[i, j])),</a>
+<a class="sourceLine" id="cb1-104" data-line-number="104">            <span class="dt">sector.index2=</span>df1<span class="op">$</span>country[j], <span class="dt">point2=</span><span class="kw">c</span>(df1<span class="op">$</span>sum2[j], df1<span class="op">$</span>sum2[j] <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(m[i, j])),</a>
+<a class="sourceLine" id="cb1-105" data-line-number="105">            <span class="dt">col =</span> df1<span class="op">$</span>lcol[i])</a>
+<a class="sourceLine" id="cb1-106" data-line-number="106"> </a>
+<a class="sourceLine" id="cb1-107" data-line-number="107"><span class="co">#update sum1 and sum2 for use when plotting the next link</span></a>
+<a class="sourceLine" id="cb1-108" data-line-number="108">df1<span class="op">$</span>sum1[i] =<span class="st"> </span>df1<span class="op">$</span>sum1[i] <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(m[i, j])</a>
+<a class="sourceLine" id="cb1-109" data-line-number="109">df1<span class="op">$</span>sum2[j] =<span class="st"> </span>df1<span class="op">$</span>sum2[j] <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(m[i, j])</a>
+<a class="sourceLine" id="cb1-110" data-line-number="110">}</a></code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="chord-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Chord150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Chord diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="network.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Network150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Network</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="sankey-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Sankey150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Sankey</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="https://www.data-to-viz.com/graph/arc.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Arc150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Arc diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hierarchical-edge-bundling.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bundle150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Edge bundling</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>

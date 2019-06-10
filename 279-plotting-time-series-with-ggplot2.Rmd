@@ -1,0 +1,284 @@
+---
+title: "Time series visualization with ggplot2"
+descriptionMeta: "The ggplot2 package provides great features for time series visualization. This post describes how to use different chart types and customize them for time related metric visualization."
+descriptionTop: "The `ggplot2` package provides great features for time series visualization. This post describes how to use different chart types and customize them for time related metric visualization."
+sectionText: "Time series section"
+sectionLink: "time-series.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "279-plotting-time-series-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+
+
+
+
+
+# Basic line chart for time series with `ggplot2`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggplot2` package recognizes the `date` format and automatically uses a specific type of X axis. If the time variable isn't at the `date` format, this won't work. Always check with `str(data)` how variables are understood by R. If not read as a date, use [lubridate](time-series.html) to convert it. Read more about this [here](time-series.html).
+
+On the chart beside, dates are displayed using a neat format: month + year.
+
+<u>Note</u>: the gallery offers a section dedicated to [line charts](line-plot.html).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+
+# Dummy data
+data <- data.frame(
+  day = as.Date("2017-06-14") - 0:364,
+  value = runif(365) + seq(-140, 224)^2 / 10000
+)
+
+# Most basic bubble plot
+p <- ggplot(data, aes(x=day, y=value)) +
+  geom_line() + 
+  xlab("")
+p
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Format used on the X axis
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+As soon as the time variable is recognized as a `date`, you can use the `scale_x_date()` function to choose the format displayed on the X axis. 
+
+Below are 4 examples on how to call the function. See beside the list of available options. ([source](http://www.statmethods.net/input/dates.html))
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<img src="img/other/tableTimeFormat.png" width="100%"></img>
+
+</div>
+</div>
+
+
+```{r, out.width = c("50%", "50%", "50%", "50%"), fig.show='hold'}
+p+scale_x_date(date_labels = "%b")
+p+scale_x_date(date_labels = "%Y %b %d")
+p+scale_x_date(date_labels = "%W")
+p+scale_x_date(date_labels = "%m-%Y")
+```
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+# Breaks and minor breaks
+***
+
+
+It also possible to control the amount of break and minor breaks to display with `date_breaks` and `date_minor_breaks`.
+
+
+```{r, out.width = c("50%", "50%"), fig.show='hold'}
+p + scale_x_date(date_breaks = "1 week", date_labels = "%W")
+p + scale_x_date(date_minor_breaks = "2 day")
+```
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+# Add angle to X axis labels
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggplot2` package recognizes the `date` format and automatically uses a specific type of X axis. If the time variable isn't at the `date` format, this won't work. Always check with `str(data)` how variables are understood by R. If not read as a date, use [lubridate](time-series.html) to convert it. Read more about this [here](time-series.html).
+
+On the chart beside, dates are displayed using a neat format: month + year.
+
+<u>Note</u>: the gallery offers a section dedicated to [line charts](line-plot.html).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+
+# Dummy data
+data <- data.frame(
+  day = as.Date("2017-06-14") - 0:364,
+  value = runif(365) - seq(-140, 224)^2 / 10000
+)
+
+# Most basic bubble plot
+p <- ggplot(data, aes(x=day, y=value)) +
+  geom_line( color="#69b3a2") + 
+  xlab("") +
+  theme_ipsum() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+p
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Select time frame
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Use the `limit` option of the `scale_x_date()` function to select a time frame in the data:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+
+# Dummy data
+data <- data.frame(
+  day = as.Date("2017-06-14") - 0:364,
+  value = runif(365) + seq(-140, 224)^2 / 10000
+)
+
+# Most basic bubble plot
+p <- ggplot(data, aes(x=day, y=value)) +
+  geom_line( color="steelblue") + 
+  geom_point() +
+  xlab("") +
+  theme_ipsum() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) +
+  scale_x_date(limit=c(as.Date("2017-01-01"),as.Date("2017-02-11"))) +
+  ylim(0,1.5)
+
+p
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

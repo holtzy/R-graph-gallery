@@ -1,0 +1,228 @@
+---
+title: "An introduction to interactive time series with R and dygraphs"
+descriptionMeta: "This post is an introduction to the dygraphs package for interactive time series visualization with R. It shows how to deal with various input formats, and what are the main chart types offered."
+descriptionTop: "This post is an introduction to the `dygraphs` package for interactive [time series](time-series.html) visualization with R. It shows how to deal with various input formats, and what are the main chart types offered."
+sectionText: "Time series section"
+sectionLink: "time-series.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "316-possible-inputs-for-the-dygraphs-library"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+The `dygraphs` package allows to represent [time series](time-series.html): a chart where the X axis represent time, and the Y axis the evolution of one or several variables. 
+
+`dygraphs` allows to make interactive charts: you can zoom on a specific time period, hover a data point to have more info, and more. Two input format are possible for the time variable: 
+
+- `numeric`: like 1,2,3,4,5
+- `date`: like 2017/12/08
+ 
+You can check at which your format your time variable is with `str(data)`.
+ 
+ 
+ 
+ 
+ 
+# If time is a `numeric` variable
+***
+
+That's the simplest use case. Just make sure that time is displayed on the first column of the data frame.
+
+Here is a code example and the resulting chart:
+
+ 
+<center><iframe src="HtmlWidget/dygraphs316-1.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Library
+library(dygraphs)
+ 
+# --- Format 1: time is represented by a simple number. (must be numeric and ordered)
+data <- data.frame( 
+  time=c( seq(0,20,0.5), 40), 
+  value=runif(42)
+)
+
+# Double check time is numeric
+str(data)
+
+# Use dygraph
+p <- dygraph(data)
+p
+```
+
+
+
+
+
+
+
+
+# If time is a `date` variable
+***
+
+The process is slightly more complicated with the `date` format. 
+
+- First, check time is indeed recognized as a date by R with `str(data)`. This gives the format of each column, so check that `Date` is written. 
+
+- Second, transform the data frame to the `xts` format (xts=eXtensible Time Series). This is requested by dygraphs. 
+
+
+
+<center><iframe src="HtmlWidget/dygraphs316-2.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Libraries
+library(dygraphs)
+library(xts) # To make the convertion data-frame / xts format
+ 
+# Format 2: time is represented by a date.
+data <- data.frame(
+  time=seq(from=Sys.Date()-40, to=Sys.Date(), by=1 ), 
+  value=runif(41)
+)
+ 
+# Your time column MUST be a time format!, check it out with str()
+str(data)
+ 
+# Then you can create the xts format, and thus use dygraph
+don <- xts(x = data$value, order.by = data$time)
+
+# Make the chart
+p <- dygraph(don)
+p
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Several series
+***
+
+The process to plot several variables is very close. When you do the transformation to the `xts` format, simply specify all the columns you want to keep on your chart
+
+<center><iframe src="HtmlWidget/dygraphs316-3.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# Libraries
+library(dygraphs)
+library(xts) # To make the convertion data-frame / xts format
+
+# Format 3: Several variables for each date
+data <- data.frame(
+  time=seq(from=Sys.Date()-40, to=Sys.Date(), by=1 ), 
+  value1=runif(41), 
+  value2=runif(41)+0.7
+)
+
+# Then you can create the xts format:
+don=xts( x=data[,-1], order.by=data$time)
+
+# Chart
+p <- dygraph(don)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs316-3.html"))
+```
+
+
+
+
+# Getting the date format
+***
+
+The hardest part in time series visualization is to get your data at the `date` format! 
+
+This can be a real struggle. Fortunately the `lubridate` package is here to make your life easier. Have a look to its documentation [here](http://r4ds.had.co.nz/dates-and-times.html).
+
+Most of the time data is available at text format (like from excel spreadsheet). When you load these data you get a `character` format. You want to transform it in a `date`, `time` or `date-time` format. A set of functions with relevant names exist for that. Here is an example of utilisation on a real dataset:
+ 
+ 
+<center><iframe src="HtmlWidget/dygraphs316-4.html" height="300" width="100%" style="border:none;"></iframe></center>
+
+```{r eval=FALSE}
+# libraries
+library(dygraphs)
+library(xts) # To make the convertion data-frame / xts format
+library(lubridate) # You will love it to work with dates
+library(tidyverse)
+ 
+# Load the data (hosted on the gallery website)
+data <- read.table("https://python-graph-gallery.com/wp-content/uploads/bike.csv", header=T, sep=",")
+ 
+# Check the format, it is not a date yet !
+str(data)
+ 
+# The wanna-be-date column looks like that: "2011-02-19 02:00:00". This is Year, Month, Day, Hour, Minute, Second. Thus I can transform it with the function: ymd_hms
+data$datetime <- ymd_hms(data$datetime)
+ 
+# Check if it worked properly!
+str(data)
+ 
+# It does! Let's go to the its format like seen above, and make the dygraph
+don <- xts(x = data$count, order.by = data$datetime)
+
+# Chart
+p <- dygraph(don)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/dygraphs316-4.html"))
+```
+
+
+As a memo, here is an overview of the function that exist:
+
+- `ymd(“20110604”)`
+- `mdy(“06-04-2011”)`
+- `dmy(“04/06/2011”)`
+- `ymd_hms(“2011-06-04 12:00:00”)`
+ 
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

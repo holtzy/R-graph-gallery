@@ -1,0 +1,93 @@
+---
+title: "Introduction to the circlize package"
+descriptionMeta: "This post is an introduction to the circlize package: the ultimate way to build circular charts with R. It shows how to initialize a circular section and fill it with a scatterplot."
+descriptionTop: "This post is an introduction to the `circlize` package: the ultimate way to build [circular charts](chord-diagram.html) with R. It shows how to initialize a circular section and fill it with a [scatterplot](scatterplot.html)."
+sectionText: "Chord section"
+sectionLink: "chord-diagram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/chord.html"
+url: "224-basic-circular-plot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+In R, circular plots are made using the `circlize` package. Circular plots are composed by several regions (8 here), each representing a level of a factor.  Three steps  are required to build a circular plot:
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+
+- *Step 1*: Initialize the chart with `circos.initialize()`. Provide the factor vector, and the numeric values to use for the X axis. The circle will be split in as many zone as the number of levels present in your factor. Each region will be as long as the coresponding x axis.
+
+- *Step2*: Build the regions with `circos.trackPlotRegion()`. You have to specify the factors once again, and tell what to use for the Y axis if needed.
+
+- *Step3*: Add a chart in each region. Here `circos.trackPoints()` is used to build a scatterplot. See [chart #226](226-plot-types-for-circular-plot.html) for other chart types.
+
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Upload library
+library(circlize)
+ 
+# Create data
+data = data.frame(
+    factor = sample(letters[1:8], 1000, replace = TRUE),
+    x = rnorm(1000), 
+    y = runif(1000)
+    )
+ 
+# Step1: Initialise the chart giving factor and x-axis.
+circos.initialize( factors=data$factor, x=data$x )
+ 
+# Step 2: Build the regions. 
+circos.trackPlotRegion(factors = data$factor, y = data$y, panel.fun = function(x, y) {
+    circos.axis()
+    })
+ 
+# Step 3: Add points
+circos.trackPoints(data$factor, data$x, data$y, col = "blue", pch = 16, cex = 0.5) 
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```

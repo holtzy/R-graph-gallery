@@ -1,0 +1,104 @@
+---
+title: "Line chart annotation with ggplot2"
+descriptionMeta: "Annotation is a crucial part of a time sery visual. This post shows how to highlight main parts of a line chart with text, circles, lines and more."
+descriptionTop: "Annotation is a crucial part of a [time sery](time-series.html) visual. This post shows how to highlight main parts of a [line chart](line-plot.html) with text, circles, lines and more."
+sectionText: "Time series section"
+sectionLink: "time-series.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/connectedscatter.html"
+url: "line_chart_annotation"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggplot2` package recognizes the `date` format and automatically uses a specific type of X axis. If the time variable isn't at the `date` format, this won't work. Always check with `str(data)` how variables are understood by R. If not read as a date, use [lubridate](time-series.html) to convert it. Read more about this [here](time-series.html).
+
+On the chart beside, dates are displayed using a neat format: month + year.
+
+<u>Note</u>: the gallery offers a section dedicated to [line charts](line-plot.html).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# plot
+data %>% 
+  ggplot( aes(x=date, y=value)) +
+    geom_line(color="#69b3a2") +
+    ylim(0,22000) +
+    annotate(geom="text", x=as.Date("2017-01-01"), y=20089, 
+             label="Bitcoin price reached 20k $\nat the end of 2017") +
+    annotate(geom="point", x=as.Date("2017-12-17"), y=20089, size=10, shape=21, fill="transparent") +
+    geom_hline(yintercept=5000, color="orange", size=.5) +
+    theme_ipsum()
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
