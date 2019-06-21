@@ -1,396 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-6"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
- <head>
+      gtag("config", "UA-79254642-6");
+    </script>
 
-   <!-- Global site tag (gtag.js) - Google Analytics -->
-   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-6"></script>
-   <script>
-     window.dataLayer = window.dataLayer || [];
-     function gtag(){dataLayer.push(arguments);}
-     gtag('js', new Date());
+    <meta charset="utf-8" />
+    <title>Chord diagram &#124; the R Graph Gallery</title>
 
-     gtag('config', 'UA-79254642-6');
-   </script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="How to build a Chord diagram with R: a set of examples with reproducible code using the circlize library and ggplot2."
+    />
+    <meta
+      name="keywords"
+      content="Data,Dataviz,Datavisualization,R,ggplot2,d3Network,networkd3,sankey,flow chart,alluvial"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
-   <meta charset="utf-8">
-   <title>Chord diagram &#124; the R Graph Gallery</title>
+    <meta
+      property="og:title"
+      content="Chord diagram &#124; the R Graph Gallery"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="How to build a Chord diagram with R: a set of examples with reproducible code using the circlize library and ggplot2."
+    />
 
-   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <meta name="description" content="How to build a Chord diagram with R: a set of examples with reproducible code using the circlize library and ggplot2.">
-   <meta name="keywords" content="Data,Dataviz,Datavisualization,R,ggplot2,d3Network,networkd3,sankey,flow chart,alluvial">
-   <meta name="author" content="Yan Holtz">
-   <link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-   <meta property="og:title" content="Chord diagram &#124; the R Graph Gallery">
-   <meta property="og:image" content="img/overview_RGG.png">
-   <meta property="og:description" content="How to build a Chord diagram with R: a set of examples with reproducible code using the circlize library and ggplot2.">
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Kaushan+Script"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-   <!-- Bootstrap core CSS -->
-   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-   <!-- Custom fonts for this template -->
-   <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-   <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
-   <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-   <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-   <!-- Custom styles for this template -->
-   <link href="css/agency.css" rel="stylesheet">
+  <body id="page-top">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function() {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-   <!-- JQUERY -->
-   <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function() {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
+    <!-- Header -->
+    <header class="masthead" style="padding-top: 150px; padding-bottom: 80px">
+      <div class="textlanding">
+        <h1>Chord diagram</h1>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <br /><br />
+        <p style="max-width: 700px; margin: auto">
+          A
+          <a href="https://www.data-to-viz.com/graph/chord.html"
+            >Chord diagram</a
+          >
+          allows to study flows between a set of entities. Entities (nodes) are
+          displayed all around a circle and connected with arcs (links). In
+          <code>R</code>, the <code>circlize</code> package is the best option
+          to build it.
+        </p>
+      </div>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function() {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
-
-<body id="page-top">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-$(function(){
- $("#mainNav").load("html_chunk/menu.html");
-});
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-$(function(){
- $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-});
-</script>
-
- <!-- Header -->
- <header class="masthead" style="padding-top: 150px; padding-bottom: 80px">
-   <div class="textlanding">
-     <h1>Chord diagram</h1>
-     <hr class="short_hr">
-     <br>
-     <ul class="list-inline social-buttons">
-       <li class="list-inline-item">
-         <a href="https://twitter.com/R_Graph_Gallery">
-           <i class="fa fa-twitter"></i>
-         </a>
-       </li>
-       <li class="list-inline-item social-buttons">
-         <a href="https://github.com/holtzy">
-           <i class="fa fa-github" style="color: white"></i>
-         </a>
-       </li>
-       <li class="list-inline-item social-buttons">
-         <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-           <i class="fa fa-linkedin"></i>
-         </a>
-       </li>
-       <li class="list-inline-item social-buttons">
-         <a href="https://www.yan-holtz.com">
-           <i class="fa fa-home"></i>
-         </a>
-       </li>
-     </ul>
-     <br><br>
-     <p style="max-width: 700px; margin: auto">A <a href="https://www.data-to-viz.com/graph/chord.html">Chord diagram</a> allows to study flows between a set of entities. Entities (nodes) are displayed all around a circle and connected with arcs (links). In <code>R</code>, the <code>circlize</code> package is the best option to build it.</p>
- </div>
-</header>
-
-
-
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"> </div>
-<script>
-$(function(){
- $("#position_for_images").load("html_chunk/images.html");
-});
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- ======================== PORTFOLIO SECTION ============================ -->
-<!-- Images must be 480 x 480, resize them with ./script_reformat_img.sh output_name.png -->
-<section class="bg" id="portfolio" style="padding-top: 10px">
- <div class="container">
-
-   <div class="mySeryTitle">Introduction to <code>circlize</code></div>
-   <hr>
-   <p>The <code>networkD3</code> package allows to visualize networks using several kinds of viz. One of its function makes stunning Sankey diagrams as shown below. Follow the steps below to get the basics and learn how to customize your Sankey Diagram.</p>
-   <div id="portfolio-items" class="row">
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="224-basic-circular-plot.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Introduction to circlize</p>
-             <hr>
-             <p class="explanation_portfolio">An introduction to the R circlize package: how to initalize a circular graph and fill it with a scatterplot.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/224-basic-circular-plot.png" alt="">
-       </a>
-     </div>
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="225-circular-plot-custom-a-track.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Customization</p>
-             <hr>
-             <p class="explanation_portfolio">Apply customization to the circular chart: color, background, track height and more.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/225-circular-plot-custom-a-track.png" alt="">
-       </a>
-     </div>
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="226-plot-types-for-circular-plot.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Chart types</p>
-             <hr>
-             <p class="explanation_portfolio">Learn how to use other chart types like line chart, barcharts, vertical ablines and more.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/226-plot-types-for-circular-plot.png" alt="">
-       </a>
-     </div>
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="227-add-several-tracks.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Stack tracks</p>
-             <hr>
-             <p class="explanation_portfolio">You can stack several tracks to show several series one on top of each other.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/227-add-several-tracks.png" alt="">
-       </a>
-     </div>
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="229-several-circular-plots-in-a-figure.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Several in figure</p>
-             <hr>
-             <p class="explanation_portfolio">How to display several on same window.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/229-several-circular-plots-in-a-figure.png" alt="">
-       </a>
-     </div>
-     <div class="col-md-4 col-sm-6 portfolio-item">
-       <a class="portfolio-link" href="230-draw-part-of-the-circular-plot-only.html">
-         <div class="portfolio-hover">
-           <div class="portfolio-hover-content">
-             <p>Select a section</p>
-             <hr>
-             <p class="explanation_portfolio">Select a section of the circular chart only.</p>
-           </div>
-         </div>
-         <img class="img-fluid imgOfPortfolio" src="img/graph/230-draw-part-of-the-circular-plot-only.png" alt="">
-       </a>
-     </div>
-   </div>
-
-
-  <br><br><br><br>
-  <div class="mySeryTitle">Static chord diagram</div>
-  <hr>
-  <p>The <code>networkD3</code> package allows to visualize networks using several kinds of viz. One of its function makes stunning Sankey diagrams as shown below. Follow the steps below to get the basics and learn how to customize your Sankey Diagram.</p>
-  <div id="portfolio-items" class="row">
-    <div class="col-md-4 col-sm-6 portfolio-item">
-      <a class="portfolio-link" href="228-add-links-between-regions.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <p>Introduction to arcs</p>
-            <hr>
-            <p class="explanation_portfolio">How to use circos.arc to draw arcs between entities, resulting in a chord diagram.</p>
+    <!-- ======================== PORTFOLIO SECTION ============================ -->
+    <!-- Images must be 480 x 480, resize them with ./script_reformat_img.sh output_name.png -->
+    <section class="bg" id="portfolio" style="padding-top: 10px">
+      <div class="container">
+        <div class="mySeryTitle">Introduction to <code>circlize</code></div>
+        <hr />
+        <p>
+          The <code>circlize</code> package allows to build all kinds of circular chart. This first section introduces
+          the way it works, step by step. Chord diagram are described in the following section, but a basic
+          understanding of the library is necessary at first.
+        </p>
+        <div id="portfolio-items" class="row">
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="224-basic-circular-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Introduction to circlize</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    An introduction to the R circlize package: how to initalize
+                    a circular graph and fill it with a scatterplot.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/224-basic-circular-plot.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="225-circular-plot-custom-a-track.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Customization</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Apply customization to the circular chart: color,
+                    background, track height and more.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/225-circular-plot-custom-a-track.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="226-plot-types-for-circular-plot.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Chart types</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Learn how to use other chart types like line chart,
+                    barcharts, vertical ablines and more.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/226-plot-types-for-circular-plot.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="227-add-several-tracks.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Stack tracks</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    You can stack several tracks to show several series one on
+                    top of each other.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/227-add-several-tracks.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="229-several-circular-plots-in-a-figure.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Several in figure</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    How to display several on same window.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/229-several-circular-plots-in-a-figure.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="230-draw-part-of-the-circular-plot-only.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Select a section</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Select a section of the circular chart only.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/230-draw-part-of-the-circular-plot-only.png"
+                alt=""
+              />
+            </a>
           </div>
         </div>
-        <img class="img-fluid imgOfPortfolio" src="img/graph/228-add-links-between-regions.png" alt="">
-      </a>
-    </div>
-    <div class="col-md-4 col-sm-6 portfolio-item">
-      <a class="portfolio-link" href="123-circular-plot-circlize-package-2.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <p>Basic chord diagram</p>
-            <hr>
-            <p class="explanation_portfolio">How to build a basic chord diagram from an edge list or an adjacency matrix with R and the circlize package.</p>
+
+        <br /><br /><br /><br />
+        <div class="mySeryTitle">Static chord diagram</div>
+        <hr />
+        <p>
+          The <code>circlize</code> package also offers functions to build chord diagrams. Basically, it allows to
+          add arcs between nodes to show flows. The examples below will guide you through their usage. The <code>circos.links()</code> function
+          builds connection one by one, when <code>chordDiagram()</code> plot a whole dataset in one shot.
+        </p>
+        <div id="portfolio-items" class="row">
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="228-add-links-between-regions.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Introduction to arcs</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    How to use circos.arc to draw arcs between entities,
+                    resulting in a chord diagram.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/228-add-links-between-regions.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="123-circular-plot-circlize-package-2.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Basic chord diagram</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    How to build a basic chord diagram from an edge list or an
+                    adjacency matrix with R and the circlize package.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/123-circular-plot-circlize-package-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="122-a-circular-plot-with-the-circlize-package.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Customized chord diagram</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Build links manually to allow more flexiility on the
+                    display.
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/122-a-circular-plot-with-the-circlize-package.png"
+                alt=""
+              />
+            </a>
           </div>
         </div>
-        <img class="img-fluid imgOfPortfolio" src="img/graph/123-circular-plot-circlize-package-2.png" alt="">
-      </a>
-    </div>
-    <div class="col-md-4 col-sm-6 portfolio-item">
-      <a class="portfolio-link" href="122-a-circular-plot-with-the-circlize-package.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <p>Customized chord diagram</p>
-            <hr>
-            <p class="explanation_portfolio">Build links manually to allow more flexiility on the display.</p>
+        <div id="portfolio-items" class="row">
+          <div class="col-md-6 col-sm-6 portfolio-item mx-auto">
+            <a class="portfolio-link" href="https://www.data-to-viz.com/graph/chord.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Migration</p>
+                  <hr>
+                  <p class="explanation_portfolio">Change node features to display one more level of information on the chart</p>
+                </div>
+              </div>
+              <center><img class="img-fluid imgOfPortfolio" src="img/graph/chord-migration.png" alt=""></center>
+            </a>
           </div>
         </div>
-        <img class="img-fluid imgOfPortfolio" src="img/graph/122-a-circular-plot-with-the-circlize-package.png" alt="">
-      </a>
-    </div>
-  </div>
 
-</div>
-</section>
+        <br><br><br><br>
+        <div class="mySeryTitle">Interactivity</div>
+        <hr>
+        <p>The <code>chorddiag</code> package is an htmlwidget: it automatically builds interactive charts. On the chart below, hovering a group or a connection will highlight the related flow and give additional information.</p>
+        <p><u>Note</u>: The example below comes directly from the <code>chorddiag</code><a href="https://github.com/mattflor/chorddiag">documentation</a>. Thanks to <a href="https://github.com/mattflor">Mattflor</a> for developping such a nice package.</p>
+        <a class="btn btn-secondary btn-md text-uppercase" href="159-save-interactive-streamgraph-to-static-image-png.html">How to export to .png</a>
+        <a class="btn btn-secondary btn-md text-uppercase" href="chord-diagram-interactive.html">Chart code</a>
+        <br><br>
+        <center><iframe src="HtmlWidget/chord_interactive.html" height="700" width="80%" style="border:none;"></iframe></center>
 
+      </div>
 
-<!-- ======================================================================= -->
+    </section>
 
+    <!-- ======================================================================= -->
 
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="chord.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Chord150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Chord diagram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="network.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Network150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Network</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="sankey-diagram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Sankey150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Sankey</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="arc.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Arc150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Arc diagram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hierarchical-edge-bundling.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bundle150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Edge bundling</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- ============================ CONTACT SECTION ============================ -->
 
+    <!-- ANCHOR -->
+    <a name="contactanchor"></a>
 
+    <section id="contact" class="bg" style="background-color: white"></section>
 
+    <!-- THIS ALLOWS TO INSERT THE CONTACT CHUNK THAT IS STORED IN A CONTACT.HTML FILE-->
+    <script>
+      $(function() {
+        $("#contact").load("html_chunk/contact.html");
+      });
+    </script>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter"></footer>
 
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px">
+    <!-- THIS ALLOWS TO INSERT THE FOOTER THAT IS STORED IN A FOOTER.HTML FILE-->
+    <script>
+      $(function() {
+        $("#myFooter").load("html_chunk/footer.html");
+      });
+    </script>
 
-<div class="container">
+    <!-- ============================ -->
 
- <p class="mySeryTitle">Related chart types</p>
- <hr>
- <div class="row">
-   <div class="col-md-2 col-sm-4 portfolio-item">
-     <a class="portfolio-link"  href="chord.html">
-       <div class="portfolio-hover">
-         <div class="portfolio-hover-content">
-           <i class="fa fa-plus fa-3x"></i>
-         </div>
-       </div>
-       <img class="img-fluid" src="img/section/Chord150.png" alt="">
-     </a>
-     <div class="captionPortfolio">Chord diagram</div>
-   </div>
-   <div class="col-md-2 col-sm-4 portfolio-item">
-     <a class="portfolio-link"  href="network.html">
-       <div class="portfolio-hover">
-         <div class="portfolio-hover-content">
-           <i class="fa fa-plus fa-3x"></i>
-         </div>
-       </div>
-       <img class="img-fluid" src="img/section/Network150.png" alt="">
-     </a>
-     <div class="captionPortfolio">Network</div>
-   </div>
-   <div class="col-md-2 col-sm-4 portfolio-item">
-     <a class="portfolio-link"  href="sankey-diagram.html">
-       <div class="portfolio-hover">
-         <div class="portfolio-hover-content">
-           <i class="fa fa-plus fa-3x"></i>
-         </div>
-       </div>
-       <img class="img-fluid" src="img/section/Sankey150.png" alt="">
-     </a>
-     <div class="captionPortfolio">Sankey</div>
-   </div>
-   <div class="col-md-2 col-sm-4 portfolio-item">
-     <a class="portfolio-link"  href="arc.html">
-       <div class="portfolio-hover">
-         <div class="portfolio-hover-content">
-           <i class="fa fa-plus fa-3x"></i>
-         </div>
-       </div>
-       <img class="img-fluid" src="img/section/Arc150.png" alt="">
-     </a>
-     <div class="captionPortfolio">Arc diagram</div>
-   </div>
-   <div class="col-md-2 col-sm-4 portfolio-item">
-     <a class="portfolio-link"  href="hierarchical-edge-bundling.html">
-       <div class="portfolio-hover">
-         <div class="portfolio-hover-content">
-           <i class="fa fa-plus fa-3x"></i>
-         </div>
-       </div>
-       <img class="img-fluid" src="img/section/Bundle150.png" alt="">
-     </a>
-     <div class="captionPortfolio">Edge bundling</div>
-   </div>
- </div>
-</div>
-</section>
+    <!-- =============== JAVASCRIPT SECTION =============== -->
 
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
 
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-
-<!-- ANCHOR -->
-<a name="contactanchor"></a>
-
-<section id="contact" class="bg" style="background-color: white"></section>
-
-<!-- THIS ALLOWS TO INSERT THE CONTACT CHUNK THAT IS STORED IN A CONTACT.HTML FILE-->
-<script>
-$(function(){
- $("#contact").load("html_chunk/contact.html");
-});
-</script>
-
-
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter"></footer>
-
-<!-- THIS ALLOWS TO INSERT THE FOOTER THAT IS STORED IN A FOOTER.HTML FILE-->
-<script>
-$(function(){
- $("#myFooter").load("html_chunk/footer.html");
-});
-</script>
-
-<!-- ============================ -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- =============== JAVASCRIPT SECTION =============== -->
-
-   <!-- Bootstrap core JavaScript -->
-   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-   <!-- Plugin JavaScript -->
-   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-   <!-- Custom scripts for this template -->
-   <script src="js/agency.min.js"></script>
-
-
-
-
-
-<!--============================== -->
-
-
-
- </body>
-
+    <!--============================== -->
+  </body>
 </html>

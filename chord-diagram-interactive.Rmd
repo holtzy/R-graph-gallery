@@ -1,0 +1,80 @@
+---
+title: "Interactive chord diagram with R"
+descriptionMeta: "This post describes how to build an interactive chord diagram on which you can hover groups to highlight flows."
+descriptionTop: "This post describes how to build an interactive [chord diagram](chord-diagram.html) on which you can hover groups to highlight flows."
+sectionText: "Chord section"
+sectionLink: "chord-diagram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/chord.html"
+url: "chord-diagram-interactive"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 50px">
+
+
+
+<center><iframe src="HtmlWidget/chord_interactive.html" height="640" width="100%" style="border:none;"></iframe></center>
+
+
+The `chorddiag` package allows to build interactive chord diagrams with R. It expects a square matrix as input, providing flow strength between each pair of nodes that will be displayed around the circle.
+
+Once the data formated properly, the `chorddiag()` function will automatically build the chart for you.
+
+<u>Note</u>: The chorddiag package is a project by [Mattflor](https://github.com/mattflor) and this example comes from its [documentation](https://github.com/mattflor/chorddiag).
+
+
+```{r, eval=FALSE}
+# Load package
+# devtools::install_github("mattflor/chorddiag")
+library(chorddiag)
+
+# Create dummy data
+m <- matrix(c(11975,  5871, 8916, 2868,
+              1951, 10048, 2060, 6171,
+              8010, 16145, 8090, 8045,
+              1013,   990,  940, 6907),
+            byrow = TRUE,
+            nrow = 4, ncol = 4)
+
+# A vector of 4 colors for 4 groups
+haircolors <- c("black", "blonde", "brown", "red")
+dimnames(m) <- list(have = haircolors,
+                    prefer = haircolors)
+groupColors <- c("#000000", "#FFDD89", "#957244", "#F26223")
+
+# Build the chord diagram:
+p <- chorddiag(m, groupColors = groupColors, groupnamePadding = 20)
+p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/chord_interactive.html"))
+```
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```
