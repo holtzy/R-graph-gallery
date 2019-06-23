@@ -14,17 +14,17 @@
     </script>
 
     <meta charset="utf-8">
-    <title>Dendrogram &#124; the D3 Graph Gallery</title>
+    <title>Dendrogram &#124; the R Graph Gallery</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Dendrogram with Javascript and D3.js: A set of examples with reproducible code.">
+    <meta name="description" content="How to build dendrogram with R: a set of reproducible examples using different approaches with code.">
     <meta name="keywords" content="Data,Dataviz,Datavisualization,Javascript,D3,D3.js,sankey, flow chart">
     <meta name="author" content="Yan Holtz">
     <link rel="icon" href="img/logo/R_single_small.png">
 
-    <meta property="og:title" content="Area Chart &#124; the D3 Graph Gallery">
+    <meta property="og:title" content="Dendrogram &#124; the R Graph Gallery">
     <meta property="og:image" content="img/overview_RGG.png">
-    <meta property="og:description" content="Dendrogram with Javascript and D3.js: A set of examples with reproducible code.">
+    <meta property="og:description" content="How to build dendrogram with R: a set of reproducible examples using different approaches with code.">
 
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -98,7 +98,7 @@ $(function(){
         </li>
       </ul>
       <br><br>
-      <p style="max-width: 700px; margin: auto">A <a href="https://www.data-to-viz.com/graph/dendrogram.html">dendrogram</a> shows a <u>hierarchical</u> structure. It is constituted of a <u>root</u> node that gives birth to several nodes connected by <u>edges</u> or branches. Last nodes of the hierarchy are called <u>leaves</u>. Learn more about its theory on <a href="https://www.data-to-viz.com/graph/dendrogram.html">data-to-viz.com</a>, or visit the examples below to learn how to implement it in d3.js</p>
+      <p style="max-width: 700px; margin: auto">A <a href="https://www.data-to-viz.com/graph/dendrogram.html">dendrogram</a> (or tree diagram) is a network structure. It is constituted of a root node that gives birth to several nodes connected by edges or branches. The last nodes of the hierarchy are called leaves. Many options are available to build one with R. This sections aims to lead you toward the best strategy for your data.</p>
   </div>
 </header>
 
@@ -127,103 +127,45 @@ $(function(){
   <div class="container">
 
 
-  <p class="mySeryTitle">A note on input data format</p>
+  <p class="mySeryTitle">Two types of dendrogram</p>
   <hr>
   <p>Building dendrogram with <code>d3.js</code> requires to have an input at the <code>Json</code> format, like <a href="https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_dendrogram.json">here</a>. The <a href="https://github.com/timelyportfolio/d3r">d3r package</a> makes it a breeze to get this format from a <code>R</code> data frame.</p>
-  <div id="summary">
-    <div class="collapse" id="collapseSummary">
 
-<pre class="language-js"><code id="codejs" contenteditable="false"><xmp># This is R code
 
-# create a simple hierarchy
-data <- data.frame(
-  level1="CEO",
-  level2=c( rep("boss1",4), rep("boss2",4)),
-  level3=paste0("mister_", letters[1:8])
-)
-
-# transform it to json format
-library(d3r)
-data_json <- d3_nest(data)
-
-# Save in a json file
-write(data_json, "data_ready.json")
-
-</xmp></code></pre>
-
-      <p>You're now ready to use the file called <code>data_ready.json</code> in your d3.js chart</p>
+  <br><br><br><br>
+  <div class="mySeryTitle">Dendrogram from <code>hierarchical</code> data.</div>
+  <hr>
+  <p>The <code>ggraph</code> package is the best option to build a dendrogram from hierarchical data with R. It is based on the grammar of graphic and thus follows the same logic that <code>ggplot2</code>.</p>
+  <div id="portfolio-items" class="row">
+    <div class="col-md-4 col-sm-6 portfolio-item">
+      <a class="portfolio-link" href="graph/334-basic-dendrogram-with-ggraph.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <p>Most basic dendrogram</p>
+            <hr>
+            <p class="explanation_portfolio">Most basic usage of ggraph, applied on 2 types of input data format.</p>
+          </div>
+        </div>
+        <img class="img-fluid imgOfPortfolio" src="img/graph/334-basic-dendrogram-with-ggraph.png" alt="">
+      </a>
     </div>
-    <a class="collapsed" data-toggle="collapse" href="#collapseSummary" aria-expanded="false" aria-controls="collapseSummary"></a>
+  </div>
+  <p>The <code>collapsibletree</code> package is an htmlwidget: it automatically builds collapsible interactive tree diagram. On the chart below, <u>click a node</u> to reveal the next branch, and zoom in/out if necessary.</p>
+  <a class="btn btn-secondary btn-md text-uppercase" href="159-save-interactive-streamgraph-to-static-image-png.html">How to export to .png</a>
+  <a class="btn btn-secondary btn-md text-uppercase" href="336-interactive-dendrogram-with-collapsibletree.html">Chart code</a>
+  <br><br>
+  <center><iframe src="HtmlWidget/dendrogram_interactive.html" height="700" width="80%" style="border:none;"></iframe></center>
 
 
-    <br><br><br><br>
-    <div class="mySeryTitle">Step by step</div>
-    <hr>
-    <p>Building a dendrogram with d3.js always follows the same steps. <u>First</u>, a cluster layout must be defined with <code>d3.cluster()</code>. <u>Second</u>, data is provided to this layout thanks to <code>d3.hierarchy()</code>. We now have an object with nodes coordinates. <u>Lastly</u>, we can use it to add nodes with <code>append('circle')</code> and links with <code>append('path')</code>.</p>
-    <div id="portfolio-items" class="row">
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="graph/dendrogram_basic.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Most basic dendrogram</p>
-              <hr>
-              <p class="explanation_portfolio">Most basic dendrogram. Built from a Json file.</p>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/graph/dendrogram_basic.png" alt="">
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="graph/dendrogram_radial_basic.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Basic radial dendrogram</p>
-              <hr>
-              <p class="explanation_portfolio">Very basic as well, but uses a radial layout instead of the linear</p>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/graph/dendrogram_radial_basic.png" alt="">
-        </a>
-      </div>
-    </div>
 
-
-    <br><br><br><br>
-    <div class="mySeryTitle">Selection of blocks</div>
-    <hr>
-    <p>A few blocks with more complicated codes to showcase what's possible to do with hierarchical edge bundling.</a>
-    <div id="portfolio-items" class="row">
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="https://bl.ocks.org/mbostock/e9ba78a2c1070980d1b530800ce7fa2b">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Transition tree / dendrogram</p>
-              <hr>
-              <p class="explanation_portfolio">A block illustrating the difference between tree and dendrogram, with smooth transition between both.</p>
-            </div>
-          </div>
-          <img class="img-fluid showBlock" src="img/block/block_dendrogramTransition.png" alt="Hierarchical edge bundling">
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6 portfolio-item">
-        <a class="portfolio-link" href="https://bl.ocks.org/lorenzopub/dfd90f8a3a8c76de939f857de24e7d89">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <p>Dendrogram and barplot</p>
-              <hr>
-              <p class="explanation_portfolio">A block showing how to add a barplot next to dendrogram leaves.</p>
-            </div>
-          </div>
-          <img class="img-fluid showBlock" src="img/block/block_dendrogramBarplot.png" alt="Dendrogram and barplot">
-        </a>
-      </div>
-    </div>
 
  </div>
 </section>
 
 
 <!-- ======================================================================= -->
+
+
 
 
 
@@ -241,64 +183,79 @@ write(data_json, "data_ready.json")
   <hr>
   <div class="row">
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="chord.html">
+      <a class="portfolio-link"  href="treemap.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Chord150.png" alt="">
+        <img class="img-fluid" src="img/section/Tree150.png" alt="">
       </a>
-      <div class="captionPortfolio">Chord diagram</div>
+      <div class="captionPortfolio">Treemap</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="network.html">
+      <a class="portfolio-link"  href="donut.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Network150.png" alt="">
+        <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
       </a>
-      <div class="captionPortfolio">Network</div>
+      <div class="captionPortfolio">Doughnut</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="sankey.html">
+      <a class="portfolio-link"  href="pie.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Sankey150.png" alt="">
+        <img class="img-fluid" src="img/section/Pie150.png" alt="">
       </a>
-      <div class="captionPortfolio">Sankey</div>
+      <div class="captionPortfolio">Pie chart</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="arc.html">
+      <a class="portfolio-link"  href="dendrogram.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Arc150.png" alt="">
+        <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
       </a>
-      <div class="captionPortfolio">Arc diagram</div>
+      <div class="captionPortfolio">Dendrogram</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bundle.html">
+      <a class="portfolio-link"  href="circularpacking.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Bundle150.png" alt="">
+        <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
       </a>
-      <div class="captionPortfolio">Edge bundling</div>
+      <div class="captionPortfolio">Circular packing</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="sunburst.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Sunburst150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Sunburst</div>
     </div>
   </div>
 
 </div>
 </section>
+
+
+
+
 
 
 

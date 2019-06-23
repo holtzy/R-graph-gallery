@@ -1,0 +1,177 @@
+---
+title: "Introduction to tree diagram with R and ggraph"
+descriptionMeta: "This posts is a step by step introduction to building dendrograms with R and the ggraph package. It provides several examples based on different input formats with explanation and reproducible code."
+descriptionTop: "This posts is a step by step introduction to building [dendrograms](dendrogram.html) with R and the `ggraph` package. It provides several examples based on different input formats with explanation and reproducible code."
+sectionText: "Dendrogram section"
+sectionLink: "dendrogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/dendrogram.html"
+url: "334-basic-dendrogram-with-ggraph"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px;">
+
+
+This page aims to describe how to make a basic [dendrogram](dendrogram.html) representing hierarchical data with the `ggraph` library. Two input formats are considered: 
+
+- edge list &rarr; 2 columns, one row is on connection
+- nested data frame &rarr; one row is one path from root to leaf. As many columns as the number of levels in the hierarchy
+
+Please visit [this page](335-custom-ggraph-dendrogram.html) to learn how to custom these dendrograms. If you want to create a dendrogram from clustering result, visit the [dendrogram section](dendrogram.html) of the gallery.
+
+
+
+
+
+
+
+# Dendrogram from edge list
+***
+
+Edge list is the most convenient format to use `ggraph`. Follow those steps:
+
+- transform the input dataframe to a graph object using the `graph_from_data_frame()` function from the `igraph` library
+- use the dendrogram layout of `ggraph` with `layout = 'dendrogram'`
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+<center><img src="img/other/Hierarchical_network_2col.png" alt="edge list input data example"></img><center>
+<center><i><p style="color: grey; font-size: 11px">Edge list data format</p></i></center>
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+ 
+# create an edge list data frame giving the hierarchical structure of your individuals
+d1 <- data.frame(from="origin", to=paste("group", seq(1,5), sep=""))
+d2 <- data.frame(from=rep(d1$to, each=5), to=paste("subgroup", seq(1,25), sep="_"))
+edges <- rbind(d1, d2)
+ 
+# Create a graph object 
+mygraph <- graph_from_data_frame( edges )
+ 
+# Basic tree
+ggraph(mygraph, layout = 'dendrogram', circular = FALSE) + 
+  geom_edge_diagonal() +
+  geom_node_point() +
+  theme_void()
+
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Dendrogram from a nested dataframe
+***
+
+Another common format is the nested data frame. The code below shows how to easily transform it into a nested data frame. Once it is done, just apply the code described above once more.
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+<center><img src="img/other/Nested_DataFrame.png" alt="Nested dataframe input data example"></img><center>
+<center><i><p style="color: grey; font-size: 11px">Nested dataframe format</p></i></center>
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+ 
+# create a data frame 
+data <- data.frame(
+  level1="CEO",
+  level2=c( rep("boss1",4), rep("boss2",4)),
+  level3=paste0("mister_", letters[1:8])
+)
+ 
+# transform it to a edge list!
+edges_level1_2 <- data %>% select(level1, level2) %>% unique %>% rename(from=level1, to=level2)
+edges_level2_3 <- data %>% select(level2, level3) %>% unique %>% rename(from=level2, to=level3)
+edge_list=rbind(edges_level1_2, edges_level2_3)
+ 
+# Now we can plot that
+mygraph <- graph_from_data_frame( edge_list )
+ggraph(mygraph, layout = 'dendrogram', circular = FALSE) + 
+  geom_edge_diagonal() +
+  geom_node_point() +
+  theme_void()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
