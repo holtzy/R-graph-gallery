@@ -1,0 +1,268 @@
+---
+title: "Dendrogram customization with R and ggraph"
+descriptionMeta: "This post follows the previous introduction to ggraph and dendrogram. It shows how to customize the dendrogram: layout, edge style, node features and more."
+descriptionTop: "This post follows the previous [introduction](334-basic-dendrogram-with-ggraph.html) to `ggraph` and dendrogram. It shows how to customize the dendrogram: layout, edge style, node features and more."
+sectionText: "Dendrogram section"
+sectionLink: "dendrogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/dendrogram.html"
+url: "335-custom-ggraph-dendrogram"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px;">
+
+
+
+
+Start by creating a dataset and a graph object using the `igraph` package.
+
+```{r}
+# Libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+theme_set(theme_void())
+ 
+# data: edge list
+d1 <- data.frame(from="origin", to=paste("group", seq(1,7), sep=""))
+d2 <- data.frame(from=rep(d1$to, each=7), to=paste("subgroup", seq(1,49), sep="_"))
+edges <- rbind(d1, d2)
+ 
+# We can add a second data frame with information for each node!
+name <- unique(c(as.character(edges$from), as.character(edges$to)))
+vertices <- data.frame(
+  name=name,
+  group=c( rep(NA,8) ,  rep( paste("group", seq(1,7), sep=""), each=7)),
+  cluster=sample(letters[1:4], length(name), replace=T),
+  value=sample(seq(10,30), length(name), replace=T)
+)
+ 
+# Create a graph object
+mygraph <- graph_from_data_frame( edges, vertices=vertices)
+````
+
+
+
+
+# Circular or linear `layout`
+***
+
+First of all, you can use a linear or a circular representation using the circular option thanks to the `layout` argument of `ggraph`. 
+
+<u>Note</u>: a customized version of the circular dendrogram is available [here](339-circular-dendrogram-with-ggraph.html), with more node features and labels.
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Left
+ggraph(mygraph, layout = 'dendrogram', circular = FALSE) + 
+  geom_edge_diagonal() 
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode1, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Right
+ggraph(mygraph, layout = 'dendrogram', circular = TRUE) + 
+  geom_edge_diagonal()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+```{r thecode1, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Edge style
+***
+
+Then you can choose between different styles for your edges. The `ggraph` package comes with 2 main functions: `geom_edge_link` and `geom_edge_diagonal`.
+
+Note that the most usual "elbow" representation is not implemented for hierarchical data yet.
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode2, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Left
+ggraph(mygraph, layout = 'dendrogram') + 
+  geom_edge_link()
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Right
+ggraph(mygraph, layout = 'dendrogram') + 
+  geom_edge_diagonal()
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Labels and Nodes
+***
+
+You probably want to add labels to give more insight to your tree. And eventually nodes. This can be done using `the geom_node_text` and `geom_node_point` respectively. 
+
+<u>Note</u>: the label addition is a bit more tricky for circular dendrogram, a solution is suggested in [graph #339](339-circular-dendrogram-with-ggraph.html).
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode4, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Left
+ggraph(mygraph, layout = 'dendrogram') + 
+  geom_edge_diagonal() +
+  geom_node_text(aes( label=name, filter=leaf) , angle=90 , hjust=1, nudge_y = -0.01) +
+  ylim(-.4, NA)
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode5, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# Right
+ggraph(mygraph, layout = 'dendrogram') + 
+  geom_edge_diagonal() +
+  geom_node_text(aes( label=name, filter=leaf) , angle=90 , hjust=1, nudge_y = -0.04) +
+  geom_node_point(aes(filter=leaf) , alpha=0.6) +
+  ylim(-.5, NA)
+```
+
+
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+
+
+# Customize aesthetics
+***
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is a common task to add color or shapes to your dendrogram. It allows to show more clearly the organization of the dataset.
+
+`ggraph` works the same way as `ggplot2`. In the aesthetics part of each component, you can use a column of your initial data frame to be mapped to a shape, a color, a size or other..
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode8, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph, layout = 'dendrogram') + 
+  geom_edge_diagonal() +
+  geom_node_text(aes( label=name, filter=leaf, color=group) , angle=90 , hjust=1, nudge_y=-0.1) +
+  geom_node_point(aes(filter=leaf, size=value, color=group) , alpha=0.6) +
+  ylim(-.6, NA) +
+  theme(legend.position="none")
+```
+</div>
+</div>
+
+
+
+```{r thecode8, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

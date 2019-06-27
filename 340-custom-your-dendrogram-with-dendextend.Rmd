@@ -1,0 +1,356 @@
+---
+title: "Customized dendrogram with R and the dendextend package"
+descriptionMeta: "Dendextend allows to reach the next step in term of dendrogram. Check many examples with explanation and reproducible code."
+descriptionTop: "The `dendextend` package allows to apply all kinds of customization to a dendrogram: coloring nodes, labels, putting several tree face to face and more."
+sectionText: "Dendrogram section"
+sectionLink: "dendrogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/dendrogram.html"
+url: "340-custom-your-dendrogram-with-dendextend"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Basic dendrogram
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+First of all, let's remind how to build a basic [dendrogram](dendrogram.html) with `R`:
+
+- input dataset is a dataframe with individuals in row, and features in column
+- `dist()` is used to compute distance between sample
+- `hclust()` performs the hierarchical clustering
+- the `plot()` function can plot the output directly as a tree
+
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(tidyverse)
+ 
+# Data
+head(mtcars)
+ 
+# Clusterisation using 3 variables
+mtcars %>% 
+  select(mpg, cyl, disp) %>% 
+  dist() %>% 
+  hclust() %>% 
+  as.dendrogram() -> dend
+ 
+# Plot
+par(mar=c(7,3,1,1))  # Increase bottom margin to have the complete label
+plot(dend)
+```
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+# The `set()` function
+***
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+```{r thecodeA, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(dendextend)
+
+# Chart (left)
+dend %>% 
+  # Custom branches
+  set("branches_col", "grey") %>% set("branches_lwd", 3) %>%
+  # Custom labels
+  set("labels_col", "orange") %>% set("labels_cex", 0.8) %>%
+  plot()
+```
+
+</div>
+
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+```{r thecodeB, echo=FALSE, out.width = "100%", fig.height=7}
+# Middle
+dend %>% 
+  set("nodes_pch", 19)  %>% 
+  set("nodes_cex", 0.7) %>% 
+  set("nodes_col", "orange") %>% 
+  plot()
+```
+
+</div>
+
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+```{r thecodeC, echo=FALSE, out.width = "100%", fig.height=7}
+# right
+dend %>% 
+  set("leaves_pch", 19)  %>% 
+  set("leaves_cex", 0.7) %>% 
+  set("leaves_col", "skyblue") %>% 
+  plot()
+
+```
+
+</div>
+
+</div>
+
+The `set()` function of `dendextend` allows to modify the attribute of a specific part of the tree. 
+
+You can customize the `cex`, `lwd`, `col`, `lty` for `branches` and `labels` for example. You can also custom the nodes or the leaf. The code below illustrates this concept:
+
+
+```{r thecodeA, eval=FALSE}
+```
+```{r thecodeB, eval=FALSE}
+```
+```{r thecodeC, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Highlight clusters
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode2A, echo=FALSE, out.width = "100%", fig.height=7}
+# Color in function of the cluster
+par(mar=c(1,1,1,7))
+dend %>%
+  set("labels_col", value = c("skyblue", "orange", "grey"), k=3) %>%
+  set("branches_k_color", value = c("skyblue", "orange", "grey"), k = 3) %>%
+  plot(horiz=TRUE, axes=FALSE)
+abline(v = 350, lty = 2)
+```
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+```{r thecode2B, echo=FALSE, out.width = "100%", fig.height=7}
+# Highlight a cluster with rectangle
+par(mar=c(9,1,1,1))
+dend %>%
+  set("labels_col", value = c("skyblue", "orange", "grey"), k=3) %>%
+  set("branches_k_color", value = c("skyblue", "orange", "grey"), k = 3) %>%
+  plot(axes=FALSE)
+rect.dendrogram( dend, k=3, lty = 5, lwd = 0, x=1, col=rgb(0.1, 0.2, 0.4, 0.1) ) 
+
+```
+
+</div>
+
+
+
+</div>
+
+The `dendextend` library has some good functionalities to highlight the tree clusters. 
+
+You can color branches and label following their cluster attribution, specifying the number of cluster you want. The `rect.dendrogram()` function even allows to highlight one or several specific clusters with a rectangle.
+
+
+```{r thecode2A, eval=FALSE}
+```
+```{r thecode2B, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Comparing with an expected clustering
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is a common task to compare the cluster you get with an expected distribution. 
+
+In the `mtcars` dataset we used to build our dendrogram, there is an `am` column that is a binary variable. We can check if this variable is consistent with the cluster we got using the `colored_bars()` function.
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Create a vector of colors, darkgreen if am is 0, green if 1.
+my_colors <- ifelse(mtcars$am==0, "forestgreen", "green")
+ 
+# Make the dendrogram
+par(mar=c(10,1,1,1))
+dend %>%
+  set("labels_col", value = c("skyblue", "orange", "grey"), k=3) %>%
+  set("branches_k_color", value = c("skyblue", "orange", "grey"), k = 3) %>%
+  set("leaves_pch", 19)  %>% 
+  set("nodes_cex", 0.7) %>% 
+  plot(axes=FALSE)
+ 
+# Add the colored bar
+colored_bars(colors = my_colors, dend = dend, rowLabels = "am")
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Comparing 2 dendrograms with `tanglegram()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is possible to compare 2 dendrograms using the `tanglegram()` function.
+
+Here it illustrates a very important concept: when you calculate your distance matrix and when you run your hierarchical clustering algorithm, you cannot simply use the default options without thinking about what you’re doing. Have a look to the differences between 2 different methods of clusterisation.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Make 2 dendrograms, using 2 different clustering methods
+d1 <- USArrests %>% dist() %>% hclust( method="average" ) %>% as.dendrogram()
+d2 <- USArrests %>% dist() %>% hclust( method="complete" ) %>% as.dendrogram()
+ 
+# Custom these kendo, and place them in a list
+dl <- dendlist(
+  d1 %>% 
+    set("labels_col", value = c("skyblue", "orange", "grey"), k=3) %>%
+    set("branches_lty", 1) %>%
+    set("branches_k_color", value = c("skyblue", "orange", "grey"), k = 3),
+  d2 %>% 
+    set("labels_col", value = c("skyblue", "orange", "grey"), k=3) %>%
+    set("branches_lty", 1) %>%
+    set("branches_k_color", value = c("skyblue", "orange", "grey"), k = 3)
+)
+ 
+# Plot them together
+tanglegram(dl, 
+           common_subtrees_color_lines = FALSE, highlight_distinct_edges  = TRUE, highlight_branches_lwd=FALSE, 
+           margin_inner=7,
+           lwd=2
+)
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

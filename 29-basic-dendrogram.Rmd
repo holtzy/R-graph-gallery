@@ -1,0 +1,148 @@
+---
+title: "Most basic dendrogram for clustering with R"
+descriptionMeta: "Clustering allows to group samples by similarity and can its result can be visualized as a dendrogram. This post describes a basic usage of the hclust function and builds a dendrogram from its output."
+descriptionTop: "Clustering allows to group samples by similarity and can its result can be visualized as a [dendrogram](dendrogram.html). This post describes a basic usage of the `hclust()` function and builds a dendrogram from its output."
+sectionText: "Dendrogram section"
+sectionLink: "dendrogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/dendrogram.html"
+url: "29-basic-dendrogram"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic dendrogram with R
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+&rarr; Input dataset is a `matrix` where each row is a sample, and each column is a variable. Keep in mind you can transpose a matrix using the `t()` function if needed.
+
+&rarr; Clustering is performed on a square matrix (sample x sample) that provides the distance between samples. It can be computed using the `dist()` or the `cor()` function depending on the question your asking
+
+&rarr; The `hclust()` function is used to perform the hierarchical clustering
+
+&rarr; Its output can be visualized directly with the `plot()` function. See possible [customization](31-custom-colors-in-dendrogram.html).
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode8, echo=FALSE, out.width = "100%", fig.height=7}
+# Dataset 
+data <- matrix( sample(seq(1,2000),200), ncol = 10 )
+rownames(data) <- paste0("sample_" , seq(1,20))
+colnames(data) <- paste0("variable",seq(1,10))
+
+# Euclidean distance
+dist <- dist(data[ , c(4:8)] , diag=TRUE)
+
+# Hierarchical Clustering with hclust
+hc <- hclust(dist)
+
+# Plot the result
+plot(hc)
+```
+</div>
+</div>
+
+
+
+```{r thecode8, eval=FALSE}
+```
+
+<br><br>
+
+
+
+
+# Hierarchical clustering principle:
+***
+
+- Take distances between objects. 
+- Seek the smallest distance between 2 objects. 
+- Aggregate the 2 objects in a cluster. 
+- Replace them with their barycenter. 
+&rarr; Again until having only one cluster containing every points. 
+
+There are several ways to calculate the distance between 2 clusters ( using the max between 2 points of the clusters, or the mean, or the min, or ward (default) ).
+
+
+
+
+
+
+
+# Zoom on a group
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+It is possible to zoom on a specific part of the tree. Select the group of interest using the `[[..]]` operator:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=5}
+# store the dedrogram in an object
+dhc <- as.dendrogram(hc)
+
+# set the margin
+par(mar=c(4,4,2,2))
+
+# Plot the Second group
+plot(dhc[[2]] , main= "zoom on a part of the dendrogram")
+```
+
+</div>
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+<br><br>
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
