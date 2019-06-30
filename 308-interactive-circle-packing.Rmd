@@ -1,0 +1,89 @@
+---
+title: "Interactive circle packing with R"
+descriptionMeta: "This post describes how to build an interactive circle packing chart with R and the ggiraph package. It allows to hover bubbles to get additionnal information."
+descriptionTop: "This post describes how to build an interactive [circle packing](circle-packing.html) chart with R and the `ggiraph` package. It allows to hover bubbles to get additionnal information."
+sectionText: "Circle Packing section"
+sectionLink: "circle-packing.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/circularpacking.html"
+url: "308-interactive-circle-packing"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 50px">
+
+
+
+<center><iframe src="HtmlWidget/circular_packing_interactive.html" height="640" width="100%" style="border:none;"></iframe></center>
+
+This chart follows posts [#305](305-basic-circle-packing-with-one-level.html) and [#306](306-custom-circle-packing-with-one-level.html) that explains how to build a static version of circle packing, and how to customize it. 
+
+This interactive version is very close to the static one. It uses the `ggiraph` library to transform the `ggplot2` code in something interactive. The steps are quite easy: 
+
+- First you need to prepare a column in the data frame with the text you want to display while hovering. 
+- Second, you need to change the geometries to use the interactive geometries of ggiraph. 
+
+Check the code below:
+
+```{r, eval=FALSE}
+# libraries
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
+
+# Create data
+data <- data.frame(group=paste("Group_", sample(letters, 70, replace=T), sample(letters, 70, replace=T), sample(letters, 70, replace=T), sep="" ), value=sample(seq(1,70),70)) 
+
+# Add a column with the text you want to display for each bubble:
+data$text <- paste("name: ",data$group, "\n", "value:", data$value, "\n", "You can add a story here!")
+
+# Generate the layout
+packing <- circleProgressiveLayout(data$value, sizetype='area')
+data <- cbind(data, packing)
+dat.gg <- circleLayoutVertices(packing, npoints=50)
+
+# Make the plot with a few differences compared to the static version:
+p <- ggplot() + 
+  geom_polygon_interactive(data = dat.gg, aes(x, y, group = id, fill=id, tooltip = data$text[id], data_id = id), colour = "black", alpha = 0.6) +
+  scale_fill_viridis() +
+  geom_text(data = data, aes(x, y, label = gsub("Group_", "", group)), size=2, color="black") +
+  theme_void() + 
+  theme(legend.position="none", plot.margin=unit(c(0,0,0,0),"cm") ) + 
+  coord_equal()
+
+# Turn it interactive
+widg <- ggiraph(ggobj = p, width_svg = 7, height_svg = 7)
+# widg
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(widg, file=paste0( getwd(), "/HtmlWidget/circular_packing_interactive.html"))
+```
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
