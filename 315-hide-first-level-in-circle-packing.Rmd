@@ -1,0 +1,180 @@
+---
+title: "Circular packing with hidden first level of hierarchy"
+descriptionMeta: "This post shows how to build a circular packing with R and the ggraph packing, and how to remove the main bubble that packs all the others."
+descriptionTop: "This post shows how to build a [circular packing](circular-packing.html) with R and the `ggraph` package, and how to remove the main bubble that packs all the others."
+sectionText: "Circle Packing section"
+sectionLink: "circle-packing.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/circularpacking.html"
+url: "315-hide-first-level-in-circle-packing"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" >
+
+
+
+
+# Hiding the first level for better styling
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3a, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+library(viridis)
+ 
+# We need a data frame giving a hierarchical structure. Let's consider the flare dataset:
+edges=flare$edges
+vertices = flare$vertices
+mygraph <- graph_from_data_frame( edges, vertices=vertices )
+ 
+# Hide the first level (right)
+ggraph(mygraph, layout = 'circlepack', weight="size") + 
+  geom_node_circle(aes(fill = as.factor(depth), color = as.factor(depth) )) +
+  scale_fill_manual(values=c("0" = "white", "1" = viridis(4)[1], "2" = viridis(4)[2], "3" = viridis(4)[3], "4"=viridis(4)[4])) +
+  scale_color_manual( values=c("0" = "white", "1" = "black", "2" = "black", "3" = "black", "4"="black") ) +
+  theme_void() + 
+  theme(legend.position="FALSE") 
+ 
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3b, echo=FALSE, out.width = "100%", fig.height=7}
+# Second one: hide 2 first levels
+ggraph(mygraph, layout = 'circlepack', weight="size") + 
+  geom_node_circle(aes(fill = as.factor(depth), color = as.factor(depth) )) +
+  scale_fill_manual(values=c("0" = "white", "1" = "white", "2" = magma(4)[2], "3" = magma(4)[3], "4"=magma(4)[4])) +
+  scale_color_manual( values=c("0" = "white", "1" = "white", "2" = "black", "3" = "black", "4"="black") ) +
+  theme_void() + 
+  theme(legend.position="FALSE")
+```
+</div>
+
+
+</div>
+
+
+I personally do not like to display the big circle that surrounds the whole chart (level 0, origin). This circle does not provide any information, and the chart looks better without it in my opinion.
+
+To get rid of it, just specify a color equal to the background color in the `scale_fill_manual()` and `scale_color_manual()` functions. Following the same idea, you can get rid of as many levels of hierarchy as you like.
+ 
+
+```{r thecode3a, eval=FALSE}
+```
+```{r thecode3b, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Add labels to a specific level of the hierarchy
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+A related problem consists to add labels for one specific level of hierarchy only. For instance, if you want to display the names of group of level2, but not of level 3 to avoid cluttering the chart.
+ 
+To solve this issue, the trickiest part is to determine the level of each node in the edge list data frame. Fortunately, the `data.tree` library is here to help with its `FromDataFrameNetwork()` function. It allows to isolate the level of each node, making it a breeze to select the labels to display.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Add the data.tree library
+library(data.tree)
+
+# Rebuild the data
+edges <-flare$edges
+vertices <- flare$vertices
+
+# Transform it in a 'tree' format
+tree <- FromDataFrameNetwork(edges)
+
+# Then I can easily get the level of each node, and add it to the initial data frame:
+mylevels <- data.frame( name=tree$Get('name'), level=tree$Get("level") )
+vertices <- vertices %>% 
+  left_join(., mylevels, by=c("name"="name"))
+
+# Now we can add label for level1 and 2 only for example:
+vertices <- vertices %>% 
+  mutate(new_label=ifelse(level==2, shortName, NA))
+mygraph <- graph_from_data_frame( edges, vertices=vertices )
+
+# Make the graph
+ggraph(mygraph, layout = 'circlepack', weight="size") + 
+  geom_node_circle(aes(fill = as.factor(depth), color = as.factor(depth) )) +
+  scale_fill_manual(values=c("0" = "white", "1" = viridis(4)[1], "2" = viridis(4)[2], "3" = viridis(4)[3], "4"=viridis(4)[4])) +
+  scale_color_manual( values=c("0" = "white", "1" = "black", "2" = "black", "3" = "black", "4"="black") ) +
+  geom_node_label( aes(label=new_label), size=4) +
+  theme_void() + 
+  theme(legend.position="FALSE", plot.margin = unit(rep(0,4), "cm"))
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

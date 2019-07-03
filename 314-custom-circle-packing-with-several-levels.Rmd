@@ -1,0 +1,225 @@
+---
+title: "Customized Circle packing with R and ggraph"
+descriptionMeta: "Learn how to use the ggraph R package to build customized circular packing with specific colors, sizes, labels and more."
+descriptionTop: "This page follows the previous [introduction](313-basic-circle-packing-with-several-levels.html) that explained the basis of circle packing with R and the ggraph library. It describes how to customize color, size, labels and more."
+sectionText: "Circle Packing section"
+sectionLink: "circle-packing.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/circularpacking.html"
+url: "314-custom-circle-packing-with-several-levels"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" >
+
+
+
+
+# Bubble size proportionnal to a variable
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Mapping the bubble size to a numeric variable allows to add an additionnal layer of information to the chart.
+
+Here, the `vertices` data frame has a `size` column that is used for the bubble size. Basically, it just needs to be passed to the `weight` argument of the `ggraph()` function.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+library(viridis)
+ 
+# We need a data frame giving a hierarchical structure. Let's consider the flare dataset:
+edges <- flare$edges
+vertices <- flare$vertices
+mygraph <- graph_from_data_frame( edges, vertices=vertices )
+ 
+# Control the size of each circle: (use the size column of the vertices data frame)
+ggraph(mygraph, layout = 'circlepack', weight="size") + 
+  geom_node_circle() +
+  theme_void()
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Map color to hierarchy depth
+***
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3a, echo=FALSE, out.width = "100%", fig.height=7}
+# Left: color depends of depth
+p <- ggraph(mygraph, layout = 'circlepack', weight="size") + 
+  geom_node_circle(aes(fill = depth)) +
+  theme_void() + 
+  theme(legend.position="FALSE")
+p
+```
+</div>
+
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3b, echo=FALSE, out.width = "100%", fig.height=7}
+# Adjust color palette: viridis
+p + scale_fill_viridis()
+```
+</div>
+
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3c, echo=FALSE, out.width = "100%", fig.height=7}
+# Adjust color palette: colorBrewer
+p + scale_fill_distiller(palette = "RdPu") 
+```
+</div>
+
+</div>
+
+
+Adding color to circular packing definitely makes sense. The first option is to map color to depth: the origin of every node will have a color, the level 1 another one, and so on.. 
+
+As usual, you can play with the colour palette to fit your needs. Here are 2 examples with the `viridis` and the `RColorBrewer` palettes:
+
+
+
+```{r thecode3a, eval=FALSE}
+```
+```{r thecode3b, eval=FALSE}
+```
+```{r thecode3c, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Map color to hierarchy depth
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4a, echo=FALSE, out.width = "100%", fig.height=7}
+# Create a subset of the dataset (I remove 1 level)
+edges <- flare$edges %>% 
+  filter(to %in% from) %>% 
+  droplevels()
+vertices <- flare$vertices %>% 
+  filter(name %in% c(edges$from, edges$to)) %>% 
+  droplevels()
+vertices$size <- runif(nrow(vertices))
+ 
+# Rebuild the graph object
+mygraph <- graph_from_data_frame( edges, vertices=vertices )
+ 
+# left
+ggraph(mygraph, layout = 'circlepack', weight="size" ) + 
+  geom_node_circle(aes(fill = depth)) +
+  geom_node_text( aes(label=shortName, filter=leaf, fill=depth, size=size)) +
+  theme_void() + 
+  theme(legend.position="FALSE") + 
+  scale_fill_viridis()
+```
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4b, echo=FALSE, out.width = "100%", fig.height=7}
+# Right 
+ggraph(mygraph, layout = 'circlepack', weight="size" ) + 
+  geom_node_circle(aes(fill = depth)) +
+  geom_node_label( aes(label=shortName, filter=leaf, size=size)) +
+  theme_void() + 
+  theme(legend.position="FALSE") + 
+  scale_fill_viridis()
+```
+</div>
+
+
+</div>
+
+To add more insight to the plot, we often need to add labels to the circles. However you can do it only if the number of circle is not to big. Note that you can use `geom_node_text` (left) or `geom_node_label` to annotate leaves of the circle packing:
+ 
+
+
+```{r thecode4a, eval=FALSE}
+```
+```{r thecode4b, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

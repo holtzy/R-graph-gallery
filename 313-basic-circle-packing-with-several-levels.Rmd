@@ -1,0 +1,210 @@
+---
+title: "Basic Circle packing with several hierarchy level"
+descriptionMeta: "This page is dedicated to multi level circle packing. It explains how to build one using R and the ggraph package."
+descriptionTop: "This page is dedicated to multi level [circle packing](circular-packing.html). It explains how to build one using R and the `ggraph` package."
+sectionText: "Circle Packing section"
+sectionLink: "circle-packing.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/circularpacking.html"
+url: "313-basic-circle-packing-with-several-levels"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" >
+
+
+
+
+# Input & concept
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+[Circular packing](circular-packing.html) represents a hierarchy: The biggest circle (origin of the hierarchy) contains several big circles (nodes of level 1), which contain smaller circle (level 2) and so on.. The last level is called leaf.
+
+The input data is a list of edges between nodes. It should look more or less like the table beside. Moreover, we usually accompany this table with another one that gives features for each node.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><img src="img/other/Hierarchical_network_2col.png" alt="Edge list"></img></center>
+<center><p style="color: grey; font-size: 12px"><i>Edge list</i></p></center>
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+# Most basic circular packing with `ggraph`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `ggraph` package makes it a breeze to build a circular packing from an edge list. Here is an example based on the `flare` dataset proovded with the package.
+
+The first step is to transform the dataframe to a graph object thanks to the `graph_from_data_frame()` function of the `igraph` package. Then, `ggraph` offers the `geom_node_circle()` function that will build the chart.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+# Libraries
+library(ggraph)
+library(igraph)
+library(tidyverse)
+ 
+# We need a data frame giving a hierarchical structure. Let's consider the flare dataset:
+edges <- flare$edges
+ 
+# Usually we associate another dataset that give information about each node of the dataset:
+vertices <- flare$vertices
+ 
+# Then we have to make a 'graph' object using the igraph library:
+mygraph <- graph_from_data_frame( edges, vertices=vertices )
+ 
+# Make the plot
+ggraph(mygraph, layout = 'circlepack') + 
+  geom_node_circle() +
+  theme_void()
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Switching to another chart type
+***
+Note that the `ggraph` library allows to easily go from one type of representation to another. Indeed several types of representation are suitable for hierarchical data: [dendrogram](dendrogram.html) (can be circular), [treemap](treemap.html), sunburst diagram or [network](network.html)!
+
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3a, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph, layout='dendrogram', circular=TRUE) + 
+  geom_edge_diagonal() +
+  theme_void() +
+  theme(legend.position="none")
+```
+
+</div>
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3b, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph, layout='dendrogram', circular=FALSE) + 
+  geom_edge_diagonal() +
+  theme_void() +
+  theme(legend.position="none")
+```
+
+</div>
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3c, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph, 'treemap', weight = 'size') + 
+  geom_node_tile(aes(fill = depth), size = 0.25) +
+  theme_void() +
+  theme(legend.position="none")
+
+```
+
+</div>
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3d, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph, 'partition', circular = TRUE) + 
+  geom_node_arc_bar(aes(fill = depth), size = 0.25) +
+  theme_void() +
+  theme(legend.position="none")
+```
+
+</div>
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode3e, echo=FALSE, out.width = "100%", fig.height=7}
+ggraph(mygraph) + 
+  geom_edge_link() + 
+  geom_node_point() +
+  theme_void() +
+  theme(legend.position="none")
+```
+
+</div>
+
+
+</div>
+
+
+
+```{r thecode3a, eval=FALSE}
+```
+```{r thecode3b, eval=FALSE}
+```
+```{r thecode3c, eval=FALSE}
+```
+```{r thecode3d, eval=FALSE}
+```
+```{r thecode3e, eval=FALSE}
+```
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
