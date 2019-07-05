@@ -1,0 +1,165 @@
+---
+title: "Interactive network chart with R"
+descriptionMeta: "The networkD3 package allows to build interactive network diagram directly from R. It allows to zoom, hover nodes, reorganize the layout and more. This post explains how to use the library with reproducible examples."
+descriptionTop: "The `networkD3` package allows to build interactive [network diagram](network.html) directly from `R`. It allows to zoom, hover nodes, reorganize the layout and more. This post explains how to use the library with reproducible examples."
+sectionText: "Network section"
+sectionLink: "network.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/network.html"
+url: "network-interactive"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Most basic network diagram
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Here is a very basic interactive network diagram built with the `networkD3` package. Its creation follows those steps:
+
+- Input has to be at edge list format: each row specify a link between 2 nodes
+- The `simpleNetwork()` function allows to plot the interactive chart directly
+- The `saveWidget()` function allows to save the chart in a standalone `.html` file if needed
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/networkInteractive1.html" height="300" width="300" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# Libraries
+library(igraph)
+library(networkD3)
+
+# create a dataset:
+data <- data_frame(
+  from=c("A", "A", "B", "D", "C", "D", "E", "B", "C", "D", "K", "A", "M"),
+  to=c("B", "E", "F", "A", "C", "A", "B", "Z", "A", "C", "A", "B", "K")
+)
+
+# Plot
+p <- simpleNetwork(data, height="100px", width="100px")
+
+# p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/networkInteractive1.html"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interactive network customization
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Many option are available to customize the interactive diagram.
+
+- some options allow to customize the node, links and label feature, like `nodeColour` or `fontSize`. They are easy to understand and you can get a list of them with `help(simpleNetwork)`.
+- other options allow to control the layout, i.e. how nodes are distributed on the window. `networkD3` uses a force algorithm: each nodes are gonna be attracted / repulsed depending on their connection degree?
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/networkInteractive2.html" height="500" width="400" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+```{r, eval=FALSE}
+# Libraries
+library(igraph)
+library(networkD3)
+
+# create a dataset:
+data <- data_frame(
+  from=c("A", "A", "B", "D", "C", "D", "E", "B", "C", "D", "K", "A", "M"),
+  to=c("B", "E", "F", "A", "C", "A", "B", "Z", "A", "C", "A", "B", "K")
+)
+
+# Plot
+p <- simpleNetwork(data, height="100px", width="100px",        
+        Source = 1,                 # column number of source
+        Target = 2,                 # column number of target
+        linkDistance = 10,          # distance between node. Increase this value to have more space between nodes
+        charge = -900,                # numeric value indicating either the strength of the node repulsion (negative value) or attraction (positive value)
+        fontSize = 14,               # size of the node names
+        fontFamily = "serif",       # font og node names
+        linkColour = "#666",        # colour of edges, MUST be a common colour for the whole graph
+        nodeColour = "#69b3a2",     # colour of nodes, MUST be a common colour for the whole graph
+        opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
+        zoom = T                    # Can you zoom on the figure?
+        )
+
+#p
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(p, file=paste0( getwd(), "/HtmlWidget/networkInteractive2.html"))
+```
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```
