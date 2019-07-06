@@ -1,0 +1,280 @@
+---
+title: "Network chart with R and igraph: chart parameters "
+descriptionMeta: "The igraph package is the best way to build network diagrams with R. This post describes the different parameters offered by the library, allowing to customize node, link and label features."
+descriptionTop: "The `igraph` package is the best way to build [network diagrams](network.html) with R. This post describes the different parameters offered by the library, allowing to customize node, link and label features.."
+sectionText: "Network section"
+sectionLink: "network.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/network.html"
+url: "248-igraph-plotting-parameters"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Default network chart with `igraph`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This post assumes you already know how to build a basic network chart with the `igraph` library. If you don't have a look to the [network section](network.html) that provides an introduction.
+
+Basically, `igraph` allows to transform several types of input into a `graph` object that can be plotted using the `plot()` function as follow:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode1, echo=FALSE, out.width = "100%", fig.height=7}
+# Library
+library(igraph)
+
+# Create data
+set.seed(1)
+data <- matrix(sample(0:1, 100, replace=TRUE, prob=c(0.8,0.2)), nc=10)
+network <- graph_from_adjacency_matrix(data , mode='undirected', diag=F )
+
+# Default network
+par(mar=c(0,0,0,0))
+plot(network)
+```
+</div>
+</div>
+
+
+
+```{r thecode1, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Customize node features
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Node can be modified buy several arguments that all start with `vertex.`. A vertex is a node in `igraph` language. Main options are explained in the code below:
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+plot(network,
+    vertex.color = rgb(0.8,0.2,0.2,0.9),           # Node color
+    vertex.frame.color = "Forestgreen",            # Node border color
+    vertex.shape=c("circle","square"),             # One of “none”, “circle”, “square”, “csquare”, “rectangle” “crectangle”, “vrectangle”, “pie”, “raster”, or “sphere”
+    vertex.size=c(15:24),                          # Size of the node (default is 15)
+    vertex.size2=NA,                               # The second size of the node (e.g. for a rectangle)
+    )
+```
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Customize label features
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Following the same principle, options starting with `vertex.label.` control the labgel features. Note that when several values are provided to an option, values are used subsequently and recycled.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+plot(network,
+    vertex.label=LETTERS[1:10],                    # Character vector used to label the nodes
+    vertex.label.color=c("red","blue"),
+    vertex.label.family="Times",                   # Font family of the label (e.g.“Times”, “Helvetica”)
+    vertex.label.font=c(1,2,3,4),                  # Font: 1 plain, 2 bold, 3, italic, 4 bold italic, 5 symbol
+    vertex.label.cex=c(0.5,1,1.5),                 # Font size (multiplication factor, device-dependent)
+    vertex.label.dist=0,                           # Distance between the label and the vertex
+    vertex.label.degree=0 ,                        # The position of the label in relation to the vertex (use pi)
+    )
+```
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Customize link features
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Last but not least, control edges with arguments starting with `edge.`.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+plot(network,
+    edge.color=rep(c("red","pink"),5),           # Edge color
+    edge.width=seq(1,10),                        # Edge width, defaults to 1
+    edge.arrow.size=1,                           # Arrow size, defaults to 1
+    edge.arrow.width=1,                          # Arrow width, defaults to 1
+    edge.lty=c("solid")                           # Line type, could be 0 or “blank”, 1 or “solid”, 2 or “dashed”, 3 or “dotted”, 4 or “dotdash”, 5 or “longdash”, 6 or “twodash”
+    #edge.curved=c(rep(0,5), rep(1,5))            # Edge curvature, range 0-1 (FALSE sets it to 0, TRUE to 0.5)
+    )
+```
+</div>
+</div>
+
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# All customization
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Of course, you can use all the options described above all together on the same chart, for a high level of customization.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode5, echo=FALSE, out.width = "100%", fig.height=7}
+par(bg="black")
+
+plot(network, 
+    
+    # === vertex
+    vertex.color = rgb(0.8,0.4,0.3,0.8),          # Node color
+    vertex.frame.color = "white",                 # Node border color
+    vertex.shape="circle",                        # One of “none”, “circle”, “square”, “csquare”, “rectangle” “crectangle”, “vrectangle”, “pie”, “raster”, or “sphere”
+    vertex.size=14,                               # Size of the node (default is 15)
+    vertex.size2=NA,                              # The second size of the node (e.g. for a rectangle)
+    
+    # === vertex label
+    vertex.label=LETTERS[1:10],                   # Character vector used to label the nodes
+    vertex.label.color="white",
+    vertex.label.family="Times",                  # Font family of the label (e.g.“Times”, “Helvetica”)
+    vertex.label.font=2,                          # Font: 1 plain, 2 bold, 3, italic, 4 bold italic, 5 symbol
+    vertex.label.cex=1,                           # Font size (multiplication factor, device-dependent)
+    vertex.label.dist=0,                          # Distance between the label and the vertex
+    vertex.label.degree=0 ,                       # The position of the label in relation to the vertex (use pi)
+    
+    # === Edge
+    edge.color="white",                           # Edge color
+    edge.width=4,                                 # Edge width, defaults to 1
+    edge.arrow.size=1,                            # Arrow size, defaults to 1
+    edge.arrow.width=1,                           # Arrow width, defaults to 1
+    edge.lty="solid",                             # Line type, could be 0 or “blank”, 1 or “solid”, 2 or “dashed”, 3 or “dotted”, 4 or “dotdash”, 5 or “longdash”, 6 or “twodash”
+    edge.curved=0.3    ,                          # Edge curvature, range 0-1 (FALSE sets it to 0, TRUE to 0.5)
+    )
+```
+</div>
+</div>
+
+
+
+```{r thecode5, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

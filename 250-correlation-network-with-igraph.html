@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Clustering result visualization with network diagram &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post explains how to compute a correlation matrix and display the result as a network chart using R and the igraph package.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Clustering result visualization with network diagram" />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="This post explains how to compute a correlation matrix and display the result as a network chart using R and the igraph package." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/250-correlation-network-with-igraph.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Clustering result visualization with network diagram</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to compute a correlation matrix and display the result as a <a href="network.html">network</a> chart using R and the <code>igraph</code> package.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='network.html'>Network section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/network.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="compute-the-correlation-matrix">Compute the correlation matrix</h1>
+<hr />
+<p>Consider a dataset composed by entities (usually in rows) and features (usually in columns).</p>
+<p>It is possible to compute a correlation matrix from it. It is a square matrix showing the relationship between each pair of entity. It can be computed using correlation (<code>cor()</code>) or euclidean distance (<code>dist()</code>).</p>
+<p>Let’s apply it to the <code>mtcars</code> dataset that is natively provided by R.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(igraph)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># data</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># head(mtcars)</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Make a correlation matrix:</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">mat &lt;-<span class="st"> </span><span class="kw">cor</span>(<span class="kw">t</span>(mtcars[,<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span><span class="op">:</span><span class="dv">6</span>)]))</a></code></pre></div>
+<h1 id="basic-network-diagram">Basic network diagram</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>A correlation matrix can be visualized as a network diagram. Each entity of the dataset will be a node. And 2 nodes will be connected if their correlation or distance reach a threshold (<code>0.995</code> here).</p>
+<p>To make a <code>graph</code> object from the correlation matrix, use the <code>graph_from_adjacency_matrix()</code> function of the <code>igraph</code> package. If you’re not familiar with <code>igraph</code>, the <a href="network.html">network</a> section is full of examples to get you started.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="250-correlation-network-with-igraph_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Keep only high correlations</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">mat[mat<span class="op">&lt;</span><span class="fl">0.995</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Make an Igraph object from this matrix:</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">network &lt;-<span class="st"> </span><span class="kw">graph_from_adjacency_matrix</span>( mat, <span class="dt">weighted=</span>T, <span class="dt">mode=</span><span class="st">&quot;undirected&quot;</span>, <span class="dt">diag=</span>F)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># Basic chart</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">plot</span>(network)</a></code></pre></div>
+<h1 id="customization">Customization</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The hardest part of the job has been done. The chart just requires a bit of polishing for a better output:</p>
+<ul>
+<li>customize node, link, label and background features as you like</li>
+<li>map the node feature to a variable (<code>cyl</code> here). It gives an additional layer of information, allowing to compare the network structure with a potential expected organization.</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="250-correlation-network-with-igraph_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># color palette</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(RColorBrewer)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">coul &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="kw">nlevels</span>(<span class="kw">as.factor</span>(mtcars<span class="op">$</span>cyl)), <span class="st">&quot;Set2&quot;</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># Map the color to cylinders</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">my_color &lt;-<span class="st"> </span>coul[<span class="kw">as.numeric</span>(<span class="kw">as.factor</span>(mtcars<span class="op">$</span>cyl))]</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># plot</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">par</span>(<span class="dt">bg=</span><span class="st">&quot;grey13&quot;</span>, <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw">set.seed</span>(<span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">plot</span>(network, </a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">    <span class="dt">vertex.size=</span><span class="dv">12</span>,</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">    <span class="dt">vertex.color=</span>my_color, </a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">    <span class="dt">vertex.label.cex=</span><span class="fl">0.7</span>,</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">    <span class="dt">vertex.label.color=</span><span class="st">&quot;white&quot;</span>,</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">    <span class="dt">vertex.frame.color=</span><span class="st">&quot;transparent&quot;</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">    )</a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co"># title and legend</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="kw">text</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="st">&quot;mtcars network&quot;</span>,<span class="dt">col=</span><span class="st">&quot;white&quot;</span>, <span class="dt">cex=</span><span class="fl">1.5</span>)</a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="kw">legend</span>(<span class="dt">x=</span><span class="op">-</span><span class="fl">0.2</span>, <span class="dt">y=</span><span class="op">-</span><span class="fl">0.12</span>, </a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">       <span class="dt">legend=</span><span class="kw">paste</span>( <span class="kw">levels</span>(<span class="kw">as.factor</span>(mtcars<span class="op">$</span>cyl)), <span class="st">&quot; cylinders&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>), </a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">       <span class="dt">col =</span> coul , </a>
+<a class="sourceLine" id="cb3-24" data-line-number="24">       <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">pch=</span><span class="dv">20</span> , <span class="dt">pt.cex =</span> <span class="dv">2</span>, <span class="dt">cex =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb3-25" data-line-number="25">       <span class="dt">text.col=</span><span class="st">&quot;white&quot;</span> , <span class="dt">horiz =</span> F)</a></code></pre></div>
+<h1 id="customize-link-features">Customize link features</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Last but not least, control edges with arguments starting with <code>edge.</code>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="250-correlation-network-with-igraph_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">plot</span>(network,</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">    <span class="dt">edge.color=</span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;red&quot;</span>,<span class="st">&quot;pink&quot;</span>),<span class="dv">5</span>),           <span class="co"># Edge color</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">edge.width=</span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>),                        <span class="co"># Edge width, defaults to 1</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    <span class="dt">edge.arrow.size=</span><span class="dv">1</span>,                           <span class="co"># Arrow size, defaults to 1</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">    <span class="dt">edge.arrow.width=</span><span class="dv">1</span>,                          <span class="co"># Arrow width, defaults to 1</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="dt">edge.lty=</span><span class="kw">c</span>(<span class="st">&quot;solid&quot;</span>)                           <span class="co"># Line type, could be 0 or “blank”, 1 or “solid”, 2 or “dashed”, 3 or “dotted”, 4 or “dotdash”, 5 or “longdash”, 6 or “twodash”</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="co">#edge.curved=c(rep(0,5), rep(1,5))            # Edge curvature, range 0-1 (FALSE sets it to 0, TRUE to 0.5)</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">    )</a></code></pre></div>
+<h1 id="all-customization">All customization</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Of course, you can use all the options described above all together on the same chart, for a high level of customization.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="250-correlation-network-with-igraph_files/figure-html/thecode5-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">par</span>(<span class="dt">bg=</span><span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">plot</span>(network,</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="co"># === vertex</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="dt">vertex.color =</span> <span class="kw">rgb</span>(<span class="fl">0.8</span>,<span class="fl">0.4</span>,<span class="fl">0.3</span>,<span class="fl">0.8</span>),          <span class="co"># Node color</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">    <span class="dt">vertex.frame.color =</span> <span class="st">&quot;white&quot;</span>,                 <span class="co"># Node border color</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="dt">vertex.shape=</span><span class="st">&quot;circle&quot;</span>,                        <span class="co"># One of “none”, “circle”, “square”, “csquare”, “rectangle” “crectangle”, “vrectangle”, “pie”, “raster”, or “sphere”</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">    <span class="dt">vertex.size=</span><span class="dv">14</span>,                               <span class="co"># Size of the node (default is 15)</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="dt">vertex.size2=</span><span class="ot">NA</span>,                              <span class="co"># The second size of the node (e.g. for a rectangle)</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    <span class="co"># === vertex label</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">    <span class="dt">vertex.label=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>],                   <span class="co"># Character vector used to label the nodes</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    <span class="dt">vertex.label.color=</span><span class="st">&quot;white&quot;</span>,</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    <span class="dt">vertex.label.family=</span><span class="st">&quot;Times&quot;</span>,                  <span class="co"># Font family of the label (e.g.“Times”, “Helvetica”)</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">    <span class="dt">vertex.label.font=</span><span class="dv">2</span>,                          <span class="co"># Font: 1 plain, 2 bold, 3, italic, 4 bold italic, 5 symbol</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">    <span class="dt">vertex.label.cex=</span><span class="dv">1</span>,                           <span class="co"># Font size (multiplication factor, device-dependent)</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18">    <span class="dt">vertex.label.dist=</span><span class="dv">0</span>,                          <span class="co"># Distance between the label and the vertex</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">    <span class="dt">vertex.label.degree=</span><span class="dv">0</span> ,                       <span class="co"># The position of the label in relation to the vertex (use pi)</span></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">    <span class="co"># === Edge</span></a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">    <span class="dt">edge.color=</span><span class="st">&quot;white&quot;</span>,                           <span class="co"># Edge color</span></a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">    <span class="dt">edge.width=</span><span class="dv">4</span>,                                 <span class="co"># Edge width, defaults to 1</span></a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">    <span class="dt">edge.arrow.size=</span><span class="dv">1</span>,                            <span class="co"># Arrow size, defaults to 1</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">    <span class="dt">edge.arrow.width=</span><span class="dv">1</span>,                           <span class="co"># Arrow width, defaults to 1</span></a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">    <span class="dt">edge.lty=</span><span class="st">&quot;solid&quot;</span>,                             <span class="co"># Line type, could be 0 or “blank”, 1 or “solid”, 2 or “dashed”, 3 or “dotted”, 4 or “dotdash”, 5 or “longdash”, 6 or “twodash”</span></a>
+<a class="sourceLine" id="cb5-27" data-line-number="27">    <span class="dt">edge.curved=</span><span class="fl">0.3</span>    ,                          <span class="co"># Edge curvature, range 0-1 (FALSE sets it to 0, TRUE to 0.5)</span></a>
+<a class="sourceLine" id="cb5-28" data-line-number="28">    )</a></code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-barplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="treemap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Tree150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Treemap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="doughnut-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Doughnut</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="pie-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Pie150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Pie chart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="dendrogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Dendrogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="circle-packing.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Circular packing</div>
+      </div>
+      <!-- <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="sunburst.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Sunburst150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Sunburst</div>
+      </div> -->
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
