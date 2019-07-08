@@ -1,0 +1,245 @@
+---
+title: "How to annotate a plot in ggplot2"
+descriptionMeta: "Once your chart is done, annotating it is a crucial step to make it more insightful. This post will guide you through the best practices using R and ggplot2."
+descriptionTop: "Once your chart is done, annotating it is a crucial step to make it more insightful. This post will guide you through the best practices using `R` and `ggplot2`."
+sectionText: "ggplot2 section"
+sectionLink: "ggplot2-package.html"
+DataToVizText: "Why annotating?"
+DataToVizLink: "data-to-viz.com/caveat/annotation.html"
+url: "233-add-annotations-on-ggplot2-chart"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Adding text with `geom_text()` or `geom_label()`
+***
+
+<div class = "row">
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeA, echo=FALSE, out.width = "100%", fig.height=7}
+# library
+library(ggplot2)
+
+# basic graph
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point()
+ 
+# a data frame with all the annotation info
+annotation <- data.frame(
+   x = c(2,4.5),
+   y = c(20,25),
+   label = c("label 1", "label 2")
+)
+
+# Add text
+p + geom_text(data=annotation, aes( x=x, y=y, label=label),                 , 
+           color="orange", 
+           size=7 , angle=45, fontface="bold" )
+
+# Note: possible to shorten with annotate:
+# p +
+#  annotate("text", x = c(2,4.5), y = c(20,25), 
+#           label = c("label 1", "label 2") , color="orange", 
+#           size=7 , angle=45, fontface="bold")
+
+```
+</div>
+
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeB, echo=FALSE, out.width = "100%", fig.height=7}
+# Right chart: using labels
+p + geom_label(data=annotation, aes( x=x, y=y, label=label),                 , 
+           color="orange", 
+           size=7 , angle=45, fontface="bold" )
+```
+</div>
+
+</div>
+
+Text is the most common kind of annotation. It allows to give more information on the most important part of the chart.
+
+Using `ggplot2`, 2 main functions are available for that kind of annotation:
+
+- `geom_text` to add a simple piece of text
+- `geom_label` to add a label: framed text
+
+Note that the `annotate()` function is a good alternative that can reduces the code length for simple cases.
+
+
+```{r thecodeA, eval=FALSE}
+```
+
+```{r thecodeB, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Add shapes with `annotate()`
+***
+
+<div class = "row">
+
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode1A, echo=FALSE, out.width = "100%", fig.height=7}
+# Add rectangles
+p + annotate("rect", xmin=c(2,4), xmax=c(3,5), ymin=c(20,10) , ymax=c(30,20), alpha=0.2, color="blue", fill="blue")
+```
+
+</div>
+
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode1B, echo=FALSE, out.width = "100%", fig.height=7}
+# Add segments
+p + annotate("segment", x = 1, xend = 3, y = 25, yend = 15, colour = "purple", size=3, alpha=0.6)
+```
+
+</div>
+
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode1C, echo=FALSE, out.width = "100%", fig.height=7}
+# Add arrow
+p + annotate("segment", x = 2, xend = 4, y = 15, yend = 25, colour = "pink", size=3, alpha=0.6, arrow=arrow())
+```
+
+</div>
+
+
+</div>
+
+The `annotate()` function allows to add all kind of shape on a `ggplot2` chart. The first argument will control what kind is used: `rect` or `segment` for rectangle, segment or arrow.
+
+```{r thecode1A, eval=FALSE}
+```
+
+```{r thecode1B, eval=FALSE}
+```
+
+```{r thecode1C, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+# Add ablines with `geom_hline()` and `geom_vline()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+An abline is a segment that goes from one chart extremity to the other. `ggplot2` offers the `geom_hline()` and `geom_vline()` functions that are dedicated to it.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+p + 
+  # horizontal
+  geom_hline(yintercept=25, color="orange", size=1) + 
+  # vertical
+  geom_vline(xintercept=3, color="orange", size=1)
+```
+
+</div>
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+# Add a point and a range with.. `pointrange()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Last kind of annotation, add a dot and a segment directly with `pointrange()`.
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# Add point and range
+p + annotate("pointrange", x = 3.5, y = 20, ymin = 12, ymax = 28,colour = "orange", size = 1.5, alpha=0.4)
+```
+
+</div>
+</div>
+
+
+
+```{r thecode3, eval=FALSE}
+```
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
