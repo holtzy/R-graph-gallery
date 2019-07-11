@@ -1,0 +1,301 @@
+---
+title: "Building a nice legend with R and ggplot2"
+descriptionMeta: "This post describes all the available options to customize the chart legend with R and ggplot2. It shows how to control the title, text, location, symbols and more."
+descriptionTop: "This post describes all the available options to customize the chart legend with `R` and `ggplot2`. It shows how to control the title, text, location, symbols and more."
+sectionText: "ggplot2 section"
+sectionLink: "ggplot2-package.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "239-custom-layout-legend-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+
+# Default legend with `ggplot2`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+By default, `ggplot2` will automatically build a legend on your chart as soon as a shape feature is mapped to a variable in `aes()` part of the `ggplot()` call. So if you use `color`, `shape` or `alpha`, a legend will be available.
+
+Here is an example based on the `mtcars` dataset. This post is gonna show how to use the `theme()` function to apply all type of customization on this default legend.
+
+<u>Note </u>: this post is strongly inspired by the doc you get typiinig `??ggplot2::theme`, give it a go!
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Load ggplot2
+library(ggplot2)
+
+# Very basic chart
+basic <- ggplot(mtcars, aes(wt, mpg, colour = factor(cyl), shape = factor(vs) )) +
+       geom_point()
+basic
+```
+</div>
+
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Change legend title with `labs()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `labs()` function allows to change the legend titles. You can specify one title per section of the legend, i.e. per aesthetics in use in the chart.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+basic+
+  labs(
+         colour = "name1",
+         shape = "name2"
+        )
+```
+</div>
+
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Get rid of the legend: `guides()` and `theme()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode3a, echo=FALSE, out.width = "80%", fig.height=6, fig.align="center"}
+# Left -> get rid of one part of the legend
+basic + guides(shape=FALSE)
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3b, echo=FALSE, out.width = "80%", fig.height=6,  fig.align="center"}
+# Right -> only the x axis is modified
+basic + theme(legend.position = "none")
+```
+
+</div>
+
+</div>
+
+
+It is possible to remove a specific part or the whole legend thanks to the `theme()` and the `guides()` function. See code below:
+
+```{r thecode3a, eval=FALSE}
+```
+```{r thecode3b, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Control legend position with `legend.position`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode4a, echo=FALSE, out.width = "80%", fig.height=6, fig.align="center"}
+# Left -> legend around the plot
+basic + theme(legend.position = "bottom")
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4b, echo=FALSE, out.width = "80%", fig.height=6,  fig.align="center"}
+# Right -> inside the plot area
+basic + theme(
+    legend.position = c(.95, .95),
+    legend.justification = c("right", "top"),
+    legend.box.just = "right",
+    legend.margin = margin(6, 6, 6, 6)
+    )
+```
+
+</div>
+
+</div>
+
+
+You can place the legend literally anywhere. 
+
+To put it around the chart, use the `legend.position` option and specify `top`, `right`, `bottom`, or `left`. To put it inside the plot area, specify a vector of length 2, both values going between 0 and 1 and giving the x and y coordinates.
+
+Note: the command `legend.justification` sets the corner that the position refers to.
+
+```{r thecode4a, eval=FALSE}
+```
+```{r thecode4b, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+# Legend appearance
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode5a, echo=FALSE, out.width = "100%", fig.height=7, fig.align="center"}
+# custom box around legend
+basic + theme(
+    legend.box.background = element_rect(color="red", size=2),
+    legend.box.margin = margin(116, 6, 6, 6)
+)
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode5b, echo=FALSE, out.width = "100%", fig.height=7,  fig.align="center"}
+# custom the key
+basic + theme(legend.key = element_rect(fill = "white", colour = "black"))
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode5c, echo=FALSE, out.width = "100%", fig.height=7,  fig.align="center"}
+# custom the text
+basic + theme(legend.text = element_text(size = 8, colour = "red"))
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode5d, echo=FALSE, out.width = "100%", fig.height=7,  fig.align="center"}
+# custom the title
+basic + theme(legend.title = element_text(face = "bold"))
+```
+
+</div>
+
+</div>
+
+Here are 4 examples showing how to customize the legend main features:
+
+- box with `legend.box.`: it is a rectangle that frames the legend. Give features with `element_rect()`
+- key with `legend.key`: the key is the part showing the symbols. Note that symbols will automatically be the ones used on the chart
+- text with `legend.text`: here you can control the color, the size of the right part of the legend
+- title with `legend.title`.
+
+```{r thecode5a, eval=FALSE}
+```
+```{r thecode5b, eval=FALSE}
+```
+```{r thecode5c, eval=FALSE}
+```
+```{r thecode5d, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

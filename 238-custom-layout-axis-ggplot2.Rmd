@@ -1,0 +1,284 @@
+---
+title: "Axis manipulation with R and ggplot2"
+descriptionMeta: "This post describes all the available options to customize chart axis with R and ggplot2. It shows how to control the axis itself, its label, title, position and more."
+descriptionTop: "This post describes all the available options to customize chart axis with `R` and `ggplot2`. It shows how to control the axis itself, its label, title, position and more."
+sectionText: "ggplot2 section"
+sectionLink: "ggplot2-package.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "238-custom-layout-axis-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+# Default `ggplot2` axis
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Let's start with a very basic `ggplot2` [scatterplot](scatterplot.html). The axis usually looks very good with default option as you can see here.
+
+Basically two main functions will allow to customize it:
+
+- `theme()` to change the axis appearance
+- `scale_x_` and `scale_y_` to change the axis type
+
+Let's see how to use them
+
+
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# Load ggplot2
+library(ggplot2)
+
+# Very basic chart
+basic <- ggplot( mtcars , aes(x=mpg, y=wt)) + 
+  geom_point()
+basic
+```
+</div>
+
+</div>
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Set axis title and limits with `xlab()` and `xlim()`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Two basic options that are used in almost every charts are `xlab()` and `xlim()` to control the axis title and the axis limits respectively.
+
+<u>Note </u>: it is possible to specify only the lower or upper bound of a limit. For instance, try `xlim(0,NA)`
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+basic+
+    xlab("mpg value") + 
+    xlim(0,50)
+```
+</div>
+
+</div>
+
+
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Customize axis title appearance: `axis.title`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 ">
+
+```{r thecode3a, echo=FALSE, out.width = "80%", fig.height=6, fig.align="center"}
+# Left -> both axis are modified
+basic + theme(axis.title = element_text( angle = 90, color="red", size=15, face=3)) # face = title location
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3b, echo=FALSE, out.width = "80%", fig.height=6,  fig.align="center"}
+# Right -> only the x axis is modified
+basic + theme(axis.title.x = element_text( angle = 90, color="red", size=15, face=3))
+```
+
+</div>
+
+</div>
+
+
+The `theme()` function allows to customize all parts of the `ggplot2` chart. The `axis.title.` controls the axis title appearance. Since it is text, features are wrapped in a `element_text()` function. The code below shows how to change the most common features:
+
+```{r thecode3a, eval=FALSE}
+```
+```{r thecode3b, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+# Customize axis labels: `axis.text`
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Using pretty much the same process, the `axis.text()` function allows to control text label features. Once more, using `axis.text.x()` would modify the x axis only.
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+basic + 
+  theme(axis.text = element_text( 
+    angle = 90, 
+    color="blue", 
+    size=15, 
+    face=3)
+  )
+```
+</div>
+
+</div>
+
+
+```{r thecode4, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Customize axis ticks and axis line with `axis.ticks` and `axis.line`
+***
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 ">
+
+```{r thecode5a, echo=FALSE, out.width = "100%", fig.height=7, fig.align="center"}
+# chart 1: ticks
+basic + theme(
+   axis.ticks = element_line(size = 2, color="red") , 
+   axis.ticks.length = unit(.5, "cm")
+)
+```
+
+</div>
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode5b, echo=FALSE, out.width = "100%", fig.height=7,  fig.align="center"}
+# chart 2: axis lines
+basic + theme(axis.line = element_line(size = 3, colour = "green", linetype=2))
+```
+
+</div>
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode5c, echo=FALSE, out.width = "100%", fig.height=7,  fig.align="center"}
+# chart 3: combination
+ggplot( mtcars , aes(x=mpg, y=wt)) + geom_point() +
+    theme(
+        axis.title = element_text( color="red", size=15, face=2),
+        axis.line = element_line(size = 3, colour = "green", linetype=2),
+        axis.text = element_text( angle = 90, color="blue", size=15, face=2)
+        )
+```
+
+</div>
+
+</div>
+
+
+
+The `axis.ticks()` function controls the ticks appearance. `axis.line()` controles the axis line. Both of them are lines, so options are wrapped in a `element_line()` statement. 
+
+`linetype` controls the type of line in use, see the [ggplot2 section](ggplot2-package.html) for more.
+
+```{r thecode5a, eval=FALSE}
+```
+```{r thecode5b, eval=FALSE}
+```
+```{r thecode5c, eval=FALSE}
+```
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
