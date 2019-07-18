@@ -1,0 +1,90 @@
+---
+title: "Base R graph parameters: a cheatsheet."
+descriptionMeta: "This post aims to remind the options offered to customize a graph in base R. Understand in a sec how to use lwd, pch, type, lty, cex, and more."
+descriptionTop: "This post aims to remind the options offered to customize a graph in base R. Understand in a sec how to use `lwd`, `pch`, `type`, `lty`, `cex`, and more."
+sectionText: "3d Section"
+sectionLink: "3d.html"
+DataToVizText: "3d: warning"
+DataToVizLink: "data-to-viz.com/caveat/3d.html"
+url: "3-r-animated-cube"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The `rgl` package is the best option to build 3d charts in R. Please see this post for an introduction to 3d scatterplots using it.
+
+It also provides the `plot3d()` and `play3d()` functions that allow to animate the 3d chart, and eventually to export the result at a `.gif` format. Here is an application to the famous `iris` dataset, with a nice animated 3d scatterplot chart.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<center><img src="img/graph/3-r-animated-cube.gif" alt="3D animated chart in R"></img></center>
+
+</div>
+</div>
+
+
+```{r thecode, eval=FALSE}
+library( rgl )
+library(magick)
+
+# Let's use the iris dataset
+# iris
+
+# This is ugly
+colors <- c("royalblue1", "darkcyan", "oldlace")
+iris$color <- colors[ as.numeric( as.factor(iris$Species) ) ]
+
+# Static chart
+plot3d( iris[,1], iris[,2], iris[,3], col = iris$color, type = "s", radius = .2 )
+
+# We can indicate the axis and the rotation velocity
+play3d( spin3d( axis = c(0, 0, 1), rpm = 20), duration = 10 )
+
+# Save like gif
+movie3d(
+  movie="3dAnimatedScatterplot", 
+  spin3d( axis = c(0, 0, 1), rpm = 7),
+  duration = 10, 
+  dir = "~/Desktop",
+  type = "gif", 
+  clean = TRUE
+)
+```
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedOther.html")
+```

@@ -1,0 +1,94 @@
+---
+title: "3d scatterplot with R"
+descriptionMeta: "This post shows how to build a 3d scatterplot with R and the rgl package. It provides the reproducible code and makes it easy to apply it to your own dataset."
+descriptionTop: "This post shows how to build a 3d scatterplot with R and the rgl package. It provides the reproducible code and makes it easy to apply it to your own dataset."
+sectionText: "3d Section"
+sectionLink: "3d.html"
+DataToVizText: "3d: warning"
+DataToVizLink: "data-to-viz.com/caveat/3d.html"
+url: "3d_scatter_plot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+<div class = "row">
+
+<div class = "col-md-4  col-sm-12 align-self-center">
+
+Building a [3d scatterplot](3d.html) requires a dataset with 3 numeric variables, each being used on an axis. Here, the famous `iris` dataset is used.
+
+The `rgl` package comes with the `plot3d()` function that is pretty close from the base R `plot()` function. Instead of providing just an `x` and a `y` argument, you also have to provide the `z` coordinate.
+
+Note that the output is interactive by default. If you have X11 or a similar tool installed, you should be able to rotate the chart for a better user experience. A few command line are also provided in case you want to export the chart at `.html`, `.png` or `.Rmd` format.
+
+</div>
+
+
+<div class = "col-md-8  col-sm-12">
+
+<center><iframe src="HtmlWidget/3dscatter.html" height="600" width="600" style="border:none;"></iframe></center>
+
+
+
+</div>
+</div>
+
+
+```{r thecode, eval=FALSE}
+# library
+library(rgl)
+
+# This is to output a rgl plot in a rmarkdown document. Note that you must add webgl=TRUE, results='hide' in the chunck header
+#library(knitr)
+#knit_hooks$set(webgl = hook_webgl)
+
+# Data: the iris data is provided by R
+data <- iris
+
+# Add a new column with color
+mycolors <- c('royalblue1', 'darkcyan', 'oldlace')
+data$color <- mycolors[ as.numeric(data$Species) ]
+
+# Plot
+par(mar=c(0,0,0,0))
+plot3d( 
+  x=data$`Sepal.Length`, y=data$`Sepal.Width`, z=data$`Petal.Length`, 
+  col = data$color, 
+  type = 's', 
+  radius = .1,
+  xlab="Sepal Length", ylab="Sepal Width", zlab="Petal Length")
+
+writeWebGL( filename="HtmlWidget/3dscatter.html" ,  width=600, height=600)
+
+```
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedOther.html")
+```

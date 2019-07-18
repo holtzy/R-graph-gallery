@@ -2,10 +2,10 @@
 title: "Building a 3D knot wiith R and rgl"
 descriptionMeta: "This is an illustration of what is possible to do with R and the rgl library: a 3D knot."
 descriptionTop: "This is an illustration of what is possible to do with `R` and the `rgl` library: a 3D knot."
-sectionText: "Line chart Section"
-sectionLink: "line-plot.html"
-DataToVizText: "About line chart"
-DataToVizLink: "data-to-viz.com/graph/line.html"
+sectionText: "3d Section"
+sectionLink: "3d.html"
+DataToVizText: "3d: warning"
+DataToVizLink: "data-to-viz.com/caveat/3d.html"
 url: "20-knot-in-3d"
 output:
   html_document:
@@ -31,7 +31,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 <div class = "row">
 
-<div class = "col-md-6  col-sm-12 align-self-center">
+<div class = "col-md-5  col-sm-12 align-self-center">
 
 With the `rgl` package, you can make the image moove and zoom in an out. Find this image in the interactive mode here.
 
@@ -41,9 +41,16 @@ With the `rgl` package, you can make the image moove and zoom in an out. Find th
 </div>
 
 
-<div class = "col-md-6  col-sm-12">
+<div class = "col-md-7  col-sm-12">
 
-```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+<center><iframe src="HtmlWidget/3dknot.html" height="500" width="500" style="border:none;"></iframe></center>
+
+
+</div>
+</div>
+
+
+```{r eval=FALSE}
 # Library rgl
 library(rgl)
 
@@ -54,8 +61,13 @@ open3d()
 #If you want to put line on the background
 #bg3d(sphere = TRUE, color = c("grey", "white"), lit = TRUE, back = "lines" ,lwd=2)
 
+# This is to output a rgl plot in a rmarkdown document. Note that you must add webgl=TRUE, results='hide' in the chunck header
+library(knitr)
+knit_hooks$set(webgl = hook_webgl)
+
+
 # plot
-bg3d(col=rgb(0.2,0.8,0.5,0.8))
+bg3d( col=rgb(0.2,0.8,0.5,0.8) )
 theta <- seq(0, 2*pi, len = 50)
 knot <- cylinder3d(
 center = cbind(sin(theta) + 3*sin(2*theta), 2*sin(3*theta), cos(theta) - 2*cos(2*theta)),
@@ -63,23 +75,12 @@ e1 = cbind(cos(theta) + 4*cos(2*theta),6*cos(3*theta),sin(theta) + 4*sin(2*theta
 shade3d(addNormals(subdivision3d(knot, depth = 2)), col = rgb(0.4,0.2,0.8,0.3))
 
 # save it as png
-rgl.snapshot( "#20_portfolio_knot_3D.png", fmt="png", top=TRUE  )
+# rgl.snapshot( "~/Desktop/#20_portfolio_knot_3D.png", fmt="png", top=TRUE  )
 
-# This is to output a rgl plot in a rmarkdown document. Note that you must add webgl=TRUE, results='hide' in the chunck header
-library(knitr)
-knit_hooks$set(webgl = hook_webgl)
 
-# insert an interactive version in R Markdown
-writeWebGL( filename="#20_portfolio_knot_3D.html" ,  width=1500)
+# Export as an html file if needed:
+writeWebGL( filename="HtmlWidget/3dknot.html" ,  width=600, height=600)
 ```
-
-</div>
-</div>
-
-
-```{r thecode, eval=FALSE}
-```
-
 
 
 
@@ -90,5 +91,5 @@ writeWebGL( filename="#20_portfolio_knot_3D.html" ,  width=1500)
 
 
 ```{r, echo=FALSE}
-htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+htmltools::includeHTML("htmlChunkRelatedOther.html")
 ```
