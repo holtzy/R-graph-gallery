@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+
+<head>
+<meta charset="utf-8">
+<title>Building a bb8 droid with R and ggplot2. &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post describes how to build a bb8 droid with R and ggplot2. Reproducible code is provided.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Building a bb8 droid with R and ggplot2." />
+<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:description" content="This post describes how to build a bb8 droid with R and ggplot2. Reproducible code is provided." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/144-droid-bb-8-data-art.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+<div class="container">
+  <a href="index.html">&larr; R Graph Gallery</a>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    Menu
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav text-uppercase ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Quick
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <p class="menuTitle"><i>Basics</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
+          <p class="menuTitle"><i>Customize</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
+          <p class="menuTitle"><i>Interactivity</i></p>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
+          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../all.html">ALL</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead">
+  <div class="textlanding">
+      <center><h1>Building a bb8 droid with R and ggplot2.</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post describes how to build a bb8 droid with R and ggplot2. Reproducible code is provided.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='ggplot2-package.html'>ggplot2 Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/line.html'>About line chart</a>
+      </div>
+  </div>
+</header>
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container" style="padding-top: 80px">
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>This is a bb9 droïd built using the <code>ggplot2</code> R package.</p>
+<p>Realized by <a href="https://github.com/pvictor">Victor Perrier</a>, inspired from <a href="http://codepen.io/bhough/pen/wawrPL">Bryan Hough</a>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="144-droid-bb-8-data-art_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Packages ----------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(<span class="st">&quot;sp&quot;</span>)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(<span class="st">&quot;rgeos&quot;</span>)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># Funs --------------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">coord_circle &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">r =</span> <span class="dv">1</span>, <span class="dt">n =</span> <span class="dv">1000</span>) {</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  <span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">    <span class="dt">x =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">0</span> <span class="op">-</span><span class="st"> </span>r, <span class="dt">to =</span> <span class="dv">0</span> <span class="op">+</span><span class="st"> </span>r, <span class="dt">length.out =</span> n <span class="op">%/%</span><span class="st"> </span><span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">    <span class="dt">y =</span> <span class="kw">sqrt</span>(r<span class="op">^</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>x<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  ) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">bind_rows</span>(., <span class="op">-</span>.) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw">mutate</span>(<span class="dt">x =</span> x <span class="op">+</span><span class="st"> </span>centre[<span class="dv">1</span>], <span class="dt">y =</span> y <span class="op">+</span><span class="st"> </span>centre[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">}</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">create_poly &lt;-<span class="st"> </span><span class="cf">function</span>(...) {</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">  args &lt;-<span class="st"> </span><span class="kw">list</span>(...)</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">  <span class="kw">SpatialPolygons</span>(</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">    <span class="kw">lapply</span>(</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">      <span class="dt">X =</span> <span class="kw">seq_along</span>(args),</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">      <span class="dt">FUN =</span> <span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">        <span class="kw">Polygons</span>(<span class="kw">list</span>(<span class="kw">Polygon</span>(<span class="kw">as.data.frame</span>(args[[x]]))), <span class="kw">names</span>(args)[x])</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">      }</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">    )</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">  )</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">}</a>
+<a class="sourceLine" id="cb1-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb1-33" data-line-number="33">echancrure &lt;-<span class="st"> </span><span class="cf">function</span>(to_var, by_var, <span class="dt">p =</span> <span class="fl">0.1</span>) {</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">  ind &lt;-<span class="st"> </span><span class="kw">which</span>(by_var <span class="op">&gt;=</span><span class="st"> </span><span class="fl">-0.08</span> <span class="op">&amp;</span><span class="st"> </span>by_var <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.08</span> <span class="op">&amp;</span><span class="st"> </span>to_var <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">  to_var[ind] &lt;-<span class="st"> </span>to_var[ind] <span class="op">-</span><span class="st"> </span>p</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">  ind &lt;-<span class="st"> </span><span class="kw">which</span>(by_var <span class="op">&gt;=</span><span class="st"> </span><span class="fl">-0.08</span> <span class="op">&amp;</span><span class="st"> </span>by_var <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.08</span> <span class="op">&amp;</span><span class="st"> </span>to_var <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">  to_var[ind] &lt;-<span class="st"> </span>to_var[ind] <span class="op">+</span><span class="st"> </span>p</a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">  <span class="kw">return</span>(to_var)</a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">}</a>
+<a class="sourceLine" id="cb1-40" data-line-number="40"></a>
+<a class="sourceLine" id="cb1-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb1-42" data-line-number="42"></a>
+<a class="sourceLine" id="cb1-43" data-line-number="43"><span class="co"># BB-8 geometries ---------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-44" data-line-number="44"></a>
+<a class="sourceLine" id="cb1-45" data-line-number="45"></a>
+<a class="sourceLine" id="cb1-46" data-line-number="46"><span class="co"># droid_body -------------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-47" data-line-number="47"></a>
+<a class="sourceLine" id="cb1-48" data-line-number="48"><span class="co"># shape of the droid_body : two circles and a vertical line</span></a>
+<a class="sourceLine" id="cb1-49" data-line-number="49">droid_body &lt;-<span class="st"> </span><span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">r =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">droid_body<span class="op">$</span>xvert &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-51" data-line-number="51">droid_body<span class="op">$</span>yvert &lt;-<span class="st"> </span>droid_body<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">droid_body &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(</a>
+<a class="sourceLine" id="cb1-53" data-line-number="53">  droid_body,</a>
+<a class="sourceLine" id="cb1-54" data-line-number="54">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">r =</span> <span class="fl">0.35</span>, <span class="dt">n =</span> <span class="kw">nrow</span>(droid_body)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="dt">xint =</span> x, <span class="dt">yint =</span> y)</a>
+<a class="sourceLine" id="cb1-55" data-line-number="55">)</a>
+<a class="sourceLine" id="cb1-56" data-line-number="56"></a>
+<a class="sourceLine" id="cb1-57" data-line-number="57"><span class="co"># grey shapes in the central inner circle</span></a>
+<a class="sourceLine" id="cb1-58" data-line-number="58">droid_body_rect &lt;-<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-59" data-line-number="59">  <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">-0.5</span>, <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">-0.5</span>) <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>, <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">-0.5</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>),</a>
+<a class="sourceLine" id="cb1-60" data-line-number="60">  <span class="dt">y =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">-0.4</span>, <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">-0.4</span>) <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">-0.4</span>) <span class="op">-</span><span class="st"> </span><span class="fl">0.2</span>),</a>
+<a class="sourceLine" id="cb1-61" data-line-number="61">  <span class="dt">group =</span> <span class="kw">rep</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">each =</span> <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb1-62" data-line-number="62">)</a>
+<a class="sourceLine" id="cb1-63" data-line-number="63"><span class="co"># a polygon for calculate the intersection between the grey shapes and the inner circle</span></a>
+<a class="sourceLine" id="cb1-64" data-line-number="64">polyrect &lt;-<span class="st"> </span><span class="kw">create_poly</span>(</a>
+<a class="sourceLine" id="cb1-65" data-line-number="65">  <span class="st">&quot;polyrect1&quot;</span> =<span class="st"> </span>droid_body_rect[droid_body_rect<span class="op">$</span>group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>],</a>
+<a class="sourceLine" id="cb1-66" data-line-number="66">  <span class="st">&quot;polyrect2&quot;</span> =<span class="st"> </span>droid_body_rect[droid_body_rect<span class="op">$</span>group <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>],</a>
+<a class="sourceLine" id="cb1-67" data-line-number="67">  <span class="st">&quot;polyrect3&quot;</span> =<span class="st"> </span>droid_body_rect[droid_body_rect<span class="op">$</span>group <span class="op">==</span><span class="st"> </span><span class="dv">3</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb1-68" data-line-number="68">)</a>
+<a class="sourceLine" id="cb1-69" data-line-number="69"></a>
+<a class="sourceLine" id="cb1-70" data-line-number="70">polycircle &lt;-<span class="st"> </span><span class="kw">create_poly</span>(</a>
+<a class="sourceLine" id="cb1-71" data-line-number="71">  <span class="st">&quot;polycircle&quot;</span> =<span class="st"> </span>droid_body[, <span class="kw">c</span>(<span class="st">&quot;xint&quot;</span>, <span class="st">&quot;yint&quot;</span>)]</a>
+<a class="sourceLine" id="cb1-72" data-line-number="72">)</a>
+<a class="sourceLine" id="cb1-73" data-line-number="73"><span class="co"># plot(polyrect); plot(polycircle, add = TRUE)</span></a>
+<a class="sourceLine" id="cb1-74" data-line-number="74">polyrect &lt;-<span class="st"> </span><span class="kw">gIntersection</span>(<span class="dt">spgeom1 =</span> polyrect, <span class="dt">spgeom2 =</span> polycircle)</a>
+<a class="sourceLine" id="cb1-75" data-line-number="75"><span class="co"># plot(polyrect); plot(polycircle, add = TRUE)</span></a>
+<a class="sourceLine" id="cb1-76" data-line-number="76"></a>
+<a class="sourceLine" id="cb1-77" data-line-number="77"><span class="co"># fortify the polygon for ggplot</span></a>
+<a class="sourceLine" id="cb1-78" data-line-number="78">droid_body_rect &lt;-<span class="st"> </span><span class="kw">fortify</span>(polyrect)</a>
+<a class="sourceLine" id="cb1-79" data-line-number="79"></a>
+<a class="sourceLine" id="cb1-80" data-line-number="80"></a>
+<a class="sourceLine" id="cb1-81" data-line-number="81"><span class="co"># Central ring (orange)</span></a>
+<a class="sourceLine" id="cb1-82" data-line-number="82">ring &lt;-<span class="st"> </span><span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">r =</span> <span class="fl">0.4</span>)</a>
+<a class="sourceLine" id="cb1-83" data-line-number="83">ring<span class="op">$</span>y &lt;-<span class="st"> </span><span class="kw">echancrure</span>(<span class="dt">to_var =</span> ring<span class="op">$</span>y, <span class="dt">by_var =</span> ring<span class="op">$</span>x, <span class="dt">p =</span> <span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb1-84" data-line-number="84">ring<span class="op">$</span>x &lt;-<span class="st"> </span><span class="kw">echancrure</span>(<span class="dt">to_var =</span> ring<span class="op">$</span>x, <span class="dt">by_var =</span> ring<span class="op">$</span>y, <span class="dt">p =</span> <span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb1-85" data-line-number="85">ring &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(</a>
+<a class="sourceLine" id="cb1-86" data-line-number="86">  ring <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> (x <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>) <span class="op">*</span><span class="st"> </span><span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb1-87" data-line-number="87">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">r =</span> <span class="fl">0.55</span>, <span class="dt">n =</span> <span class="kw">nrow</span>(ring)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">y =</span> <span class="op">-</span>y, <span class="dt">group =</span> (x <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>) <span class="op">*</span><span class="st"> </span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-88" data-line-number="88">) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-89" data-line-number="89">  <span class="kw">filter</span>(group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="co"># oups something went wrong</span></a>
+<a class="sourceLine" id="cb1-90" data-line-number="90">ring &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(ring, ring <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">x =</span> <span class="op">-</span>x, <span class="dt">group =</span> <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb1-91" data-line-number="91"></a>
+<a class="sourceLine" id="cb1-92" data-line-number="92"></a>
+<a class="sourceLine" id="cb1-93" data-line-number="93"></a>
+<a class="sourceLine" id="cb1-94" data-line-number="94"></a>
+<a class="sourceLine" id="cb1-95" data-line-number="95"><span class="co"># ring left and right</span></a>
+<a class="sourceLine" id="cb1-96" data-line-number="96"><span class="co"># we make a copy of the right part of the central ring</span></a>
+<a class="sourceLine" id="cb1-97" data-line-number="97">ring_left &lt;-<span class="st"> </span>ring <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb1-98" data-line-number="98"><span class="co"># and we shift the ring center</span></a>
+<a class="sourceLine" id="cb1-99" data-line-number="99">ring_left<span class="op">$</span>x &lt;-<span class="st"> </span>ring_left<span class="op">$</span>x <span class="op">-</span><span class="st"> </span><span class="fl">1.3</span></a>
+<a class="sourceLine" id="cb1-100" data-line-number="100"></a>
+<a class="sourceLine" id="cb1-101" data-line-number="101"><span class="co"># the same ...</span></a>
+<a class="sourceLine" id="cb1-102" data-line-number="102">ring_right &lt;-<span class="st"> </span>ring <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(group <span class="op">==</span><span class="st"> </span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-103" data-line-number="103">ring_right<span class="op">$</span>x &lt;-<span class="st"> </span>ring_right<span class="op">$</span>x <span class="op">+</span><span class="st"> </span><span class="fl">1.3</span></a>
+<a class="sourceLine" id="cb1-104" data-line-number="104"></a>
+<a class="sourceLine" id="cb1-105" data-line-number="105"><span class="co"># we creta a polygon for the intersection with the droid_body circle</span></a>
+<a class="sourceLine" id="cb1-106" data-line-number="106">polyring &lt;-<span class="st"> </span><span class="kw">create_poly</span>(</a>
+<a class="sourceLine" id="cb1-107" data-line-number="107">  <span class="st">&quot;polyring_g&quot;</span> =<span class="st"> </span>ring_left[, <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)],</a>
+<a class="sourceLine" id="cb1-108" data-line-number="108">  <span class="st">&quot;polyring_d&quot;</span> =<span class="st"> </span>ring_right[, <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)]</a>
+<a class="sourceLine" id="cb1-109" data-line-number="109">)</a>
+<a class="sourceLine" id="cb1-110" data-line-number="110"></a>
+<a class="sourceLine" id="cb1-111" data-line-number="111">polydroid_body &lt;-<span class="st"> </span><span class="kw">create_poly</span>(<span class="st">&quot;polydroid_body&quot;</span> =<span class="st"> </span>droid_body[, <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)])</a>
+<a class="sourceLine" id="cb1-112" data-line-number="112"></a>
+<a class="sourceLine" id="cb1-113" data-line-number="113"><span class="co"># plot(polyring); plot(polydroid_body, add = TRUE)</span></a>
+<a class="sourceLine" id="cb1-114" data-line-number="114"></a>
+<a class="sourceLine" id="cb1-115" data-line-number="115">polyring &lt;-<span class="st"> </span><span class="kw">gIntersection</span>(<span class="dt">spgeom1 =</span> polyring, <span class="dt">spgeom2 =</span> polydroid_body)</a>
+<a class="sourceLine" id="cb1-116" data-line-number="116">fort_ring &lt;-<span class="st"> </span><span class="kw">fortify</span>(polyring)</a>
+<a class="sourceLine" id="cb1-117" data-line-number="117"></a>
+<a class="sourceLine" id="cb1-118" data-line-number="118"></a>
+<a class="sourceLine" id="cb1-119" data-line-number="119"><span class="co"># the horizontal line of the body (in two parts)</span></a>
+<a class="sourceLine" id="cb1-120" data-line-number="120">ligne_hori &lt;-<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-121" data-line-number="121">  <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="kw">range</span>(ring<span class="op">$</span>x), <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb1-122" data-line-number="122">  <span class="dt">y =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb1-123" data-line-number="123">  <span class="dt">group =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-124" data-line-number="124">)</a>
+<a class="sourceLine" id="cb1-125" data-line-number="125"></a>
+<a class="sourceLine" id="cb1-126" data-line-number="126"></a>
+<a class="sourceLine" id="cb1-127" data-line-number="127"><span class="co"># droid head --------------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-128" data-line-number="128"></a>
+<a class="sourceLine" id="cb1-129" data-line-number="129">droid_head &lt;-<span class="st"> </span><span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.02</span>), <span class="dt">r =</span> <span class="fl">0.52</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-130" data-line-number="130">  <span class="kw">filter</span>(y <span class="op">&gt;=</span><span class="st"> </span><span class="fl">1.02</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-131" data-line-number="131">  <span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col=</span> <span class="st">&quot;black&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-132" data-line-number="132">  <span class="kw">bind_rows</span>(</a>
+<a class="sourceLine" id="cb1-133" data-line-number="133">    <span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-134" data-line-number="134">      <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.52</span>, <span class="fl">-0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.52</span>),</a>
+<a class="sourceLine" id="cb1-135" data-line-number="135">      <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.02</span>, <span class="fl">0.95</span>, <span class="fl">0.95</span>, <span class="fl">1.02</span>),</a>
+<a class="sourceLine" id="cb1-136" data-line-number="136">      <span class="dt">group =</span> <span class="dv">2</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col=</span> <span class="st">&quot;black&quot;</span></a>
+<a class="sourceLine" id="cb1-137" data-line-number="137">    )</a>
+<a class="sourceLine" id="cb1-138" data-line-number="138">  )</a>
+<a class="sourceLine" id="cb1-139" data-line-number="139"></a>
+<a class="sourceLine" id="cb1-140" data-line-number="140"></a>
+<a class="sourceLine" id="cb1-141" data-line-number="141"></a>
+<a class="sourceLine" id="cb1-142" data-line-number="142"><span class="co"># Grey bars in droid&#39;s head</span></a>
+<a class="sourceLine" id="cb1-143" data-line-number="143">poly_head_grey &lt;-<span class="st"> </span><span class="kw">create_poly</span>(</a>
+<a class="sourceLine" id="cb1-144" data-line-number="144">  <span class="st">&quot;poly_head_grey_haut&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-145" data-line-number="145">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">-0.52</span>),</a>
+<a class="sourceLine" id="cb1-146" data-line-number="146">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.44</span>, <span class="fl">1.44</span>, <span class="fl">1.51</span>, <span class="fl">1.51</span>)</a>
+<a class="sourceLine" id="cb1-147" data-line-number="147">  ),</a>
+<a class="sourceLine" id="cb1-148" data-line-number="148">  <span class="st">&quot;poly_head_grey_bas&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-149" data-line-number="149">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">-0.52</span>),</a>
+<a class="sourceLine" id="cb1-150" data-line-number="150">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.02</span>, <span class="fl">1.02</span>, <span class="fl">1.07</span>, <span class="fl">1.07</span>)</a>
+<a class="sourceLine" id="cb1-151" data-line-number="151">  )</a>
+<a class="sourceLine" id="cb1-152" data-line-number="152">)</a>
+<a class="sourceLine" id="cb1-153" data-line-number="153"></a>
+<a class="sourceLine" id="cb1-154" data-line-number="154">polydroid_head &lt;-<span class="st"> </span><span class="kw">create_poly</span>(<span class="st">&quot;polydroid_head&quot;</span> =<span class="st"> </span>droid_head[droid_head<span class="op">$</span>group <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)])</a>
+<a class="sourceLine" id="cb1-155" data-line-number="155"></a>
+<a class="sourceLine" id="cb1-156" data-line-number="156">poly_head_grey &lt;-<span class="st"> </span><span class="kw">gIntersection</span>(<span class="dt">spgeom1 =</span> poly_head_grey, <span class="dt">spgeom2 =</span> polydroid_head)</a>
+<a class="sourceLine" id="cb1-157" data-line-number="157">fort_droid_headrectgris &lt;-<span class="st"> </span><span class="kw">fortify</span>(poly_head_grey)</a>
+<a class="sourceLine" id="cb1-158" data-line-number="158"></a>
+<a class="sourceLine" id="cb1-159" data-line-number="159"></a>
+<a class="sourceLine" id="cb1-160" data-line-number="160"></a>
+<a class="sourceLine" id="cb1-161" data-line-number="161"><span class="co"># orange bars</span></a>
+<a class="sourceLine" id="cb1-162" data-line-number="162">poly_head_orange &lt;-<span class="st"> </span><span class="kw">create_poly</span>(</a>
+<a class="sourceLine" id="cb1-163" data-line-number="163">  <span class="st">&quot;poly_head_orange1&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-164" data-line-number="164">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">0.52</span>, <span class="fl">-0.52</span>),</a>
+<a class="sourceLine" id="cb1-165" data-line-number="165">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.38</span>, <span class="fl">1.38</span>, <span class="fl">1.42</span>, <span class="fl">1.42</span>)</a>
+<a class="sourceLine" id="cb1-166" data-line-number="166">  ),</a>
+<a class="sourceLine" id="cb1-167" data-line-number="167">  <span class="st">&quot;poly_head_orange2&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-168" data-line-number="168">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.35</span>, <span class="fl">-0.35</span>, <span class="fl">-0.2</span>, <span class="fl">-0.2</span>),</a>
+<a class="sourceLine" id="cb1-169" data-line-number="169">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.07</span>, <span class="fl">1.15</span>, <span class="fl">1.15</span>, <span class="fl">1.07</span>)</a>
+<a class="sourceLine" id="cb1-170" data-line-number="170">  ),</a>
+<a class="sourceLine" id="cb1-171" data-line-number="171">  <span class="st">&quot;poly_head_orange3&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-172" data-line-number="172">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.55</span>, <span class="fl">-0.55</span>, <span class="fl">-0.45</span>, <span class="fl">-0.45</span>),</a>
+<a class="sourceLine" id="cb1-173" data-line-number="173">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.07</span>, <span class="fl">1.15</span>, <span class="fl">1.15</span>, <span class="fl">1.07</span>)</a>
+<a class="sourceLine" id="cb1-174" data-line-number="174">  ),</a>
+<a class="sourceLine" id="cb1-175" data-line-number="175">  <span class="st">&quot;poly_head_orange4&quot;</span> =<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-176" data-line-number="176">    <span class="dt">x =</span> <span class="kw">c</span>(<span class="fl">0.44</span>, <span class="fl">0.44</span>, <span class="fl">0.47</span>, <span class="fl">0.47</span>),</a>
+<a class="sourceLine" id="cb1-177" data-line-number="177">    <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.07</span>, <span class="fl">1.15</span>, <span class="fl">1.15</span>, <span class="fl">1.07</span>)</a>
+<a class="sourceLine" id="cb1-178" data-line-number="178">  )</a>
+<a class="sourceLine" id="cb1-179" data-line-number="179">)</a>
+<a class="sourceLine" id="cb1-180" data-line-number="180"></a>
+<a class="sourceLine" id="cb1-181" data-line-number="181">poly_head_orange &lt;-<span class="st"> </span><span class="kw">gIntersection</span>(<span class="dt">spgeom1 =</span> poly_head_orange, <span class="dt">spgeom2 =</span> polydroid_head)</a>
+<a class="sourceLine" id="cb1-182" data-line-number="182">fort_droid_headrectorange &lt;-<span class="st"> </span><span class="kw">fortify</span>(poly_head_orange)</a>
+<a class="sourceLine" id="cb1-183" data-line-number="183"></a>
+<a class="sourceLine" id="cb1-184" data-line-number="184"></a>
+<a class="sourceLine" id="cb1-185" data-line-number="185">polygones_droid_head &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(</a>
+<a class="sourceLine" id="cb1-186" data-line-number="186">  fort_droid_headrectgris <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>piece) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-187" data-line-number="187">    <span class="kw">mutate</span>(<span class="dt">group =</span> <span class="kw">as.numeric</span>(<span class="kw">as.character</span>(group)), <span class="dt">fill =</span> <span class="st">&quot;#8E8E9C&quot;</span>, <span class="dt">col=</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-188" data-line-number="188">  fort_droid_headrectorange <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>piece) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb1-189" data-line-number="189">    <span class="kw">mutate</span>(<span class="dt">group =</span> <span class="kw">as.numeric</span>(<span class="kw">as.character</span>(group)) <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">fill =</span> <span class="st">&quot;#DF8D5D&quot;</span>, <span class="dt">col=</span> <span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb1-190" data-line-number="190">)</a>
+<a class="sourceLine" id="cb1-191" data-line-number="191"></a>
+<a class="sourceLine" id="cb1-192" data-line-number="192"></a>
+<a class="sourceLine" id="cb1-193" data-line-number="193"><span class="co"># Eyes</span></a>
+<a class="sourceLine" id="cb1-194" data-line-number="194">droid_eyes &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(</a>
+<a class="sourceLine" id="cb1-195" data-line-number="195">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.35</span>), <span class="dt">r =</span> <span class="fl">0.14</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;white&quot;</span>),</a>
+<a class="sourceLine" id="cb1-196" data-line-number="196">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.35</span>), <span class="dt">r =</span> <span class="fl">0.12</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">2</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-197" data-line-number="197">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.35</span>), <span class="dt">r =</span> <span class="fl">0.10</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">3</span>, <span class="dt">fill =</span> <span class="st">&quot;grey40&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;grey40&quot;</span>),</a>
+<a class="sourceLine" id="cb1-198" data-line-number="198">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.35</span>), <span class="dt">r =</span> <span class="fl">0.08</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">4</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-199" data-line-number="199">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.16</span>), <span class="dt">r =</span> <span class="fl">0.04</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">5</span>, <span class="dt">fill =</span> <span class="st">&quot;#76B1DE&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-200" data-line-number="200">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">1.20</span>), <span class="dt">r =</span> <span class="fl">0.08</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">6</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-201" data-line-number="201">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">1.20</span>), <span class="dt">r =</span> <span class="fl">0.07</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">7</span>, <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>),</a>
+<a class="sourceLine" id="cb1-202" data-line-number="202">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">1.20</span>), <span class="dt">r =</span> <span class="fl">0.06</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">8</span>, <span class="dt">fill =</span> <span class="st">&quot;grey40&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;grey40&quot;</span>),</a>
+<a class="sourceLine" id="cb1-203" data-line-number="203">  <span class="kw">coord_circle</span>(<span class="dt">centre =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">1.20</span>), <span class="dt">r =</span> <span class="fl">0.04</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="dv">9</span>, <span class="dt">fill =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb1-204" data-line-number="204">)</a>
+<a class="sourceLine" id="cb1-205" data-line-number="205"></a>
+<a class="sourceLine" id="cb1-206" data-line-number="206">eye_line &lt;-<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-207" data-line-number="207">  <span class="dt">x =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb1-208" data-line-number="208">  <span class="dt">y =</span> <span class="kw">c</span>(<span class="fl">1.07</span>, <span class="fl">1.16-0.04</span>)</a>
+<a class="sourceLine" id="cb1-209" data-line-number="209">)</a>
+<a class="sourceLine" id="cb1-210" data-line-number="210"></a>
+<a class="sourceLine" id="cb1-211" data-line-number="211"><span class="co"># Antennas</span></a>
+<a class="sourceLine" id="cb1-212" data-line-number="212">antennas &lt;-<span class="st"> </span><span class="kw">data_frame</span>(</a>
+<a class="sourceLine" id="cb1-213" data-line-number="213">  <span class="dt">x =</span> <span class="kw">c</span>(<span class="fl">0.01</span>, <span class="fl">0.01</span>, <span class="fl">0.10</span>, <span class="fl">0.10</span>),</a>
+<a class="sourceLine" id="cb1-214" data-line-number="214">  <span class="dt">y =</span> <span class="kw">c</span>(<span class="kw">sqrt</span>(<span class="fl">0.52</span><span class="op">^</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="fl">0.01</span><span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">1.02</span>, <span class="kw">sqrt</span>(<span class="fl">0.52</span><span class="op">^</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="fl">0.01</span><span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">1.02</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.15</span>,</a>
+<a class="sourceLine" id="cb1-215" data-line-number="215">        <span class="kw">sqrt</span>(<span class="fl">0.52</span><span class="op">^</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="fl">0.1</span><span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">1.02</span>, <span class="kw">sqrt</span>(<span class="fl">0.52</span><span class="op">^</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="fl">0.1</span><span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="fl">1.02</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.25</span>),</a>
+<a class="sourceLine" id="cb1-216" data-line-number="216">  <span class="dt">group =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-217" data-line-number="217">)</a>
+<a class="sourceLine" id="cb1-218" data-line-number="218"></a>
+<a class="sourceLine" id="cb1-219" data-line-number="219"></a>
+<a class="sourceLine" id="cb1-220" data-line-number="220"><span class="co"># bb-8/ggplot2 ------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-221" data-line-number="221"></a>
+<a class="sourceLine" id="cb1-222" data-line-number="222">bb8 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> droid_body) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-223" data-line-number="223">  <span class="kw">coord_fixed</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-224" data-line-number="224">  <span class="kw">geom_polygon</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y), <span class="dt">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-225" data-line-number="225">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> droid_body_rect, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill =</span> <span class="st">&quot;#8E8E9C&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-226" data-line-number="226">  <span class="kw">geom_path</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> xvert, <span class="dt">y =</span> yvert)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-227" data-line-number="227">  <span class="kw">geom_path</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> xint, <span class="dt">y =</span> yint)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-228" data-line-number="228">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> ring, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> group), <span class="dt">fill =</span> <span class="st">&quot;#DF8D5D&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;#DF8D5D&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-229" data-line-number="229">  <span class="kw">geom_path</span>(<span class="dt">data =</span> ligne_hori, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> group)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-230" data-line-number="230">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> fort_ring , <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill =</span> <span class="st">&quot;#DF8D5D&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-231" data-line-number="231">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> droid_head, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> group, <span class="dt">fill =</span> fill, <span class="dt">col =</span> col)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-232" data-line-number="232">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> polygones_droid_head, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group, <span class="dt">fill =</span> fill, <span class="dt">col =</span> col)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-233" data-line-number="233">  <span class="kw">geom_polygon</span>(<span class="dt">data =</span> droid_eyes, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> group, <span class="dt">fill =</span> fill, <span class="dt">col =</span> col)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-234" data-line-number="234">  <span class="kw">scale_fill_identity</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_color_identity</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-235" data-line-number="235">  <span class="kw">geom_line</span>(<span class="dt">data =</span> eye_line, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-236" data-line-number="236">  <span class="kw">geom_line</span>(<span class="dt">data =</span> antennas, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">group =</span> group), <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb1-237" data-line-number="237"></a>
+<a class="sourceLine" id="cb1-238" data-line-number="238"></a>
+<a class="sourceLine" id="cb1-239" data-line-number="239">bb8</a>
+<a class="sourceLine" id="cb1-240" data-line-number="240"><span class="co"># or</span></a>
+<a class="sourceLine" id="cb1-241" data-line-number="241"><span class="co">#bb8 + theme_void()</span></a>
+<a class="sourceLine" id="cb1-242" data-line-number="242"></a>
+<a class="sourceLine" id="cb1-243" data-line-number="243"></a>
+<a class="sourceLine" id="cb1-244" data-line-number="244"></a>
+<a class="sourceLine" id="cb1-245" data-line-number="245"><span class="co"># save --------------------------------------------------------------------</span></a>
+<a class="sourceLine" id="cb1-246" data-line-number="246"></a>
+<a class="sourceLine" id="cb1-247" data-line-number="247"><span class="co">#ggsave(filename = &quot;#144_bb8_ggplot2.png&quot;, plot = bb8, width = 6, height = 8)</span></a>
+<a class="sourceLine" id="cb1-248" data-line-number="248"><span class="co">#ggsave(filename = &quot;#144_bb8_ggplot2_void.png&quot;, plot = bb8 + theme_void(), width = 6, height = 8)</span></a></code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="line-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Line150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Line plot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="area-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Area150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-area-graph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/StackedArea150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Stacked area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="streamgraph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Stream150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Streamchart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="time-series.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Time150.gif" alt="">
+        </a>
+        <div class="captionPortfolio">Time Series</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
+
+</body>
+</html>
