@@ -1,0 +1,84 @@
+---
+title: "Using R and ggplot2 for data art."
+descriptionMeta: "R and ggplot2 are awesome tool to produce random shapes. Welcome in the field of generative coding or data art."
+descriptionTop: "`R` and `ggplot2` are awesome tool to produce random shapes. Welcome in the field of generative coding or [data art](https://www.data-to-art.com)."
+sectionText: "ggplot2 Section"
+sectionLink: "ggplot2-package.html"
+DataToVizText: "About line chart"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "137-spring-shapes-data-art"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=4}
+set.seed(345)
+library(ggplot2)
+library(RColorBrewer)
+ngroup=30
+names=paste("G_",seq(1,ngroup),sep="")
+DAT=data.frame()
+
+for(i in seq(1:30)){
+    data=data.frame( matrix(0, ngroup , 3))
+    data[,1]=i
+    data[,2]=sample(names, nrow(data))
+    data[,3]=prop.table(sample( c(rep(0,100),c(1:ngroup)) ,nrow(data)))
+    DAT=rbind(DAT,data)
+    }
+colnames(DAT)=c("Year","Group","Value")
+DAT=DAT[order( DAT$Year, DAT$Group) , ]
+
+
+coul = brewer.pal(12, "Paired") 
+coul = colorRampPalette(coul)(ngroup)
+coul=coul[sample(c(1:length(coul)) , size=length(coul) ) ]
+
+ggplot(DAT, aes(x=Year, y=Value, fill=Group )) + 
+    geom_area(alpha=1  )+
+    theme_bw() +
+    #scale_fill_brewer(colour="red", breaks=rev(levels(DAT$Group)))+
+    scale_fill_manual(values = coul)+
+     theme(
+        text = element_blank(),
+        line = element_blank(),
+        title = element_blank(),
+        legend.position="none",
+        panel.border = element_blank(),
+        panel.background = element_blank())
+```
+
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```
