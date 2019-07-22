@@ -8,19 +8,21 @@
 
 <head>
 <meta charset="utf-8">
-<title>Save streamgraph as static png image &#8211; the R Graph Gallery</title>
+<title>Animated 3d chart with R and Image Magick &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="The streamgraph package is a html widget and thus output interactive charts by default. This post explains how to output a static png image using to the webshot package.">
+<meta name="description" content="This post describes how to build a 3d chart .gif animation. It uses R to make several png files, and Image Magick to concatenated them in a gif.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Save streamgraph as static png image" />
+<meta property="og:title" content="Animated 3d chart with R and Image Magick" />
 <meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
-<meta property="og:description" content="The streamgraph package is a html widget and thus output interactive charts by default. This post explains how to output a static png image using to the webshot package." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/159-save-interactive-streamgraph-to-static-image-png.html" />
+<meta property="og:description" content="This post describes how to build a 3d chart .gif animation. It uses R to make several png files, and Image Magick to concatenated them in a gif." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/167-animated-3d-plot-imagemagick.html" />
 <meta property="og:type" content="website" />
 
 <!-- Bootstrap core CSS -->
@@ -116,7 +118,7 @@
 <!-- Header = Title in big + social media Icon + quick description -->
 <header class="masthead">
   <div class="textlanding">
-      <center><h1>Save streamgraph as static png image</h1></center>
+      <center><h1>Animated 3d chart with R and Image Magick</h1></center>
       <hr class="short_hr">
       <br>
       <ul class="list-inline social-buttons">
@@ -141,10 +143,10 @@
           </a>
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">The streamgraph package is a html widget and thus output interactive charts by default. This post explains how to output a static png image using to the webshot package.</p></center>
+      <center><p style="max-width: 600px; margin-top: 40px">This post describes how to build a <a href="3d.html">3d</a> chart .gif animation. It uses R to make several <code>png</code> files, and Image Magick to concatenated them in a <code>gif</code>.</p></center>
       <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='streamgraph.html'>Streamgraph section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/streamgraph.html'>Data to Viz</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='Animation.html'>Animation Section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/line.html'>About line chart</a>
       </div>
   </div>
 </header>
@@ -166,98 +168,87 @@
 
 
 
-<div class="container">
+<div class="container" style="padding-top: 80px">
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>In <code>R</code>, <a href="streamgraph.html">streamgraphs</a> are built thanks to the <code>streamgraph</code> package that is an htmlwidget. They are thus rendered as interactive graphics.</p>
-<p>It is possible to get a static version, using the <code>interactive=FALSE</code> option.</p>
-<p>It is however tricky to export the html format to an usual <code>.png</code> image. You have to use the <code>webshot</code> library which allows to take screenshots of web page from R. Check the commented code below to see how to proceed:</p>
+<p>This chart follows the previous <a href="166-basic-animated-graph-with-imagemagick.html">basic animation</a> with <code>R</code> and <code>Image Magick</code>. It uses those two tools to make an animated <a href="3d.html">3d</a> chart. The process is:</p>
+<ul>
+<li>Start by building 10 images with <code>R</code></li>
+<li>Use Image magick to concatenate them in a <code>gif</code></li>
+</ul>
+<p>Of course, Image Magick must be installed on your computer. See <a href="http://www.imagemagick.org/script/index.php">here</a> to install it.</p>
+<p><u>Note: </u>: This example has been found on Mark Heckmann’s <a href="https://ryouready.wordpress.com/2010/11/21/animate-gif-images-in-r-imagemagick/">R you ready</a> website.</p>
 </div>
 <div class="col-md-6 col-sm-12">
-<p><img src="img/graph/159-save-interactive-streamgraph-to-static-image-png.png" width="100%"></img></p>
+<p><img class="img-fluid" src="img/graph/167-animated-3d-plot-imagemagick.gif" alt=""></p>
 </div>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Library</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(streamgraph)</a>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Library for 3D</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(lattice)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Create data:</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="dt">year=</span><span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1990</span>,<span class="dv">2016</span>) , <span class="dt">each=</span><span class="dv">10</span>),</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="dt">name=</span><span class="kw">rep</span>(letters[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>] , <span class="dv">27</span>),</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="dt">value=</span><span class="kw">sample</span>( <span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">0.0001</span>) , <span class="dv">270</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># Start with a classic stream graph. It is supposed to open in a browser</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">streamgraph</span>(data, <span class="dt">key=</span><span class="st">&quot;name&quot;</span>, <span class="dt">value=</span><span class="st">&quot;value&quot;</span>, <span class="dt">date=</span><span class="st">&quot;year&quot;</span>)</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="co"># Copy the URL of the html window you get</span></a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># load webshot library</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="kw">library</span>(webshot)</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"> </a>
-<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="co">#install phantom:</span></a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">webshot<span class="op">::</span><span class="kw">install_phantomjs</span>()</a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="co"># Make a webshot in pdf : high quality but can not choose printed zone</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="kw">webshot</span>(<span class="st">&quot;paste_your_html_here.html&quot;</span> , <span class="st">&quot;output.pdf&quot;</span>, <span class="dt">delay =</span> <span class="fl">0.2</span>) </a>
-<a class="sourceLine" id="cb1-24" data-line-number="24">    </a>
-<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="co"># Make a webshot in png : Low quality - but you can choose shape</span></a>
-<a class="sourceLine" id="cb1-26" data-line-number="26"><span class="kw">webshot</span>(<span class="st">&quot;paste_your_html_here&quot;</span> , <span class="st">&quot;output.png&quot;</span>, <span class="dt">delay =</span> <span class="fl">0.2</span> , <span class="dt">cliprect =</span> <span class="kw">c</span>(<span class="dv">440</span>, <span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">10</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Initiate data</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">b0 &lt;-<span class="st"> </span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">b1 &lt;-<span class="st"> </span><span class="fl">.5</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">b2 &lt;-<span class="st"> </span><span class="fl">.3</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">int12 &lt;-<span class="st"> </span><span class="fl">.2</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">g &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">x =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>, <span class="dt">y =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">g<span class="op">$</span>z &lt;-<span class="st"> </span>b0 <span class="op">+</span><span class="st"> </span>b1<span class="op">*</span>g<span class="op">$</span>x <span class="op">+</span><span class="st"> </span>b2<span class="op">*</span>g<span class="op">$</span>y <span class="op">+</span><span class="st"> </span>int12<span class="op">*</span>g<span class="op">$</span>x<span class="op">*</span>g<span class="op">$</span>y</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co"># Make several .png images</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="kw">png</span>(<span class="dt">file=</span><span class="st">&quot;example%03d.png&quot;</span>, <span class="dt">width=</span><span class="dv">480</span>, <span class="dt">heigh=</span><span class="dv">480</span>)</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">350</span> ,<span class="dv">10</span>)){</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">    <span class="kw">print</span>(<span class="kw">wireframe</span>(z <span class="op">~</span><span class="st"> </span>x <span class="op">*</span><span class="st"> </span>y, <span class="dt">data =</span> g,</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">              <span class="dt">screen =</span> <span class="kw">list</span>(<span class="dt">z =</span> i, <span class="dt">x =</span> <span class="dv">-60</span>),</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">              <span class="dt">drape=</span><span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  }</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="kw">dev.off</span>()</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="co"># convert pdf to gif using ImageMagick</span></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="kw">system</span>(<span class="st">&quot;convert -delay 40 *.png animated_3D_plot.gif&quot;</span>)</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"><span class="co"># cleaning up</span></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="kw">file.remove</span>(<span class="kw">list.files</span>(<span class="dt">pattern=</span><span class="st">&quot;.png&quot;</span>))</a></code></pre></div>
+<!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
 <section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
 
-  <div class="container">
+<div class="container">
 
-    <p class="mySeryTitle">Related chart types</p>
-    <hr>
-    <div class="row">
-
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="line-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Line150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Line plot</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="area.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Area150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Area</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="stackedarea.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/StackedArea150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Stacked area</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="streamgraph.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Stream150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Streamchart</div>
-      </div>
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item align-self-center">
+      <a class="portfolio-link"  href="ggplot2-package.html">
+        <center><img class="grey_on_hover" src="img/other/ggplot2Hex.jpg" height="131px" alt=""></center>
+      </a>
+      <div class="captionPortfolio">Ggplot2</div>
     </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="animation.html">
+        <img class="img-fluid grey_on_hover" src="img/section/anim150.gif" alt="">
+      </a>
+      <div class="captionPortfolio">Animation</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="3d.html">
+        <img class="img-fluid grey_on_hover" src="img/section/3d150.png" alt="">
+      </a>
+      <div class="captionPortfolio">3D</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="https://www.data-to-viz.com/caveats.html">
+        <img class="img-fluid grey_on_hover" src="img/section/Bad150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Caveats</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="data-art.html">
+        <img class="img-fluid grey_on_hover" src="img/section/DataArt1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Data art</div>
+    </div>
+  </div>
 
   </div>
 </section>
@@ -352,6 +343,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>

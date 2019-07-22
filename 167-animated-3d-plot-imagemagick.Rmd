@@ -1,0 +1,95 @@
+---
+title: "Animated 3d chart with R and Image Magick"
+descriptionMeta: "This post describes how to build a 3d chart .gif animation. It uses R to make several png files, and Image Magick to concatenated them in a gif."
+descriptionTop: "This post describes how to build a [3d](3d.html) chart .gif animation. It uses R to make several `png` files, and Image Magick to concatenated them in a `gif`."
+sectionText: "Animation Section"
+sectionLink: "Animation.html"
+DataToVizText: "About line chart"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "167-animated-3d-plot-imagemagick"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px">
+
+
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This chart follows the previous [basic animation](166-basic-animated-graph-with-imagemagick.html) with `R` and `Image Magick`. It uses those two tools to make an animated [3d](3d.html) chart. The process is:
+
+- Start by building 10 images with `R`
+- Use Image magick to concatenate them in a `gif`
+
+Of course, Image Magick must be installed on your computer. See [here](http://www.imagemagick.org/script/index.php) to install it.
+
+<u>Note: </u>: This example has been found on Mark Heckmann’s [R you ready](https://ryouready.wordpress.com/2010/11/21/animate-gif-images-in-r-imagemagick/) website.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<img class="img-fluid" src="img/graph/167-animated-3d-plot-imagemagick.gif" alt="">
+
+</div>
+</div>
+
+
+```{r  eval=FALSE}
+# Library for 3D
+library(lattice)
+
+# Initiate data
+b0 <- 10
+b1 <- .5
+b2 <- .3
+int12 <- .2
+g <- expand.grid(x = 1:20, y = 1:20)
+g$z <- b0 + b1*g$x + b2*g$y + int12*g$x*g$y
+
+# Make several .png images
+png(file="example%03d.png", width=480, heigh=480)
+for (i in seq(0, 350 ,10)){
+    print(wireframe(z ~ x * y, data = g,
+              screen = list(z = i, x = -60),
+              drape=TRUE))
+  }
+dev.off()
+
+# convert pdf to gif using ImageMagick
+system("convert -delay 40 *.png animated_3D_plot.gif")
+
+# cleaning up
+file.remove(list.files(pattern=".png"))
+```
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedOther.html")
+```
