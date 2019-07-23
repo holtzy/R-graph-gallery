@@ -1,0 +1,107 @@
+---
+title: "Animated line chart transition with R"
+descriptionMeta: "The gganimate package allows to build animated chart using the ggplot2 syntax directly from R. This post describes how to make an animation revealing a line chart progressively."
+descriptionTop: "The `gganimate` package allows to build [animated](animation.html) chart using the `ggplot2` syntax directly from R. This post describes how to make an animation revealing a [line chart](line-plot.html) progressively."
+sectionText: "Line chart section"
+sectionLink: "line-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "287-smooth-animation-with-tweenr"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Progressive line chart rendering
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Before trying to build an [animated](animation.html) plot with `gganimate`, make sure you understood how to build a [line chart](line-plot.html) with R and `ggplot2`.
+
+The idea is to add an additional aesthetics called `transition_..()` that provides a frame variable. For each value of the variable, a step on the chart will be drawn. Here, `transition_reveal()` is used to reveal each new time frame progressively.
+
+Note that the `gganimate` automatically performs a transition between state.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<img class="img-fluid" src="img/graph/287-smooth-animation-with-tweenr.gif" alt="">
+
+
+</div>
+</div>
+
+
+```{r eval=FALSE}
+# libraries:
+library(ggplot2)
+library(gganimate)
+library(babynames)
+library(hrbrthemes)
+
+# Keep only 3 names
+don <- babynames %>% 
+  filter(name %in% c("Ashley", "Patricia", "Helen")) %>%
+  filter(sex=="F")
+  
+# Plot
+don %>%
+  ggplot( aes(x=year, y=n, group=name, color=name)) +
+    geom_line() +
+    geom_point() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle("Popularity of American names in the previous 30 years") +
+    theme_ipsum() +
+    ylab("Number of babies born") +
+    transition_reveal(year)
+
+
+
+# Save at gif:
+anim_save("287-smooth-animation-with-tweenr.gif")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

@@ -1,0 +1,153 @@
+---
+title: "Animated bubble chart with R and gganimate"
+descriptionMeta: "The gganimate package allows to build animated chart using the ggplot2 syntax directly from R. This post shows how to apply it on a bubble chart, to show an evolution in time."
+descriptionTop: "The `gganimate` package allows to build `animated` chart using the `ggplot2` syntax directly from R. This post shows how to apply it on a [bubble](bubble-chart.html) chart, to show an evolution in time."
+sectionText: "Bubble section"
+sectionLink: "bubble-chart.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/bubble.html"
+url: "271-ggplot2-animated-gif-chart-with-gganimate"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Animated bubble chart
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Before trying to build an [animated](animation.html) plot with `gganimate`, make sure you understood how to build a [basic bubble chart](bubble-chart.html) with R and `ggplot2`.
+
+The idea is to add an additional aesthetics called `transition_..()` that provides a frame variable. For each value of the variable, a step on the chart will be drawn. Here, `transition_time()` is used since the frame variable is numeric.
+
+Note that the `gganimate` automatically performs a transition between state. Several options are available, set using the `ease_aes()` function.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<img class="img-fluid" src="img/graph/271-ggplot2-animated-gif-chart-with-gganimate1.gif" alt="">
+
+
+</div>
+</div>
+
+
+```{r eval=FALSE}
+# Get data:
+library(gapminder)
+ 
+# Charge libraries:
+library(ggplot2)
+library(gganimate)
+ 
+# Make a ggplot, but add frame=year: one image per year
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
+  geom_point() +
+  scale_x_log10() +
+  theme_bw() +
+  # gganimate specific bits:
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+
+# Save at gif:
+anim_save("271-ggplot2-animated-gif-chart-with-gganimate1.gif")
+```
+
+
+
+
+
+
+
+
+# Use small multiple
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Since `gganimate` is a ggplot2 extension, any ggplot2 option can be used to customize the chart. Here, an example using `facet_wrap()` to use small multiple on the previous chart, spliting the chart window per continent.
+
+<u>Important note</u>: this example comes from the [gganimate homepage](https://github.com/thomasp85/gganimate).
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+<img class="img-fluid" src="img/graph/271-ggplot2-animated-gif-chart-with-gganimate2.gif" alt="">
+
+
+</div>
+</div>
+
+
+```{r eval=FALSE}
+# Get data:
+library(gapminder)
+ 
+# Charge libraries:
+library(ggplot2)
+library(gganimate)
+ 
+# Make a ggplot, but add frame=year: one image per year
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+
+# Save at gif:
+anim_save("271-ggplot2-animated-gif-chart-with-gganimate2.gif")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
