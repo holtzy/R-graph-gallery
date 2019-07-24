@@ -15,6 +15,8 @@
 <meta name="description" content="How to build a pie chart with base R to visualize the proportion of a set of groups. Several examples with reproducible code provided.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="Pie plot with base R" />
@@ -44,77 +46,26 @@
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
 
 
-<!-- THIS ALLOWS TO INSERT THE MENU -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-  <a href="index.html">&larr; R Graph Gallery</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    Menu
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav text-uppercase ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Quick
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <p class="menuTitle"><i>Basics</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
-          <p class="menuTitle"><i>Customize</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
-          <p class="menuTitle"><i>Interactivity</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../all.html">ALL</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
-      </li>
-    </ul>
-  </div>
-</div>
-</nav>
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
 
-
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
 
 
 
 <!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead">
+<header class="masthead" style="padding-bottom: 30px;">
   <div class="textlanding">
       <center><h1>Pie plot with base R</h1></center>
       <hr class="short_hr">
@@ -151,6 +102,17 @@
 
 
 
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
 
 
 
@@ -178,11 +140,11 @@
 <p><img src="131-pie-plot-with-r_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create Data</span>
-Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">2</span>)
- 
-<span class="co"># Make the default Pie Plot</span>
-<span class="kw">pie</span>(Prop)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create Data</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">1</span>,<span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Make the default Pie Plot</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">pie</span>(Prop)</a></code></pre></div>
 <h1 id="change-labels-with-labels">Change labels with <code>labels</code></h1>
 <hr />
 <div class="row">
@@ -193,8 +155,8 @@ Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3<
 <p><img src="131-pie-plot-with-r_files/figure-html/thecode2-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># You can also custom the labels:</span>
-<span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>))</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># You can also custom the labels:</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>))</a></code></pre></div>
 <h1 id="non-circular-piechart-with-edges">Non-circular piechart with <code>edges</code></h1>
 <hr />
 <div class="row">
@@ -205,8 +167,8 @@ Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3<
 <p><img src="131-pie-plot-with-r_files/figure-html/thecode3-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># If you give a low value to the &quot;edge&quot; argument, you go from something circular to a shape with edges</span>
-<span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>) , <span class="dt">edges=</span><span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># If you give a low value to the &quot;edge&quot; argument, you go from something circular to a shape with edges</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>) , <span class="dt">edges=</span><span class="dv">10</span>)</a></code></pre></div>
 <h1 id="add-stripes-with-density">Add stripes with <code>density</code></h1>
 <hr />
 <div class="row">
@@ -218,8 +180,8 @@ Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3<
 <p><img src="131-pie-plot-with-r_files/figure-html/thecode4-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The density arguments adds stripes. You can control the angle of this lines with &quot;angle&quot;</span>
-<span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>) , <span class="dt">density=</span><span class="dv">10</span> , <span class="dt">angle=</span><span class="kw">c</span>(<span class="dv">20</span>,<span class="dv">90</span>,<span class="dv">30</span>,<span class="dv">10</span>,<span class="dv">0</span>))</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># The density arguments adds stripes. You can control the angle of this lines with &quot;angle&quot;</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>) , <span class="dt">density=</span><span class="dv">10</span> , <span class="dt">angle=</span><span class="kw">c</span>(<span class="dv">20</span>,<span class="dv">90</span>,<span class="dv">30</span>,<span class="dv">10</span>,<span class="dv">0</span>))</a></code></pre></div>
 <h1 id="color-with-col-and-border">Color with <code>col</code> and <code>border</code></h1>
 <hr />
 <div class="row">
@@ -231,12 +193,12 @@ Prop &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3<
 <p><img src="131-pie-plot-with-r_files/figure-html/thecode5-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Prepare a color palette. Here with R color brewer:</span>
-<span class="kw">library</span>(RColorBrewer)
-myPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">5</span>, <span class="st">&quot;Set2&quot;</span>) 
-
-<span class="co"># You can change the border of each area with the classical parameters:</span>
-<span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>), <span class="dt">border=</span><span class="st">&quot;white&quot;</span>, <span class="dt">col=</span>myPalette )</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Prepare a color palette. Here with R color brewer:</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(RColorBrewer)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">myPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">5</span>, <span class="st">&quot;Set2&quot;</span>) </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co"># You can change the border of each area with the classical parameters:</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="kw">pie</span>(Prop , <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Gr-A&quot;</span>,<span class="st">&quot;Gr-B&quot;</span>,<span class="st">&quot;Gr-C&quot;</span>,<span class="st">&quot;Gr-D&quot;</span>,<span class="st">&quot;Gr-E&quot;</span>), <span class="dt">border=</span><span class="st">&quot;white&quot;</span>, <span class="dt">col=</span>myPalette )</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
@@ -270,7 +232,7 @@ myPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span
         <div class="captionPortfolio">Treemap</div>
       </div>
       <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="donut.html">
+        <a class="portfolio-link"  href="doughnut-plot.html">
           <div class="portfolio-hover">
             <div class="portfolio-hover-content">
               <i class="fa fa-plus fa-3x"></i>
@@ -303,7 +265,7 @@ myPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span
         <div class="captionPortfolio">Dendrogram</div>
       </div>
       <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="circularpacking.html">
+        <a class="portfolio-link"  href="circle-packing.html">
           <div class="portfolio-hover">
             <div class="portfolio-hover-content">
               <i class="fa fa-plus fa-3x"></i>
@@ -313,17 +275,6 @@ myPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span
         </a>
         <div class="captionPortfolio">Circular packing</div>
       </div>
-      <!-- <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="sunburst.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Sunburst150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Sunburst</div>
-      </div> -->
     </div>
 
   </div>
@@ -419,6 +370,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>

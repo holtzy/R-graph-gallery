@@ -15,6 +15,8 @@
 <meta name="description" content="This post describes how to reorder a variable in a ggplot2 chart. Several methods are suggested, always providing examples with reproducible code chunks.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="Reorder a variable with ggplot2" />
@@ -44,77 +46,26 @@
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
 
 
-<!-- THIS ALLOWS TO INSERT THE MENU -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-  <a href="index.html">&larr; R Graph Gallery</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    Menu
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav text-uppercase ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Quick
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <p class="menuTitle"><i>Basics</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
-          <p class="menuTitle"><i>Customize</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
-          <p class="menuTitle"><i>Interactivity</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../all.html">ALL</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
-      </li>
-    </ul>
-  </div>
-</div>
-</nav>
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
 
-
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
 
 
 
 <!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead">
+<header class="masthead" style="padding-bottom: 30px;">
   <div class="textlanding">
       <center><h1>Reorder a variable with ggplot2</h1></center>
       <hr class="short_hr">
@@ -151,6 +102,17 @@
 
 
 
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
 
 
 
@@ -169,76 +131,76 @@
 <div class="container" style="padding-top: 50px">
 <p>Reordering groups in a <code>ggplot2</code> chart can be a struggle. This is due to the fact that ggplot2 takes into account the order of the <code>factor</code> levels, not the order you observe in your data frame. You can sort your input data frame with <code>sort()</code> or <code>arrange()</code>, it will never have any impact on your <code>ggplot2</code> output.</p>
 <p>This post explains how to reorder the level of your factor through several examples. Examples are based on 2 dummy datasets:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Library</span>
-<span class="kw">library</span>(ggplot2)
-<span class="kw">library</span>(dplyr)
-
-<span class="co"># Dataset 1: one value per group</span>
-data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
-  <span class="dt">name=</span><span class="kw">c</span>(<span class="st">&quot;north&quot;</span>,<span class="st">&quot;south&quot;</span>,<span class="st">&quot;south-east&quot;</span>,<span class="st">&quot;north-west&quot;</span>,<span class="st">&quot;south-west&quot;</span>,<span class="st">&quot;north-east&quot;</span>,<span class="st">&quot;west&quot;</span>,<span class="st">&quot;east&quot;</span>),
-  <span class="dt">val=</span><span class="kw">sample</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="dv">8</span> )
-)
- 
-<span class="co"># Dataset 2: several values per group (natively provided in R)</span>
-<span class="co"># mpg</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Library</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Dataset 1: one value per group</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="dt">name=</span><span class="kw">c</span>(<span class="st">&quot;north&quot;</span>,<span class="st">&quot;south&quot;</span>,<span class="st">&quot;south-east&quot;</span>,<span class="st">&quot;north-west&quot;</span>,<span class="st">&quot;south-west&quot;</span>,<span class="st">&quot;north-east&quot;</span>,<span class="st">&quot;west&quot;</span>,<span class="st">&quot;east&quot;</span>),</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="dt">val=</span><span class="kw">sample</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="dv">8</span> )</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"> </a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># Dataset 2: several values per group (natively provided in R)</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co"># mpg</span></a></code></pre></div>
 <h1 id="method-1-the-forecats-library">Method 1: the <code>Forecats</code> library</h1>
 <hr />
 <p>The <a href="https://github.com/tidyverse/forcats">Forecats library</a> is a library from the <a href="https://www.tidyverse.org/">tidyverse</a> especially made to handle factors in R. It provides a suite of useful tools that solve common problems with factors. The <code>fact_reorder()</code> function allows to reorder the factor (<code>data$name</code> for example) following the value of another column (<code>data$val</code> here).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the library</span>
-<span class="kw">library</span>(forcats)
-
-<span class="co"># Reorder following the value of another column:</span>
-data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_reorder</span>(name, val)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;#f68060&quot;</span>, <span class="dt">alpha=</span>.<span class="dv">6</span>, <span class="dt">width=</span>.<span class="dv">4</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme_bw</span>()
- 
-<span class="co"># Reverse side</span>
-data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_reorder</span>(name, <span class="kw">desc</span>(val))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;#f68060&quot;</span>, <span class="dt">alpha=</span>.<span class="dv">6</span>, <span class="dt">width=</span>.<span class="dv">4</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme_bw</span>()</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># load the library</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(forcats)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Reorder following the value of another column:</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_reorder</span>(name, val)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;#f68060&quot;</span>, <span class="dt">alpha=</span>.<span class="dv">6</span>, <span class="dt">width=</span>.<span class="dv">4</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="st">    </span><span class="kw">theme_bw</span>()</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"> </a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># Reverse side</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_reorder</span>(name, <span class="kw">desc</span>(val))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">fill=</span><span class="st">&quot;#f68060&quot;</span>, <span class="dt">alpha=</span>.<span class="dv">6</span>, <span class="dt">width=</span>.<span class="dv">4</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="st">    </span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <p><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-2-1.png" width="50%" /><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-2-2.png" width="50%" /></p>
 <p><br><br> If you have several values per level of your factor, you can specify which function to apply to determine the order. The default is to use the median, but you can use the number of data points per group to make the classification:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Using median</span>
-mpg <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">class =</span> <span class="kw">fct_reorder</span>(class, hwy, <span class="dt">.fun=</span><span class="st">&#39;median&#39;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">reorder</span>(class, hwy), <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span>
-<span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)
- 
-<span class="co"># Using number of observation per group</span>
-mpg <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">class =</span> <span class="kw">fct_reorder</span>(class, hwy, <span class="dt">.fun=</span><span class="st">&#39;length&#39;</span> )) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>class, <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span>
-<span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Using median</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">mpg <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">class =</span> <span class="kw">fct_reorder</span>(class, hwy, <span class="dt">.fun=</span><span class="st">&#39;median&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">reorder</span>(class, hwy), <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co"># Using number of observation per group</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">mpg <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">class =</span> <span class="kw">fct_reorder</span>(class, hwy, <span class="dt">.fun=</span><span class="st">&#39;length&#39;</span> )) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>class, <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="st">    </span><span class="kw">geom_boxplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a></code></pre></div>
 <p><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-3-1.png" width="50%" /><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-3-2.png" width="50%" /></p>
 <p><br><br></p>
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
 <p>The last common operation is to provide a specific order to your levels, you can do so using the <code>fct_relevel()</code> function as follow:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Reorder following a precise order</span>
-p &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_relevel</span>(name, 
-            <span class="st">&quot;north&quot;</span>, <span class="st">&quot;north-east&quot;</span>, <span class="st">&quot;east&quot;</span>, 
-            <span class="st">&quot;south-east&quot;</span>, <span class="st">&quot;south&quot;</span>, <span class="st">&quot;south-west&quot;</span>, 
-            <span class="st">&quot;west&quot;</span>, <span class="st">&quot;north-west&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)
-<span class="co">#p</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Reorder following a precise order</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">p &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">fct_relevel</span>(name, </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">            <span class="st">&quot;north&quot;</span>, <span class="st">&quot;north-east&quot;</span>, <span class="st">&quot;east&quot;</span>, </a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">            <span class="st">&quot;south-east&quot;</span>, <span class="st">&quot;south&quot;</span>, <span class="st">&quot;south-west&quot;</span>, </a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">            <span class="st">&quot;west&quot;</span>, <span class="st">&quot;north-west&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#p</span></a></code></pre></div>
 </div>
 <div class="col-md-6 col-sm-12">
 <p><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="100%" /></p>
@@ -252,40 +214,40 @@ p &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
 </li>
 <li>The second specifies a custom order for the factor giving the levels one by one.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(val) <span class="op">%&gt;%</span><span class="st">    </span><span class="co"># First sort by val. This sort the dataframe but NOT the factor levels</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name=</span><span class="kw">factor</span>(name, <span class="dt">levels=</span>name)) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># This trick update the factor levels</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">xend=</span>name, <span class="dt">yend=</span><span class="dv">0</span>)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_point</span>( <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)
- 
-data <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(val) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">factor</span>(name, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;north&quot;</span>, <span class="st">&quot;north-east&quot;</span>, <span class="st">&quot;east&quot;</span>, <span class="st">&quot;south-east&quot;</span>, <span class="st">&quot;south&quot;</span>, <span class="st">&quot;south-west&quot;</span>, <span class="st">&quot;west&quot;</span>, <span class="st">&quot;north-west&quot;</span>))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">xend=</span>name, <span class="dt">yend=</span><span class="dv">0</span>)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">geom_point</span>( <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span><span class="kw">arrange</span>(val) <span class="op">%&gt;%</span><span class="st">    </span><span class="co"># First sort by val. This sort the dataframe but NOT the factor levels</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name=</span><span class="kw">factor</span>(name, <span class="dt">levels=</span>name)) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># This trick update the factor levels</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">    </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">xend=</span>name, <span class="dt">yend=</span><span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_point</span>( <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"> </a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw">arrange</span>(val) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">name =</span> <span class="kw">factor</span>(name, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;north&quot;</span>, <span class="st">&quot;north-east&quot;</span>, <span class="st">&quot;east&quot;</span>, <span class="st">&quot;south-east&quot;</span>, <span class="st">&quot;south&quot;</span>, <span class="st">&quot;south-west&quot;</span>, <span class="st">&quot;west&quot;</span>, <span class="st">&quot;north-west&quot;</span>))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>name, <span class="dt">y=</span>val)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="st">    </span><span class="kw">geom_segment</span>( <span class="kw">aes</span>(<span class="dt">xend=</span>name, <span class="dt">yend=</span><span class="dv">0</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="st">    </span><span class="kw">geom_point</span>( <span class="dt">size=</span><span class="dv">4</span>, <span class="dt">color=</span><span class="st">&quot;orange&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a></code></pre></div>
 <p><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="50%" /><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-6-2.png" width="50%" /></p>
 <h1 id="method-3-the-reorder-function-of-base-r">Method 3: the <code>reorder()</code> function of base R</h1>
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
 <p>In case your an unconditional user of the good old R, here is how to control the order using the <code>reorder()</code> function inside a <code>with()</code> call:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reorder is close to order, but is made to change the order of the factor levels.</span>
-mpg<span class="op">$</span>class =<span class="st"> </span><span class="kw">with</span>(mpg, <span class="kw">reorder</span>(class, hwy, median))
-
-p &lt;-<span class="st"> </span>mpg <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>class, <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span>
-<span class="st">    </span><span class="kw">geom_violin</span>() <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)
-<span class="co">#p</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># reorder is close to order, but is made to change the order of the factor levels.</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">mpg<span class="op">$</span>class =<span class="st"> </span><span class="kw">with</span>(mpg, <span class="kw">reorder</span>(class, hwy, median))</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">p &lt;-<span class="st"> </span>mpg <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>class, <span class="dt">y=</span>hwy, <span class="dt">fill=</span>class)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_violin</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;class&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#p</span></a></code></pre></div>
 </div>
 <div class="col-md-6 col-sm-12">
 <p><img src="267-reorder-a-variable-in-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="100%" /></p>
@@ -313,7 +275,7 @@ p &lt;-<span class="st"> </span>mpg <span class="op">%&gt;%</span>
       <div class="captionPortfolio">Violin</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="density.html">
+      <a class="portfolio-link"  href="density-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -346,7 +308,7 @@ p &lt;-<span class="st"> </span>mpg <span class="op">%&gt;%</span>
       <div class="captionPortfolio">Boxplot</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="ridgeline.html">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -451,6 +413,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>

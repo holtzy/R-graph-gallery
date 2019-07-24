@@ -15,6 +15,8 @@
 <meta name="description" content="Boxplot hides the distribution behind each group. This post show how to tackle this issue in base R, adding individual observation using dots with jittering.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="Boxplot with jitter in base R" />
@@ -44,77 +46,26 @@
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
 
 
-<!-- THIS ALLOWS TO INSERT THE MENU -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-  <a href="index.html">&larr; R Graph Gallery</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    Menu
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav text-uppercase ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Quick
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <p class="menuTitle"><i>Basics</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
-          <p class="menuTitle"><i>Customize</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
-          <p class="menuTitle"><i>Interactivity</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../all.html">ALL</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
-      </li>
-    </ul>
-  </div>
-</div>
-</nav>
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
 
-
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
 
 
 
 <!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead">
+<header class="masthead" style="padding-bottom: 30px;">
   <div class="textlanding">
       <center><h1>Boxplot with jitter in base R</h1></center>
       <hr class="short_hr">
@@ -151,6 +102,17 @@
 
 
 
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
 
 
 
@@ -177,27 +139,27 @@
 <p><img src="96-boxplot-with-jitter_files/figure-html/unnamed-chunk-1-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create data</span>
-names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">80</span>) , <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">50</span>) , <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>, <span class="dv">70</span>))
-value &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">rnorm</span>(<span class="dv">80</span> , <span class="dt">mean=</span><span class="dv">10</span> , <span class="dt">sd=</span><span class="dv">9</span>) , <span class="kw">rnorm</span>(<span class="dv">50</span> , <span class="dt">mean=</span><span class="dv">2</span> , <span class="dt">sd=</span><span class="dv">15</span>) , <span class="kw">rnorm</span>(<span class="dv">70</span> , <span class="dt">mean=</span><span class="dv">30</span> , <span class="dt">sd=</span><span class="dv">10</span>) )
-data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(names,value)
- 
-<span class="co"># Basic boxplot</span>
-<span class="kw">boxplot</span>(data<span class="op">$</span>value <span class="op">~</span><span class="st"> </span>data<span class="op">$</span>names , <span class="dt">col=</span><span class="kw">terrain.colors</span>(<span class="dv">4</span>) )
- 
-<span class="co"># Add data points</span>
-mylevels &lt;-<span class="st"> </span><span class="kw">levels</span>(data<span class="op">$</span>names)
-levelProportions &lt;-<span class="st"> </span><span class="kw">summary</span>(data<span class="op">$</span>names)<span class="op">/</span><span class="kw">nrow</span>(data)
-<span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(mylevels)){
- 
-  thislevel &lt;-<span class="st"> </span>mylevels[i]
-  thisvalues &lt;-<span class="st"> </span>data[data<span class="op">$</span>names<span class="op">==</span>thislevel, <span class="st">&quot;value&quot;</span>]
-   
-  <span class="co"># take the x-axis indices and add a jitter, proportional to the N in each level</span>
-  myjitter &lt;-<span class="st"> </span><span class="kw">jitter</span>(<span class="kw">rep</span>(i, <span class="kw">length</span>(thisvalues)), <span class="dt">amount=</span>levelProportions[i]<span class="op">/</span><span class="dv">2</span>)
-  <span class="kw">points</span>(myjitter, thisvalues, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">col=</span><span class="kw">rgb</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">9</span>)) 
-   
-}</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create data</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">80</span>) , <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">50</span>) , <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>, <span class="dv">70</span>))</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">value &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">rnorm</span>(<span class="dv">80</span> , <span class="dt">mean=</span><span class="dv">10</span> , <span class="dt">sd=</span><span class="dv">9</span>) , <span class="kw">rnorm</span>(<span class="dv">50</span> , <span class="dt">mean=</span><span class="dv">2</span> , <span class="dt">sd=</span><span class="dv">15</span>) , <span class="kw">rnorm</span>(<span class="dv">70</span> , <span class="dt">mean=</span><span class="dv">30</span> , <span class="dt">sd=</span><span class="dv">10</span>) )</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(names,value)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"> </a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># Basic boxplot</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">boxplot</span>(data<span class="op">$</span>value <span class="op">~</span><span class="st"> </span>data<span class="op">$</span>names , <span class="dt">col=</span><span class="kw">terrain.colors</span>(<span class="dv">4</span>) )</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"> </a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># Add data points</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">mylevels &lt;-<span class="st"> </span><span class="kw">levels</span>(data<span class="op">$</span>names)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">levelProportions &lt;-<span class="st"> </span><span class="kw">summary</span>(data<span class="op">$</span>names)<span class="op">/</span><span class="kw">nrow</span>(data)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(mylevels)){</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"> </a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  thislevel &lt;-<span class="st"> </span>mylevels[i]</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  thisvalues &lt;-<span class="st"> </span>data[data<span class="op">$</span>names<span class="op">==</span>thislevel, <span class="st">&quot;value&quot;</span>]</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">   </a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  <span class="co"># take the x-axis indices and add a jitter, proportional to the N in each level</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  myjitter &lt;-<span class="st"> </span><span class="kw">jitter</span>(<span class="kw">rep</span>(i, <span class="kw">length</span>(thisvalues)), <span class="dt">amount=</span>levelProportions[i]<span class="op">/</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  <span class="kw">points</span>(myjitter, thisvalues, <span class="dt">pch=</span><span class="dv">20</span>, <span class="dt">col=</span><span class="kw">rgb</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">9</span>)) </a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">   </a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">}</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
@@ -220,7 +182,7 @@ levelProportions &lt;-<span class="st"> </span><span class="kw">summary</span>(d
       <div class="captionPortfolio">Violin</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="density.html">
+      <a class="portfolio-link"  href="density-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -253,7 +215,7 @@ levelProportions &lt;-<span class="st"> </span><span class="kw">summary</span>(d
       <div class="captionPortfolio">Boxplot</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="ridgeline.html">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -358,6 +320,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>

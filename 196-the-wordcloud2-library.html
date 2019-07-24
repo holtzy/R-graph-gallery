@@ -15,6 +15,8 @@
 <meta name="description" content="This post explains how to draw wordclouds with R and the wordcloud2 package. It provides several reproducible examples with explanation and R code.">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="The Wordcloud2 library" />
@@ -44,77 +46,26 @@
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
 
 
-<!-- THIS ALLOWS TO INSERT THE MENU -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-  <a href="index.html">&larr; R Graph Gallery</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    Menu
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav text-uppercase ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Quick
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <p class="menuTitle"><i>Basics</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
-          <p class="menuTitle"><i>Customize</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
-          <p class="menuTitle"><i>Interactivity</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../all.html">ALL</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
-      </li>
-    </ul>
-  </div>
-</div>
-</nav>
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
 
-
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
 
 
 
 <!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead">
+<header class="masthead" style="padding-bottom: 30px;">
   <div class="textlanding">
       <center><h1>The Wordcloud2 library</h1></center>
       <hr class="short_hr">
@@ -151,6 +102,17 @@
 
 
 
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
 
 
 
@@ -181,14 +143,14 @@
 <p><img src="img/graph/196-the-wordcloud2-library1.png"></img></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="co"># have a look to the example dataset</span>
-<span class="co"># head(demoFreq)</span>
-
-<span class="co"># Basic plot</span>
-<span class="kw">wordcloud2</span>(<span class="dt">data=</span>demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># have a look to the example dataset</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># head(demoFreq)</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Basic plot</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">wordcloud2</span>(<span class="dt">data=</span>demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>)</a></code></pre></div>
 <h1 id="color">Color &amp; Background color</h1>
 <hr />
 <div class="row">
@@ -203,17 +165,17 @@
 </div>
 </div>
 <p>It is possible to change the word color using the <code>color</code> argument. You can provide a vector of color, or use <code>random-dark</code> or <code>random-light</code>. You can also customize the background color with <code>backgroundColor</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="co"># Gives a proposed palette</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="st">&#39;random-dark&#39;</span>)
- 
-<span class="co"># or a vector of colors. vector must be same length than input data</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="kw">rep_len</span>( <span class="kw">c</span>(<span class="st">&quot;green&quot;</span>,<span class="st">&quot;blue&quot;</span>), <span class="kw">nrow</span>(demoFreq) ) )
- 
-<span class="co"># Change the background color</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="st">&#39;random-light&#39;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Gives a proposed palette</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="st">&#39;random-dark&#39;</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># or a vector of colors. vector must be same length than input data</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="kw">rep_len</span>( <span class="kw">c</span>(<span class="st">&quot;green&quot;</span>,<span class="st">&quot;blue&quot;</span>), <span class="kw">nrow</span>(demoFreq) ) )</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># Change the background color</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.6</span>, <span class="dt">color=</span><span class="st">&#39;random-light&#39;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)</a></code></pre></div>
 <h1 id="shape">Shape</h1>
 <hr />
 <div class="row">
@@ -235,14 +197,14 @@
 <li><code>star</code></li>
 </ul>
 <p>You can also use an image like <a href="https://github.com/holtzy/R-graph-gallery/blob/master/img/other/peaceAndLove.jpg">this one</a> as a mask.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="co"># Change the shape:</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size =</span> <span class="fl">0.7</span>, <span class="dt">shape =</span> <span class="st">&#39;star&#39;</span>)
- 
-<span class="co"># Change the shape using your image</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">figPath =</span> <span class="st">&quot;~/Desktop/R-graph-gallery/img/other/peaceAndLove.jpg&quot;</span>, <span class="dt">size =</span> <span class="fl">1.5</span>, <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># Change the shape:</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size =</span> <span class="fl">0.7</span>, <span class="dt">shape =</span> <span class="st">&#39;star&#39;</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># Change the shape using your image</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">figPath =</span> <span class="st">&quot;~/Desktop/R-graph-gallery/img/other/peaceAndLove.jpg&quot;</span>, <span class="dt">size =</span> <span class="fl">1.5</span>, <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)</a></code></pre></div>
 <h1 id="word-orientation">Word orientation</h1>
 <hr />
 <div class="row">
@@ -253,11 +215,11 @@
 <p><img src="img/graph/196-the-wordcloud2-library7.png"></img></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="co"># wordcloud</span>
-<span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size =</span> <span class="fl">2.3</span>, <span class="dt">minRotation =</span> <span class="op">-</span>pi<span class="op">/</span><span class="dv">6</span>, <span class="dt">maxRotation =</span> <span class="op">-</span>pi<span class="op">/</span><span class="dv">6</span>, <span class="dt">rotateRatio =</span> <span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># wordcloud</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size =</span> <span class="fl">2.3</span>, <span class="dt">minRotation =</span> <span class="op">-</span>pi<span class="op">/</span><span class="dv">6</span>, <span class="dt">maxRotation =</span> <span class="op">-</span>pi<span class="op">/</span><span class="dv">6</span>, <span class="dt">rotateRatio =</span> <span class="dv">1</span>)</a></code></pre></div>
 <h1 id="chinese-version">Chinese version</h1>
 <hr />
 <div class="row">
@@ -268,11 +230,11 @@
 <p><img src="img/graph/196-the-wordcloud2-library8.png"></img></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="co"># wordcloud</span>
-<span class="kw">wordcloud2</span>(demoFreqC, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">fontFamily =</span> <span class="st">&quot;????????????&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;random-light&quot;</span>, <span class="dt">backgroundColor =</span> <span class="st">&quot;grey&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># wordcloud</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="kw">wordcloud2</span>(demoFreqC, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">fontFamily =</span> <span class="st">&quot;????????????&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;random-light&quot;</span>, <span class="dt">backgroundColor =</span> <span class="st">&quot;grey&quot;</span>)</a></code></pre></div>
 <h1 id="letter">Use letter or text as shape</h1>
 <hr />
 <div class="row">
@@ -284,31 +246,31 @@
 </div>
 </div>
 <p>The <code>letterCloud</code> function allows to use a letter or a word as a mask for the wordcloud:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># library</span>
-<span class="kw">library</span>(wordcloud2) 
- 
-<span class="kw">letterCloud</span>( demoFreq, <span class="dt">word =</span> <span class="st">&quot;R&quot;</span>, <span class="dt">color=</span><span class="st">&#39;random-light&#39;</span> , <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)
-<span class="kw">letterCloud</span>( demoFreq, <span class="dt">word =</span> <span class="st">&quot;PEACE&quot;</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;pink&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">letterCloud</span>( demoFreq, <span class="dt">word =</span> <span class="st">&quot;R&quot;</span>, <span class="dt">color=</span><span class="st">&#39;random-light&#39;</span> , <span class="dt">backgroundColor=</span><span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw">letterCloud</span>( demoFreq, <span class="dt">word =</span> <span class="st">&quot;PEACE&quot;</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>, <span class="dt">backgroundColor=</span><span class="st">&quot;pink&quot;</span>)</a></code></pre></div>
 <h1 id="export">Export the wordcloud</h1>
 <hr />
 <p><code>Wordcloud2</code> is a <a href="https://www.htmlwidgets.org">html widget</a>. It means your wordcloud will be output in a <code>HTML</code> format.</p>
 <p>You can export it as a <code>png</code> image using rstudio, or using the <code>webshot</code> library as follow:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load wordcloud2</span>
-<span class="kw">library</span>(wordcloud2) 
-
-<span class="co"># install webshot</span>
-<span class="kw">library</span>(webshot)
-webshot<span class="op">::</span><span class="kw">install_phantomjs</span>()
-
-<span class="co"># Make the graph</span>
-my_graph &lt;-<span class="st"> </span><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.5</span>)
-
-<span class="co"># save it in html</span>
-<span class="kw">library</span>(<span class="st">&quot;htmlwidgets&quot;</span>)
-<span class="kw">saveWidget</span>(my_graph,<span class="st">&quot;tmp.html&quot;</span>,<span class="dt">selfcontained =</span> F)
-
-<span class="co"># and in png or pdf</span>
-<span class="kw">webshot</span>(<span class="st">&quot;tmp.html&quot;</span>,<span class="st">&quot;fig_1.pdf&quot;</span>, <span class="dt">delay =</span><span class="dv">5</span>, <span class="dt">vwidth =</span> <span class="dv">480</span>, <span class="dt">vheight=</span><span class="dv">480</span>)</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># load wordcloud2</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">library</span>(wordcloud2) </a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co"># install webshot</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="kw">library</span>(webshot)</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">webshot<span class="op">::</span><span class="kw">install_phantomjs</span>()</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="co"># Make the graph</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">my_graph &lt;-<span class="st"> </span><span class="kw">wordcloud2</span>(demoFreq, <span class="dt">size=</span><span class="fl">1.5</span>)</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="co"># save it in html</span></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12"><span class="kw">library</span>(<span class="st">&quot;htmlwidgets&quot;</span>)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">saveWidget</span>(my_graph,<span class="st">&quot;tmp.html&quot;</span>,<span class="dt">selfcontained =</span> F)</a>
+<a class="sourceLine" id="cb7-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"><span class="co"># and in png or pdf</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="kw">webshot</span>(<span class="st">&quot;tmp.html&quot;</span>,<span class="st">&quot;fig_1.pdf&quot;</span>, <span class="dt">delay =</span><span class="dv">5</span>, <span class="dt">vwidth =</span> <span class="dv">480</span>, <span class="dt">vheight=</span><span class="dv">480</span>)</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
@@ -353,7 +315,7 @@ my_graph &lt;-<span class="st"> </span><span class="kw">wordcloud2</span>(demoFr
       <div class="captionPortfolio">Wordcloud</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel.html">
+      <a class="portfolio-link"  href="parallel-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -364,7 +326,7 @@ my_graph &lt;-<span class="st"> </span><span class="kw">wordcloud2</span>(demoFr
       <div class="captionPortfolio">Parallel</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop.html">
+      <a class="portfolio-link"  href="lollipop-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -375,7 +337,7 @@ my_graph &lt;-<span class="st"> </span><span class="kw">wordcloud2</span>(demoFr
       <div class="captionPortfolio">Lollipop</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular_barplot.html">
+      <a class="portfolio-link" href="circular-barplot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -480,6 +442,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>

@@ -15,6 +15,8 @@
 <meta name="description" content="This post is dedicated to boxplot ordering in base R. It describes 3 common use cases of reordering issue with code and explanation">
 <meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
 <meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
 
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="Ordering boxplots in base R" />
@@ -44,77 +46,26 @@
 <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
 
 
-<!-- THIS ALLOWS TO INSERT THE MENU -->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-<div class="container">
-  <a href="index.html">&larr; R Graph Gallery</a>
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-    Menu
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <ul class="navbar-nav text-uppercase ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#researchModal"><i class="fa fa-search"></i></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" href="#LogoMenu">Chart types</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Quick
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <p class="menuTitle"><i>Basics</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/intro_d3js.html">Intro to d3</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/shape.html">Shape</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/basic_datamanipulation.html">Data wrangling</a>
-          <p class="menuTitle"><i>Customize</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_axis.html">Axis</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_color.html">Color</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_theme.html">Themes</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Legend</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/custom_responsive.html">Responsivness</a>
-          <p class="menuTitle"><i>Interactivity</i></p>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html">Tooltip</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_button.html">Button</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_zoom.html">Zoom</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/graph/interactivity_brush.html">Brushing</a>
-          <a class="dropdown-item" href="https://www.d3-graph-gallery.com/interactivity.html">Transition</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="../all.html">ALL</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.r-graph-gallery.com">R</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.python-graph-gallery.com">Python</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.data-to-viz.com">Data to viz</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="https://www.yan-holtz.com">Who am I</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link js-scroll-trigger" href="about.html">About</a>
-      </li>
-    </ul>
-  </div>
-</div>
-</nav>
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
 
-
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
 
 
 
 <!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead">
+<header class="masthead" style="padding-bottom: 30px;">
   <div class="textlanding">
       <center><h1>Ordering boxplots in base R</h1></center>
       <hr class="short_hr">
@@ -151,6 +102,17 @@
 
 
 
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
 
 
 
@@ -178,17 +140,17 @@
 <p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-1-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create data : 7 varieties / 20 samples per variety / a numeric value for each sample</span>
-variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">20</span>)
-note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T),
-        <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">30</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">70</span> , <span class="dt">replace=</span>T) )
-data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(variety, note)
- 
-<span class="co"># Create a vector named &quot;new_order&quot; containing the desired order</span>
-new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">reorder</span>(variety , note, median , <span class="dt">na.rm=</span>T))
- 
-<span class="co"># Draw the boxplot using this new order</span>
-<span class="kw">boxplot</span>(data<span class="op">$</span>note <span class="op">~</span><span class="st"> </span>new_order , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span> , <span class="dt">col=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create data : 7 varieties / 20 samples per variety / a numeric value for each sample</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">20</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T),</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">        <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">30</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">70</span> , <span class="dt">replace=</span>T) )</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(variety, note)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Create a vector named &quot;new_order&quot; containing the desired order</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">reorder</span>(variety , note, median , <span class="dt">na.rm=</span>T))</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Draw the boxplot using this new order</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">boxplot</span>(data<span class="op">$</span>note <span class="op">~</span><span class="st"> </span>new_order , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span> , <span class="dt">col=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a></code></pre></div>
 <h1 id="give-a-specific-order">Give a specific order</h1>
 <hr />
 <div class="row">
@@ -200,21 +162,21 @@ new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span
 <p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Creating data </span>
-names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&quot;D&quot;</span>, <span class="dv">20</span>))
-value &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), 
-       <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) )
-data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(names,value)
- 
-<span class="co"># Classic boxplot (A-B-C-D order)</span>
-<span class="co"># boxplot(data$value ~ data$names)</span>
- 
-<span class="co"># I reorder the groups order : I change the order of the factor data$names</span>
-data<span class="op">$</span>names &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>names , <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>))
- 
-<span class="co">#The plot is now ordered !</span>
-<span class="kw">boxplot</span>(data<span class="op">$</span>value <span class="op">~</span><span class="st"> </span>data<span class="op">$</span>names , <span class="dt">col=</span><span class="kw">rgb</span>(<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.4</span>,<span class="fl">0.6</span>) , <span class="dt">ylab=</span><span class="st">&quot;value&quot;</span> , 
-    <span class="dt">xlab=</span><span class="st">&quot;names in desired order&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">#Creating data </span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&quot;D&quot;</span>, <span class="dv">20</span>))</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">value &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">       <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) )</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(names,value)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># Classic boxplot (A-B-C-D order)</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># boxplot(data$value ~ data$names)</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># I reorder the groups order : I change the order of the factor data$names</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">data<span class="op">$</span>names &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>names , <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;B&quot;</span>))</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"> </a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#The plot is now ordered !</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw">boxplot</span>(data<span class="op">$</span>value <span class="op">~</span><span class="st"> </span>data<span class="op">$</span>names , <span class="dt">col=</span><span class="kw">rgb</span>(<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.4</span>,<span class="fl">0.6</span>) , <span class="dt">ylab=</span><span class="st">&quot;value&quot;</span> , </a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="dt">xlab=</span><span class="st">&quot;names in desired order&quot;</span>)</a></code></pre></div>
 <h1 id="grouped">Grouped and ordered boxplot</h1>
 <hr />
 <div class="row">
@@ -226,43 +188,43 @@ data<span class="op">$</span>names &lt;-<span class="st"> </span><span class="kw
 <p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-5-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create dummy data</span>
-variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">40</span>)
-treatment &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;high&quot;</span> , <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;low&quot;</span> , <span class="dv">20</span>)) , <span class="dv">7</span>)
-note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>), 
-          <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">5</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">5</span><span class="op">:</span><span class="dv">9</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>), 
-          <span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), 
-          <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">8</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">7</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>) ))
-data=<span class="kw">data.frame</span>(variety, treatment ,  note)
- 
-<span class="co"># Reorder varieties (group) (mixing low and high treatments for the calculations)</span>
-new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">reorder</span>(variety , note, mean , <span class="dt">na.rm=</span>T))
- 
-<span class="co"># Then I make the boxplot, asking to use the 2 factors : variety (in the good order) AND treatment :</span>
-<span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>))
-myplot &lt;-<span class="st"> </span><span class="kw">boxplot</span>(note <span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>new_order , <span class="dt">data=</span>data  , 
-        <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span>,
-        <span class="dt">main=</span><span class="st">&quot;sickness of several wheat lines&quot;</span> , 
-        <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;slateblue1&quot;</span> , <span class="st">&quot;tomato&quot;</span>) ,  
-        <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>)
- 
-<span class="co"># To add the label of x axis</span>
-my_names &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(myplot<span class="op">$</span>names , <span class="st">&#39;</span><span class="ch">\\</span><span class="st">.&#39;</span>) , <span class="cf">function</span>(x) x[[<span class="dv">2</span>]] )
-my_names &lt;-<span class="st"> </span>my_names[<span class="kw">seq</span>(<span class="dv">1</span> , <span class="kw">length</span>(my_names) , <span class="dv">2</span>)]
-<span class="kw">axis</span>(<span class="dv">1</span>, 
-     <span class="dt">at =</span> <span class="kw">seq</span>(<span class="fl">1.5</span> , <span class="dv">14</span> , <span class="dv">2</span>), 
-     <span class="dt">labels =</span> my_names , 
-     <span class="dt">tick=</span><span class="ot">FALSE</span> , <span class="dt">cex=</span><span class="fl">0.3</span>)
-
-<span class="co"># Add the grey vertical lines</span>
-<span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq</span>(<span class="fl">0.5</span> , <span class="dv">20</span> , <span class="dv">2</span>)){ 
-  <span class="kw">abline</span>(<span class="dt">v=</span>i,<span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;grey&quot;</span>)
-  }
- 
-<span class="co"># Add a legend</span>
-<span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;High treatment&quot;</span>, <span class="st">&quot;Low treatment&quot;</span>), 
-       <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;slateblue1&quot;</span> , <span class="st">&quot;tomato&quot;</span>),
-       <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">pt.cex =</span> <span class="dv">3</span>, <span class="dt">cex =</span> <span class="fl">1.2</span>,  <span class="dt">horiz =</span> F, <span class="dt">inset =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>))</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Create dummy data</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">40</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">treatment &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;high&quot;</span> , <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;low&quot;</span> , <span class="dv">20</span>)) , <span class="dv">7</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">          <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">5</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">5</span><span class="op">:</span><span class="dv">9</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">          <span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), </a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">          <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">8</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">7</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>) ))</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">data=<span class="kw">data.frame</span>(variety, treatment ,  note)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co"># Reorder varieties (group) (mixing low and high treatments for the calculations)</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">reorder</span>(variety , note, mean , <span class="dt">na.rm=</span>T))</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"> </a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># Then I make the boxplot, asking to use the 2 factors : variety (in the good order) AND treatment :</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">myplot &lt;-<span class="st"> </span><span class="kw">boxplot</span>(note <span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>new_order , <span class="dt">data=</span>data  , </a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">        <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span>,</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">        <span class="dt">main=</span><span class="st">&quot;sickness of several wheat lines&quot;</span> , </a>
+<a class="sourceLine" id="cb3-18" data-line-number="18">        <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;slateblue1&quot;</span> , <span class="st">&quot;tomato&quot;</span>) ,  </a>
+<a class="sourceLine" id="cb3-19" data-line-number="19">        <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>)</a>
+<a class="sourceLine" id="cb3-20" data-line-number="20"> </a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="co"># To add the label of x axis</span></a>
+<a class="sourceLine" id="cb3-22" data-line-number="22">my_names &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">strsplit</span>(myplot<span class="op">$</span>names , <span class="st">&#39;</span><span class="ch">\\</span><span class="st">.&#39;</span>) , <span class="cf">function</span>(x) x[[<span class="dv">2</span>]] )</a>
+<a class="sourceLine" id="cb3-23" data-line-number="23">my_names &lt;-<span class="st"> </span>my_names[<span class="kw">seq</span>(<span class="dv">1</span> , <span class="kw">length</span>(my_names) , <span class="dv">2</span>)]</a>
+<a class="sourceLine" id="cb3-24" data-line-number="24"><span class="kw">axis</span>(<span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb3-25" data-line-number="25">     <span class="dt">at =</span> <span class="kw">seq</span>(<span class="fl">1.5</span> , <span class="dv">14</span> , <span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb3-26" data-line-number="26">     <span class="dt">labels =</span> my_names , </a>
+<a class="sourceLine" id="cb3-27" data-line-number="27">     <span class="dt">tick=</span><span class="ot">FALSE</span> , <span class="dt">cex=</span><span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb3-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb3-29" data-line-number="29"><span class="co"># Add the grey vertical lines</span></a>
+<a class="sourceLine" id="cb3-30" data-line-number="30"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq</span>(<span class="fl">0.5</span> , <span class="dv">20</span> , <span class="dv">2</span>)){ </a>
+<a class="sourceLine" id="cb3-31" data-line-number="31">  <span class="kw">abline</span>(<span class="dt">v=</span>i,<span class="dt">lty=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="st">&quot;grey&quot;</span>)</a>
+<a class="sourceLine" id="cb3-32" data-line-number="32">  }</a>
+<a class="sourceLine" id="cb3-33" data-line-number="33"> </a>
+<a class="sourceLine" id="cb3-34" data-line-number="34"><span class="co"># Add a legend</span></a>
+<a class="sourceLine" id="cb3-35" data-line-number="35"><span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;High treatment&quot;</span>, <span class="st">&quot;Low treatment&quot;</span>), </a>
+<a class="sourceLine" id="cb3-36" data-line-number="36">       <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;slateblue1&quot;</span> , <span class="st">&quot;tomato&quot;</span>),</a>
+<a class="sourceLine" id="cb3-37" data-line-number="37">       <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">pt.cex =</span> <span class="dv">3</span>, <span class="dt">cex =</span> <span class="fl">1.2</span>,  <span class="dt">horiz =</span> F, <span class="dt">inset =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>))</a></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
@@ -285,7 +247,7 @@ my_names &lt;-<span class="st"> </span>my_names[<span class="kw">seq</span>(<spa
       <div class="captionPortfolio">Violin</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="density.html">
+      <a class="portfolio-link"  href="density-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -318,7 +280,7 @@ my_names &lt;-<span class="st"> </span>my_names[<span class="kw">seq</span>(<spa
       <div class="captionPortfolio">Boxplot</div>
     </div>
     <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="ridgeline.html">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
@@ -423,6 +385,16 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
 
 </body>
 </html>
