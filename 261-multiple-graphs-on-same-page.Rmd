@@ -1,0 +1,113 @@
+---
+title: "Multiple ggplot2 charts on a single page"
+descriptionMeta: "This post shows how to use the gridExtra library to combine several ggplot2 charts on the same figure. Several examples are provided, illustrating several ways to split the graphing window."
+descriptionTop: "This post shows how to use the `gridExtra` library to combine several `ggplot2` charts on the same figure. Several examples are provided, illustrating several ways to split the graphing window."
+sectionText: "ggplot2 Section"
+sectionLink: "ggplot2-package.html"
+DataToVizText: "About Scatter"
+DataToVizLink: "data-to-viz.com/graph/scatter.html"
+url: "261-multiple-graphs-on-same-page"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 40px">
+
+
+
+
+Mixing multiple graphs on the same page is a common practice. It allows to summarize a lot of information on the same figure, and is for instance widely used for scientific publication.
+
+The gridExtra package makes it a breeze. It offers the `grid.arrange()` function that does exactly that. Its `nrow` argument allows to specify how to arrange the layout. 
+
+For more complex layout, the `arrangeGrob()` functions allows to do some nesting. Here are 4 examples to illustrate how `gridExtra` works:
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeA, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+# libraries
+library(ggplot2)
+library(gridExtra)
+ 
+# Make 3 simple graphics:
+g1 <- ggplot(mtcars, aes(x=qsec)) + geom_density(fill="slateblue")
+g2 <- ggplot(mtcars, aes(x=drat, y=qsec, color=cyl)) + geom_point(size=5) + theme(legend.position="none")
+g3 <- ggplot(mtcars, aes(x=factor(cyl), y=qsec, fill=cyl)) + geom_boxplot() + theme(legend.position="none")
+g4 <- ggplot(mtcars , aes(x=factor(cyl), fill=factor(cyl))) +  geom_bar()
+ 
+# Plots
+grid.arrange(g2, arrangeGrob(g3, g4, ncol=2), nrow = 2)
+```
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeB, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+
+grid.arrange(g1, g2, g3, nrow = 3)
+
+```
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeC, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+
+grid.arrange(g2, arrangeGrob(g3, g4, ncol=2), nrow = 1)
+
+
+```
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecodeD, echo=FALSE, out.width = "80%", fig.height=7, fig.align="center"}
+grid.arrange(g2, arrangeGrob(g3, g4, nrow=2), nrow = 1)
+```
+</div>
+</div>
+
+
+
+
+```{r thecodeA, eval=FALSE}
+```
+
+```{r thecodeB, eval=FALSE}
+```
+
+```{r thecodeC, eval=FALSE}
+```
+
+```{r thecodeD, eval=FALSE}
+```
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
