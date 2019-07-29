@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>Grouped, stacked and percent stacked barplot in ggplot2 &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post explains how to build grouped, stacked and percent stacked barplot with R and ggplot2. It provides a reproducible example with code for each type.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Grouped, stacked and percent stacked barplot in ggplot2" />
+<meta property="og:image" content="img/overview_RGG.png" />
+<meta property="og:description" content="This post explains how to build grouped, stacked and percent stacked barplot with R and ggplot2. It provides a reproducible example with code for each type." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/48-grouped-barplot-with-ggplot2.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
+
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead" style="padding-bottom: 30px;">
+  <div class="textlanding">
+      <center><h1>Grouped, stacked and percent stacked barplot in ggplot2</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post explains how to build grouped, stacked and percent stacked barplot with R and ggplot2. It provides a reproducible example with code for each type.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='barplot.html'>Barchart section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/barplot.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<h1 id="grouped-barchart">Grouped barchart</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>A grouped barplot display a numeric value for a set of entities split in groups and subgroups. Before trying to build one, check how to make a <a href="218-basic-barplots-with-ggplot2.html">basic barplot</a> with <code>R</code> and <code>ggplot2</code>.</p>
+<p>A few explanation about the code below:</p>
+<ul>
+<li>input dataset must provide 3 columns: the numeric value (<code>value</code>), and 2 categorical variables for the group (<code>specie</code>) and the subgroup (<code>condition</code>) levels.</li>
+<li>in the <code>aes()</code> call, x is the group (<code>specie</code>), and the subgroup (<code>condition</code>) is given to the <code>fill</code> argument.</li>
+<li>in the <code>geom_bar()</code> call, <code>position=&quot;dodge&quot;</code> must be specified to have the bars one beside each other.</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="48-grouped-barplot-with-ggplot2_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"> <span class="co"># library</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># create a dataset</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">specie &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;sorgho&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;poacee&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;banana&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;triticum&quot;</span> , <span class="dv">3</span>) )</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">condition &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;normal&quot;</span> , <span class="st">&quot;stress&quot;</span> , <span class="st">&quot;Nitrogen&quot;</span>) , <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">value &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">12</span> , <span class="dv">0</span> , <span class="dv">15</span>))</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(specie,condition,value)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Grouped</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">fill=</span>condition, <span class="dt">y=</span>value, <span class="dt">x=</span>specie)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="st">&quot;dodge&quot;</span>, <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>)</a></code></pre></div>
+<h1 id="grouped-barchart-1">Grouped barchart</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>A stacked barplot is very similar to the grouped barplot above. The subgroups are just displayed on top of each other, not beside.</p>
+<p>The only thing to change to get this figure is to switch the <code>position</code> argument to <code>stack</code>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="48-grouped-barplot-with-ggplot2_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"> <span class="co"># library</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># create a dataset</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">specie &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;sorgho&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;poacee&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;banana&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;triticum&quot;</span> , <span class="dv">3</span>) )</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">condition &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;normal&quot;</span> , <span class="st">&quot;stress&quot;</span> , <span class="st">&quot;Nitrogen&quot;</span>) , <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">value &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">12</span> , <span class="dv">0</span> , <span class="dv">15</span>))</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(specie,condition,value)</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># Stacked</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">fill=</span>condition, <span class="dt">y=</span>value, <span class="dt">x=</span>specie)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="st">&quot;stack&quot;</span>, <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>)</a></code></pre></div>
+<h1 id="grouped-barchart-2">Grouped barchart</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Once more, there is not much to do to switch to a percent stacked barplot. Just switch to <code>position=&quot;fill&quot;</code>. Now, the percentage of each subgroup is represented, allowing to study the evolution of their proportion in the whole.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="48-grouped-barplot-with-ggplot2_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"> <span class="co"># library</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"> </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># create a dataset</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">specie &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;sorgho&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;poacee&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;banana&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;triticum&quot;</span> , <span class="dv">3</span>) )</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">condition &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;normal&quot;</span> , <span class="st">&quot;stress&quot;</span> , <span class="st">&quot;Nitrogen&quot;</span>) , <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">value &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">12</span> , <span class="dv">0</span> , <span class="dv">15</span>))</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(specie,condition,value)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"> </a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co"># Stacked + percent</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">fill=</span>condition, <span class="dt">y=</span>value, <span class="dt">x=</span>specie)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="st">&quot;fill&quot;</span>, <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>)</a></code></pre></div>
+<h1 id="grouped-barchart-customization">Grouped barchart customization</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>As usual, some customization are often necessary to make the chart look better and personnal. Let’s:</p>
+<ul>
+<li>add a <a href="ggplot2-package.html">title</a></li>
+<li>use a <a href="ggplot2-package.html">theme</a></li>
+<li>change color palette. See more <a href="ggplot_color.html">here</a>.</li>
+<li>customize axis titles</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="48-grouped-barplot-with-ggplot2_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(viridis)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">library</span>(hrbrthemes)</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co"># create a dataset</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">specie &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;sorgho&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;poacee&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;banana&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;triticum&quot;</span> , <span class="dv">3</span>) )</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">condition &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;normal&quot;</span> , <span class="st">&quot;stress&quot;</span> , <span class="st">&quot;Nitrogen&quot;</span>) , <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">value &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">12</span> , <span class="dv">0</span> , <span class="dv">15</span>))</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(specie,condition,value)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"> </a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># Small multiple</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">fill=</span>condition, <span class="dt">y=</span>value, <span class="dt">x=</span>specie)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="st">&quot;stack&quot;</span>, <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete =</span> T) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Studying 4 species..&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<h1 id="small-multiple">Small multiple</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Small multiple can be used as an alternative of stacking or grouping. It is straightforward to make thanks to the <code>facet_wrap()</code> function.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="48-grouped-barplot-with-ggplot2_files/figure-html/thecode5-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># library</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">library</span>(viridis)</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">library</span>(hrbrthemes)</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># create a dataset</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">specie &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;sorgho&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;poacee&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;banana&quot;</span> , <span class="dv">3</span>) , <span class="kw">rep</span>(<span class="st">&quot;triticum&quot;</span> , <span class="dv">3</span>) )</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">condition &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;normal&quot;</span> , <span class="st">&quot;stress&quot;</span> , <span class="st">&quot;Nitrogen&quot;</span>) , <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">value &lt;-<span class="st"> </span><span class="kw">abs</span>(<span class="kw">rnorm</span>(<span class="dv">12</span> , <span class="dv">0</span> , <span class="dv">15</span>))</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(specie,condition,value)</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"> </a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co"># Graph</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">fill=</span>condition, <span class="dt">y=</span>value, <span class="dt">x=</span>condition)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="st">&quot;dodge&quot;</span>, <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete =</span> T, <span class="dt">option =</span> <span class="st">&quot;E&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Studying 4 species..&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="st">    </span><span class="kw">facet_wrap</span>(<span class="op">~</span>specie) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20"><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)</a></code></pre></div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-79254642-1');
+</script>
+
+</body>
+</html>
