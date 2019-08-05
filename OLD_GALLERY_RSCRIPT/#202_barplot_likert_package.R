@@ -3,7 +3,7 @@
 # Sympa!
 # Carlos Ortega
 # cof@qualityexcellence.es
-# http://jason.bryer.org/likert/
+# https://github.com/jbryer/likert
 
 # library
 library(likert) 
