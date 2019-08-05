@@ -35,7 +35,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 Two inputs are needed to build a choropleth map:
 
 - A geospatial object providing region boundaries (city districts of the south of France in this example). Data are available at the geoJSON format [here](https://github.com/gregoiredavid/france-geojson), and this post explains in detail how to read and represent geoJSON format with R.
-- A numeric variable that we use to color each geographical unit. Here we will use the number of restaurant per city. The data has been found [here](https://www.insee.fr/fr/statistiques/2410933). (Thanks [@joelgombin](https://twitter.com/joelgombin)).
+- A numeric variable that we use to color each geographical unit. Here we will use the number of restaurant per city. The data has been found [here](https://www.insee.fr/fr/accueil). (Thanks [@joelgombin](https://twitter.com/joelgombin)).
 
 
 
@@ -55,7 +55,7 @@ This step has been extensively describe in [chart #325](325-background-map-from-
 # Geospatial data available at the geojson format
 library(geojsonio)
 spdf <- geojson_read("https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson",  what = "sp")
- 
+
 # Since it is a bit to much data, I select only a subset of it:
 spdf <- spdf[ substr(spdf@data$code,1,2)  %in% c("06", "83", "13", "30", "34", "11", "66") , ]
 ```
@@ -98,7 +98,7 @@ Finally, `geom_polygon` is used to plot the shape.
 # I need to fortify the data AND keep trace of the commune code! (Takes ~2 minutes)
 library(broom)
 spdf_fortified <- tidy(spdf, region = "code")
- 
+
 # Now I can plot this shape easily as described before:
 library(ggplot2)
 ggplot() +
@@ -133,7 +133,7 @@ ggplot() +
 <div class = "col-md-6  col-sm-12 align-self-center">
 
 The number of restaurant per city district has been found on the internet and a clean version is stored on the gallery website. It is thus easy to read it with read.table. Before doing a choropleth map, it is a good practice to check the distribution of your variable.
- 
+
 Here, we have a ‘long tail’ distribution: a few cities have a lot of restaurant. Thus we will probably need to apply a log scale to our color palette. It will avoid that all the variation is absorbed by these high values.
 
 </div>
@@ -145,11 +145,11 @@ Here, we have a ‘long tail’ distribution: a few cities have a lot of restaur
 # read data
 data <- read.table("https://www.r-graph-gallery.com/wp-content/uploads/2017/12/data_on_french_states.csv", header=T, sep=";")
 head(data)
- 
+
 # Distribution of the number of restaurant?
-library(dplyr) 
-data %>% 
-  ggplot( aes(x=nb_equip)) + 
+library(dplyr)
+data %>%
+  ggplot( aes(x=nb_equip)) +
     geom_histogram(bins=20, fill='skyblue', color='#69b3a2') + scale_x_log10()
 ```
 
@@ -180,8 +180,8 @@ This is a key step in choropleth map: your 2 inputs must have a id in common to 
 ```{r thecode5, echo=FALSE, out.width = "100%", fig.height=4}
 # Make the merge
 spdf_fortified = spdf_fortified %>%
-  left_join(. , data, by=c("id"="depcom")) 
- 
+  left_join(. , data, by=c("id"="depcom"))
+
 # Note that if the number of restaurant is NA, it is in fact 0
 spdf_fortified$nb_equip[ is.na(spdf_fortified$nb_equip)] = 0.001
 ```
@@ -247,19 +247,19 @@ p <- ggplot() +
   scale_fill_viridis(trans = "log", breaks=c(1,5,10,20,50,100), name="Number of restaurant", guide = guide_legend( keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), label.position = "bottom", title.position = 'top', nrow=1) ) +
   labs(
     title = "South of France Restaurant concentration",
-    subtitle = "Number of restaurant per city district", 
+    subtitle = "Number of restaurant per city district",
     caption = "Data: INSEE | Creation: Yan Holtz | r-graph-gallery.com"
   ) +
   theme(
-    text = element_text(color = "#22211d"), 
-    plot.background = element_rect(fill = "#f5f5f2", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f2", color = NA), 
+    text = element_text(color = "#22211d"),
+    plot.background = element_rect(fill = "#f5f5f2", color = NA),
+    panel.background = element_rect(fill = "#f5f5f2", color = NA),
     legend.background = element_rect(fill = "#f5f5f2", color = NA),
-    
+
     plot.title = element_text(size= 22, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
     plot.subtitle = element_text(size= 17, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
     plot.caption = element_text( size=12, color = "#4e4d47", margin = margin(b = 0.3, r=-99, unit = "cm") ),
-    
+
     legend.position = c(0.7, 0.09)
   ) +
   coord_map()
