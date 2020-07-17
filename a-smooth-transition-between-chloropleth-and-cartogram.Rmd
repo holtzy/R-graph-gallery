@@ -65,6 +65,7 @@ library(gganimate)    # To realize the animation
 library(maptools)     # world boundaries coordinates
 library(viridis)      # for a nice color palette
 library(rgdal)        # for handling projections
+library(mapproj)      # for plotting the maps
 ```
 
 
@@ -183,11 +184,15 @@ The `geom_polygon()` function is used to draw map data. See the [graph #327](327
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
+# Reproject to WGS84
+afr_cartogram <- spTransform(afr_cartogram, CRS("+init=epsg:4326"))
+afr <- spTransform(afr, CRS("+init=epsg:4326"))
+
 # Transform these 2 objects in dataframe, plotable with ggplot2
 afr_cartogram_df <- tidy(afr_cartogram) %>% left_join(. , afr_cartogram@data, by=c("id"="ISO3")) 
 afr_df <- tidy(afr) %>% left_join(. , afr@data, by=c("id"="ISO3")) 
  
-# And using the advices of chart #331 we can custom it to get a better result:
+# And using the advice of chart #331 we can customise it to get a better result:
 ggplot() +
   geom_polygon(data = afr_df, aes(fill = POP2005/1000000, x = long, y = lat, group = group) , size=0, alpha=0.9) +
   theme_void() +
