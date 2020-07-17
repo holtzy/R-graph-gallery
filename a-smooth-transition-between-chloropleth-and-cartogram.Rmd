@@ -64,6 +64,7 @@ library(tweenr)       # to create transition dataframe between 2 states
 library(gganimate)    # To realize the animation
 library(maptools)     # world boundaries coordinates
 library(viridis)      # for a nice color palette
+library(rgdal)        # for handling projections
 ```
 
 
@@ -98,8 +99,8 @@ This requires only 3 lines of code.
 ```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
 # Get the shape file of Africa
 data(wrld_simpl)
-afr=wrld_simpl[wrld_simpl$REGION==2,]
- 
+afr <- spTransform(wrld_simpl[wrld_simpl$REGION==2 & wrld_simpl$POP2005 > 0,], 
+                   CRS("+init=epsg:3395")) 
 # A basic representation
 plot(afr)
 ```
@@ -143,7 +144,7 @@ The output is a new geospatial object that we can map like we’ve done before. 
 
 ```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
 # construct a cartogram using the population in 2005
-afr_cartogram <- cartogram(afr, "POP2005", itermax=7)
+afr_cartogram <- cartogram_cont(afr, "POP2005", itermax=7)
  
 # A basic representation
 plot(afr_cartogram)
