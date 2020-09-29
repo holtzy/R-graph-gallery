@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-
-
-
-
 <head>
+
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-79254642-1');
+  </script>
+  <script>
+  var getOutboundLink = function(url) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': url,
+      'transport_type': 'beacon',
+      'event_callback': function(){document.location = url;}
+    });
+  }
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-3523953066677938",
+            enable_page_level_ads: true
+       });
+  </script>
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+
 <meta charset="utf-8">
 <title>Choropleth map with R and ggplot2 &#8211; the R Graph Gallery</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,10 +42,9 @@
 <meta name="author" content="Yan Holtz">
 <link rel="icon" href="img/logo/R_single_small.png">
 
-
 <!-- Control appearance when shared by social media -->
 <meta property="og:title" content="Choropleth map with R and ggplot2" />
-<meta property="og:image" content="https://github.com/holtzy/R-graph-gallery/raw/master/img/logo/R_single_big.png" />
+<meta property="og:image" content="img/overview_RGG.png" />
 <meta property="og:description" content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided." />
 <meta property='og:url' content="https://www.r-graph-gallery.com/327-chloropleth-map-from-geojson-with-ggplot2.html" />
 <meta property="og:type" content="website" />
@@ -140,14 +164,14 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"> </a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Since it is a bit to much data, I select only a subset of it:</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"> </a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># Since it is a bit to much data, I select only a subset of it:</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre></div>
 <h1 id="basic-background-map">Basic background map</h1>
 <hr />
@@ -166,7 +190,7 @@
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co"># I need to fortify the data AND keep trace of the commune code! (Takes ~2 minutes)</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">library</span>(broom)</a>
 <a class="sourceLine" id="cb3-5" data-line-number="5">spdf_fortified &lt;-<span class="st"> </span><span class="kw">tidy</span>(spdf, <span class="dt">region =</span> <span class="st">&quot;code&quot;</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"> </a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># Now I can plot this shape easily as described before:</span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">library</span>(ggplot2)</a>
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">ggplot</span>() <span class="op">+</span></a>
@@ -190,13 +214,13 @@
 </div>
 </div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># read data</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://www.r-graph-gallery.com/wp-content/uploads/2017/12/data_on_french_states.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;;&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;;&quot;</span>)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(data)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"> </a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Distribution of the number of restaurant?</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(dplyr) </a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">data <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>nb_equip)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">data <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>nb_equip)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;skyblue&#39;</span>, <span class="dt">color=</span><span class="st">&#39;#69b3a2&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_log10</span>()</a></code></pre></div>
 <h1 id="merge-geospatial-and-numeric-data">Merge geospatial and numeric data</h1>
 <hr />
@@ -218,6 +242,30 @@
 <h1 id="customized-choropleth-map-with-r-and-ggplot2">Customized choropleth map with R and ggplot2</h1>
 <hr />
 <p>There is a bit of work to do to get a descent figure. We need to change the color palette, improve the legend, use a log scale transformation for the colorscale, change background and add titles and explanation. Here is the code to do that, and the final result!</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">library</span>(viridis)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> nb_equip, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="st">  </span><span class="kw">scale_fill_viridis</span>(<span class="dt">trans =</span> <span class="st">&quot;log&quot;</span>, <span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">50</span>,<span class="dv">100</span>), <span class="dt">name=</span><span class="st">&quot;Number of restaurant&quot;</span>, <span class="dt">guide =</span> <span class="kw">guide_legend</span>( <span class="dt">keyheight =</span> <span class="kw">unit</span>(<span class="dv">3</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">keywidth=</span><span class="kw">unit</span>(<span class="dv">12</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">label.position =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">title.position =</span> <span class="st">&#39;top&#39;</span>, <span class="dt">nrow=</span><span class="dv">1</span>) ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="st">  </span><span class="kw">labs</span>(</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">    <span class="dt">title =</span> <span class="st">&quot;South of France Restaurant concentration&quot;</span>,</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="dt">subtitle =</span> <span class="st">&quot;Number of restaurant per city district&quot;</span>,</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="dt">caption =</span> <span class="st">&quot;Data: INSEE | Creation: Yan Holtz | r-graph-gallery.com&quot;</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    <span class="dt">text =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">&quot;#22211d&quot;</span>),</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">    <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14">    <span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">    <span class="dt">legend.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17">    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">22</span>, <span class="dt">hjust=</span><span class="fl">0.01</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.4</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">    <span class="dt">plot.subtitle =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">17</span>, <span class="dt">hjust=</span><span class="fl">0.01</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.43</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">    <span class="dt">plot.caption =</span> <span class="kw">element_text</span>( <span class="dt">size=</span><span class="dv">12</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">0.3</span>, <span class="dt">r=</span><span class="op">-</span><span class="dv">99</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>) ),</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">    <span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.09</span>)</a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23"><span class="st">  </span><span class="kw">coord_map</span>()</a>
+<a class="sourceLine" id="cb6-24" data-line-number="24">p</a></code></pre></div>
 <p><img src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode9-1.png" width="100%" /></p>
 <!-- Close container -->
 </div>
@@ -390,16 +438,6 @@ $(document).ready(function () {
 
 <!-- Custom scripts for this template -->
 <script src="js/agency.min.js"></script>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-79254642-1');
-</script>
 
 </body>
 </html>
