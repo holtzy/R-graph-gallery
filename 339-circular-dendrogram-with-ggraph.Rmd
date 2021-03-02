@@ -70,14 +70,14 @@ vertices$id=NA
 myleaves=which(is.na( match(vertices$name, edges$from) ))
 nleaves=length(myleaves)
 vertices$id[ myleaves ] = seq(1:nleaves)
-vertices$angle= 90 - 360 * vertices$id / nleaves
+vertices$angle = 360 / nleaves * vertices$id + 110
  
 # calculate the alignment of labels: right or left
 # If I am on the left part of the plot, my labels have currently an angle < -90
-vertices$hjust<-ifelse( vertices$angle < -90, 1, 0)
+vertices$hjust<-ifelse( vertices$angle < 291, 1, 0)
  
 # flip angle BY to make them readable
-vertices$angle<-ifelse(vertices$angle < -90, vertices$angle+180, vertices$angle)
+vertices$angle<-ifelse(vertices$angle < 291, vertices$angle+180, vertices$angle)
  
 # Create a graph object
 mygraph <- graph_from_data_frame( edges, vertices=vertices )
@@ -95,7 +95,8 @@ ggraph(mygraph, layout = 'dendrogram', circular = TRUE) +
     legend.position="none",
     plot.margin=unit(c(0,0,0,0),"cm"),
   ) +
-  expand_limits(x = c(-1.3, 1.3), y = c(-1.3, 1.3))
+  expand_limits(x = c(-1.3, 1.3), y = c(-1.3, 1.3)) +
+  coord_flip()
 ```
 </div>
 </div>
