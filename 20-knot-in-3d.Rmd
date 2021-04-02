@@ -23,6 +23,7 @@ output:
 
 ```{r global options, include = FALSE}
 knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+rgl::setupKnitr()
 ```
 
 <div class="container" style="padding-top: 80px">
@@ -43,14 +44,14 @@ With the `rgl` package, you can make the image moove and zoom in an out. Find th
 
 <div class = "col-md-7  col-sm-12">
 
-<center><iframe src="HtmlWidget/3dknot.html" height="500" width="500" style="border:none;"></iframe></center>
+<center><iframe src="HtmlWidget/3dknot.html" height="580" width="580" style="border:none;"></iframe></center>
 
 
 </div>
 </div>
 
 
-```{r eval=FALSE}
+```{r}
 # Library rgl
 library(rgl)
 
@@ -61,9 +62,8 @@ open3d()
 #If you want to put line on the background
 #bg3d(sphere = TRUE, color = c("grey", "white"), lit = TRUE, back = "lines" ,lwd=2)
 
-# This is to output a rgl plot in a rmarkdown document. Note that you must add webgl=TRUE, results='hide' in the chunck header
-library(knitr)
-knit_hooks$set(webgl = hook_webgl)
+# This is to output a rgl plot in a rmarkdown document
+# rgl::setupKnitr()
 
 
 # plot
@@ -74,12 +74,18 @@ center = cbind(sin(theta) + 3*sin(2*theta), 2*sin(3*theta), cos(theta) - 2*cos(2
 e1 = cbind(cos(theta) + 4*cos(2*theta),6*cos(3*theta),sin(theta) + 4*sin(2*theta)),radius = 0.9,closed = TRUE)
 shade3d(addNormals(subdivision3d(knot, depth = 2)), col = rgb(0.4,0.2,0.8,0.3))
 
+# To display in an R Markdown document:
+# rglwidget()
+
 # save it as png
-# rgl.snapshot( "~/Desktop/#20_portfolio_knot_3D.png", fmt="png", top=TRUE  )
+# snapshot3d( "~/Desktop/#20_portfolio_knot_3D.png", fmt="png")
 
-
-# Export as an html file if needed:
-writeWebGL( filename="HtmlWidget/3dknot.html" ,  width=600, height=600)
+# To save interactive plot to a file:
+htmlwidgets::saveWidget(rglwidget(width = 500, height = 500), 
+                        file = "HtmlWidget/3dknot.html",
+                        libdir = "libs",
+                        selfcontained = FALSE
+                        )
 ```
 
 
