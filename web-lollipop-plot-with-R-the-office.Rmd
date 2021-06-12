@@ -18,11 +18,13 @@ output:
       toc_float: TRUE
       toc_depth: 2
       df_print: "paged"
+editor_options: 
+  chunk_output_type: console
 ---
 
 
-```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```{r global options, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 <div class="container" style="padding-top: 100px">
@@ -37,62 +39,82 @@ About the dataset. A bit of explanation of what the dataset is about. A link to 
 
 <br>
 
-
-
-
-
-
-
 ## Package and Theme
 ***
 
-As always several packages are needed in order to build the figure.
+As always several packages are needed in order to build the figure. In this 
+occasion, we also import some fonts from Google via the `font_add_google()`
+function.
+
 ```{r, warning=FALSE}
-## packages
+# Load packages
 library(tidyverse)
 library(cowplot)
 library(showtext)
+
+# Add fonts from Google.
 font_add_google("Roboto Mono", "Roboto Mono")
 font_add_google("Open Sans", "Open Sans")
 font_add_google("Special Elite", "Special Elite")
 
-## ggplot theme
+# Set ggplot theme
 theme_set(theme_minimal(base_family = "Roboto Mono"))
-theme_update(plot.background = element_rect(fill = "#fafaf5", color = "#fafaf5"),
-             panel.background = element_rect(fill = NA, color = NA),
-             panel.border = element_rect(fill = NA, color = NA),
-             panel.grid.major.x = element_blank(),
-             panel.grid.minor = element_blank(),
-             axis.text.x = element_blank(),
-             axis.text.y = element_text(size = 10),
-             axis.ticks = element_blank(),
-             axis.title.y = element_text(size = 13, 
-                                         margin = margin(r = 10)),
-             legend.title = element_text(size = 9),
-             plot.caption = element_text(family = "Special Elite",
-                                         size = 10,
-                                         color = "grey70",
-                                         face = "bold",
-                                         hjust = .5,
-                                         margin = margin(5, 0, 20, 0)),
-             plot.margin = margin(10, 25, 10, 25))
+theme_update(
+  plot.background = element_rect(fill = "#fafaf5", color = "#fafaf5"),
+  panel.background = element_rect(fill = NA, color = NA),
+  panel.border = element_rect(fill = NA, color = NA),
+  panel.grid.major.x = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_blank(),
+  axis.text.y = element_text(size = 10),
+  axis.ticks = element_blank(),
+  axis.title.y = element_text(size = 13, margin = margin(r = 10)),
+  legend.title = element_text(size = 9),
+  plot.caption = element_text(
+    family = "Special Elite",
+    size = 10,
+    color = "grey70",
+    face = "bold",
+    hjust = .5,
+    margin = margin(5, 0, 20, 0)
+  ),
+  plot.margin = margin(10, 25, 10, 25)
+)
 ```
 
-
 <br>
-
 
 # Load and prepare the dataset
 ***
 
-About the dataset. Explain a bit what the columns are and which ones are gonna be used. What needs to be done to wrangle thee dataset
+Today we are creating a highly customized lollipop plot to visualize IMDB ratings
+for each episode of the television show The Office (US). The data originally comes from
+the [`schrute` R package](https://bradlindblad.github.io/schrute/index.html)
+and [data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset), but
+we are using the version released for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) 
+initiative on the week of 2020-03-17. You can find the original announcement and
+more information about the data [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-03-17).
+
+First, we read the data set and take a look at the first few rows to get familiar 
+with the data.
 
 ```{r}
 df_office <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv')
 head(df_office)
 ```
 
-Prepare the data
+<br>
+
+From all the columns included in the data, we use the season (`season`), the
+episode number (`episode`), the IMDB rating (`imdb_rating`), and the number 
+of votes used for each rating (`total_votes`).
+
+Compute the average rating per season. Observations are arranged by `season` and
+`episode` to make sure `row_number()` represents the episode number irrespective
+of the season. `season` is mutated into a factor type so `ggplot2` recognizes it
+as a discrete variable instead of numeric.
+
+<!--TODO: What is `episode_mod`?-->
 
 ```{r}
 df_office_avg <-
@@ -107,7 +129,14 @@ df_office_avg <-
   ) %>% 
   ungroup() %>% 
   mutate(season = factor(season))
+```
 
+<br>
+
+Now we construct the data frame that is used to plot the horizontal lines with
+the mean rating per season.
+
+```{r}
 df_lines <-
   df_office_avg %>% 
   group_by(season) %>% 
@@ -135,59 +164,139 @@ df_lines <-
 ## Plot
 ***
 
-Now let's build the chart
+Now let's build the chart. We do it in a step-by-step fashion, adding comments
+to explain what we are adding each time.
 
 ```{r}
+# First, horizontal lines that are used as scale reference. They are added first
+# to ensure they stay in the background.
 p <- df_office_avg %>% 
   ggplot(aes(episode_mod, imdb_rating)) +
-    geom_hline(data = tibble(y = 7:10),
-               aes(yintercept = y),
-               color = "grey82",
-               size = .5) +
-    geom_segment(aes(xend = episode_mod,
-                     yend = avg, 
-                     color = season, 
-                     color = after_scale(colorspace::lighten(color, .2)))) +
-    geom_line(data = df_lines,
-              aes(x, y),
-              color = "grey40") +
-    geom_line(data = df_lines,
-              aes(x_group, y, 
-                  color = season, 
-                  color = after_scale(colorspace::darken(color, .2))),
-              size = 2.5) +
-    geom_point(aes(size = total_votes,
-                   color = season)) +
-    geom_label(aes(mid, 10.12,
-                   label = glue::glue(" Season {season} "),
-                   color = season, 
-                   color = after_scale(colorspace::darken(color, .2))),
-               fill = NA,
-               family = "Special Elite",
-               fontface = "bold",
-               label.padding = unit(.2, "lines"),
-               label.r = unit(.25, "lines"),
-               label.size = .5) +
-    scale_x_continuous(expand = c(.015, .015)) +
-    scale_y_continuous(expand = c(.03, .03),
-                       limits = c(6.5, 10.2),
-                       breaks = seq(6.5, 10, by = .5),
-                       sec.axis = dup_axis(name = NULL)) +
-    scale_color_manual(values = c("#486090", "#D7BFA6", "#6078A8", "#9CCCCC", 
-                                  "#7890A8", "#C7B0C1", "#B5C9C9", "#90A8C0", "#A8A890"),
-                       guide = F) +
-    scale_size_binned(name = "Votes per Episode",
-                      range = c(.3, 3)) +
-    labs(x = NULL, y = "IMDb Rating",
-        caption = "Visualization by Cédric Scherer  •  Data by IMDb via data.world  •  Fanart Logo by ArieS") +
-    guides(size = guide_bins(show.limits = T,
-                             direction = "horizontal",
-                             title.position = "top",
-                             title.hjust = .5)) +
-    theme(legend.position = c(.5, .085), 
-          legend.key.width = unit(2, "lines"))
-````
+    geom_hline(
+      data = tibble(y = 7:10),
+      aes(yintercept = y),
+      color = "grey82",
+      size = .5
+    )
 
+
+# Add vertical segments. They represent how much the rating of each episode
+# deviates from the rating of the season they appeared.
+p <- p + 
+  geom_segment(
+    aes(
+      xend = episode_mod,
+      yend = avg, 
+      color = season, 
+      color = after_scale(colorspace::lighten(color, .2))
+    )
+  )
+
+# Add vertical lines connecting edges of season's means
+# and horizontal lines representing mean rating for each season.
+p <- p + 
+  geom_line(
+    data = df_lines,
+    aes(x, y),
+    color = "grey40"
+  ) +
+  geom_line(
+    data = df_lines,
+    aes(
+      x_group, 
+      y, 
+      color = season, 
+      color = after_scale(colorspace::darken(color, .2))
+    ),
+    size = 2.5
+  ) + 
+  geom_point(
+    aes(size = total_votes, color = season)
+  ) 
+```
+
+<br>
+
+So far, the plot looks as follows
+
+```{r, include=FALSE}
+ggsave(
+  here::here("img", "lollipop-plot-with-R-the-office-preview.png"), 
+  width = 15, height = 9
+)
+```
+
+<center>
+![](img/lollipop-plot-with-R-the-office-preview.png){width=90%}
+</center>
+<br>
+
+
+```{r}
+# TODO: Add more comments about what's going on here. Maybe split.
+p <- p + 
+  geom_label(
+    aes(
+      mid, 
+      10.12,
+      label = glue::glue(" Season {season} "),
+      color = season, 
+      color = after_scale(colorspace::darken(color, .2))
+    ),
+    fill = NA,
+    family = "Special Elite",
+    fontface = "bold",
+    label.padding = unit(.2, "lines"),
+    label.r = unit(.25, "lines"),
+    label.size = .5
+  ) 
+
+p <- p + 
+    scale_x_continuous(expand = c(.015, .015)) +
+    scale_y_continuous(
+      expand = c(.03, .03),
+      limits = c(6.5, 10.2),
+      breaks = seq(6.5, 10, by = .5),
+      sec.axis = dup_axis(name = NULL)
+    ) +
+    scale_color_manual(
+      values = c("#486090", "#D7BFA6", "#6078A8", "#9CCCCC", "#7890A8", 
+                 "#C7B0C1", "#B5C9C9", "#90A8C0", "#A8A890"),
+      guide = FALSE
+    ) +
+    scale_size_binned(name = "Votes per Episode", range = c(.3, 3)) +
+    labs(
+      x = NULL, 
+      y = "IMDb Rating",
+      caption = "Visualization by Cédric Scherer  •  Data by IMDb via data.world  •  Fanart Logo by ArieS"
+    ) +
+    guides(
+      size = guide_bins(
+        show.limits = TRUE,
+        direction = "horizontal",
+        title.position = "top",
+        title.hjust = .5
+      )
+    ) +
+    theme(
+      legend.position = c(.5, .085), 
+      legend.key.width = unit(2, "lines")
+    )
+```
+
+```{r}
+ggsave(
+  here::here("img", "lollipop-plot-with-R-the-office.png"), 
+  width = 15, height = 9
+)
+```
+
+<center>
+![](img/lollipop-plot-with-R-the-office.png){width=90%}
+</center>
+<br>
+
+TODO: Add logo, make sure fonts are correctly rendered, etc...
 Now we're gonna add a logo
 
 ```
