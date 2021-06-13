@@ -162,57 +162,58 @@
 <p><img src="339-circular-dendrogram-with-ggraph_files/figure-html/thecode8-1.png" width="100%" /></p>
 </div>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Libraries</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggraph)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(igraph)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(RColorBrewer) </a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># create a data frame giving the hierarchical structure of your individuals</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">d1=<span class="kw">data.frame</span>(<span class="dt">from=</span><span class="st">&quot;origin&quot;</span>, <span class="dt">to=</span><span class="kw">paste</span>(<span class="st">&quot;group&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>))</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">d2=<span class="kw">data.frame</span>(<span class="dt">from=</span><span class="kw">rep</span>(d1<span class="op">$</span>to, <span class="dt">each=</span><span class="dv">10</span>), <span class="dt">to=</span><span class="kw">paste</span>(<span class="st">&quot;subgroup&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">100</span>), <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">edges=<span class="kw">rbind</span>(d1, d2)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"> </a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># create a vertices data.frame. One line per object of our hierarchy</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">vertices =<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="dt">name =</span> <span class="kw">unique</span>(<span class="kw">c</span>(<span class="kw">as.character</span>(edges<span class="op">$</span>from), <span class="kw">as.character</span>(edges<span class="op">$</span>to))) , </a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="dt">value =</span> <span class="kw">runif</span>(<span class="dv">111</span>)</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">) </a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># Let&#39;s add a column with the group of each name. It will be useful later to color points</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">vertices<span class="op">$</span>group =<span class="st"> </span>edges<span class="op">$</span>from[ <span class="kw">match</span>( vertices<span class="op">$</span>name, edges<span class="op">$</span>to ) ]</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"> </a>
-<a class="sourceLine" id="cb1-19" data-line-number="19"> </a>
-<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="co">#Let&#39;s add information concerning the label we are going to add: angle, horizontal adjustement and potential flip</span></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="co">#calculate the ANGLE of the labels</span></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22">vertices<span class="op">$</span>id=<span class="ot">NA</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23">myleaves=<span class="kw">which</span>(<span class="kw">is.na</span>( <span class="kw">match</span>(vertices<span class="op">$</span>name, edges<span class="op">$</span>from) ))</a>
-<a class="sourceLine" id="cb1-24" data-line-number="24">nleaves=<span class="kw">length</span>(myleaves)</a>
-<a class="sourceLine" id="cb1-25" data-line-number="25">vertices<span class="op">$</span>id[ myleaves ] =<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span><span class="op">:</span>nleaves)</a>
-<a class="sourceLine" id="cb1-26" data-line-number="26">vertices<span class="op">$</span>angle=<span class="st"> </span><span class="dv">90</span> <span class="op">-</span><span class="st"> </span><span class="dv">360</span> <span class="op">*</span><span class="st"> </span>vertices<span class="op">$</span>id <span class="op">/</span><span class="st"> </span>nleaves</a>
-<a class="sourceLine" id="cb1-27" data-line-number="27"> </a>
-<a class="sourceLine" id="cb1-28" data-line-number="28"><span class="co"># calculate the alignment of labels: right or left</span></a>
-<a class="sourceLine" id="cb1-29" data-line-number="29"><span class="co"># If I am on the left part of the plot, my labels have currently an angle &lt; -90</span></a>
-<a class="sourceLine" id="cb1-30" data-line-number="30">vertices<span class="op">$</span>hjust&lt;-<span class="kw">ifelse</span>( vertices<span class="op">$</span>angle <span class="op">&lt;</span><span class="st"> </span><span class="dv">-90</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb1-31" data-line-number="31"> </a>
-<a class="sourceLine" id="cb1-32" data-line-number="32"><span class="co"># flip angle BY to make them readable</span></a>
-<a class="sourceLine" id="cb1-33" data-line-number="33">vertices<span class="op">$</span>angle&lt;-<span class="kw">ifelse</span>(vertices<span class="op">$</span>angle <span class="op">&lt;</span><span class="st"> </span><span class="dv">-90</span>, vertices<span class="op">$</span>angle<span class="op">+</span><span class="dv">180</span>, vertices<span class="op">$</span>angle)</a>
-<a class="sourceLine" id="cb1-34" data-line-number="34"> </a>
-<a class="sourceLine" id="cb1-35" data-line-number="35"><span class="co"># Create a graph object</span></a>
-<a class="sourceLine" id="cb1-36" data-line-number="36">mygraph &lt;-<span class="st"> </span><span class="kw">graph_from_data_frame</span>( edges, <span class="dt">vertices=</span>vertices )</a>
-<a class="sourceLine" id="cb1-37" data-line-number="37"> </a>
-<a class="sourceLine" id="cb1-38" data-line-number="38"><span class="co"># Make the plot</span></a>
-<a class="sourceLine" id="cb1-39" data-line-number="39"><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-40" data-line-number="40"><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">colour=</span><span class="st">&quot;grey&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-41" data-line-number="41"><span class="st">  </span><span class="kw">scale_edge_colour_distiller</span>(<span class="dt">palette =</span> <span class="st">&quot;RdPu&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-42" data-line-number="42"><span class="st">  </span><span class="kw">geom_node_text</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.15</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.15</span>, <span class="dt">filter =</span> leaf, <span class="dt">label=</span>name, <span class="dt">angle =</span> angle, <span class="dt">hjust=</span>hjust, <span class="dt">colour=</span>group), <span class="dt">size=</span><span class="fl">2.7</span>, <span class="dt">alpha=</span><span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-43" data-line-number="43"><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.07</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.07</span>, <span class="dt">colour=</span>group, <span class="dt">size=</span>value, <span class="dt">alpha=</span><span class="fl">0.2</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-44" data-line-number="44"><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span> <span class="kw">rep</span>( <span class="kw">brewer.pal</span>(<span class="dv">9</span>,<span class="st">&quot;Paired&quot;</span>) , <span class="dv">30</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-45" data-line-number="45"><span class="st">  </span><span class="kw">scale_size_continuous</span>( <span class="dt">range =</span> <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="dv">10</span>) ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-46" data-line-number="46"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-47" data-line-number="47"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb1-48" data-line-number="48">    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,</a>
-<a class="sourceLine" id="cb1-49" data-line-number="49">    <span class="dt">plot.margin=</span><span class="kw">unit</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="st">&quot;cm&quot;</span>),</a>
-<a class="sourceLine" id="cb1-50" data-line-number="50">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-51" data-line-number="51"><span class="st">  </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>), <span class="dt">y =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(ggraph)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(igraph)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(RColorBrewer) </span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="co"># create a data frame giving the hierarchical structure of your individuals</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>d1=<span class="kw">data.frame</span>(<span class="dt">from=</span><span class="st">&quot;origin&quot;</span>, <span class="dt">to=</span><span class="kw">paste</span>(<span class="st">&quot;group&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="dt">sep=</span><span class="st">&quot;&quot;</span>))</span>
+<span id="cb1-8"><a href="#cb1-8"></a>d2=<span class="kw">data.frame</span>(<span class="dt">from=</span><span class="kw">rep</span>(d1<span class="op">$</span>to, <span class="dt">each=</span><span class="dv">10</span>), <span class="dt">to=</span><span class="kw">paste</span>(<span class="st">&quot;subgroup&quot;</span>, <span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">100</span>), <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))</span>
+<span id="cb1-9"><a href="#cb1-9"></a>edges=<span class="kw">rbind</span>(d1, d2)</span>
+<span id="cb1-10"><a href="#cb1-10"></a> </span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co"># create a vertices data.frame. One line per object of our hierarchy</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>vertices =<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb1-13"><a href="#cb1-13"></a>  <span class="dt">name =</span> <span class="kw">unique</span>(<span class="kw">c</span>(<span class="kw">as.character</span>(edges<span class="op">$</span>from), <span class="kw">as.character</span>(edges<span class="op">$</span>to))) , </span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="dt">value =</span> <span class="kw">runif</span>(<span class="dv">111</span>)</span>
+<span id="cb1-15"><a href="#cb1-15"></a>) </span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="co"># Let&#39;s add a column with the group of each name. It will be useful later to color points</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>vertices<span class="op">$</span>group =<span class="st"> </span>edges<span class="op">$</span>from[ <span class="kw">match</span>( vertices<span class="op">$</span>name, edges<span class="op">$</span>to ) ]</span>
+<span id="cb1-18"><a href="#cb1-18"></a> </span>
+<span id="cb1-19"><a href="#cb1-19"></a> </span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="co">#Let&#39;s add information concerning the label we are going to add: angle, horizontal adjustement and potential flip</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="co">#calculate the ANGLE of the labels</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>vertices<span class="op">$</span>id=<span class="ot">NA</span></span>
+<span id="cb1-23"><a href="#cb1-23"></a>myleaves=<span class="kw">which</span>(<span class="kw">is.na</span>( <span class="kw">match</span>(vertices<span class="op">$</span>name, edges<span class="op">$</span>from) ))</span>
+<span id="cb1-24"><a href="#cb1-24"></a>nleaves=<span class="kw">length</span>(myleaves)</span>
+<span id="cb1-25"><a href="#cb1-25"></a>vertices<span class="op">$</span>id[ myleaves ] =<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1</span><span class="op">:</span>nleaves)</span>
+<span id="cb1-26"><a href="#cb1-26"></a>vertices<span class="op">$</span>angle =<span class="st"> </span><span class="dv">360</span> <span class="op">/</span><span class="st"> </span>nleaves <span class="op">*</span><span class="st"> </span>vertices<span class="op">$</span>id <span class="op">+</span><span class="st"> </span><span class="dv">110</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a> </span>
+<span id="cb1-28"><a href="#cb1-28"></a><span class="co"># calculate the alignment of labels: right or left</span></span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="co"># If I am on the left part of the plot, my labels have currently an angle &lt; -90</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>vertices<span class="op">$</span>hjust&lt;-<span class="kw">ifelse</span>( vertices<span class="op">$</span>angle <span class="op">&lt;</span><span class="st"> </span><span class="dv">291</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb1-31"><a href="#cb1-31"></a> </span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="co"># flip angle BY to make them readable</span></span>
+<span id="cb1-33"><a href="#cb1-33"></a>vertices<span class="op">$</span>angle&lt;-<span class="kw">ifelse</span>(vertices<span class="op">$</span>angle <span class="op">&lt;</span><span class="st"> </span><span class="dv">291</span>, vertices<span class="op">$</span>angle<span class="op">+</span><span class="dv">180</span>, vertices<span class="op">$</span>angle)</span>
+<span id="cb1-34"><a href="#cb1-34"></a> </span>
+<span id="cb1-35"><a href="#cb1-35"></a><span class="co"># Create a graph object</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a>mygraph &lt;-<span class="st"> </span><span class="kw">graph_from_data_frame</span>( edges, <span class="dt">vertices=</span>vertices )</span>
+<span id="cb1-37"><a href="#cb1-37"></a> </span>
+<span id="cb1-38"><a href="#cb1-38"></a><span class="co"># Make the plot</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="kw">ggraph</span>(mygraph, <span class="dt">layout =</span> <span class="st">&#39;dendrogram&#39;</span>, <span class="dt">circular =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-40"><a href="#cb1-40"></a><span class="st">  </span><span class="kw">geom_edge_diagonal</span>(<span class="dt">colour=</span><span class="st">&quot;grey&quot;</span>) <span class="op">+</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="st">  </span><span class="kw">scale_edge_colour_distiller</span>(<span class="dt">palette =</span> <span class="st">&quot;RdPu&quot;</span>) <span class="op">+</span></span>
+<span id="cb1-42"><a href="#cb1-42"></a><span class="st">  </span><span class="kw">geom_node_text</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.15</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.15</span>, <span class="dt">filter =</span> leaf, <span class="dt">label=</span>name, <span class="dt">angle =</span> angle, <span class="dt">hjust=</span>hjust, <span class="dt">colour=</span>group), <span class="dt">size=</span><span class="fl">2.7</span>, <span class="dt">alpha=</span><span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="st">  </span><span class="kw">geom_node_point</span>(<span class="kw">aes</span>(<span class="dt">filter =</span> leaf, <span class="dt">x =</span> x<span class="op">*</span><span class="fl">1.07</span>, <span class="dt">y=</span>y<span class="op">*</span><span class="fl">1.07</span>, <span class="dt">colour=</span>group, <span class="dt">size=</span>value, <span class="dt">alpha=</span><span class="fl">0.2</span>)) <span class="op">+</span></span>
+<span id="cb1-44"><a href="#cb1-44"></a><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values=</span> <span class="kw">rep</span>( <span class="kw">brewer.pal</span>(<span class="dv">9</span>,<span class="st">&quot;Paired&quot;</span>) , <span class="dv">30</span>)) <span class="op">+</span></span>
+<span id="cb1-45"><a href="#cb1-45"></a><span class="st">  </span><span class="kw">scale_size_continuous</span>( <span class="dt">range =</span> <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="dv">10</span>) ) <span class="op">+</span></span>
+<span id="cb1-46"><a href="#cb1-46"></a><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a><span class="st">  </span><span class="kw">theme</span>(</span>
+<span id="cb1-48"><a href="#cb1-48"></a>    <span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>,</span>
+<span id="cb1-49"><a href="#cb1-49"></a>    <span class="dt">plot.margin=</span><span class="kw">unit</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb1-50"><a href="#cb1-50"></a>  ) <span class="op">+</span></span>
+<span id="cb1-51"><a href="#cb1-51"></a><span class="st">  </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>), <span class="dt">y =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>)) <span class="op">+</span></span>
+<span id="cb1-52"><a href="#cb1-52"></a><span class="st">  </span><span class="kw">coord_flip</span>()</span></code></pre></div>
 <!-- Close container -->
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
