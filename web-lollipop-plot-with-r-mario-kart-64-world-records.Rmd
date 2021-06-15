@@ -1,7 +1,7 @@
 ---
 title: "Mario Kart 64 World Records"
 descriptionMeta: "A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with R and the tidyverse."
-descriptionTop: "A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with R and the tidyverse... TODO"
+descriptionTop: "A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with `R` and the `tidyverse`. This article shows how to use more than one data set in a `ggplot2` chart and how to save plots with the `ragg` package."
 sectionText: "Lollipop section"
 sectionLink: "lollipop-plot.html"
 DataToVizText: "Data to Viz"
@@ -44,7 +44,11 @@ Thanks to him for accepting sharinig his work here! 🙏🙏
 ## Package and Theme
 ***
 
-As always several packages are needed in order to build the figure.
+We start by loading the packages needed to build the figure. From all the 
+packages we use, [`ragg`](https://ragg.r-lib.org/index.html) may be the least 
+known. It is worth noting it a great library that impacts both the quality and 
+performance of our graphs in R thanks to the new graphic devices it brings 
+through the lower-level [AGG](https://antigrain.com/) library.
 
 ```{r, warning=FALSE}
 # Load packages
@@ -140,9 +144,6 @@ track. The two last `arrange()` and `mutate()` lines are used to convert `track`
 into an ordered factor where the order is given by the time it took to complete
 the race. It will be useful when sorting tracks on the plot. 
 
-We also create `df_records_three` which holds all the records, no matter they 
-were beaten or not. It is used to derive other data frames that are used in our 
-chart.
 
 ```{r}
 df_rank <- 
@@ -153,7 +154,15 @@ df_rank <-
   ungroup %>% 
   arrange(-time) %>% 
   mutate(track = fct_inorder(track, time))
+```
 
+<br>
+
+We also create `df_records_three` which holds all the records, no matter they 
+were beaten or not. It is used to derive other data frames that are used in our 
+chart.
+
+```{r}
 df_records_three <-
   df_records %>% 
   filter(type == "Three Lap") %>% 
@@ -176,6 +185,8 @@ df_connect <-
     names_to = "record", 
     values_to = "time"
   ) %>% 
+  # The line goes from the first record without shortcut (the slower)
+  # to the most recent record with shortcut (the fastest)
   filter((shortcut == "No" & record == "no") | (shortcut == "Yes" & record == "yes")) %>% 
   pivot_wider(id_cols = c(track), values_from = time, names_from = record)
 ```
@@ -183,13 +194,13 @@ df_connect <-
 <br>
 
 Then we have `df_longdist` and `df_shortcut`. Without getting much into the 
-details of the data manipulation, we note that each data frame consists of five 
-columns: `track`, `year`, `max`, `min` and `diff`. `year` refers to the year 
-where the current record was achieved, `max` is the completetion time for the 
-first record and `min` is the time for the current record. `diff` is simply the 
-difference between `max` and `min`, i.e. a measurement of how much the first 
-record was improved. `df_shortcut` and `df_longdist` refer to records with and
-without shortcuts, respectively.
+details, we note each data frame consists of five columns: `track`, `year`, 
+`max`, `min` and `diff`. `year` refers to the year where the current record 
+was achieved, `max` is the completetion time for the first record and `min` 
+is the time for the current record. `diff` is simply the difference between 
+`max` and `min`, i.e. a measurement of how much the first record was improved.
+`df_shortcut` and `df_longdist` refer to records with and without shortcuts,
+respectively.
 
 ```{r}
 df_longdist <- 
@@ -232,9 +243,13 @@ As always there's intentional overlap in a plot, we add what we want to remain
 on the background first.
 
 ```{r}
+# This dataset `df_shorcut` and the aesthetics `aes(min, track)` are used
+# in the `geom_*` calls when they are not explicitly specified.
 p <- df_shortcut %>% 
   ggplot(aes(min, track)) +
   # Dotted line connection shortcut yes/no
+  # This geom uses `df_connect` instead of `df_shorcut` because it is being
+  # explicitly overridden
   geom_linerange(
     data = df_connect, 
     aes(xmin = yes, xmax = no, y = track), 
@@ -243,6 +258,7 @@ p <- df_shortcut %>%
     linetype = "11" # dotted line
   ) +
   # Segment when shortcut==yes
+  # When the `data` argument is missing in the `geom_*` function
   geom_linerange(aes(xmin = min, xmax = max, color = diff), size = 2) +
   # Segment when shortcut==no. Overlapped lineranges.
   geom_linerange(data = df_longdist, aes(xmin = min, xmax = max, color = diff), size = 2) +
@@ -261,9 +277,10 @@ ggsave(
 </center>
 <br>
 
-While the plot doesn't tell us much yet, this preview lets us see the 
-contribution of the overlapped line ranges for records without shortcuts. 
-Something similar is done in the next chunk to obtain dots with a center of a different color.
+While there's a lot we still have to customize yet, this preview lets us see 
+that the white center in the lines is used to differentiate records without 
+shortcuts from those records with shortcuts. The same logic is used in the next 
+chunk to add dots representing the first and last world records for each modality.
 
 ```{r}
 p <- p +
@@ -293,15 +310,16 @@ ggsave(
 </center>
 <br>
 
-And we now see that that records with shortcuts are represented by geoms with 
+And it is now clear that records without shortcuts are represented by geoms with 
 white centers. Let's keep improving the appearence of the chart. Now it's the 
-turn to customize labels, legends and add some informative text.
+turn to customize labels and legends, and add some informative text.
 
-Add the track labels with `geom_label()`. We need to make two calls because some 
-tracks don't have any record without shortcuts and so their names are taken from 
-the `df_longdist` data frame. Next, `geom_text()` is used  four times to
-label the four different types of dots and tell the reader what they meaning.
-This is a very nice approach to include information on a plot without a legend.
+First, add the track labels with `geom_label()`. We need to make two calls 
+because some tracks don't have any record without shortcuts and so their names 
+are taken from the `df_longdist` data frame. Next, `geom_text()` is used  four
+times to label the four different types of dots and tell the reader what they 
+meaning. This is a very nice approach to include information on a plot without 
+a legend.
 
 
 ```{r}
@@ -370,8 +388,7 @@ ggsave(
 <br>
 
 
-Finally, some touches to the position of the guides and their size, and 
-we're done!
+Some touches to the position of the guides and their size...
 
 ```{r}
 p <- p + 
@@ -388,8 +405,10 @@ p <- p +
     subtitle = "Most world records for Mario Kart 64 were achieved pretty recently (13 in 2020, 10 in 2021). On several tracks, the players considerably improved the time needed to complete three laps when they used shortcuts (*Choco Mountain*, *D.K.'s Jungle Parkway*, *Frappe Snowland*, *Luigi Raceway*, *Rainbow Road*, *Royal Raceway*, *Toad's Turnpike*, *Wario Stadium*, and *Yoshi Valley*). Actually, for three out of these tracks the previous records were more than halved since 2020 (*Luigi Raceway*, *Rainbow Road*, and *Toad's Turnpike*). Four other tracks still have no records for races with shortcuts (*Moo Moo Farm*, *Koopa Troopa Beach*, *Banshee Boardwalk*, and *Bowser's Castle*). Are there none or did nobody find them yet? Pretty unrealistic given the fact that since more than 24 years the game is played all around the world—but maybe you're able to find one and obtain a new world record?",
     caption = "Visualization: Cédric Scherer  •  Data: mkwrs.com/mk64"
   )
+```
 
-# Save plot
+
+```{r, include=FALSE}
 ggsave(
   here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records.png"),
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
@@ -397,9 +416,22 @@ ggsave(
 ```
 
 
+<br>
+
 <center>
 ![](img/lollipop-plot-with-r-mario-kart-64-world-records.png){width=90%}
 </center>
+
+And finally, save the plot. `device = agg_png` means we use the PNG graphic 
+device from the AGG backend previously mentioned instead of the default PNG 
+backend that comes with a typical installation of R.
+
+```{r, eval=FALSE}
+ggsave(
+  here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records.png"),
+  width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
+)
+```
 
 
 <!-- Close container -->
