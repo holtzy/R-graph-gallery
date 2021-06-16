@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-79254642-1');
+  </script>
+  <script>
+  var getOutboundLink = function(url) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': url,
+      'transport_type': 'beacon',
+      'event_callback': function(){document.location = url;}
+    });
+  }
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-3523953066677938",
+            enable_page_level_ads: true
+       });
+  </script>
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+
+<meta charset="utf-8">
+<title>Mario Kart 64 World Records &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with R and the tidyverse.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Mario Kart 64 World Records" />
+<meta property="og:image" content="img/overview_RGG.png" />
+<meta property="og:description" content="A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with R and the tidyverse." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/web-lollipop-plot-with-r-mario-kart-64-world-records.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
+
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead" style="padding-bottom: 30px;">
+  <div class="textlanding">
+      <center><h1>Mario Kart 64 World Records</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">A highly customized lollipop chart showing world records for the Mario Kart 64 racing game on the Nintendo 64. Built with <code>R</code> and the <code>tidyverse</code>. This article shows how to use more than one data set in a <code>ggplot2</code> chart and how to save plots with the <code>ragg</code> package.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='lollipop-plot.html'>Lollipop section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/lollipop.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container" style="padding-top: 100px">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This page showcases the work of <a href="https://www.cedricscherer.com">Cedric Sherer</a>, built for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative. You can find the original code on his github repository <a href="https://github.com/z3tt/TidyTuesday/blob/master/R/2021_22_MarioKart.Rmd">here</a>. Thanks to him for accepting sharinig his work here! 🙏🙏</p>
+<p><br></p>
+<div id="package-and-theme" class="section level2">
+<h2>Package and Theme</h2>
+<hr />
+<p>We start by loading the packages needed to build the figure. From all the packages we use, <a href="https://ragg.r-lib.org/index.html"><code>ragg</code></a> may be the least known. It is worth noting it a great library that impacts both the quality and performance of our graphs in R thanks to the new graphic devices it brings through the lower-level <a href="https://antigrain.com/">AGG</a> library.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ragg)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set ggplot theme</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">base_size =</span> <span class="dv">13</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_update</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">25</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.major.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;grey94&quot;</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">07</span>, .<span class="dv">31</span>), </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">90</span>, </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> .<span class="dv">5</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.text =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>, </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">12</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.box =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.box.just =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.spacing =</span> <span class="fu">unit</span>(.<span class="dv">6</span>, <span class="st">&quot;lines&quot;</span>),</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Atlantis Headline&quot;</span>, </span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, </span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">17.45</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.subtitle =</span> <span class="fu">element_textbox_simple</span>(</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">10.8</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">lineheight =</span> <span class="fl">1.3</span>, </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">5</span>, <span class="at">b =</span> <span class="dv">30</span>)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.caption =</span> <span class="fu">element_text</span>(</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey55&quot;</span>, </span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">10.5</span>, </span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">0</span>, <span class="at">r =</span> <span class="dv">15</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p><br></p>
+</div>
+</div>
+<div id="load-and-prepare-the-dataset" class="section level1">
+<h1>Load and prepare the dataset</h1>
+<hr />
+<p>Today we are going to visualize world records for the Mario Kart 64 game. The game consists of 16 individual tracks and world records can be achieved for the fastest <em>single lap</em> or the fastest completed race (<strong>three laps</strong>). Also, through the years, players discovered <strong>shortcuts</strong> in many of the tracks. Fortunately, shortcut and non-shortcut world records are listed separately.</p>
+<p>Our chart consists of a double-dumbbell plot where we visualize world record times on Mario Kart 64 with and without shortcuts. The original source of the data is <a href="https://mkwrs.com/">https://mkwrs.com/</a>, which holds time trial world records for all of the Mario Kart games, but we are using the version released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2021-05-25. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-25">here</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_records <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/records.csv&#39;</span>)</span></code></pre></div>
+<p><br></p>
+<p>From all the columns in the data, we only use <code>track</code>, <code>type</code>, <code>shortcut</code>, <code>date</code>, and <code>time</code>. <code>track</code> indicates the name of the track, <code>type</code> tells us whether the record is for single lap or a complete race, <code>shortcut</code> is a yes/no variable that identifies records where a shortcut was used, <code>date</code> represents the date where the record was achieved, and <code>time</code> indicates how many seconds it took to complete the track.</p>
+<p>On this occasion, we only keep records for complete races. We start by creating <code>df_rank</code>, a data frame that keeps current world records for every track. The two last <code>arrange()</code> and <code>mutate()</code> lines are used to convert <code>track</code> into an ordered factor where the order is given by the time it took to complete the race. It will be useful when sorting tracks on the plot.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_rank <span class="ot">&lt;-</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  df_records <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;Three Lap&quot;</span>) <span class="sc">%&gt;%</span>  </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  ungroup <span class="sc">%&gt;%</span> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>time) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">track =</span> <span class="fu">fct_inorder</span>(track, time))</span></code></pre></div>
+<p><br></p>
+<p>We also create <code>df_records_three</code> which holds all the records, no matter they were beaten or not. It is used to derive other data frames that are used in our chart.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_records_three <span class="ot">&lt;-</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  df_records <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;Three Lap&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">track =</span> <span class="fu">factor</span>(track, <span class="at">levels =</span> <span class="fu">levels</span>(df_rank<span class="sc">$</span>track)))</span></code></pre></div>
+<p><br></p>
+<p>The first data frame derived is <code>df_connect</code>. This one is used to add a dotted line that connects record times with and without shortcuts.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_connect <span class="ot">&lt;-</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, type, shortcut) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">no =</span> <span class="fu">min</span>(time), <span class="at">yes =</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(track, type, shortcut),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;record&quot;</span>, </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;time&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># The line goes from the first record without shortcut (the slower)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to the most recent record with shortcut (the fastest)</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>((shortcut <span class="sc">==</span> <span class="st">&quot;No&quot;</span> <span class="sc">&amp;</span> record <span class="sc">==</span> <span class="st">&quot;no&quot;</span>) <span class="sc">|</span> (shortcut <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span> <span class="sc">&amp;</span> record <span class="sc">==</span> <span class="st">&quot;yes&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track), <span class="at">values_from =</span> time, <span class="at">names_from =</span> record)</span></code></pre></div>
+<p><br></p>
+<p>Then we have <code>df_longdist</code> and <code>df_shortcut</code>. Without getting much into the details, we note each data frame consists of five columns: <code>track</code>, <code>year</code>, <code>max</code>, <code>min</code> and <code>diff</code>. <code>year</code> refers to the year where the current record was achieved, <code>max</code> is the completetion time for the first record and <code>min</code> is the time for the current record. <code>diff</code> is simply the difference between <code>max</code> and <code>min</code>, i.e. a measurement of how much the first record was improved. <code>df_shortcut</code> and <code>df_longdist</code> refer to records with and without shortcuts, respectively.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_longdist <span class="ot">&lt;-</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shortcut <span class="sc">==</span> <span class="st">&quot;No&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time) <span class="sc">|</span> time <span class="sc">==</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">if_else</span>(time <span class="sc">==</span> <span class="fu">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, group) <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(time) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">max</span>(year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track, year), <span class="at">values_from =</span> time, <span class="at">names_from =</span> group) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> max <span class="sc">-</span> min) </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>df_shortcut <span class="ot">&lt;-</span> </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shortcut <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time) <span class="sc">|</span> time <span class="sc">==</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">if_else</span>(time <span class="sc">==</span> <span class="fu">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, group) <span class="sc">%&gt;%</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(time) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">max</span>(year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track, year), <span class="at">values_from =</span> time, <span class="at">names_from =</span> group) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> max <span class="sc">-</span> min)</span></code></pre></div>
+<p><br></p>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
+<hr />
+<p>In this case, our lollipop plot consists of several overlapped geoms. As always there’s intentional overlap in a plot, we add what we want to remain on the background first.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This dataset `df_shorcut` and the aesthetics `aes(min, track)` are used</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in the `geom_*` calls when they are not explicitly specified.</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> df_shortcut <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(min, track)) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Dotted line connection shortcut yes/no</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This geom uses `df_connect` instead of `df_shorcut` because it is being</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># explicitly overridden</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_connect, </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">xmin =</span> yes, <span class="at">xmax =</span> no, <span class="at">y =</span> track), </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey75&quot;</span>, </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">&quot;11&quot;</span> <span class="co"># dotted line</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Segment when shortcut==yes</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># When the `data` argument is missing in the `geom_*` function</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max, <span class="at">color =</span> diff), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Segment when shortcut==no. Overlapped lineranges.</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max, <span class="at">color =</span> diff), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max), <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">size =</span> .<span class="dv">8</span>)</span></code></pre></div>
+<center>
+<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview1.png" style="width:90.0%" />
+</center>
+<p><br></p>
+<p>While there’s a lot we still have to customize yet, this preview lets us see that the white center in the lines is used to differentiate records without shortcuts from those records with shortcuts. The same logic is used in the next chunk to add dots representing the first and last world records for each modality.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==yes – first record</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==yes – latest record. </span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> year), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==no – first record. </span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">fill =</span> year), <span class="at">size =</span> <span class="fl">5.6</span>, <span class="at">shape =</span> <span class="dv">21</span>, </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">stroke =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==no – latest record</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="fl">5.6</span>, <span class="at">shape =</span> <span class="dv">21</span>, </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">stroke =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>)</span></code></pre></div>
+<center>
+<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview2.png" style="width:90.0%" />
+</center>
+<p><br></p>
+<p>And it is now clear that records without shortcuts are represented by geoms with white centers. Let’s keep improving the appearence of the chart. Now it’s the turn to customize labels and legends, and add some informative text.</p>
+<p>First, add the track labels with <code>geom_label()</code>. We need to make two calls because some tracks don’t have any record without shortcuts and so their names are taken from the <code>df_longdist</code> data frame. Next, <code>geom_text()</code> is used four times to label the four different types of dots and tell the reader what they meaning. This is a very nice approach to include information on a plot without a legend.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels tracks</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> track), <span class="at">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">size =</span> <span class="fl">6.6</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">label.size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, <span class="sc">!</span>track <span class="sc">%in%</span> <span class="fu">unique</span>(df_shortcut<span class="sc">$</span>track)), </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> track), <span class="at">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">size =</span> <span class="fl">6.6</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">label.size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels dots when shortcut==yes</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_shortcut, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> <span class="st">&quot;Most recent record</span><span class="sc">\n</span><span class="st">with shortcuts&quot;</span>), </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">lineheight =</span> .<span class="dv">8</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_shortcut, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> max, <span class="at">label =</span> <span class="st">&quot;First record</span><span class="sc">\n</span><span class="st">with shortcuts&quot;</span>), </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">lineheight =</span> .<span class="dv">8</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels dots when shortcut==no</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> <span class="st">&quot;Most recent record</span><span class="sc">\n</span><span class="st">w/o shortcuts&quot;</span>), </span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, <span class="at">lineheight =</span> .<span class="dv">8</span>, </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> max, <span class="at">label =</span> <span class="st">&quot;First record</span><span class="sc">\n</span><span class="st">w/o shortcuts&quot;</span>), </span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, <span class="at">lineheight =</span> .<span class="dv">8</span>, </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_x =</span> <span class="dv">7</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>)</span></code></pre></div>
+<p><br></p>
+<p>Then it’s the time to tweak scales and axis.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extend horizontal axis so trackl labels fit</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">60</span>, <span class="dv">400</span>)) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">400</span>, <span class="at">by =</span> <span class="dv">50</span>), </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add &#39;seconds&#39; label only to first axis tick</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">paste</span>(x, <span class="st">&quot;seconds&quot;</span>), <span class="fu">paste</span>(x)),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">dup_axis</span>(), <span class="co"># Add axis ticks and labels both on top and bottom.</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">c</span>(.<span class="dv">02</span>, .<span class="dv">02</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">expand =</span> <span class="fu">c</span>(.<span class="dv">07</span>, .<span class="dv">07</span>)) <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;#b4d1d2&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#242c3c&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Year of Record&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  rcartocolor<span class="sc">::</span><span class="fu">scale_color_carto_c</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;RedOr&quot;</span>, </span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Time difference between first and most recent record&quot;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<center>
+<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview3.png" style="width:90.0%" />
+</center>
+<p><br></p>
+<p>Some touches to the position of the guides and their size…</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">title.position =</span> <span class="st">&quot;left&quot;</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">guide_colorbar</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">barwidth =</span> <span class="fu">unit</span>(.<span class="dv">45</span>, <span class="st">&quot;lines&quot;</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">barheight =</span> <span class="fu">unit</span>(<span class="dv">22</span>, <span class="st">&quot;lines&quot;</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;left&quot;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Let&#39;s-a-Go!  You  May  Still  Have  Chances  to  Grab  a  New  World  Record  for  Mario  Kart  64&quot;</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Most world records for Mario Kart 64 were achieved pretty recently (13 in 2020, 10 in 2021). On several tracks, the players considerably improved the time needed to complete three laps when they used shortcuts (*Choco Mountain*, *D.K.&#39;s Jungle Parkway*, *Frappe Snowland*, *Luigi Raceway*, *Rainbow Road*, *Royal Raceway*, *Toad&#39;s Turnpike*, *Wario Stadium*, and *Yoshi Valley*). Actually, for three out of these tracks the previous records were more than halved since 2020 (*Luigi Raceway*, *Rainbow Road*, and *Toad&#39;s Turnpike*). Four other tracks still have no records for races with shortcuts (*Moo Moo Farm*, *Koopa Troopa Beach*, *Banshee Boardwalk*, and *Bowser&#39;s Castle*). Are there none or did nobody find them yet? Pretty unrealistic given the fact that since more than 24 years the game is played all around the world—but maybe you&#39;re able to find one and obtain a new world record?&quot;</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Visualization: Cédric Scherer  •  Data: mkwrs.com/mk64&quot;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><br></p>
+<center>
+<img src="img/lollipop-plot-with-r-mario-kart-64-world-records.png" style="width:90.0%" />
+</center>
+<p>And finally, save the plot. <code>device = agg_png</code> means we use the PNG graphic device from the AGG backend previously mentioned instead of the default PNG backend that comes with a typical installation of R.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;img&quot;</span>, <span class="st">&quot;lollipop-plot-with-r-mario-kart-64-world-records.png&quot;</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">7990</span>, <span class="at">height =</span> <span class="dv">5200</span>, <span class="at">res =</span> <span class="dv">500</span>, <span class="at">device =</span> agg_png, <span class="at">limitsize =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<!-- Close container -->
+</div>
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
