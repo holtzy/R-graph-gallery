@@ -153,263 +153,277 @@
 
 
 <div class="container" style="padding-top: 100px">
-<div id="about" class="section level1">
-<h1>About</h1>
+<h1 id="about">About</h1>
 <hr />
-<p>This page showcases the work of <a href="https://www.cedricscherer.com">Cedric Sherer</a>, built for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative. You can find the original code on his github repository <a href="https://github.com/z3tt/TidyTuesday/blob/master/R/2021_22_MarioKart.Rmd">here</a>. Thanks to him for accepting sharinig his work here! 🙏🙏</p>
+<p>This page showcases the work of <a href="https://www.cedricscherer.com">Cedric Scherer</a>, built for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative. You can find the original code on his github repository <a href="https://github.com/z3tt/TidyTuesday/blob/master/R/2021_22_MarioKart.Rmd">here</a>.</p>
+<p>Thanks to him for accepting sharing his work here! 🙏🙏 Thanks also to <a href="https://tcapretto.netlify.app">Tomás Capretto</a> who help writing down the blogpost!</p>
+<p>As a teaser, here is the plot we’re gonna try building:</p>
 <p><br></p>
-<div id="package-and-theme" class="section level2">
-<h2>Package and Theme</h2>
+<center>
+<img src="img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records.png" style="width:90.0%" />
+</center>
+<p><br></p>
+<h2 id="package-and-theme">Package and Theme</h2>
 <hr />
-<p>We start by loading the packages needed to build the figure. From all the packages we use, <a href="https://ragg.r-lib.org/index.html"><code>ragg</code></a> may be the least known. It is worth noting it a great library that impacts both the quality and performance of our graphs in R thanks to the new graphic devices it brings through the lower-level <a href="https://antigrain.com/">AGG</a> library.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load packages</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ragg)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set ggplot theme</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">base_size =</span> <span class="dv">13</span>))</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_update</span>(</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">25</span>),</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.major.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;grey94&quot;</span>),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">07</span>, .<span class="dv">31</span>), </span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.title =</span> <span class="fu">element_text</span>(</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">90</span>, </span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> .<span class="dv">5</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.text =</span> <span class="fu">element_text</span>(</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>, </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">12</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.box =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.box.just =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.spacing =</span> <span class="fu">unit</span>(.<span class="dv">6</span>, <span class="st">&quot;lines&quot;</span>),</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Atlantis Headline&quot;</span>, </span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, </span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">17.45</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.subtitle =</span> <span class="fu">element_textbox_simple</span>(</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>, </span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">10.8</span>,</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">lineheight =</span> <span class="fl">1.3</span>, </span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">5</span>, <span class="at">b =</span> <span class="dv">30</span>)</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot.caption =</span> <span class="fu">element_text</span>(</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, </span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey55&quot;</span>, </span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">10.5</span>, </span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">0</span>, <span class="at">r =</span> <span class="dv">15</span>)</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Let’s start by loading the packages needed to build the figure. From all the packages we use, <a href="https://ragg.r-lib.org/index.html">ragg</a> may be the least known. It’s a great library that impacts both the quality and performance of our graphs in <code>R</code> thanks to the new graphic devices it brings through the lower-level <a href="https://antigrain.com/">AGG</a> library.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Load packages</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggtext)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(ragg)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># Set ggplot theme</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">theme_set</span>(<span class="kw">theme_minimal</span>(<span class="dt">base_family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="dt">base_size =</span> <span class="dv">13</span>))</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">theme_update</span>(</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="dt">plot.margin =</span> <span class="kw">margin</span>(<span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">15</span>, <span class="dv">25</span>),</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>),</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  <span class="dt">panel.grid.major.x =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey94&quot;</span>),</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  <span class="dt">panel.grid.major.y =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="dt">panel.grid.minor =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>),</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">&quot;grey40&quot;</span>),</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  <span class="dt">axis.text.y =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  <span class="dt">axis.title =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  <span class="dt">axis.ticks =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  <span class="dt">legend.position =</span> <span class="kw">c</span>(.<span class="dv">07</span>, <span class="fl">.31</span>), </a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">  <span class="dt">legend.title =</span> <span class="kw">element_text</span>(</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="dt">color =</span> <span class="st">&quot;grey40&quot;</span>, </a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">    <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, </a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">    <span class="dt">angle =</span> <span class="dv">90</span>, </a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    <span class="dt">hjust =</span> <span class="fl">.5</span></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">  ),</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  <span class="dt">legend.text =</span> <span class="kw">element_text</span>(</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27">    <span class="dt">color =</span> <span class="st">&quot;grey40&quot;</span>, </a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">    <span class="dt">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>, </a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">    <span class="dt">size =</span> <span class="dv">12</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">  ),</a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">  <span class="dt">legend.box =</span> <span class="st">&quot;horizontal&quot;</span>,</a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">  <span class="dt">legend.box.just =</span> <span class="st">&quot;bottom&quot;</span>,</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33">  <span class="dt">legend.margin =</span> <span class="kw">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">  <span class="dt">legend.spacing =</span> <span class="kw">unit</span>(.<span class="dv">6</span>, <span class="st">&quot;lines&quot;</span>),</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">  <span class="dt">plot.title =</span> <span class="kw">element_text</span>(</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">    <span class="dt">family =</span> <span class="st">&quot;Atlantis Headline&quot;</span>, </a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">    <span class="dt">face =</span> <span class="st">&quot;bold&quot;</span>, </a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">    <span class="dt">size =</span> <span class="fl">17.45</span></a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">  ),</a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">  <span class="dt">plot.subtitle =</span> <span class="kw">element_textbox_simple</span>(</a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">    <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, </a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">    <span class="dt">color =</span> <span class="st">&quot;grey40&quot;</span>, </a>
+<a class="sourceLine" id="cb1-43" data-line-number="43">    <span class="dt">size =</span> <span class="fl">10.8</span>,</a>
+<a class="sourceLine" id="cb1-44" data-line-number="44">    <span class="dt">lineheight =</span> <span class="fl">1.3</span>, </a>
+<a class="sourceLine" id="cb1-45" data-line-number="45">    <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">t =</span> <span class="dv">5</span>, <span class="dt">b =</span> <span class="dv">30</span>)</a>
+<a class="sourceLine" id="cb1-46" data-line-number="46">  ),</a>
+<a class="sourceLine" id="cb1-47" data-line-number="47">  <span class="dt">plot.caption =</span> <span class="kw">element_text</span>(</a>
+<a class="sourceLine" id="cb1-48" data-line-number="48">    <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, </a>
+<a class="sourceLine" id="cb1-49" data-line-number="49">    <span class="dt">color =</span> <span class="st">&quot;grey55&quot;</span>, </a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">    <span class="dt">size =</span> <span class="fl">10.5</span>, </a>
+<a class="sourceLine" id="cb1-51" data-line-number="51">    <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">t =</span> <span class="dv">20</span>, <span class="dt">b =</span> <span class="dv">0</span>, <span class="dt">r =</span> <span class="dv">15</span>)</a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">  )</a>
+<a class="sourceLine" id="cb1-53" data-line-number="53">)</a></code></pre></div>
 <p><br></p>
-</div>
-</div>
-<div id="load-and-prepare-the-dataset" class="section level1">
-<h1>Load and prepare the dataset</h1>
+<h1 id="load-and-prepare-the-dataset">Load and prepare the dataset</h1>
 <hr />
-<p>Today we are going to visualize world records for the Mario Kart 64 game. The game consists of 16 individual tracks and world records can be achieved for the fastest <em>single lap</em> or the fastest completed race (<strong>three laps</strong>). Also, through the years, players discovered <strong>shortcuts</strong> in many of the tracks. Fortunately, shortcut and non-shortcut world records are listed separately.</p>
-<p>Our chart consists of a double-dumbbell plot where we visualize world record times on Mario Kart 64 with and without shortcuts. The original source of the data is <a href="https://mkwrs.com/">https://mkwrs.com/</a>, which holds time trial world records for all of the Mario Kart games, but we are using the version released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2021-05-25. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-25">here</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_records <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/records.csv&#39;</span>)</span></code></pre></div>
+<p>The dataset provides world records for the Mario Kart 64 game. The game consists of 16 individual tracks and world records can be achieved for the fastest <em>single lap</em> or the fastest completed race (<strong>three laps</strong>). Also, through the years, players discovered <strong>shortcuts</strong> in many of the tracks. Fortunately, shortcut and non-shortcut world records are listed separately.</p>
+<p>Our chart consists of a double-dumbbell plot, a variation of the better known lollipop chart, where we visualize world record times on Mario Kart 64 with and without shortcuts. The original source of the data is <a href="https://mkwrs.com/">available here</a>. It holds time trial world records for all of the Mario Kart games, but we are using the version released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2021-05-25. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-25">here</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">df_records &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-25/records.csv&#39;</span>)</a></code></pre></div>
 <p><br></p>
-<p>From all the columns in the data, we only use <code>track</code>, <code>type</code>, <code>shortcut</code>, <code>date</code>, and <code>time</code>. <code>track</code> indicates the name of the track, <code>type</code> tells us whether the record is for single lap or a complete race, <code>shortcut</code> is a yes/no variable that identifies records where a shortcut was used, <code>date</code> represents the date where the record was achieved, and <code>time</code> indicates how many seconds it took to complete the track.</p>
+<p>From all the columns in the data, we only use <code>track</code>, <code>type</code>, <code>shortcut</code>, <code>date</code>, and <code>time</code>.</p>
+<ul>
+<li><code>track</code> indicates the name of the track</li>
+<li><code>type</code> tells us whether the record is for single lap or a complete race</li>
+<li><code>shortcut</code> is a yes/no variable that identifies records where a shortcut was used</li>
+<li><code>date</code> represents the date where the record was achieved</li>
+<li><code>time</code> indicates how many seconds it took to complete the track.</li>
+</ul>
 <p>On this occasion, we only keep records for complete races. We start by creating <code>df_rank</code>, a data frame that keeps current world records for every track. The two last <code>arrange()</code> and <code>mutate()</code> lines are used to convert <code>track</code> into an ordered factor where the order is given by the time it took to complete the race. It will be useful when sorting tracks on the plot.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_rank <span class="ot">&lt;-</span> </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  df_records <span class="sc">%&gt;%</span> </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;Three Lap&quot;</span>) <span class="sc">%&gt;%</span>  </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  ungroup <span class="sc">%&gt;%</span> </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>time) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">track =</span> <span class="fu">fct_inorder</span>(track, time))</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">df_rank &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="st">  </span>df_records <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(type <span class="op">==</span><span class="st"> &quot;Three Lap&quot;</span>) <span class="op">%&gt;%</span><span class="st">  </span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(track) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw">filter</span>(time <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(time)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span>ungroup <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>time) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">track =</span> <span class="kw">fct_inorder</span>(track, time))</a></code></pre></div>
 <p><br></p>
 <p>We also create <code>df_records_three</code> which holds all the records, no matter they were beaten or not. It is used to derive other data frames that are used in our chart.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_records_three <span class="ot">&lt;-</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  df_records <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;Three Lap&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">track =</span> <span class="fu">factor</span>(track, <span class="at">levels =</span> <span class="fu">levels</span>(df_rank<span class="sc">$</span>track)))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">df_records_three &lt;-</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">  </span>df_records <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(type <span class="op">==</span><span class="st"> &quot;Three Lap&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> lubridate<span class="op">::</span><span class="kw">year</span>(date)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">track =</span> <span class="kw">factor</span>(track, <span class="dt">levels =</span> <span class="kw">levels</span>(df_rank<span class="op">$</span>track)))</a></code></pre></div>
 <p><br></p>
 <p>The first data frame derived is <code>df_connect</code>. This one is used to add a dotted line that connects record times with and without shortcuts.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_connect <span class="ot">&lt;-</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, type, shortcut) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">no =</span> <span class="fu">min</span>(time), <span class="at">yes =</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(track, type, shortcut),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;record&quot;</span>, </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;time&quot;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># The line goes from the first record without shortcut (the slower)</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to the most recent record with shortcut (the fastest)</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>((shortcut <span class="sc">==</span> <span class="st">&quot;No&quot;</span> <span class="sc">&amp;</span> record <span class="sc">==</span> <span class="st">&quot;no&quot;</span>) <span class="sc">|</span> (shortcut <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span> <span class="sc">&amp;</span> record <span class="sc">==</span> <span class="st">&quot;yes&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track), <span class="at">values_from =</span> time, <span class="at">names_from =</span> record)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">df_connect &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span>df_records_three <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">group_by</span>(track, type, shortcut) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">no =</span> <span class="kw">min</span>(time), <span class="dt">yes =</span> <span class="kw">max</span>(time)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">  </span><span class="kw">pivot_longer</span>(</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="dt">cols =</span> <span class="op">-</span><span class="kw">c</span>(track, type, shortcut),</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">    <span class="dt">names_to =</span> <span class="st">&quot;record&quot;</span>, </a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="dt">values_to =</span> <span class="st">&quot;time&quot;</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">  ) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">  </span><span class="co"># The line goes from the first record without shortcut (the slower)</span></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="st">  </span><span class="co"># to the most recent record with shortcut (the fastest)</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw">filter</span>((shortcut <span class="op">==</span><span class="st"> &quot;No&quot;</span> <span class="op">&amp;</span><span class="st"> </span>record <span class="op">==</span><span class="st"> &quot;no&quot;</span>) <span class="op">|</span><span class="st"> </span>(shortcut <span class="op">==</span><span class="st"> &quot;Yes&quot;</span> <span class="op">&amp;</span><span class="st"> </span>record <span class="op">==</span><span class="st"> &quot;yes&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">id_cols =</span> <span class="kw">c</span>(track), <span class="dt">values_from =</span> time, <span class="dt">names_from =</span> record)</a></code></pre></div>
 <p><br></p>
 <p>Then we have <code>df_longdist</code> and <code>df_shortcut</code>. Without getting much into the details, we note each data frame consists of five columns: <code>track</code>, <code>year</code>, <code>max</code>, <code>min</code> and <code>diff</code>. <code>year</code> refers to the year where the current record was achieved, <code>max</code> is the completetion time for the first record and <code>min</code> is the time for the current record. <code>diff</code> is simply the difference between <code>max</code> and <code>min</code>, i.e. a measurement of how much the first record was improved. <code>df_shortcut</code> and <code>df_longdist</code> refer to records with and without shortcuts, respectively.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_longdist <span class="ot">&lt;-</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shortcut <span class="sc">==</span> <span class="st">&quot;No&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time) <span class="sc">|</span> time <span class="sc">==</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">if_else</span>(time <span class="sc">==</span> <span class="fu">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, group) <span class="sc">%&gt;%</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(time) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">max</span>(year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track, year), <span class="at">values_from =</span> time, <span class="at">names_from =</span> group) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> max <span class="sc">-</span> min) </span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>df_shortcut <span class="ot">&lt;-</span> </span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  df_records_three <span class="sc">%&gt;%</span> </span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(shortcut <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time <span class="sc">==</span> <span class="fu">min</span>(time) <span class="sc">|</span> time <span class="sc">==</span> <span class="fu">max</span>(time)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">if_else</span>(time <span class="sc">==</span> <span class="fu">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track, group) <span class="sc">%&gt;%</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(time) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(track) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">max</span>(year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">id_cols =</span> <span class="fu">c</span>(track, year), <span class="at">values_from =</span> time, <span class="at">names_from =</span> group) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> max <span class="sc">-</span> min)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">df_longdist &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span>df_records_three <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(shortcut <span class="op">==</span><span class="st"> &quot;No&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(track) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="st">  </span><span class="kw">filter</span>(time <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(time) <span class="op">|</span><span class="st"> </span>time <span class="op">==</span><span class="st"> </span><span class="kw">max</span>(time)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="kw">if_else</span>(time <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">  </span><span class="kw">group_by</span>(track, group) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="st">  </span><span class="kw">arrange</span>(time) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="st">  </span><span class="kw">group_by</span>(track) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">max</span>(year)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">id_cols =</span> <span class="kw">c</span>(track, year), <span class="dt">values_from =</span> time, <span class="dt">names_from =</span> group) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">diff =</span> max <span class="op">-</span><span class="st"> </span>min) </a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">df_shortcut &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="st">  </span>df_records_three <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="st">  </span><span class="kw">filter</span>(shortcut <span class="op">==</span><span class="st"> &quot;Yes&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="st">  </span><span class="kw">group_by</span>(track) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="st">  </span><span class="kw">filter</span>(time <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(time) <span class="op">|</span><span class="st"> </span>time <span class="op">==</span><span class="st"> </span><span class="kw">max</span>(time)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">group =</span> <span class="kw">if_else</span>(time <span class="op">==</span><span class="st"> </span><span class="kw">min</span>(time), <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21"><span class="st">  </span><span class="kw">group_by</span>(track, group) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-22" data-line-number="22"><span class="st">  </span><span class="kw">arrange</span>(time) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-24" data-line-number="24"><span class="st">  </span><span class="kw">group_by</span>(track) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-25" data-line-number="25"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">max</span>(year)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-26" data-line-number="26"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">id_cols =</span> <span class="kw">c</span>(track, year), <span class="dt">values_from =</span> time, <span class="dt">names_from =</span> group) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-27" data-line-number="27"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">diff =</span> max <span class="op">-</span><span class="st"> </span>min)</a></code></pre></div>
 <p><br></p>
-<div id="plot" class="section level2">
-<h2>Plot</h2>
+<h2 id="basic-plot">Basic Plot</h2>
 <hr />
 <p>In this case, our lollipop plot consists of several overlapped geoms. As always there’s intentional overlap in a plot, we add what we want to remain on the background first.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This dataset `df_shorcut` and the aesthetics `aes(min, track)` are used</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in the `geom_*` calls when they are not explicitly specified.</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> df_shortcut <span class="sc">%&gt;%</span> </span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(min, track)) <span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Dotted line connection shortcut yes/no</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This geom uses `df_connect` instead of `df_shorcut` because it is being</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># explicitly overridden</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_connect, </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">xmin =</span> yes, <span class="at">xmax =</span> no, <span class="at">y =</span> track), </span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey75&quot;</span>, </span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">&quot;11&quot;</span> <span class="co"># dotted line</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Segment when shortcut==yes</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># When the `data` argument is missing in the `geom_*` function</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max, <span class="at">color =</span> diff), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Segment when shortcut==no. Overlapped lineranges.</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max, <span class="at">color =</span> diff), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">xmin =</span> min, <span class="at">xmax =</span> max), <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">size =</span> .<span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># This dataset `df_shorcut` and the aesthetics `aes(min, track)` are used</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># in the `geom_*` calls when they are not explicitly specified.</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">p &lt;-<span class="st"> </span>df_shortcut <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(min, track)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">  </span><span class="co"># Dotted line connection shortcut yes/no</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="st">  </span><span class="co"># This geom uses `df_connect` instead of `df_shorcut` because it is being</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="st">  </span><span class="co"># explicitly overridden</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_linerange</span>(</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="dt">data =</span> df_connect, </a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="kw">aes</span>(<span class="dt">xmin =</span> yes, <span class="dt">xmax =</span> no, <span class="dt">y =</span> track), </a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">    <span class="dt">inherit.aes =</span> <span class="ot">FALSE</span>, </a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">    <span class="dt">color =</span> <span class="st">&quot;grey75&quot;</span>, </a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">    <span class="dt">linetype =</span> <span class="st">&quot;11&quot;</span> <span class="co"># dotted line</span></a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-15" data-line-number="15"><span class="st">  </span><span class="co"># Segment when shortcut==yes</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16"><span class="st">  </span><span class="co"># When the `data` argument is missing in the `geom_*` function</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="st">  </span><span class="kw">geom_linerange</span>(<span class="kw">aes</span>(<span class="dt">xmin =</span> min, <span class="dt">xmax =</span> max, <span class="dt">color =</span> diff), <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="st">  </span><span class="co"># Segment when shortcut==no. Overlapped lineranges.</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="st">  </span><span class="kw">geom_linerange</span>(<span class="dt">data =</span> df_longdist, <span class="kw">aes</span>(<span class="dt">xmin =</span> min, <span class="dt">xmax =</span> max, <span class="dt">color =</span> diff), <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="st">  </span><span class="kw">geom_linerange</span>(<span class="dt">data =</span> df_longdist, <span class="kw">aes</span>(<span class="dt">xmin =</span> min, <span class="dt">xmax =</span> max), <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">size =</span> <span class="fl">.8</span>)</a></code></pre></div>
 <center>
-<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview1.png" style="width:90.0%" />
+<img src="img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview1.png" style="width:90.0%" />
 </center>
 <p><br></p>
-<p>While there’s a lot we still have to customize yet, this preview lets us see that the white center in the lines is used to differentiate records without shortcuts from those records with shortcuts. The same logic is used in the next chunk to add dots representing the first and last world records for each modality.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==yes – first record</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==yes – latest record. </span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> year), <span class="at">size =</span> <span class="dv">7</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> .<span class="dv">7</span>) <span class="sc">+</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==no – first record. </span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">fill =</span> year), <span class="at">size =</span> <span class="fl">5.6</span>, <span class="at">shape =</span> <span class="dv">21</span>, </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">stroke =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Point when shortcut==no – latest record</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="fl">5.6</span>, <span class="at">shape =</span> <span class="dv">21</span>, </span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="at">stroke =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_longdist, <span class="fu">aes</span>(<span class="at">x =</span> max), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>)</span></code></pre></div>
+<p>While there’s a lot we still have to customize yet, this preview lets us see that the white center in the lines is used to differentiate records without shortcuts from those records with shortcuts.</p>
+<p><br></p>
+<h2 id="customized-lollipop-plot">Customized lollipop Plot</h2>
+<hr />
+<p>The same logic is used in the next chunk to add dots representing the first and last world records for each modality.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">p &lt;-<span class="st"> </span>p <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="co"># Point when shortcut==yes – first record</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> max), <span class="dt">size =</span> <span class="dv">7</span>, <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">stroke =</span> <span class="fl">.7</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="st">  </span><span class="co"># Point when shortcut==yes – latest record. </span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> year), <span class="dt">size =</span> <span class="dv">7</span>, <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">stroke =</span> <span class="fl">.7</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="co"># Point when shortcut==no – first record. </span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> df_longdist, <span class="kw">aes</span>(<span class="dt">fill =</span> year), <span class="dt">size =</span> <span class="fl">5.6</span>, <span class="dt">shape =</span> <span class="dv">21</span>, </a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">             <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">stroke =</span> <span class="fl">.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> df_longdist, <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="st">  </span><span class="co"># Point when shortcut==no – latest record</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> df_longdist, <span class="kw">aes</span>(<span class="dt">x =</span> max), <span class="dt">size =</span> <span class="fl">5.6</span>, <span class="dt">shape =</span> <span class="dv">21</span>, </a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">             <span class="dt">fill =</span> <span class="st">&quot;grey65&quot;</span>, <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>, <span class="dt">stroke =</span> <span class="fl">.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> df_longdist, <span class="kw">aes</span>(<span class="dt">x =</span> max), <span class="dt">size =</span> <span class="dv">3</span>, <span class="dt">color =</span> <span class="st">&quot;#FFFCFC&quot;</span>)</a></code></pre></div>
 <center>
-<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview2.png" style="width:90.0%" />
+<img src="img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview2.png" style="width:90.0%" />
 </center>
 <p><br></p>
-<p>And it is now clear that records without shortcuts are represented by geoms with white centers. Let’s keep improving the appearence of the chart. Now it’s the turn to customize labels and legends, and add some informative text.</p>
+<p>And it is now clear that records without shortcuts are represented by geoms with white centers.</p>
+<p>Let’s keep improving the appearence of the chart. Now it’s the turn to customize labels and legends, and add some informative text.</p>
 <p>First, add the track labels with <code>geom_label()</code>. We need to make two calls because some tracks don’t have any record without shortcuts and so their names are taken from the <code>df_longdist</code> data frame. Next, <code>geom_text()</code> is used four times to label the four different types of dots and tell the reader what they meaning. This is a very nice approach to include information on a plot without a legend.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels tracks</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">label =</span> track), <span class="at">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">size =</span> <span class="fl">6.6</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">label.size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, <span class="sc">!</span>track <span class="sc">%in%</span> <span class="fu">unique</span>(df_shortcut<span class="sc">$</span>track)), </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> track), <span class="at">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="at">size =</span> <span class="fl">6.6</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">label.size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels dots when shortcut==yes</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_shortcut, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> <span class="st">&quot;Most recent record</span><span class="sc">\n</span><span class="st">with shortcuts&quot;</span>), </span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, </span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">lineheight =</span> .<span class="dv">8</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_shortcut, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> max, <span class="at">label =</span> <span class="st">&quot;First record</span><span class="sc">\n</span><span class="st">with shortcuts&quot;</span>), </span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, </span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">lineheight =</span> .<span class="dv">8</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">## labels dots when shortcut==no</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">label =</span> <span class="st">&quot;Most recent record</span><span class="sc">\n</span><span class="st">w/o shortcuts&quot;</span>), </span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, <span class="at">lineheight =</span> .<span class="dv">8</span>, </span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>             <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="dv">7</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> <span class="fu">filter</span>(df_longdist, track <span class="sc">==</span> <span class="st">&quot;Wario Stadium&quot;</span>),</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> max, <span class="at">label =</span> <span class="st">&quot;First record</span><span class="sc">\n</span><span class="st">w/o shortcuts&quot;</span>), </span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, <span class="at">lineheight =</span> .<span class="dv">8</span>, </span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">nudge_x =</span> <span class="dv">7</span>, <span class="at">nudge_y =</span> .<span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">p &lt;-<span class="st"> </span>p <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="co">## labels tracks</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_label</span>(<span class="kw">aes</span>(<span class="dt">label =</span> track), <span class="dt">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="dt">size =</span> <span class="fl">6.6</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">nudge_x =</span> <span class="dv">-7</span>,</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">             <span class="dt">label.size =</span> <span class="dv">0</span>, <span class="dt">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_label</span>(<span class="dt">data =</span> <span class="kw">filter</span>(df_longdist, <span class="op">!</span>track <span class="op">%in%</span><span class="st"> </span><span class="kw">unique</span>(df_shortcut<span class="op">$</span>track)), </a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">             <span class="kw">aes</span>(<span class="dt">label =</span> track), <span class="dt">family =</span> <span class="st">&quot;Atlantis&quot;</span>, <span class="dt">size =</span> <span class="fl">6.6</span>, <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">nudge_x =</span> <span class="dv">-7</span>,</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">             <span class="dt">label.size =</span> <span class="dv">0</span>, <span class="dt">fill =</span> <span class="st">&quot;#FFFCFC&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="st">  </span><span class="co">## labels dots when shortcut==yes</span></a>
+<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data =</span> <span class="kw">filter</span>(df_shortcut, track <span class="op">==</span><span class="st"> &quot;Wario Stadium&quot;</span>),</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">             <span class="kw">aes</span>(<span class="dt">label =</span> <span class="st">&quot;Most recent record</span><span class="ch">\n</span><span class="st">with shortcuts&quot;</span>), </a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">             <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="dt">size =</span> <span class="fl">3.5</span>, <span class="dt">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, </a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">             <span class="dt">lineheight =</span> <span class="fl">.8</span>, <span class="dt">vjust =</span> <span class="dv">0</span>, <span class="dt">nudge_y =</span> <span class="fl">.4</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data =</span> <span class="kw">filter</span>(df_shortcut, track <span class="op">==</span><span class="st"> &quot;Wario Stadium&quot;</span>),</a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">             <span class="kw">aes</span>(<span class="dt">x =</span> max, <span class="dt">label =</span> <span class="st">&quot;First record</span><span class="ch">\n</span><span class="st">with shortcuts&quot;</span>), </a>
+<a class="sourceLine" id="cb9-15" data-line-number="15">             <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="dt">size =</span> <span class="fl">3.5</span>, <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>, </a>
+<a class="sourceLine" id="cb9-16" data-line-number="16">             <span class="dt">lineheight =</span> <span class="fl">.8</span>, <span class="dt">vjust =</span> <span class="dv">0</span>, <span class="dt">nudge_y =</span> <span class="fl">.4</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-17" data-line-number="17"><span class="st">  </span><span class="co">## labels dots when shortcut==no</span></a>
+<a class="sourceLine" id="cb9-18" data-line-number="18"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data =</span> <span class="kw">filter</span>(df_longdist, track <span class="op">==</span><span class="st"> &quot;Wario Stadium&quot;</span>),</a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">             <span class="kw">aes</span>(<span class="dt">label =</span> <span class="st">&quot;Most recent record</span><span class="ch">\n</span><span class="st">w/o shortcuts&quot;</span>), </a>
+<a class="sourceLine" id="cb9-20" data-line-number="20">             <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="dt">size =</span> <span class="fl">3.5</span>, <span class="dt">color =</span> <span class="st">&quot;#4a5a7b&quot;</span>, <span class="dt">lineheight =</span> <span class="fl">.8</span>, </a>
+<a class="sourceLine" id="cb9-21" data-line-number="21">             <span class="dt">vjust =</span> <span class="dv">0</span>, <span class="dt">nudge_x =</span> <span class="dv">-7</span>, <span class="dt">nudge_y =</span> <span class="fl">.4</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-22" data-line-number="22"><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data =</span> <span class="kw">filter</span>(df_longdist, track <span class="op">==</span><span class="st"> &quot;Wario Stadium&quot;</span>),</a>
+<a class="sourceLine" id="cb9-23" data-line-number="23">             <span class="kw">aes</span>(<span class="dt">x =</span> max, <span class="dt">label =</span> <span class="st">&quot;First record</span><span class="ch">\n</span><span class="st">w/o shortcuts&quot;</span>), </a>
+<a class="sourceLine" id="cb9-24" data-line-number="24">             <span class="dt">family =</span> <span class="st">&quot;Overpass&quot;</span>, <span class="dt">size =</span> <span class="fl">3.5</span>, <span class="dt">color =</span> <span class="st">&quot;grey50&quot;</span>, <span class="dt">lineheight =</span> <span class="fl">.8</span>, </a>
+<a class="sourceLine" id="cb9-25" data-line-number="25">             <span class="dt">vjust =</span> <span class="dv">0</span>, <span class="dt">nudge_x =</span> <span class="dv">7</span>, <span class="dt">nudge_y =</span> <span class="fl">.4</span>)</a></code></pre></div>
 <p><br></p>
 <p>Then it’s the time to tweak scales and axis.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extend horizontal axis so trackl labels fit</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">60</span>, <span class="dv">400</span>)) <span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">400</span>, <span class="at">by =</span> <span class="dv">50</span>), </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add &#39;seconds&#39; label only to first axis tick</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">paste</span>(x, <span class="st">&quot;seconds&quot;</span>), <span class="fu">paste</span>(x)),</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">sec.axis =</span> <span class="fu">dup_axis</span>(), <span class="co"># Add axis ticks and labels both on top and bottom.</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">c</span>(.<span class="dv">02</span>, .<span class="dv">02</span>)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">expand =</span> <span class="fu">c</span>(.<span class="dv">07</span>, .<span class="dv">07</span>)) <span class="sc">+</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;#b4d1d2&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#242c3c&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Year of Record&quot;</span>) <span class="sc">+</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  rcartocolor<span class="sc">::</span><span class="fu">scale_color_carto_c</span>(</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;RedOr&quot;</span>, </span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">250</span>),</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Time difference between first and most recent record&quot;</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">p &lt;-<span class="st"> </span>p <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span><span class="co"># Extend horizontal axis so trackl labels fit</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">60</span>, <span class="dv">400</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_x_continuous</span>(</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">    <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">400</span>, <span class="dt">by =</span> <span class="dv">50</span>), </a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">    <span class="co"># Add &#39;seconds&#39; label only to first axis tick</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">    <span class="dt">labels =</span> <span class="cf">function</span>(x) <span class="kw">ifelse</span>(x <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">paste</span>(x, <span class="st">&quot;seconds&quot;</span>), <span class="kw">paste</span>(x)),</a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">    <span class="dt">sec.axis =</span> <span class="kw">dup_axis</span>(), <span class="co"># Add axis ticks and labels both on top and bottom.</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">    <span class="dt">expand =</span> <span class="kw">c</span>(.<span class="dv">02</span>, <span class="fl">.02</span>)</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="st">  </span><span class="kw">scale_y_discrete</span>(<span class="dt">expand =</span> <span class="kw">c</span>(.<span class="dv">07</span>, <span class="fl">.07</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> <span class="st">&quot;#b4d1d2&quot;</span>, <span class="dt">high =</span> <span class="st">&quot;#242c3c&quot;</span>, <span class="dt">name =</span> <span class="st">&quot;Year of Record&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">  </span>rcartocolor<span class="op">::</span><span class="kw">scale_color_carto_c</span>(</a>
+<a class="sourceLine" id="cb10-14" data-line-number="14">    <span class="dt">palette =</span> <span class="st">&quot;RedOr&quot;</span>, </a>
+<a class="sourceLine" id="cb10-15" data-line-number="15">    <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">250</span>),</a>
+<a class="sourceLine" id="cb10-16" data-line-number="16">    <span class="dt">name =</span> <span class="st">&quot;Time difference between first and most recent record&quot;</span></a>
+<a class="sourceLine" id="cb10-17" data-line-number="17">  )</a></code></pre></div>
 <center>
-<img src="img/lollipop-plot-with-r-mario-kart-64-world-records-preview3.png" style="width:90.0%" />
+<img src="img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview3.png" style="width:90.0%" />
 </center>
 <p><br></p>
 <p>Some touches to the position of the guides and their size…</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">title.position =</span> <span class="st">&quot;left&quot;</span>),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">guide_colorbar</span>(</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">barwidth =</span> <span class="fu">unit</span>(.<span class="dv">45</span>, <span class="st">&quot;lines&quot;</span>),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">barheight =</span> <span class="fu">unit</span>(<span class="dv">22</span>, <span class="st">&quot;lines&quot;</span>),</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;left&quot;</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Let&#39;s-a-Go!  You  May  Still  Have  Chances  to  Grab  a  New  World  Record  for  Mario  Kart  64&quot;</span>,</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Most world records for Mario Kart 64 were achieved pretty recently (13 in 2020, 10 in 2021). On several tracks, the players considerably improved the time needed to complete three laps when they used shortcuts (*Choco Mountain*, *D.K.&#39;s Jungle Parkway*, *Frappe Snowland*, *Luigi Raceway*, *Rainbow Road*, *Royal Raceway*, *Toad&#39;s Turnpike*, *Wario Stadium*, and *Yoshi Valley*). Actually, for three out of these tracks the previous records were more than halved since 2020 (*Luigi Raceway*, *Rainbow Road*, and *Toad&#39;s Turnpike*). Four other tracks still have no records for races with shortcuts (*Moo Moo Farm*, *Koopa Troopa Beach*, *Banshee Boardwalk*, and *Bowser&#39;s Castle*). Are there none or did nobody find them yet? Pretty unrealistic given the fact that since more than 24 years the game is played all around the world—but maybe you&#39;re able to find one and obtain a new world record?&quot;</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Visualization: Cédric Scherer  •  Data: mkwrs.com/mk64&quot;</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">p &lt;-<span class="st"> </span>p <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw">guides</span>(</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">    <span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">title.position =</span> <span class="st">&quot;left&quot;</span>),</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">    <span class="dt">color =</span> <span class="kw">guide_colorbar</span>(</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">      <span class="dt">barwidth =</span> <span class="kw">unit</span>(.<span class="dv">45</span>, <span class="st">&quot;lines&quot;</span>),</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">      <span class="dt">barheight =</span> <span class="kw">unit</span>(<span class="dv">22</span>, <span class="st">&quot;lines&quot;</span>),</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">      <span class="dt">title.position =</span> <span class="st">&quot;left&quot;</span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">    )</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="st">  </span><span class="kw">labs</span>(</a>
+<a class="sourceLine" id="cb11-11" data-line-number="11">    <span class="dt">title =</span> <span class="st">&quot;Let&#39;s-a-Go!  You  May  Still  Have  Chances  to  Grab  a  New  World  Record  for  Mario  Kart  64&quot;</span>,</a>
+<a class="sourceLine" id="cb11-12" data-line-number="12">    <span class="dt">subtitle =</span> <span class="st">&quot;Most world records for Mario Kart 64 were achieved pretty recently (13 in 2020, 10 in 2021). On several tracks, the players considerably improved the time needed to complete three laps when they used shortcuts (*Choco Mountain*, *D.K.&#39;s Jungle Parkway*, *Frappe Snowland*, *Luigi Raceway*, *Rainbow Road*, *Royal Raceway*, *Toad&#39;s Turnpike*, *Wario Stadium*, and *Yoshi Valley*). Actually, for three out of these tracks the previous records were more than halved since 2020 (*Luigi Raceway*, *Rainbow Road*, and *Toad&#39;s Turnpike*). Four other tracks still have no records for races with shortcuts (*Moo Moo Farm*, *Koopa Troopa Beach*, *Banshee Boardwalk*, and *Bowser&#39;s Castle*). Are there none or did nobody find them yet? Pretty unrealistic given the fact that since more than 24 years the game is played all around the world—but maybe you&#39;re able to find one and obtain a new world record?&quot;</span>,</a>
+<a class="sourceLine" id="cb11-13" data-line-number="13">    <span class="dt">caption =</span> <span class="st">&quot;Visualization: Cédric Scherer  •  Data: mkwrs.com/mk64&quot;</span></a>
+<a class="sourceLine" id="cb11-14" data-line-number="14">  )</a></code></pre></div>
 <p><br></p>
 <center>
-<img src="img/lollipop-plot-with-r-mario-kart-64-world-records.png" style="width:90.0%" />
+<img src="img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records.png" style="width:90.0%" />
 </center>
 <p>And finally, save the plot. <code>device = agg_png</code> means we use the PNG graphic device from the AGG backend previously mentioned instead of the default PNG backend that comes with a typical installation of R.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;img&quot;</span>, <span class="st">&quot;lollipop-plot-with-r-mario-kart-64-world-records.png&quot;</span>),</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">7990</span>, <span class="at">height =</span> <span class="dv">5200</span>, <span class="at">res =</span> <span class="dv">500</span>, <span class="at">device =</span> agg_png, <span class="at">limitsize =</span> <span class="cn">FALSE</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">ggsave</span>(</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;img&quot;</span>, <span class="st">&quot;lollipop-plot-with-r-mario-kart-64-world-records.png&quot;</span>),</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">  <span class="dt">width =</span> <span class="dv">7990</span>, <span class="dt">height =</span> <span class="dv">5200</span>, <span class="dt">res =</span> <span class="dv">500</span>, <span class="dt">device =</span> agg_png, <span class="dt">limitsize =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">)</a></code></pre></div>
+<p><br></p>
+<h2 id="conclusion">Conclusion</h2>
+<hr />
+<p>Here we are, with a very highly customized plot showcasing the possibilities offered by the tidyverse and other packages like <code>ragg</code>. Thanks again to Cedric for providing this chart example!</p>
 <!-- Close container -->
-</div>
-</div>
 </div>
 <!-- ============================ RELATED SECTION ============================ -->
 <section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">

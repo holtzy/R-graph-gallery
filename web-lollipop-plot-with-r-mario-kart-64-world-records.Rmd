@@ -32,11 +32,20 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE, dev = "ragg_png",
 # About
 ***
 
-This page showcases the work of [Cedric Sherer](https://www.cedricscherer.com), 
+This page showcases the work of [Cedric Scherer](https://www.cedricscherer.com), 
 built for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) 
 initiative. You can find the original code on his github repository 
 [here](https://github.com/z3tt/TidyTuesday/blob/master/R/2021_22_MarioKart.Rmd). 
-Thanks to him for accepting sharinig his work here! 🙏🙏
+
+Thanks to him for accepting sharing his work here! 🙏🙏 Thanks also to [Tomás Capretto](https://tcapretto.netlify.app) who help writing down the blogpost!
+
+As a teaser, here is the plot we're gonna try building:
+
+<br>
+
+<center>
+![](img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records.png){width=90%}
+</center>
 
 <br>
 
@@ -44,10 +53,10 @@ Thanks to him for accepting sharinig his work here! 🙏🙏
 ## Package and Theme
 ***
 
-We start by loading the packages needed to build the figure. From all the 
-packages we use, [`ragg`](https://ragg.r-lib.org/index.html) may be the least 
-known. It is worth noting it a great library that impacts both the quality and 
-performance of our graphs in R thanks to the new graphic devices it brings 
+Let's start by loading the packages needed to build the figure. From all the 
+packages we use, [ragg](https://ragg.r-lib.org/index.html) may be the least 
+known. It's a great library that impacts both the quality and 
+performance of our graphs in `R` thanks to the new graphic devices it brings 
 through the lower-level [AGG](https://antigrain.com/) library.
 
 ```{r, warning=FALSE}
@@ -112,15 +121,15 @@ theme_update(
 # Load and prepare the dataset
 ***
 
-Today we are going to visualize world records for the Mario Kart 64 game. The 
+The dataset provides world records for the Mario Kart 64 game. The 
 game consists of 16 individual tracks and world records can be achieved for 
 the fastest *single lap* or the fastest completed race (**three laps**).
 Also, through the years, players discovered **shortcuts** in many of the tracks. 
 Fortunately, shortcut and non-shortcut world records are listed separately.
 
-Our chart consists of a double-dumbbell plot where we visualize world record 
+Our chart consists of a double-dumbbell plot, a variation of the better known lollipop chart, where we visualize world record 
 times on Mario Kart 64 with and without shortcuts. The original source of the 
-data is [https://mkwrs.com/](https://mkwrs.com/), which holds time trial world 
+data is [available here](https://mkwrs.com/). It holds time trial world 
 records for all of the Mario Kart games, but we are using the version released for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) 
 initiative on the week of 2021-05-25. You can find the original announcement and
 more information about the data [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-25).
@@ -132,11 +141,13 @@ df_records <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience
 <br>
 
 From all the columns in the data, we only use `track`, `type`, `shortcut`, `date`, 
-and `time`. `track` indicates the name of the track, `type` tells us whether 
-the record is for single lap or a complete race, `shortcut` is a yes/no variable 
-that identifies records where a shortcut was used, `date` represents the date 
-where the record was achieved, and `time` indicates how many seconds it took to 
-complete the track. 
+and `time`. 
+
+- `track` indicates the name of the track
+- `type` tells us whether the record is for single lap or a complete race
+- `shortcut` is a yes/no variable that identifies records where a shortcut was used
+- `date` represents the date where the record was achieved
+- `time` indicates how many seconds it took to complete the track. 
 
 On this occasion, we only keep records for complete races. We start by 
 creating `df_rank`, a data frame that keeps current world records for every 
@@ -235,7 +246,7 @@ df_shortcut <-
 
 <br>
 
-## Plot
+## Basic Plot
 ***
 
 In this case, our lollipop plot consists of several overlapped geoms.
@@ -267,19 +278,27 @@ p <- df_shortcut %>%
 
 ```{r, include=FALSE}
 ggsave(
-  here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records-preview1.png"),
+  here::here("img/fromTheWeb", "lollipop-plot-with-r-mario-kart-64-world-records-preview1.png"),
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
 )
 ```
 
 <center>
-![](img/lollipop-plot-with-r-mario-kart-64-world-records-preview1.png){width=90%}
+![](img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview1.png){width=90%}
 </center>
 <br>
 
 While there's a lot we still have to customize yet, this preview lets us see 
 that the white center in the lines is used to differentiate records without 
-shortcuts from those records with shortcuts. The same logic is used in the next 
+shortcuts from those records with shortcuts. 
+
+
+<br>
+
+## Customized lollipop Plot
+***
+
+The same logic is used in the next 
 chunk to add dots representing the first and last world records for each modality.
 
 ```{r}
@@ -300,18 +319,21 @@ p <- p +
 
 ```{r, include=FALSE}
 ggsave(
-  here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records-preview2.png"),
+  here::here("img/fromTheWeb", "lollipop-plot-with-r-mario-kart-64-world-records-preview2.png"),
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
 )
 ```
 
 <center>
-![](img/lollipop-plot-with-r-mario-kart-64-world-records-preview2.png){width=90%}
+![](img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview2.png){width=90%}
 </center>
 <br>
 
 And it is now clear that records without shortcuts are represented by geoms with 
-white centers. Let's keep improving the appearence of the chart. Now it's the 
+white centers. 
+
+
+Let's keep improving the appearence of the chart. Now it's the 
 turn to customize labels and legends, and add some informative text.
 
 First, add the track labels with `geom_label()`. We need to make two calls 
@@ -377,13 +399,13 @@ p <- p +
 
 ```{r, include=FALSE}
 ggsave(
-  here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records-preview3.png"),
+  here::here("img/fromTheWeb", "lollipop-plot-with-r-mario-kart-64-world-records-preview3.png"),
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
 )
 ```
 
 <center>
-![](img/lollipop-plot-with-r-mario-kart-64-world-records-preview3.png){width=90%}
+![](img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-preview3.png){width=90%}
 </center>
 <br>
 
@@ -410,7 +432,7 @@ p <- p +
 
 ```{r, include=FALSE}
 ggsave(
-  here::here("img", "lollipop-plot-with-r-mario-kart-64-world-records.png"),
+  here::here("img/fromTheWeb", "lollipop-plot-with-r-mario-kart-64-world-records.png"),
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
 )
 ```
@@ -419,7 +441,7 @@ ggsave(
 <br>
 
 <center>
-![](img/lollipop-plot-with-r-mario-kart-64-world-records.png){width=90%}
+![](img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records.png){width=90%}
 </center>
 
 And finally, save the plot. `device = agg_png` means we use the PNG graphic 
@@ -432,6 +454,13 @@ ggsave(
   width = 7990, height = 5200, res = 500, device = agg_png, limitsize = FALSE
 )
 ```
+
+<br>
+
+## Conclusion
+***
+
+Here we are, with a very highly customized plot showcasing the possibilities offered by the tidyverse and other packages like `ragg`. Thanks again to Cedric for providing this chart example!
 
 
 <!-- Close container -->
