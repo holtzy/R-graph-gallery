@@ -1,0 +1,256 @@
+---
+title: "Radar chart with ggradar"
+descriptionMeta: "A custom radar chart to explore the palmerpenguins dataset made with ggradar. Built with R and the tidyverse."
+descriptionTop: "A custom radar chart to explore the palmerpenguins dataset made with `R` and `ggradar`. This blogpost guides you through a step-by-step construction of a radar chart that includes a variety of custom labels, annotations, and guides."
+sectionText: "Radar section"
+sectionLink: "spider-or-radar-chart.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/caveat/spider.html"
+url: "web-radar-chart-with-R"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message=FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+# About
+***
+
+This page showcases the work of [Tuo Wang](https://tuowang.rbind.io/) that 
+introduces packages to make [`ggplot2`](https://ggplot2.tidyverse.org/) plots 
+more beautiful. You can find the original code on Tuo's blog 
+[here](https://tuowang.rbind.io/post/2021-03-25-ggplot2-extensions/)
+
+Thanks to him for accepting sharing his work here! Thanks also to 
+[Tomás Capretto](https://tcapretto.netlify.app/) who split the original code 
+into this step-by-step guide! 🙏🙏
+
+## Load packages
+***
+
+Let's start by loading the packages needed to build the figure. 
+[ggradar](https://github.com/ricardo-bion/ggradar) is the star of the day.
+This package does only one thing, but it does it very well. Thanks to it,
+making `ggplot2` based radar charts is extremely easy.
+
+
+**Note:** `ggradar` can be installed from github with 
+`remotes::install_github("ricardo-bion/ggradar")`.
+
+
+```{r}
+library(ggradar)
+library(palmerpenguins)
+library(tidyverse)
+library(scales)
+library(showtext)
+```
+
+Use `font_add_google()` to download fonts. The second argument is an (optional) 
+alias that will be used throughout the plot.
+
+```{r}
+font_add_google("Lobster Two", "lobstertwo")
+font_add_google("Roboto", "roboto")
+
+# Showtext will be automatically invoked when needed
+showtext_auto()
+```
+
+Another option would be to use the [`ragg`](https://ragg.r-lib.org/) library for
+the backend. With `ragg`, all the fonts installed in your computer are available
+can be used to build charts without having to use `showtext`.
+
+<br>
+
+# Load and prepare the dataset
+***
+
+Today's data were collected and made available by 
+[Dr. Kristen Gorman](https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php) 
+and the [Palmer Station, Antarctica LTER](https://pal.lternet.edu/), a member of 
+the [Long Term Ecological Research Network](https://lternet.edu/). This dataset 
+was popularized by [Allison Horst](https://www.allisonhorst.com/) in her R 
+package [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) with 
+the goal to offer an alternative to the iris dataset for data exploration and 
+visualization.
+
+```{r}
+data("penguins", package = "palmerpenguins")
+head(penguins, 3)
+```
+
+<br>
+
+
+After dropping observations with missing values, it's necessary to compute the 
+mean value for the numerical variables that will be displayed in the radar chart. 
+Then, with the aid of the `rescale()` function from the `scales` pacakge, 
+these summaries are rescaled to the [0, 1] interval.
+
+```{r}
+penguins_radar <- penguins %>%
+  drop_na() %>%
+  group_by(species) %>%
+  summarise(
+    avg_bill_length = mean(bill_length_mm),
+    avg_bill_dept = mean(bill_depth_mm),
+    avg_flipper_length = mean(flipper_length_mm),
+    avg_body_mass = mean(body_mass_g)
+  ) %>%
+  ungroup() %>%
+  mutate_at(vars(-species), rescale)
+```
+
+<br>
+
+## Basic radar chart
+***
+
+Creating a radar chart with `ggradar` is as easy as calling `ggradar(data)`.
+In this case, the pipe operator `%>%` is used to pass the data frame to the 
+function.
+
+```{r}
+plt <- penguins_radar %>%
+  ggradar(
+    font.radar = "roboto",
+    grid.label.size = 13,  # Affects the grid annotations (0%, 50%, etc.)
+    axis.label.size = 8.5, # Afftects the names of the variables
+    group.point.size = 3   # Simply the size of the point 
+  )
+```
+  
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-radar-chart-with-R-preview1.png"),
+  plot = plt,
+  width = 5.7,
+  height = 5,
+  device = "png"
+)
+```
+
+<center>
+![](img/fromTheWeb/web-radar-chart-with-R-preview1.png){width=80%}
+</center>
+
+Can we make it better than that? Of course! Let's keep working on it.
+
+## Custom legend
+
+The chart above has nice default colors and axis guides, that's great for such a
+few lines of code! 
+
+The next step is to make it prettier. Let's get started by fixing the overlap 
+in the legend and making some adjustments.
+
+
+```{r}
+# 1. Set the position legend to bottom-right
+# 2. Bottom-right justification
+# 3. Customize text size and family
+# 4. Remove background and border color for the keys
+# 5. Remove legend background
+plt <- plt + 
+  theme(
+    legend.position = c(1, 0),  
+    legend.justification = c(1, 0),
+    legend.text = element_text(size = 28, family = "roboto"),
+    legend.key = element_rect(fill = NA, color = NA),
+    legend.background = element_blank()
+  )
+```
+
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-radar-chart-with-R-preview2.png"),
+  plot = plt,
+  width = 5.7,
+  height = 5,
+  device = "png"
+)
+```
+
+<br>
+
+<center>
+![](img/fromTheWeb/web-radar-chart-with-R-preview2.png){width=80%}
+</center>
+
+Very nice! It's amazing what can be done with just two small chunks of code.
+
+
+<br>
+
+## Final chart
+***
+  
+The chart above is pretty close from being publication ready. What's needed now 
+is a good title and final touches to the layout:
+
+```{r}
+# * The panel is the drawing region, contained within the plot region.
+#   panel.background refers to the plotting area
+#   plot.background refers to the entire plot
+plt <- plt + 
+  labs(title = "Radar plot of penguins species") + 
+  theme(
+      plot.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+      panel.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+      plot.title.position = "plot", # slightly different from default
+      plot.title = element_text(
+        family = "lobstertwo", 
+        size = 62,
+        face = "bold", 
+        color = "#2a475e"
+    )
+  )
+```
+
+<br>
+
+And finally, save the result.
+
+```{r}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-radar-chart-with-R.png"),
+  plot = plt,
+  width = 5.7,
+  height = 5,
+  device = "png"
+)
+```
+
+
+<center>
+![](img/fromTheWeb/web-radar-chart-with-R.png){width=80%}
+</center>
+<br>
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
