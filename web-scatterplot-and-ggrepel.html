@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-79254642-1');
+  </script>
+  <script>
+  var getOutboundLink = function(url) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': url,
+      'transport_type': 'beacon',
+      'event_callback': function(){document.location = url;}
+    });
+  }
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-3523953066677938",
+            enable_page_level_ads: true
+       });
+  </script>
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+
+<meta charset="utf-8">
+<title>Scatterplot with automatic text repel &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="A custom violin plot to explore the palmerpenguins dataset made with ggstatsplot. Built with R and the tidyverse.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Scatterplot with automatic text repel" />
+<meta property="og:image" content="img/overview_RGG.png" />
+<meta property="og:description" content="A custom violin plot to explore the palmerpenguins dataset made with ggstatsplot. Built with R and the tidyverse." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/web-scatterplot-with-text-repel-ggrepel.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
+
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead" style="padding-bottom: 30px;">
+  <div class="textlanding">
+      <center><h1>Scatterplot with automatic text repel</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">A custom scatterplot with auto-positioned labels to explore the palmerpenguins dataset made with <code>R</code> and the <code>tidyverse</code>. This blogpost guides you through a highly customized scatterplot that includes a variety of custom colors, markers, and fonts. The library <code>ggrepel</code> is used to automatically adjust the position of labels in the plots.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='scatterplot.html'>Scatter section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/scatter.html'>Data to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container" style="padding-top: 100px">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This page showcases the work of <a href="https://tuowang.rbind.io/">Tuo Wang</a> that introduces packages to make <a href="https://ggplot2.tidyverse.org/"><code>ggplot2</code></a> plots more beautiful. You can find the original code on Tuo’s blog <a href="https://tuowang.rbind.io/post/2021-03-25-ggplot2-extensions/">here</a>.</p>
+<p>Thanks to him for accepting sharing his work here! Thanks also to <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the original code into this step-by-step guide!</p>
+<div id="load-packages" class="section level2">
+<h2>Load packages</h2>
+<hr />
+<p>As usual, it is first necessary to load some packages before building the figure. <a href="https://ggrepel.slowkow.com/articles/examples.html">ggrepel</a> provides geoms for <code>ggplot2</code> to repel overlapping text labels. Text labels repel away from each other, away from data points, and away from edges of the plotting area in an automatic fashion. Also, <a href="https://centerforassessment.github.io/randomNames/"><code>randomNames</code></a> is used to generate random names that will be the text labels in the chart.</p>
+<p><strong>Note:</strong> <code>randomNames</code> is only available for R &gt; 4.0.0.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomNames)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<p><br></p>
+</div>
+</div>
+<div id="load-and-prepare-the-dataset" class="section level1">
+<h1>Load and prepare the dataset</h1>
+<hr />
+<p>The palmerpenguins data were collected and made available by <a href="https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php">Dr. Kristen Gorman</a> and the <a href="https://pal.lternet.edu/">Palmer Station, Antarctica LTER</a>, a member of the <a href="https://lternet.edu/">Long Term Ecological Research Network</a>. This dataset was popularized by <a href="https://www.allisonhorst.com/">Allison Horst</a> in her R package <a href="https://allisonhorst.github.io/palmerpenguins/"><code>palmerpenguins</code></a> with the goal to offer an alternative to the iris dataset for data exploration and visualization.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;penguins&quot;</span>, <span class="at">package =</span> <span class="st">&quot;palmerpenguins&quot;</span>)</span></code></pre></div>
+<p><br></p>
+<p>First of all, observations with missing values are discarded from the dataset.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="ot">&lt;-</span> <span class="fu">drop_na</span>(penguins)</span></code></pre></div>
+<p><br></p>
+<p>Then, each observation is assined a random name. A new variable <code>highlight</code> is added to the dataset to indicate which names are highlighted in the plot. These are the names starting with the letter <code>"C"</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate random names</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The results of set.seed may depends on R version.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2021</span><span class="sc">+</span><span class="dv">03</span><span class="sc">+</span><span class="dv">27</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>name_vector <span class="ot">&lt;-</span> <span class="fu">randomNames</span>(<span class="fu">nrow</span>(penguins), <span class="at">which.names =</span> <span class="st">&quot;first&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Create &#39;highlight&#39; indicator variable</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>penguins <span class="ot">&lt;-</span> penguins <span class="sc">%&gt;%</span> </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> name_vector,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">highlight =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_starts</span>(name, <span class="st">&quot;C&quot;</span>) <span class="sc">~</span> name,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    ) </span></code></pre></div>
+<p><br></p>
+<div id="basic-chart" class="section level2">
+<h2>Basic chart</h2>
+<hr />
+<p>Today’s chart is a scatterplot that shows the association between the flip length and the bill length of the penguins in the dataset. Point are colored according to the species to add an extra layer of information to the vizualisation. The first step is to create a basic colored scatterplot with <code>ggplot2</code>. Let’s get started!</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note `color = species` and s`hape = species`.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This means each species will have BOTH  a different color and shape.</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(penguins, <span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, <span class="at">y =</span> bill_length_mm)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color =</span> species, <span class="at">shape =</span> species),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.5</span>, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span> <span class="co"># It&#39;s nice to add some transparency because there may be overlap.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Use custom colors</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#386cb0&quot;</span>, <span class="st">&quot;#fdb462&quot;</span>, <span class="st">&quot;#7fc97f&quot;</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<center>
+<img src="img/fromTheWeb/web-scatterplot-and-ggrepel-preview1.png" style="width:70.0%" />
+</center>
+<p>That’s a pretty good start, but let’s make it better!</p>
+</div>
+<div id="add-labels-with-no-overlap" class="section level2">
+<h2>Add labels with no overlap</h2>
+<p>What’s truely missing here are <strong>labels</strong>. It’s very frustrating not knowing which item is hidden under a data point, isn’t it!?</p>
+<p>It is pretty challenging to add many labels on a plot since labels tend to overlap each other, making the figure unreadable. Fortunately, the <code>ggrepel</code> package is here to help us. It provides an algorithm that will automatically place the labels for us. Let’s do it!</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> highlight),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Poppins&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min.segment.length =</span> <span class="dv">0</span>, </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">42</span>, </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">box.padding =</span> <span class="fl">0.5</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.overlaps =</span> <span class="cn">Inf</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.010</span>, <span class="st">&quot;npc&quot;</span>)),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_x =</span> .<span class="dv">15</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">nudge_y =</span> .<span class="dv">5</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><br></p>
+<center>
+<img src="img/fromTheWeb/web-scatterplot-and-ggrepel-preview2.png" style="width:70.0%" />
+</center>
+<p>Isn’t it wonderful how well <code>ggrepel</code> works?</p>
+<p><br></p>
+</div>
+<div id="final-chart" class="section level2">
+<h2>Final chart</h2>
+<hr />
+<p>The chart above is pretty close from being publication ready. What’s needed now is a good title, a legend to make color and shapes more insightful, and some axis customization:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add axes labels, title, and subtitle</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Palmer Penguins Data Visualization&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Scatter plot of flipper lenth vs bill length&quot;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;flip length (mm)&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;bill length (mm)&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span>  </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The default font when not explicitly specified</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Lobster Two&quot;</span>, <span class="at">size =</span> <span class="dv">8</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize legend text, position, and background.</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>, <span class="at">family =</span> <span class="st">&quot;Roboto&quot;</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size=</span><span class="dv">12</span>, <span class="at">family =</span> <span class="st">&quot;Roboto&quot;</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This one removes the background behind each key in the legend</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize title and subtitle font/size/color</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;Lobster Two&quot;</span>, </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">20</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#2a475e&quot;</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;Lobster Two&quot;</span>, </span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">15</span>, </span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#1b2838&quot;</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adjust axis parameters such as size and color.</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Axis lines are now lighter than default</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line =</span> <span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">&quot;grey50&quot;</span>),</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Only keep y-axis major grid lines, with a grey color and dashed type.</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;#b4aea9&quot;</span>, <span class="at">linetype =</span><span class="st">&quot;dashed&quot;</span>),</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use a light color for the background of the plot and the panel.</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#fbf9f4&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#fbf9f4&quot;</span>),</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#fbf9f4&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#fbf9f4&quot;</span>)</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><br></p>
+<center>
+<img src="img/fromTheWeb/web-scatterplot-and-ggrepel.png" style="width:70.0%" />
+</center>
+<p><br></p>
+<p>What a lovely plot!</p>
+<!-- Close container -->
+</div>
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
