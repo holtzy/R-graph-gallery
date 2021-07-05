@@ -1,0 +1,230 @@
+---
+title: "Violin plot with ggstatsplot"
+descriptionMeta: "A custom violin plot to explore the palmerpenguins dataset made with ggstatsplot. Built with R and the tidyverse."
+descriptionTop: "A beautiful violin plot with statistical annotations to explore the palmerpenguins dataset. This blogpost will guide you through a custom chart that includes violinplots, boxplots, jittered dots, and very rich statistical information thanks to the wonderful `ggstatsplot` library."
+sectionText: "Violin Section"
+sectionLink: "violin.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/caveat/boxplot.html"
+url: "web-violinplot-with-ggstatsplot"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+# About
+***
+
+This page showcases the work of [Tuo Wang](https://tuowang.rbind.io/) that 
+introduces packages to make [`ggplot2`](https://ggplot2.tidyverse.org/) plots 
+more beautiful. You can find the original code on Tuo's blog 
+[here](https://tuowang.rbind.io/post/2021-03-25-ggplot2-extensions/).
+
+Thanks to him for accepting sharing his work here! Thanks also to 
+[Tomás Capretto](https://tcapretto.netlify.app/) who split the original code 
+into this step-by-step guide!
+
+## Load packages
+***
+
+Let's start by loading the packages needed to build the figure. 
+[ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) is the showcased 
+package today. `ggstatsplot` is an extension of ggplot2 package for creating 
+graphics with details from statistical tests included in the information-rich 
+plots themselves.
+
+```{r}
+library(ggstatsplot)
+library(palmerpenguins)
+library(tidyverse)
+```
+
+<br>
+
+# Load and prepare the dataset
+***
+
+Today's data were collected and made available by 
+[Dr. Kristen Gorman](https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php) 
+and the [Palmer Station, Antarctica LTER](https://pal.lternet.edu/), a member of 
+the [Long Term Ecological Research Network](https://lternet.edu/). This dataset 
+was popularized by [Allison Horst](https://www.allisonhorst.com/) in her R 
+package [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) with 
+the goal to offer an alternative to the iris dataset for data exploration and 
+visualization.
+
+```{r}
+data("penguins", package = "palmerpenguins")
+```
+
+<br>
+
+The only data preparation step is to simply drop missing values.
+
+```{r}
+penguins <- drop_na(penguins)
+```
+
+<br>
+
+## Basic chart
+***
+
+Today's chart is going to show the distribution of Bill length for the three
+species of penguins in the dataset (Adelie, Chinstrap, and Gentoo). The function
+`ggbetweenstats` in the `ggstatsplot` is a great fit for this goal. Let's see
+how it works. 
+
+```{r}
+plt <- ggbetweenstats(
+  data = penguins,
+  x = species,
+  y = bill_length_mm
+)
+```
+  
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-violinplot-with-ggstatsplot-preview1.png"),
+  plot = plt
+)
+```
+
+<center>
+![](img/fromTheWeb/web-violinplot-with-ggstatsplot-preview1.png){width=80%}
+</center>
+
+It's hard to find where the *basic* word fits in such a beautiful default plot,
+isn't it? 
+
+## Add title and labels
+
+`ggstatsplot` has very nice defaults that save a lot of time and work. But it 
+can't take over every single aspect of our charts. This is a good moment to add 
+an appropriate title and labels with nice-looking styles.
+
+```{r}
+plt <- plt + 
+  # Add labels and title
+  labs(
+    x = "Penguins Species",
+    y = "Bill Length",
+    title = "Distribution of bill length across penguins species"
+  ) + 
+  # Customizations
+  theme(
+    # This is the new default font in the plot
+    text = element_text(family = "Roboto", size = 8, color = "black"),
+    plot.title = element_text(
+      family = "Lobster Two", 
+      size = 20,
+      face = "bold",
+      color = "#2a475e"
+    ),
+    # Statistical annotations below the main title
+    plot.subtitle = element_text(
+      family = "Roboto", 
+      size = 15, 
+      face = "bold",
+      color="#1b2838"
+    ),
+    plot.title.position = "plot", # slightly different from default
+    axis.text = element_text(size = 10, color = "black"),
+    axis.title = element_text(size = 12)
+  )
+```
+
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-violinplot-with-ggstatsplot-preview2.png"),
+  plot = plt,
+  width = 8,
+  height = 8,
+  device = "png"
+)
+```
+
+<br>
+
+<center>
+![](img/fromTheWeb/web-violinplot-with-ggstatsplot-preview2.png){width=80%}
+</center>
+
+Much better!
+
+<br>
+
+## Final chart
+***
+  
+The chart above is pretty close to being publication-ready. It only needs some 
+final touches to the layout and it's ready to go.
+
+```{r}
+# 1. Remove axis ticks
+# 2. Change default color of the axis lines with a lighter one
+# 3. Remove most reference lines, only keep the major horizontal ones.
+#    This reduces clutter, while keeping the reference for the variable
+#    being compared.
+# 4. Set the panel and the background fill to the same light color.
+
+plt <- plt  +
+  theme(
+    axis.ticks = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    panel.grid = element_line(color = "#b4aea9"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_line(linetype = "dashed"),
+    panel.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+    plot.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4")
+  )
+```
+
+<br>
+
+And finally, save the result. Check it out! Isn't it wonderful?
+
+```{r}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-violinplot-with-ggstatsplot.png"),
+  plot = plt,
+  width = 8,
+  height = 8,
+  device = "png"
+)
+```
+
+
+<center>
+![](img/fromTheWeb/web-violinplot-with-ggstatsplot.png){width=80%}
+</center>
+<br>
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
