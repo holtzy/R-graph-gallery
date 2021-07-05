@@ -1,0 +1,290 @@
+---
+title: "Scatterplot with automatic text repel"
+descriptionMeta: "A custom violin plot to explore the palmerpenguins dataset made with ggstatsplot. Built with R and the tidyverse."
+descriptionTop: "A custom scatterplot with auto-positioned labels to explore the palmerpenguins dataset made with `R` and the `tidyverse`. This blogpost guides you through a highly customized scatterplot that includes a variety of custom colors, markers, and fonts. The library `ggrepel` is used to automatically adjust the position of labels in the plots."
+sectionText: "Scatter section"
+sectionLink: "scatterplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/scatter.html"
+url: "web-scatterplot-with-text-repel-ggrepel"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+# About
+***
+
+This page showcases the work of [Tuo Wang](https://tuowang.rbind.io/) that 
+introduces packages to make [`ggplot2`](https://ggplot2.tidyverse.org/) plots 
+more beautiful. You can find the original code on Tuo's blog 
+[here](https://tuowang.rbind.io/post/2021-03-25-ggplot2-extensions/).
+
+Thanks to him for accepting sharing his work here! Thanks also to 
+[Tomás Capretto](https://tcapretto.netlify.app/) who split the original code 
+into this step-by-step guide!
+
+## Load packages
+***
+
+As usual, it is first necessary to load some packages before building the figure.
+[ggrepel](https://ggrepel.slowkow.com/articles/examples.html) provides geoms for
+`ggplot2` to repel overlapping text labels. Text labels repel away from each other,
+away from data points, and away from edges of the plotting area in an automatic
+fashion. Also, [`randomNames`](https://centerforassessment.github.io/randomNames/) 
+is used to generate random names that will be the text labels in the chart.
+
+**Note:** `randomNames` is only available for R > 4.0.0.
+
+```{r}
+library(ggrepel)
+library(palmerpenguins)
+library(randomNames)
+library(tidyverse)
+```
+
+<br>
+
+# Load and prepare the dataset
+***
+
+The palmerpenguins data were collected and made available by 
+[Dr. Kristen Gorman](https://www.uaf.edu/cfos/people/faculty/detail/kristen-gorman.php) 
+and the [Palmer Station, Antarctica LTER](https://pal.lternet.edu/), a member of 
+the [Long Term Ecological Research Network](https://lternet.edu/). This dataset 
+was popularized by [Allison Horst](https://www.allisonhorst.com/) in her R 
+package [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/) with 
+the goal to offer an alternative to the iris dataset for data exploration and 
+visualization.
+
+```{r}
+data("penguins", package = "palmerpenguins")
+```
+
+<br>
+
+First of all, observations with missing values are discarded from the dataset.
+
+```{r}
+penguins <- drop_na(penguins)
+```
+<br>
+
+Then, each observation is assined a random name. A new variable `highlight` is
+added to the dataset to indicate which names are highlighted in the plot. These
+are the names starting with the letter `"C"`.
+
+```{r}
+## Generate random names
+# The results of set.seed may depends on R version.
+set.seed(2021+03+27)
+name_vector <- randomNames(nrow(penguins), which.names = "first")
+
+## Create 'highlight' indicator variable
+penguins <- penguins %>% 
+  mutate(
+    name = name_vector,
+    highlight = case_when(
+      str_starts(name, "C") ~ name,
+      TRUE ~ ""
+      )
+    ) 
+```
+
+<br>
+
+## Basic chart
+***
+
+Today's chart is a scatterplot that shows the association between the flip 
+length and the bill length of the penguins in the dataset. Point are colored 
+according to the species to add an extra layer of information to the 
+vizualisation. The first step is to create a basic colored scatterplot with 
+`ggplot2`. Let's get started!
+
+
+```{r}
+# Note `color = species` and s`hape = species`.
+# This means each species will have BOTH  a different color and shape.
+plt <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm)) +
+  geom_point(
+    aes(color = species, shape = species),
+    size = 1.5, 
+    alpha = 0.8 # It's nice to add some transparency because there may be overlap.
+  ) +
+  # Use custom colors
+  scale_color_manual(
+    values = c("#386cb0", "#fdb462", "#7fc97f")
+  )
+```
+  
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-scatterplot-and-ggrepel-preview1.png"),
+  width = 6,
+  height = 6,
+  plot = plt
+)
+```
+
+<center>
+![](img/fromTheWeb/web-scatterplot-and-ggrepel-preview1.png){width=70%}
+</center>
+
+That's a pretty good start, but let's make it better!
+
+## Add labels with no overlap
+
+What's truely missing here are **labels**. It's very frustrating not knowing 
+which item is hidden under a data point, isn't it!?
+
+It is pretty challenging to add many labels on a plot since labels tend to 
+overlap each other, making the figure unreadable. Fortunately, the `ggrepel`
+package is here to help us. It provides an algorithm that will automatically 
+place the labels for us. Let's do it!
+
+```{r}
+plt <- plt + 
+  geom_text_repel(
+    aes(label = highlight),
+    family = "Poppins",
+    size = 3,
+    min.segment.length = 0, 
+    seed = 42, 
+    box.padding = 0.5,
+    max.overlaps = Inf,
+    arrow = arrow(length = unit(0.010, "npc")),
+    nudge_x = .15,
+    nudge_y = .5,
+    color = "grey50"
+  )
+```
+
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-scatterplot-and-ggrepel-preview2.png"),
+  plot = plt,
+  width = 6,
+  height = 6,
+  device = "png"
+)
+```
+
+<br>
+
+<center>
+![](img/fromTheWeb/web-scatterplot-and-ggrepel-preview2.png){width=70%}
+</center>
+
+Isn't it wonderful how well `ggrepel` works?
+
+<br>
+
+## Final chart
+***
+  
+The chart above is pretty close from being publication ready. What's needed now 
+is a good title, a legend to make color and shapes more insightful, and some 
+axis customization:
+
+```{r}
+plt <- plt + 
+  # Add axes labels, title, and subtitle
+  labs(
+    title = "Palmer Penguins Data Visualization",
+    subtitle = "Scatter plot of flipper lenth vs bill length",
+    x = "flip length (mm)",
+    y = "bill length (mm)"
+  ) +  
+  theme(
+    # The default font when not explicitly specified
+    text = element_text(family = "Lobster Two", size = 8, color = "black"),
+    
+    # Customize legend text, position, and background.
+    legend.text = element_text(size = 9, family = "Roboto"),
+    legend.title = element_text(face = "bold", size=12, family = "Roboto"),
+    legend.position = c(1, 0),
+    legend.justification = c(1, 0),
+    legend.background = element_blank(),
+    # This one removes the background behind each key in the legend
+    legend.key = element_blank(),
+    
+    # Customize title and subtitle font/size/color
+    plot.title = element_text(
+      family = "Lobster Two", 
+      size = 20,
+      face = "bold", 
+      color = "#2a475e"
+    ),
+    plot.subtitle = element_text(
+      family = "Lobster Two", 
+      size = 15, 
+      face = "bold", 
+      color = "#1b2838"
+    ),
+    plot.title.position = "plot",
+    
+    # Adjust axis parameters such as size and color.
+    axis.text = element_text(size = 10, color = "black"),
+    axis.title = element_text(size = 12),
+    axis.ticks = element_blank(),
+    # Axis lines are now lighter than default
+    axis.line = element_line(colour = "grey50"),
+    
+    # Only keep y-axis major grid lines, with a grey color and dashed type.
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_line(color = "#b4aea9", linetype ="dashed"),
+    
+    # Use a light color for the background of the plot and the panel.
+    panel.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4"),
+    plot.background = element_rect(fill = "#fbf9f4", color = "#fbf9f4")
+  )
+```
+
+<br>
+
+```{r, include=FALSE}
+ggsave(
+  filename = here::here("img", "fromTheWeb", "web-scatterplot-and-ggrepel.png"),
+  plot = plt,
+  width = 6,
+  height = 6,
+  device = "png"
+)
+```
+
+
+<center>
+![](img/fromTheWeb/web-scatterplot-and-ggrepel.png){width=70%}
+</center>
+<br>
+
+What a lovely plot!
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
