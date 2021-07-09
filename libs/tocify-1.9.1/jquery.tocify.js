@@ -176,7 +176,7 @@
         self._setEventHandlers();
 
         // Binding to the Window load event to make sure the correct scrollTop is calculated
-        $(window).load(function() {
+        $(window).on("load", function() {
 
           // Sets the active TOC item
           self._setActiveElement(true);
@@ -386,13 +386,13 @@
 
           item.append($("<a/>", {
 
-            "text": self.text()
+            "html": self.html()
 
           }));
 
         } else {
 
-          item.text(self.text());
+          item.html(self.html());
 
         }
 

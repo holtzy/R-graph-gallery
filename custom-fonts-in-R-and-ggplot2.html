@@ -156,7 +156,11 @@
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <hr />
-<p>Fonts are one of the most important aspects of a good visualization. Choosing the right font can make a huge difference in the readability and overall quality of a chart. <a href="https://github.com/yixuan/showtext"><code>showtext</code></a> and <a href="https://ragg.r-lib.org/"><code>ragg</code></a> are two R packages that help to work with custom fonts in R and <code>ggplot2</code>. <code>showtext</code> provides a set of functions that make it easy to use various types of fonts in R plots, and <code>ragg</code> provides graphic devices based on the <a href="https://antigrain.com/">AGG</a> library, which gives direct access to all system fonts, making the usage of custom fonts painless and easy.</p>
+<p>Fonts are one of the most important aspects of a good visualization. Choosing the right font can make a huge difference in the readability and overall quality of a chart. <a href="https://github.com/yixuan/showtext"><code>showtext</code></a> and <a href="https://ragg.r-lib.org/"><code>ragg</code></a> are two R packages that help to work with custom fonts in R and <code>ggplot2</code>.</p>
+<ul>
+<li><code>showtext</code> provides a set of functions that make it easy to use various types of fonts in R plots</li>
+<li><code>ragg</code> provides graphic devices based on the <a href="https://antigrain.com/">AGG</a> library, which gives direct access to all system fonts, making the usage of custom fonts painless and easy.</li>
+</ul>
 <p>The following two fonts are going to be used in along this post:</p>
 <ul>
 <li><strong>Hydrophilia Iced</strong> from <a href="https://www.floodfonts.com/">Floodfonts</a>. <a href="https://www.floodfonts.com/freefont/download/hydrophilia.zip">Here</a> you can download a zipped folder that contains the font as both <code>.otf</code> and <code>.ttf</code> types.</li>
@@ -171,9 +175,9 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Special Elite&quot;</span>, <span class="at">family =</span> <span class="st">&quot;special&quot;</span>)</span></code></pre></div>
 <p><br></p>
 <p>The second argument, <code>family</code>, is optional. It gives the family name of the font that will be used in R. In other words, it means that the name used to refer to the font in R does not need to be the same than the original name of the font. In this case, the font <strong>Special Elite</strong> is going to be the <strong>special</strong> family.</p>
-<p>If the font wanted is not available on Google Fonts, one can use <code>font_add()</code>. The first argument is like the <code>family</code> above, and the second argument is a path to the font file for the regular font face (both <code>.ttf</code> and <code>.otf</code> work)</p>
+<p><em>note</em>: if the font wanted is not available on Google Fonts, one can use <code>font_add()</code>. The first argument is like the <code>family</code> above, and the second argument is a path to the font file for the font face (both <code>.ttf</code> and <code>.otf</code> work). Not that you have to download the font locally and update the path below</p>
 <!-- Use the right if knitting this again. -->
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">font_add</span>(<span class="st">&quot;hydrophilia&quot;</span>, <span class="st">&quot;/home/tomas/Hydrophilia/HydrophiliaIced-Regular.ttf&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">font_add</span>(<span class="st">&quot;hydrophilia&quot;</span>, <span class="st">&quot;~/Downloads/Hydrophilia/HydrophiliaIced-Regular.ttf&quot;</span>)</span></code></pre></div>
 <p><br></p>
 <p>And last but not least, <code>showtext_auto()</code> must be called to indicate that <code>showtext</code> is going to be automatically invoked to draw text whenever a plot is created.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
@@ -215,7 +219,8 @@
 <div id="custom-fonts-with-ragg" class="section level1">
 <h1>Custom fonts with <code>ragg</code></h1>
 <hr />
-<p>This solution provided in this section is quite different from the solution above. Instead of using a library to install and manage fonts that are accesible by R, this solution is based on using a different graphic device provided by <code>ragg</code>. Among other very nice features, using <code>ragg</code> gives access to all system fonts, which means that custom fonts can be used without having to install other package in R.</p>
+<p>This solution provided in this section is quite different from the solution above. Instead of using a library to install and manage fonts that are accesible by R, this solution is based on using a different graphic device provided by <code>ragg</code>.</p>
+<p>Among other very nice features, using <code>ragg</code> gives access to all system fonts, which means that custom fonts can be used without having to install other package in R.</p>
 <p>Assuming RStudio is used to work with R, <code>ragg</code> can be set up as the graphic back-end to the Rstudio device (for RStudio &gt;= 1.4) by choosing AGG as the backend in the graphics pane in general options (see screenshot)</p>
 <p><img src="img/ragg.png" style="width:70.0%" /></p>
 <p><br></p>
@@ -223,32 +228,33 @@
 <p>Finally, if you are going to export your plot with <code>ggsave()</code>, you can simply pass device functions from <code>ragg</code> into the <code>device</code> argument as <code>ggsave("image.png", device=ragg::agg_png)</code>.</p>
 <p>In practice, you need to download and install the fonts in your system manually. This is usually done by opening the font file and clicking on the install button in the window that pops up. One of its advantages is that this procedure is required only once per font. After a font is installed in your system it can be used anywhere in your R plots without having to use any external packages such as <code>showtext</code>.</p>
 <p>Let’s generate the same plot than above, but using the <code>ragg::agg_png</code> backend.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick notes:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># * No &quot;showtext_auto()&quot; or similar calls</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># * Full names must be used for the fonts because they are now </span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   searched in the system</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">y =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(x, y), <span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">&quot;cadetblue4&quot;</span>) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(x, y), </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">3</span>, <span class="at">y =</span> <span class="dv">2</span>), </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;This is Hydrophilia Iced!&quot;</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">7</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Horizontal Label&quot;</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Vertical label too!&quot;</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Do you like titles with nice-looking fonts?&quot;</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Special Elite&quot;</span>),</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Special Elite&quot;</span>)</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="custom-fonts-in-R-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ragg)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick notes:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># * No &quot;showtext_auto()&quot; or similar calls</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># * Full names must be used for the fonts because they are now </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   searched in the system</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">y =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(x, y), <span class="at">size =</span> <span class="dv">10</span>, <span class="at">color =</span> <span class="st">&quot;cadetblue4&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(x, y), </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">3</span>, <span class="at">y =</span> <span class="dv">2</span>), </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;This is Hydrophilia Iced!&quot;</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Hydrophilia Iced&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">7</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Horizontal Label&quot;</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Vertical label too!&quot;</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Do you like titles with nice-looking fonts?&quot;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Special Elite&quot;</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Special Elite&quot;</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="custom-fonts-in-R-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <!-- Close container -->
 </div>
 </div>
