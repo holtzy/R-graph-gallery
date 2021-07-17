@@ -31,11 +31,19 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 # About
 ***
 
-This page showcases the work of [Cedric Sherer](https://www.cedricscherer.com), built for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) initiative. You can find the original code on his github repository [here](https://github.com/z3tt/TidyTuesday/blob/master/R/2020_12_TheOffice.Rmd). Thanks to him for accepting sharinig his work here! 🙏🙏
+This page showcases the work of [Cedric Scherer](https://www.cedricscherer.com), built for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) initiative. You can find the original code on his github repository [here](https://github.com/z3tt/TidyTuesday/blob/master/R/2020_12_TheOffice.Rmd). Thanks to him for accepting sharing his work here! 🙏🙏
+
+Oh and by the way, this is what we're gonna build in this tutorial:
+
+
+<center>
+![](img/fromTheWeb/web-lollipop-plot-with-R-the-office.png){width=90%}
+</center>
+
 
 <br>
 
-## Package and Theme
+# Package and Theme
 ***
 
 As always several packages are needed in order to build the figure. In this 
@@ -49,6 +57,7 @@ is used to draw text in our plots.
 library(tidyverse)
 library(cowplot)
 library(showtext)
+showtext_auto()
 
 # Add fonts from Google.
 font_add_google("Roboto Mono", "Roboto Mono")
@@ -82,6 +91,11 @@ theme_update(
 # Turn on showtext
 showtext_auto()
 ```
+
+<br>
+<br>
+
+For more information on custom fonts with `ggplot2`, please visit this [dedicated blogpost](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html).
 
 <br>
 
@@ -161,7 +175,7 @@ df_lines <-
 
 <br>
 
-## Plot
+# First lollipop version
 ***
 
 Let's build the chart. We are doing it in a step-by-step fashion, adding comments
@@ -214,30 +228,14 @@ p <- p +
   geom_point(
     aes(size = total_votes, color = season)
   ) 
+
+p
 ```
+Pretty good start. Let's make it even better.
 
-<br>
 
-And so far, the plot looks as follows
-
-```{r, include=FALSE}
-# First, save as pdf, as original author does.
-basename = "lollipop-plot-with-R-the-office-preview"
-path_pdf = here::here("img", paste0(basename, ".pdf"))
-path_png = here::here("img", paste0(basename, ".png"))
-
-# Save as pdf
-ggsave(path_pdf, width = 15, height = 9, device = cairo_pdf)
-
-# Convert pdf to png using
-pdftools::pdf_convert(path_pdf, format = "png", dpi = 300, filenames = path_png)
-```
-
-<center>
-![](img/lollipop-plot-with-R-the-office-preview.png){width=90%}
-</center>
-
-<br>
+# Add labels & tweak scale
+***
 
 It is worth remarking how the apparently disconnected grey vertical lines are 
 added. Actually, it is only one gray line whose value represents the mean rating.
@@ -298,43 +296,30 @@ p <- p +
       legend.position = c(.5, .085), 
       legend.key.width = unit(2, "lines")
     )
+
 ```
 
-<br>
+# Logo & Save
+***
 
-We are almost there! The last step is to add The Office logo and save the plot.
+We are almost there! The last step is to add The Office logo and save the plot. Adding the logo to the ggplot2 chart is done thanks to the `magick` package, and the `draw_image` function:
 
 ```{r}
 # The logo is located in the folder 'img' in the root of our project. 
 # x and y coords run from 0 to 1, where (0, 0) is lower left corner of the canvas.
-logo <- magick::image_read(here::here("img", "the-office.png"))
+logo <- magick::image_read("img/fromTheWeb/the-office.png")
 p <- ggdraw(p) +
   draw_image(logo, x = -.35, y = -.34, scale = .12)
 ```
 
+Usual `ggsave` function to save the chart to pdf format:
 
 ```{r, eval=FALSE}
-ggsave(here::here("img", "lollipop-plot-with-R-the-office.pdf"), 
+ggsave("img/fromTheWeb/lollipop-plot-with-R-the-office.pdf",
        width = 15, height = 9, device = cairo_pdf)
 ```
 
-```{r, include=FALSE}
-basename <- "lollipop-plot-with-R-the-office"
-path_pdf <- here::here("img", paste0(basename, ".pdf"))
-path_png <- here::here("img", paste0(basename, ".png"))
-
-ggsave(path_pdf, width = 15, height = 9, device = cairo_pdf)
-
-pdftools::pdf_convert(path_pdf, format = "png", dpi = 300, filenames = path_png)
-```
-
-<center>
-![](img/lollipop-plot-with-R-the-office.png){width=90%}
-</center>
-
-<br>
-
-## Bonus track
+# png to pdf  conversion
 ***
 
 Both in the original work by Cedric and here, we save the plot as a .pdf file. 
@@ -343,19 +328,20 @@ Here's how we convert the .pdf plot into a .png file while maintaining its aspec
 and quality thanks to the great [`pdftools`](https://docs.ropensci.org/pdftools/) 
 package.
 
+```{r, include=FALSE}
+path_pdf <- "img/fromTheWeb/web-lollipop-plot-with-R-the-office.pdf"
+path_png <- "img/fromTheWeb/web-lollipop-plot-with-R-the-office.png"
 
-```{r, eval=FALSE}
-# Recall we saved our plot as 'lollipop-plot-with-R-the-office.pdf' in 'img'
-basename <- "lollipop-plot-with-R-the-office"
-path_pdf <- here::here("img", paste0(basename, ".pdf"))
+ggsave(path_pdf, width = 15, height = 9, device = cairo_pdf)
 
-# We create a new .png file with the same base name
-path_png <- here::here("img", paste0(basename, ".png"))
-
-# Convert pdf to png using `pdf_convert()`.
-# We use dpi = 300 because it is the default value when we used `ggsave()`.
-pdftools::pdf_convert(pdf = path_pdf, format = "png", dpi = 300, filenames = path_png)
+pdftools::pdf_convert(path_pdf, format = "png", dpi = 300, filenames = path_png)
 ```
+
+<center>
+![](img/fromTheWeb/web-lollipop-plot-with-R-the-office.png){width=90%}
+</center>
+
+
 
 <!-- Close container -->
 </div>
