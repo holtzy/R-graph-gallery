@@ -1,0 +1,337 @@
+---
+title: "Line chart with labels at end of lines"
+descriptionMeta: "This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided."
+descriptionTop: "A custom lineplot with annotations to explore the evolution of the Big Mac Index with `ggplot2`, `ggrepel` and `ggtext`. This blogpost will guide you through all the steps to produce a beautiful lineplot with highlighted groups and explain how `ggrepel` and `ggtext` are a huge help that make customized plots much easier."
+sectionText: "Line chart Section"
+sectionLink: "line-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "web-bigmac-index-with-ggplot2"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
+  fig.align = "center"
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+# About
+***
+
+This page showcases the work by the data visualization team at 
+[The Economist](https://www.economist.com/). You can find the original chart in
+[this article](https://www.economist.com/graphic-detail/2021/08/24/infections-caught-in-laboratories-are-surprisingly-common).
+
+Thanks to them for all the inspiring and insightful visualizations! Thanks also
+to [Tomás Capretto](https://tcapretto.netlify.app/) who replicated the chart 
+in R! 🙏🙏
+
+As a teaser, here is the plot we’re gonna try building:
+
+<center>
+<img src="https://www.economist.com/img/b/1000/591/90/sites/default/files/images/2021/08/articles/main/20210828_woc034.png" style="max-width:90%">
+</center>
+
+# Load packages
+***
+
+At first sight, one may be tempted to think that today's chart looks rather 
+simple. However, it actually contains several subtle customizations that when 
+added all together make the final result look beautiful and original. This is 
+also going to be a great opportunity to use the `grid` library, the drawing
+library behind `ggplot2`
+
+
+```{r}
+library(grid)
+library(tidyverse)
+library(shadowtext)
+```
+<br>
+
+# Create data
+***
+
+Let's get started by creating the objects that are going to hold the data for us. 
+Note these values are inferred from the original plot and not something we 
+computed from the original data source.
+
+
+```{r}
+names <- c(
+    "Hantavirus", "Tularemia", "Dengue", "Ebola", "E. coli", 
+    "Tuberculosis", "Salmonella", "Vaccinia", "Brucella"
+  )
+  
+# Name is an ordered factor. We do this to ensure the bars are sorted.
+data <- data.frame(
+  count = c(6, 7, 7, 9, 11, 15, 17, 18, 54), 
+  name = factor(names, levels = names),
+  y = seq(length(names)) * 0.9
+)
+```
+
+
+<br>
+
+And let's also define the colors:
+
+```{r}
+# The colors
+BLUE = "#076fa2"
+RED = "#E3120B"
+BLACK = "#202020"
+GREY = "grey50"
+```
+
+
+# Basic barchart
+***
+
+Creating a horizontal [basic barchart](https://www.r-graph-gallery.com/barplot.html) 
+with ggplot2 is quite simple.You pass the `count` variable to the first `aes()` 
+variable, and `name` to the second one. Then, it's just a call to `geom_col()`.
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- ggplot(data, aes(count, name)) +
+  geom_col(fill = BLUE, width = 0.6) 
+
+plt
+```
+<br>
+
+# Customize layout
+***
+
+The next step is to customize the layout: modify the axes configuration, change
+background color, remove the tick marks, add grid lines, change fonts, and more.
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- plt + 
+  scale_x_continuous(
+    limits = c(0, 55.5),
+    breaks = seq(0, 55, by = 5), 
+    expand = c(0, 0), # The horizontal axis does not extend to either side
+    position = "top"  # Labels are located on the top
+  ) +
+  # The vertical axis only extends upwards 
+  scale_y_discrete(expand = expansion(add = c(0, 0.5))) +
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Set the color and the width of the grid lines for the horizontal axis
+    panel.grid.major.x = element_line(color = "#A8BAC4", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length = unit(0, "mm"),
+    # Remove the title for both axes
+    axis.title = element_blank(),
+    # Only left line of the vertical axis is painted in black
+    axis.line.y.left = element_line(color = "black"),
+    # Remove labels from the vertical axis
+    axis.text.y = element_blank(),
+    # But customize labels for the horizontal axis
+    axis.text.x = element_text(family = "Econ Sans Cnd", size = 16)
+  )
+
+plt
+```
+
+Although there's still work to be done, this is definitely an improvement!
+
+# Add labels
+***
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- plt + 
+  geom_shadowtext(
+    data = subset(data, count < 8),
+    aes(count, y = name, label = name),
+    hjust = 0,
+    nudge_x = 0.3,
+    colour = BLUE,
+    bg.colour = "white",
+    bg.r = 0.2,
+    family = "Econ Sans Cnd",
+    size = 7
+  ) + 
+  geom_text(
+    data = subset(data, count >= 8),
+    aes(0, y = name, label = name),
+    hjust = 0,
+    nudge_x = 0.3,
+    colour = "white",
+    family = "Econ Sans Cnd",
+    size = 7
+  )
+
+plt
+```
+
+# Add annotations and final tweaks
+***
+
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- plt +
+  labs(
+    title = "Escape artists",
+    subtitle = "Number of laboratory-acquired infections, 1970-2021"
+  ) + 
+  theme(
+    plot.title = element_text(
+      family = "Econ Sans Cnd", 
+      face = "bold",
+      size = 22
+    ),
+    plot.subtitle = element_text(
+      family = "Econ Sans Cnd",
+      size = 20
+    )
+  )
+plt
+```
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+library(grid)
+
+plt <- plt + 
+  theme(
+    plot.margin = margin(0.05, 0, 0.1, 0.01, "npc"),
+    plot.title.position = "plot"
+  )
+
+plt
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+grid.rect(
+  x = 0.05,
+  y = 0.975, 
+  hjust = 1, 
+  vjust = 0,  
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize=16,
+    fontfamily="Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize=16,
+    fontfamily="Milo TE W01"
+  )
+)
+```
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- plt + 
+  labs(title = NULL, subtitle = NULL) +
+  theme(
+    plot.margin = margin(0.15, 0, 0.1, 0.01, "npc")
+  )
+
+plt 
+
+grid.text(
+  "Escape artists", 
+  0, 
+  0.925,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize=22,
+    fontface="bold",
+    fontfamily="Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "Number of laboratory-acquired infections, 1970-2021", 
+  0, 
+  0.875,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize=20,
+    fontfamily="Econ Sans Cnd"
+  )
+)
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+grid.rect(
+  x = 0.05,
+  y = 0.975, 
+  hjust = 1, 
+  vjust = 0,  
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize=16,
+    fontfamily="Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize=16,
+    fontfamily="Milo TE W01"
+  )
+)
+```
+
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
