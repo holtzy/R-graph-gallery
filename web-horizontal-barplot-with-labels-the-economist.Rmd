@@ -1,12 +1,12 @@
 ---
-title: "Line chart with labels at end of lines"
-descriptionMeta: "This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided."
-descriptionTop: "A custom lineplot with annotations to explore the evolution of the Big Mac Index with `ggplot2`, `ggrepel` and `ggtext`. This blogpost will guide you through all the steps to produce a beautiful lineplot with highlighted groups and explain how `ggrepel` and `ggtext` are a huge help that make customized plots much easier."
-sectionText: "Line chart Section"
-sectionLink: "line-plot.html"
+title: "Horizontal barplot with R and ggplot2"
+descriptionMeta: "This post explains how to build a customized horizontal barplot with R and ggplot2 Step by step code snippets with explanations are provided."
+descriptionTop: "A nice looking horizontal barplot with several customizations to explore the number of infections caught in laboratories made with `R` and `ggplot2`. This blogpost guides you through a step-by-step construction of a horizontal barplot that includes a variety of custom color fonts, labels, and annotations"
+sectionText: "Barchart section"
+sectionLink: "barplot.html"
 DataToVizText: "Data to Viz"
-DataToVizLink: "data-to-viz.com/graph/line.html"
-url: "web-bigmac-index-with-ggplot2"
+DataToVizLink: "data-to-viz.com/graph/barplot.html"
+url: "web-horizontal-barplot-with-labels-the-economist"
 output:
   html_document:
       self_contained: false    
@@ -56,7 +56,8 @@ At first sight, one may be tempted to think that today's chart looks rather
 simple. However, it actually contains several subtle customizations that when 
 added all together make the final result look beautiful and original. This is 
 also going to be a great opportunity to use the `grid` library, the drawing
-library behind `ggplot2`
+library behind `ggplot2`, and [`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
+a library that allows us to draw text with shadows.
 
 
 ```{r}
@@ -95,10 +96,10 @@ And let's also define the colors:
 
 ```{r}
 # The colors
-BLUE = "#076fa2"
-RED = "#E3120B"
-BLACK = "#202020"
-GREY = "grey50"
+BLUE <- "#076fa2"
+RED <- "#E3120B"
+BLACK <- "#202020"
+GREY <- "grey50"
 ```
 
 
@@ -106,12 +107,13 @@ GREY = "grey50"
 ***
 
 Creating a horizontal [basic barchart](https://www.r-graph-gallery.com/barplot.html) 
-with ggplot2 is quite simple.You pass the `count` variable to the first `aes()` 
-variable, and `name` to the second one. Then, it's just a call to `geom_col()`.
+with ggplot2 is quite simple. You use `geom_col()` passing the `count` variable 
+to the first `aes()` variable, and `name` to the second one.
+Then, you can also use a different `fill` and `width`, as below:
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
-plt <- ggplot(data, aes(count, name)) +
-  geom_col(fill = BLUE, width = 0.6) 
+plt <- ggplot(data) +
+  geom_col(aes(count, name), fill = BLUE, width = 0.6) 
 
 plt
 ```
@@ -121,7 +123,9 @@ plt
 ***
 
 The next step is to customize the layout: modify the axes configuration, change
-background color, remove the tick marks, add grid lines, change fonts, and more.
+the color of the background, remove the tick marks, add grid lines, 
+change the fonts, and more. Sounds like things to change? 
+Come on, it's not going to bee too hard!
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
 plt <- plt + 
@@ -152,12 +156,24 @@ plt <- plt +
 
 plt
 ```
-
-Although there's still work to be done, this is definitely an improvement!
+<br>
 
 # Add labels
 ***
 
+Customizing the layout was a big step towards to the final chart. But there's 
+still work to be done. 
+
+So far, the chart doesn't indicate anything about which disease is represented 
+by each bar. Isn't it frustrating? So now it is a good idea to add labels to the 
+bars. Let's do it!
+
+The following chunk uses both `geom_text()` and `geom_shadowtext()`. The first
+one is used to draw regular text within the bars of the diseases with a count
+equal or above 8. On the other hand `geom_shadowtext()` is used to draw text
+with shadow to the right of the bars of the diseases with a count below 8. This
+shadow is a subtle but important detail that hides the grid line at 10 that
+passes behind the text.
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
 plt <- plt + 
@@ -184,10 +200,16 @@ plt <- plt +
 
 plt
 ```
+<br>
 
 # Add annotations and final tweaks
 ***
 
+Adding titles is one of those steps that are simple from the technical point of 
+view but can make a huge difference in the quality of the chart. 
+
+The next chunk shows how to add a title and a subtitle to a ggplot2 chart using
+the `labs()` function. Later, their aspect is customized using `theme()`.
 
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
@@ -209,54 +231,98 @@ plt <- plt +
   )
 plt
 ```
+<br>
+
+This is how far we were able to get with ggplot2 alone. It's quite evident the 
+chart does not look like the original chart on top. It's still missing the 
+red line and rectangle on top, which is like a watermark of visualizations made
+by The Economist.
+
+We're going to use the `grid` library for this task. `grid` is a low-level 
+plotting library that comes with any `R` installation by default and provides 
+many plotting primitive functions. It is also the library that `ggplot2` uses to 
+create the charts under the hood, and that's why we can combine them in the 
+same chart.
 
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
-library(grid)
-
+# Make room for annotations
 plt <- plt + 
   theme(
-    plot.margin = margin(0.05, 0, 0.1, 0.01, "npc"),
-    plot.title.position = "plot"
+    plot.margin = margin(0.05, 0, 0.1, 0.01, "npc")
   )
 
+# Print the ggplot2 plot
 plt
 
+# Add horizontal line on top
+# It goes from x = 0 (left) to x = 1 (right) on the very top of the chart (y = 1)
+# You can think of 'gp' and 'gpar' as 'graphical parameters'.
+# There we indicate the line color and width
 grid.lines(
   x = c(0, 1),
   y = 1,
   gp = gpar(col = "#e5001c", lwd = 4)
 )
 
+# Add rectangle on top-left
+# lwd = 0 means the rectangle does not have an outer line
+# 'just' gives the horizontal and vertical justification
 grid.rect(
-  x = 0.05,
-  y = 0.975, 
-  hjust = 1, 
-  vjust = 0,  
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
   gp = gpar(fill = "#e5001c", lwd = 0)
 )
+
+# We have two captions, so we use grid.text instead of 
+# the caption provided by  ggplot2.
 grid.text(
   "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
   x = 0.005, 
-  y = 0.06, just = c("left", "bottom"),
+  y = 0.06, 
+  just = c("left", "bottom"),
   gp = gpar(
     col = GREY,
-    fontsize=16,
-    fontfamily="Econ Sans Cnd"
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
   )
 )
-
 grid.text(
   "The Economist", 
   x = 0.005, 
-  y = 0.005, just = c("left", "bottom"),
+  y = 0.005, 
+  just = c("left", "bottom"),
   gp = gpar(
     col = GREY,
-    fontsize=16,
-    fontfamily="Milo TE W01"
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
   )
 )
 ```
+<br>
+
+Just comparing the sizes of the chunks you can see it definitely takes a 
+considerable amount of extra work to get the details done. 
+But in the end... Aren't they're worth it?
+
+# The extra mile
+***
+
+If you are attentive to the smallest of the details you may have noticed the 
+titles in the chart above aren't aligned exactly in the same way than the titles
+in the original chart. 
+
+By default, `ggplot2` aligns titles using the panel region as 
+reference. We asked ggplot2 to use the plot region as reference when we added
+`plot.title.position = "plot"` in the `theme()` call. But it was not enought.
+The title is not completely aligned to the left border of the chart, which
+you can notice by comparing the position of the rectangle on top with the titles.
+
+This extra step consists of removing the titles generated with `ggplot2` and
+replacing them with text drawn with the `grix.text()` function.
 
 
 ```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
@@ -274,9 +340,9 @@ grid.text(
   0.925,
   just = c("left", "bottom"),
   gp = gpar(
-    fontsize=22,
-    fontface="bold",
-    fontfamily="Econ Sans Cnd"
+    fontsize = 22,
+    fontface = "bold",
+    fontfamily = "Econ Sans Cnd"
   )
 )
 
@@ -286,8 +352,8 @@ grid.text(
   0.875,
   just = c("left", "bottom"),
   gp = gpar(
-    fontsize=20,
-    fontfamily="Econ Sans Cnd"
+    fontsize = 20,
+    fontfamily = "Econ Sans Cnd"
   )
 )
 
@@ -296,13 +362,16 @@ grid.lines(
   y = 1,
   gp = gpar(col = "#e5001c", lwd = 4)
 )
+
 grid.rect(
-  x = 0.05,
-  y = 0.975, 
-  hjust = 1, 
-  vjust = 0,  
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
   gp = gpar(fill = "#e5001c", lwd = 0)
 )
+
 grid.text(
   "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
   x = 0.005, 
@@ -310,21 +379,107 @@ grid.text(
   just = c("left", "bottom"),
   gp = gpar(
     col = GREY,
-    fontsize=16,
-    fontfamily="Econ Sans Cnd"
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
   )
 )
 
 grid.text(
   "The Economist", 
   x = 0.005, 
-  y = 0.005, just = c("left", "bottom"),
+  y = 0.005, 
+  just = c("left", "bottom"),
   gp = gpar(
     col = GREY,
-    fontsize=16,
-    fontfamily="Milo TE W01"
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
   )
 )
+```
+<br>
+
+It's so satisfying to have nail it after so much work!
+
+# Final notes
+***
+
+If you attempt to save the plot above with `ggsave()` you'll end up with a 
+file that only reflects what is done with `ggplot2`. The right way to save
+this chart that mixes `ggplot2` and `grid` is to use more low-level functions
+such as `png()`. For example
+
+```{r, eval=FALSE}
+
+# Open file to store the plot
+png("plot.png", width = 12, height = 7, units = "in", res = 300)
+
+# Print the plot
+plt 
+
+grid.text(
+  "Escape artists", 
+  0, 
+  0.925,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 22,
+    fontface = "bold",
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "Number of laboratory-acquired infections, 1970-2021", 
+  0, 
+  0.875,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 20,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+grid.rect(
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
+  )
+)
+
+# Close connection
+dev.off()
 ```
 
 
