@@ -1,0 +1,753 @@
+---
+title: "Horizontal barplot with R and ggplot2"
+descriptionMeta: "This post explains how to build a customized horizontal barplot with R and ggplot2 Step by step code snippets with explanations are provided."
+descriptionTop: "A nice looking horizontal barplot with several customizations to explore the number of infections caught in laboratories made with `R` and `ggplot2`. This blogpost guides you through a step-by-step construction of a horizontal barplot that includes a variety of custom color fonts, labels, and annotations"
+sectionText: "Barchart section"
+sectionLink: "barplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/barplot.html"
+url: "web-horizontal-barplot-with-labels-the-economist"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE, 
+  message = FALSE,
+  fig.align = "center"
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+# About
+***
+
+This page showcases the work by the data visualization team at 
+[The Economist](https://www.economist.com/). You can find the original chart in 
+[this article](https://www.economist.com/graphic-detail/2021/08/23/the-number-of-child-labourers-has-increased-for-the-first-time-in-20-years).
+
+Thanks to them for all the inspiring and insightful visualizations! Thanks also
+to [Tomás Capretto](https://tcapretto.netlify.app/) who replicated the chart 
+in R! 🙏🙏
+
+As a teaser, here is the plot we’re gonna try building:
+
+<div style="max-width:90%">
+<img src="https://www.economist.com/img/b/1000/591/90/sites/default/files/images/2021/08/articles/main/20210828_woc033.png">
+</div> 
+
+# Load packages
+***
+
+At first sight, one may be tempted to think that today's chart looks rather 
+simple. However, it actually contains several subtle customizations that when 
+added all together make the final result look beautiful and original. This is 
+also going to be a great opportunity to use the `grid` library, the drawing
+library behind `ggplot2`, and [`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
+a library that allows us to draw text with shadows.
+
+
+```{r}
+library(grid)
+library(ggnewscale)
+library(ggtext)
+library(tidyverse)
+library(shadowtext)
+library(patchwork)
+```
+<br>
+
+# Create data
+***
+
+The chart we're going to reproduce today is made of two separated plots, a 
+linechart and a stacked area chart. We'll do the linechart first.
+
+First of all, let's get started by creating the objects that are going to hold 
+the data for us. Note these values are inferred from the original plot and not 
+something computed from the original data source.
+
+And let's also define the colors:
+
+```{r}
+BROWN <- "#AD8C97"
+BROWN_DARKER <- "#7d3a46"
+GREEN <- "#2FC1D3"
+BLUE <- "#076FA1"
+GREY <- "#C7C9CB"
+GREY_DARKER <- "#5C5B5D"
+RED <- "#E3120B"
+```
+<br>
+
+```{r}
+regions <- c(
+  "Sub-Saharan Africa", 
+  "Asia and the Pacific", 
+  "Latin America and the Caribbean"
+)
+
+line_data <- data.frame(
+  year = rep(c(2008, 2012, 2016, 2020), 3),
+  percent = c(25.5, 21, 22.2, 24, 13.5, 9.5, 7.5, 5.5,10, 9, 7.5, 5.8),
+  region = factor(rep(regions, each = 4), levels = regions)
+)
+
+line_labels<- data.frame(
+  labels = c("Sub-Saharan Africa", "Asia and the Pacific", "Latin America and\nthe Caribbean"),
+  x = c(2007.9, 2010, 2007.9),
+  y = c(27, 13, 5.8),
+  color = c(BLUE, GREEN, BROWN_DARKER)
+)
+```
+
+
+```{r}
+regions <- c(
+  "Sub-Saharan Africa", 
+  "Asia and the Pacific", 
+  "Latin America and the Caribbean", 
+  "Rest of world"
+)
+
+stacked_data <- data.frame(
+  year = rep(c(2008, 2012, 2016, 2020), 4),
+  percent = c(65, 55, 67, 85, 130, 85, 65, 50, 10, 10, 10, 8, 60, 20, 10, 16),
+  region = factor(rep(regions, each = 4), levels = rev(regions))
+)
+
+stacked_labels <- data.frame(
+  labels = c(
+    "Sub-Saharan Africa", 
+    "Asia and the Pacific", 
+    "Latin America and\nthe Caribbean",
+    "Rest\nof world"
+  ),
+  x = c(2014, 2014, 2014, 2008.1),
+  y = c(25, 100, 225, 225),
+  color = c("white", "white", BROWN_DARKER, GREY_DARKER)
+)
+```
+
+
+<br>
+
+# Basic linechart
+***
+
+Creating a [basic linechart](https://www.r-graph-gallery.com/line-plot.html) 
+with ggplot 2 is quite simple. 
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="80%"}
+plt1 <- ggplot(line_data, aes(year, percent, group = region)) +
+  geom_line(aes(color = region), size = 3) +
+  geom_point(
+    aes(fill = region), 
+    size = 5, 
+    pch = 21, 
+    color = "white", 
+    stroke = 1
+  ) +
+  scale_color_manual(values = c(BLUE, GREEN, BROWN)) +
+  scale_fill_manual(values = c(BLUE, GREEN, BROWN))  + 
+  theme(legend.position = "none")
+
+plt1
+```
+<br>
+
+# Customize layout
+***
+
+The next step is to customize the layout: modify the axes configuration, change
+the color of the background, remove the tick marks, add grid lines, 
+change the fonts, and more. Sounds like things to change? 
+Come on, it's not going to bee too hard!
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+plt1 <- plt1 + 
+  scale_x_continuous(
+    limits = c(2007.5, 2021.5),
+    expand = c(0, 0), # The horizontal axis does not extend to either side
+    breaks = c(2008, 2012, 2016, 2020),
+    labels = c("2008", "12", "16", "20")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 32),
+    breaks = seq(0, 30, by = 5), 
+    expand = c(0, 0)
+  ) + 
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Remove all grid lines
+    panel.grid = element_blank(),
+    # But add grid lines for the vertical axis, customizing color and size 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length.y = unit(0, "mm"), 
+    axis.ticks.length.x = unit(2, "mm"),
+    # Remove the title for both axes
+    axis.title = element_blank(),
+    # Only bottom line of the vertical axis is painted in black
+    axis.line.x.bottom = element_line(color = "black"),
+    # Remove labels from the vertical axis
+    axis.text.y = element_blank(),
+    # But customize labels for the horizontal axis
+    axis.text.x = element_text(family = "Econ Sans Cnd", size = 16)
+  )
+
+plt1
+```
+<br>
+
+# Add labels
+***
+
+Customizing the layout was a big step towards to the final chart. But there's 
+still work to be done. 
+
+So far, the chart doesn't indicate anything about which disease is represented 
+by each bar. Isn't it frustrating? So now it is a good idea to add labels to the 
+bars. Let's do it!
+
+The following chunk uses both `geom_text()` and `geom_shadowtext()`. The first
+one is used to draw regular text within the bars of the diseases with a count
+equal or above 8. On the other hand `geom_shadowtext()` is used to draw text
+with shadow to the right of the bars of the diseases with a count below 8. This
+shadow is a subtle but important detail that hides the grid line at 10 that
+passes behind the text.
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+plt1 <- plt1 + 
+  new_scale_color() + 
+  geom_shadowtext(
+    aes(x, y, label = labels, color = color),
+    data = line_labels,
+    hjust = 0,
+    bg.colour = "white",
+    bg.r = 0.2,
+    family = "Econ Sans Cnd",
+    size = 6,
+    inherit.aes = FALSE
+  ) + 
+  scale_color_identity()
+
+plt1 <- plt1 + 
+  geom_text(
+    data = data.frame(x = 2021.5, y = seq(0, 30, by = 5)),
+    aes(x, y, label = y),
+    hjust = 1,
+    vjust = 0,
+    nudge_y = 30 * 0.01, # The pad is equal to 1% of the vertical range (35 - 0)
+    family = "Econ Sans Cnd",
+    size = 6,
+    inherit.aes = FALSE
+  )
+
+plt1
+```
+<br>
+
+# Add annotations and final tweaks
+***
+
+Adding titles is one of those steps that are simple from the technical point of 
+view but can make a huge difference in the quality of the chart. 
+
+The next chunk shows how to add a title and a subtitle to a ggplot2 chart using
+the `labs()` function. Later, their aspect is customized using `theme()`.
+
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+plt1 <- plt1 +
+  labs(
+    title = "**Selected regions,** % of child population",
+  ) + 
+  theme(
+    plot.title = element_markdown(
+      family = "Econ Sans Cnd", 
+      size = 18
+    )
+  )
+
+plt1
+```
+<br>
+
+
+# Stacked area chart
+***
+
+Thanks to the `geom_area()` function, it is quite straightforward to create a 
+[stacked area chart](https://www.r-graph-gallery.com/stacked-area-graph.html) 
+in Matplotlib. 
+
+
+
+
+
+```{r}
+plt2 <- ggplot(stacked_data) +
+  geom_area(aes(year, percent, fill = region), color = "white") +
+  scale_fill_manual(values = c(GREY, BROWN, GREEN, BLUE)) +
+  theme(legend.position = "None")
+
+plt2
+```
+
+
+# Customize layout
+***
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+
+plt2 <- plt2 + 
+  scale_x_continuous(
+    limits = c(2007.5, 2021.5),
+    expand = c(0, 0),
+    breaks = c(2008, 2012, 2016, 2020),
+    labels = c("2008", "12", "16", "20")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 320),
+    breaks = seq(0, 300, by = 50), 
+    expand = c(0, 0)
+  ) + 
+  theme(
+    # Set background color to white
+    panel.background = element_rect(fill = "white"),
+    # Remove all grid lines
+    panel.grid = element_blank(),
+    # But add grid lines for the vertical axis, customizing color and size 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3),
+    # Remove tick marks by setting their length to 0
+    axis.ticks.length.y = unit(0, "mm"), 
+    axis.ticks.length.x = unit(2, "mm"),
+    # Remove the title for both axes
+    axis.title = element_blank(),
+    # Only bottom line of the vertical axis is painted in black
+    axis.line.x.bottom = element_line(color = "black"),
+    # Remove labels from the vertical axis
+    axis.text.y = element_blank(),
+    # But customize labels for the horizontal axis
+    axis.text.x = element_text(family = "Econ Sans Cnd", size = 16)
+  )
+
+plt2
+```
+<br>
+
+
+# Add labels and annotations
+***
+
+Again, the pad is equal to 1% of the vertical range.
+
+```{r}
+plt2 <- plt2 + 
+  geom_text(
+    aes(x, y, label = labels, color = color),
+    data = stacked_labels,
+    hjust = 0,
+    vjust = 0.5,
+    family = "Econ Sans Cnd",
+    size = 6,
+    inherit.aes = FALSE
+  ) + 
+  scale_color_identity()
+
+plt2 <- plt2 +
+  geom_text(
+    data = data.frame(x = 2021.5, y = seq(0, 300, by = 50)),
+    aes(x, y, label = y),
+    hjust = 1,
+    vjust = 0,
+    nudge_y = 300 * 0.01,
+    family = "Econ Sans Cnd",
+    size = 6,
+    inherit.aes = FALSE
+  )
+
+plt2 <- plt2 + 
+  geom_curve(
+    aes(x = x, y = y, xend = xend, yend = yend),
+    data = data.frame(x = 2016.9, y = 210, xend = 2018.8, yend = 138),
+    curvature = -0.5,
+    angle = 90
+  ) +
+  geom_point(
+    aes(x, y), 
+    data = data.frame(x = 2018.8, y = 138),
+    color = "black"
+  )
+
+
+plt2 <- plt2 + 
+  labs(
+    title = "**Number of children,** m",
+  ) + 
+  theme(
+    plot.title = element_markdown(
+      family = "Econ Sans Cnd", 
+      size = 18
+    )
+  )
+
+plt2
+```
+
+
+
+```{r}
+plt1 <- plt1 + theme(plot.margin = margin(0, 0.05, 0, 0, "npc"))
+plt2 <- plt2 + theme(plot.margin = margin(0, 0, 0.05, 0, "npc"))
+
+plt <- plt1 | plt2
+
+title_theme <- theme(
+  plot.title = element_text(
+    family = "Econ Sans Cnd", 
+    face = "bold",
+    size = 22,
+    margin = margin(0.8, 0, 0, 0, "npc")
+  ),
+  plot.subtitle = element_text(
+    family = "Econ Sans Cnd",
+    size = 20,
+    margin = margin(0.4, 0, 0, 0, "npc")
+  )
+)
+
+plt <- plt + plot_annotation(
+    title = "All work, no play",
+    subtitle = "Children in child labour*",
+    theme = title_theme
+  ) +
+  theme(
+    plot.margin = margin(0.075, 0, 0.1, 0, "npc"),
+  )
+```
+
+
+```{r}
+png("plot.png", width = 14, height = 7.2, res = 300, units = "in")
+
+plt
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+# Add rectangle on top-left
+# lwd = 0 means the rectangle does not have an outer line
+# 'just' gives the horizontal and vertical justification
+grid.rect(
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+
+
+grid.text(
+  'Source: "Child Labour: Global estimates 2020, trends and the road forward", ILO and UNICEF', 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
+  )
+)
+
+dev.off()
+```
+
+
+This is how far we were able to get with ggplot2 alone. It's quite evident the 
+chart does not look like the original chart on top. It's still missing the 
+red line and rectangle on top, which is like a watermark of visualizations made
+by The Economist.
+
+We're going to use the `grid` library for this task. `grid` is a low-level 
+plotting library that comes with any `R` installation by default and provides 
+many plotting primitive functions. It is also the library that `ggplot2` uses to 
+create the charts under the hood, and that's why we can combine them in the 
+same chart.
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+# Make room for annotations
+plt <- plt + 
+  theme(
+    plot.margin = margin(0.05, 0, 0.1, 0.01, "npc")
+  )
+
+# Print the ggplot2 plot
+plt
+
+# Add horizontal line on top
+# It goes from x = 0 (left) to x = 1 (right) on the very top of the chart (y = 1)
+# You can think of 'gp' and 'gpar' as 'graphical parameters'.
+# There we indicate the line color and width
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+# Add rectangle on top-left
+# lwd = 0 means the rectangle does not have an outer line
+# 'just' gives the horizontal and vertical justification
+grid.rect(
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+
+# We have two captions, so we use grid.text instead of 
+# the caption provided by  ggplot2.
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
+  )
+)
+```
+<br>
+
+Just comparing the sizes of the chunks you can see it definitely takes a 
+considerable amount of extra work to get the details done. 
+But in the end... Aren't they're worth it?
+
+# The extra mile
+***
+
+If you are attentive to the smallest of the details you may have noticed the 
+titles in the chart above aren't aligned exactly in the same way than the titles
+in the original chart. 
+
+By default, `ggplot2` aligns titles using the panel region as 
+reference. We asked ggplot2 to use the plot region as reference when we added
+`plot.title.position = "plot"` in the `theme()` call. But it was not enought.
+The title is not completely aligned to the left border of the chart, which
+you can notice by comparing the position of the rectangle on top with the titles.
+
+This extra step consists of removing the titles generated with `ggplot2` and
+replacing them with text drawn with the `grix.text()` function.
+
+
+```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
+plt <- plt + 
+  labs(title = NULL, subtitle = NULL) +
+  theme(
+    plot.margin = margin(0.15, 0, 0.1, 0.01, "npc")
+  )
+
+plt 
+
+grid.text(
+  "Escape artists", 
+  0, 
+  0.925,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 22,
+    fontface = "bold",
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "Number of laboratory-acquired infections, 1970-2021", 
+  0, 
+  0.875,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 20,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+grid.rect(
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
+  )
+)
+```
+<br>
+
+It's so satisfying to have nail it after so much work!
+
+# Final notes
+***
+
+If you attempt to save the plot above with `ggsave()` you'll end up with a 
+file that only reflects what is done with `ggplot2`. The right way to save
+this chart that mixes `ggplot2` and `grid` is to use more low-level functions
+such as `png()`. For example
+
+```{r, eval=FALSE}
+
+# Open file to store the plot
+png("plot.png", width = 12, height = 7, units = "in", res = 300)
+
+# Print the plot
+plt 
+
+grid.text(
+  "Escape artists", 
+  0, 
+  0.925,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 22,
+    fontface = "bold",
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "Number of laboratory-acquired infections, 1970-2021", 
+  0, 
+  0.875,
+  just = c("left", "bottom"),
+  gp = gpar(
+    fontsize = 20,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.lines(
+  x = c(0, 1),
+  y = 1,
+  gp = gpar(col = "#e5001c", lwd = 4)
+)
+
+grid.rect(
+  x = 0,
+  y = 1,
+  width = 0.05,
+  height = 0.025,
+  just = c("left", "top"),
+  gp = gpar(fill = "#e5001c", lwd = 0)
+)
+
+grid.text(
+  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
+  x = 0.005, 
+  y = 0.06, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
+
+grid.text(
+  "The Economist", 
+  x = 0.005, 
+  y = 0.005, 
+  just = c("left", "bottom"),
+  gp = gpar(
+    col = GREY,
+    fontsize = 16,
+    fontfamily = "Milo TE W01"
+  )
+)
+
+# Close connection
+dev.off()
+```
+
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
