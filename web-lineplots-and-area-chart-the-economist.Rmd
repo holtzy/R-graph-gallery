@@ -1,12 +1,12 @@
 ---
-title: "Horizontal barplot with R and ggplot2"
-descriptionMeta: "This post explains how to build a customized horizontal barplot with R and ggplot2 Step by step code snippets with explanations are provided."
-descriptionTop: "A nice looking horizontal barplot with several customizations to explore the number of infections caught in laboratories made with `R` and `ggplot2`. This blogpost guides you through a step-by-step construction of a horizontal barplot that includes a variety of custom color fonts, labels, and annotations"
-sectionText: "Barchart section"
-sectionLink: "barplot.html"
+title: "Lineplot and Stacked area chart with R and ggplot2"
+descriptionMeta: "This post explains how to build and combine customized lineplots and stacked area charts with R and ggplot2. Step by step code snippets with explanations are provided."
+descriptionTop: "An original and nice-looking visualization combining a lineplot and a stacked area chart with several customizations to explore the evolution of child labour made with `R` and `ggplot2`. This blogpost guides you through a step-by-step construction of the charts and how to combine them into a single piece of art with the `patchwork` library."
+sectionText: "Line chart Section"
+sectionLink: "line-plot.html"
 DataToVizText: "Data to Viz"
-DataToVizLink: "data-to-viz.com/graph/barplot.html"
-url: "web-horizontal-barplot-with-labels-the-economist"
+DataToVizLink: "data-to-viz.com/graph/line.html"
+url: "web-lineplots-and-area-chart-the-economist"
 output:
   html_document:
       self_contained: false    
@@ -60,13 +60,12 @@ chart because, at first sight, there's nothing that looks very fancy.
 However, it actually contains several subtle customizations that when added all 
 together make the final result look original and beautiful. 
 
-This is article uses several plotting libraries. The first one is
-[`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
+This is article uses several plotting libraries apart from the nice `ggplot2` 
+we always use. The first one is [`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
 a library that allows to draw text with shadows. Then, the popular 
 [`patchwork`](https://patchwork.data-imaginist.com/), which is going to make the
 task of combining `ggplot2` figures extremely easy. And finally, we're also
-going to use the `grid` library, the drawing library behind the excellent 
-`ggplot2` package that we always use. 
+going to use the `grid` library, the drawing library behind `ggplot2`.
 
 In addition, other utilities libraries are used: 
 [`ggtext`](https://wilkelab.org/ggtext/) to draw text with multiple styles very
@@ -158,8 +157,8 @@ stacked_labels <- data.frame(
 ```
 <br>
 
-Note these values are inferred from the original plot and not something computed
-from the original data source.
+Note the values in the data frames are inferred from the original plot and not 
+something computed from the original data source.
 
 # Basic linechart
 ***
@@ -190,7 +189,7 @@ plt1
 ```
 <br>
 
-It's been a fair start so far! There's still lot to do! Let's continue with 
+It's been a fair start so far, but there's still lot to do! Let's continue with 
 some layout customizations.
 
 # Customize layout
@@ -317,9 +316,10 @@ in `ggplot2`.
 
 ```{r}
 plt2 <- ggplot(stacked_data) +
+  # color = "white" indicates the color of the lines between the areas
   geom_area(aes(year, percent, fill = region), color = "white") +
   scale_fill_manual(values = c(GREY, BROWN, GREEN, BLUE)) +
-  theme(legend.position = "None")
+  theme(legend.position = "None") # no legend
 
 plt2
 ```
@@ -328,10 +328,14 @@ plt2
 # Customize layout
 ***
 
+As with the previous chart, there's also a lot to customize here! 
+
 ```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
 
 plt2 <- plt2 + 
   scale_x_continuous(
+    # Note: Data goes from 2008 to 2020. Extra space is added on the right
+    # so there's room for the grid line labels ;)
     limits = c(2007.5, 2021.5),
     expand = c(0, 0),
     breaks = c(2008, 2012, 2016, 2020),
@@ -369,6 +373,15 @@ plt2
 
 # Add labels and annotations
 ***
+
+We're about to finish this chart. This last step, which may be the most 
+convoluted step, consists of adding several labels and various annotations. 
+Firs of all, the labels for the areas. Then, the labels for the horizontal 
+gridlines. After that, we make use of the `geom_curve()` function to add
+a curve that goes from the "Latin America and the Caribbean" label to the 
+area it represents. And finally, it's time for a title.
+
+Sounds like lot of work? Come on, it's not going to be that hard!
 
 ```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
 plt2 <- plt2 + 
@@ -408,7 +421,7 @@ plt2 <- plt2 +
     color = "black"
   )
 
-
+# Note again we use `element_markdown()` to render Markdown content
 plt2 <- plt2 + 
   labs(
     title = "**Number of children,** m",
@@ -422,15 +435,28 @@ plt2 <- plt2 +
 
 plt2
 ```
-
+<br>
 
 # Combine charts
 ***
+
+Now it comes one of the most exciting steps: combining the charts! Thankfully,
+it exists `patchwork` which makes it extremely easy to combine plots made with
+`ggplot2`. 
+
+The following chunk not only combines the charts, it also adjust their horizontal
+margins so the result has some space between the charts as in the original
+figure. 
+
+Next, we add a title to the plot obtained with patchwork using 
+`plot_annotation()` and a theme created for it.
 
 ```{r, fig.width=14, fig.height=7.2, dpi=300, out.width="90%"}
 plt1 <- plt1 + theme(plot.margin = margin(0, 0.05, 0, 0, "npc"))
 plt2 <- plt2 + theme(plot.margin = margin(0, 0, 0.05, 0, "npc"))
 plt <- plt1 | plt2
+
+
 title_theme <- theme(
   plot.title = element_text(
     family = "Econ Sans Cnd", 
@@ -444,6 +470,7 @@ title_theme <- theme(
     margin = margin(0.4, 0, 0, 0, "npc")
   )
 )
+
 plt <- plt + plot_annotation(
     title = "All work, no play",
     subtitle = "Children in child labour*",
@@ -457,17 +484,37 @@ plt
 ```
 <br>
 
+It's so satisfying to see we're so close! Let's make one last effort and finish
+this chart!
 
 # Add final annotations with the `grid` library
 ***
 
+The chart above is quite a good replicate of the original figure, but it is 
+clearly missing some small, but very important, details. These are the 
+distinctive red marks on top, and the captions with information about the source
+of the data and credit to the original author.
+
+We're going to use the `grid` library for this last task. `grid` is a low-level 
+plotting library that comes with any `R` installation by default and provides 
+many plotting primitive functions. It is also the library that `ggplot2` uses to 
+create the charts under the hood, and that's why we can combine them in the 
+same chart. 
+
+Using `grid` will give us full control of what is added and where it is added
+to the plot. The downside, is that it requires us to write a considerable amount
+of extra code.
+
 ```{r, fig.width=14, fig.height=7.2, dpi=300, out.width="90%"}
 plt
+
+# Add line on top of the chart
 grid.lines(
   x = c(0, 1),
   y = 1,
   gp = gpar(col = "#e5001c", lwd = 4)
 )
+
 # Add rectangle on top-left
 # lwd = 0 means the rectangle does not have an outer line
 # 'just' gives the horizontal and vertical justification
@@ -479,6 +526,7 @@ grid.rect(
   just = c("left", "top"),
   gp = gpar(fill = "#e5001c", lwd = 0)
 )
+# Add first caption
 grid.text(
   'Source: "Child Labour: Global estimates 2020, trends and the road forward", ILO and UNICEF', 
   x = 0.005, 
@@ -490,6 +538,8 @@ grid.text(
     fontfamily = "Econ Sans Cnd"
   )
 )
+
+# Add second caption
 grid.text(
   "The Economist", 
   x = 0.005, 
@@ -501,26 +551,35 @@ grid.text(
     fontfamily = "Milo TE W01"
   )
 )
+
+# Add third caption
+grid.text(
+  "*5- to 17- year-olds", 
+  x = 0.995, 
+  y = 0.06, 
+  just = c("right", "bottom"),
+  gp = gpar(
+    col = "grey50",
+    fontsize = 16,
+    fontfamily = "Econ Sans Cnd"
+  )
+)
 ```
 <br>
 
+Voilà! We nailed it! 🎉
 
 # The extra mile
 ***
 
 If you are attentive to the smallest of the details you may have noticed the 
-titles in the chart above aren't aligned exactly in the same way than the titles
-in the original chart. 
+titles in the chart above aren't aligned to the leftmost side of the figure as
+in the original chart.
 
-By default, `ggplot2` aligns titles using the panel region as 
-reference. We asked ggplot2 to use the plot region as reference when we added
-`plot.title.position = "plot"` in the `theme()` call. But it was not enought.
-The title is not completely aligned to the left border of the chart, which
-you can notice by comparing the position of the rectangle on top with the titles.
-
-This extra step consists of removing the titles generated with `ggplot2` and
-replacing them with text drawn with the `grix.text()` function.
-
+One alternative, the one we used [here](https://www.r-graph-gallery.com/web-horizontal-barplot-with-labels-the-economist.html),
+is to remove the titles made with `ggplot2` and make all the annotations from
+scratch using the `grid` library. Do you like challenges? 
+Then have a look at the article and go for it!
 
 <!-- Close container -->
 </div>
