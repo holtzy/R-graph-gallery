@@ -45,19 +45,33 @@ in R! 🙏🙏
 
 As a teaser, here is the plot we’re gonna try building:
 
-<div style="max-width:90%">
-<img src="https://www.economist.com/img/b/1000/591/90/sites/default/files/images/2021/08/articles/main/20210828_woc033.png">
+<div>
+<img 
+  style="max-width:80%; display:block; margin:auto"
+  src="https://www.economist.com/img/b/1000/591/90/sites/default/files/images/2021/08/articles/main/20210828_woc033.png"
+>
 </div> 
 
 # Load packages
 ***
 
-At first sight, one may be tempted to think that today's chart looks rather 
-simple. However, it actually contains several subtle customizations that when 
-added all together make the final result look beautiful and original. This is 
-also going to be a great opportunity to use the `grid` library, the drawing
-library behind `ggplot2`, and [`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
-a library that allows us to draw text with shadows.
+It is possible to think it is not going to be too much work to reproduce today's
+chart because, at first sight, there's nothing that looks very fancy. 
+However, it actually contains several subtle customizations that when added all 
+together make the final result look original and beautiful. 
+
+This is article uses several plotting libraries. The first one is
+[`shadowtext`](https://github.com/GuangchuangYu/shadowtext),
+a library that allows to draw text with shadows. Then, the popular 
+[`patchwork`](https://patchwork.data-imaginist.com/), which is going to make the
+task of combining `ggplot2` figures extremely easy. And finally, we're also
+going to use the `grid` library, the drawing library behind the excellent 
+`ggplot2` package that we always use. 
+
+In addition, other utilities libraries are used: 
+[`ggtext`](https://wilkelab.org/ggtext/) to draw text with multiple styles very
+easily, and [`ggnewscale`](https://eliocamp.github.io/ggnewscale/) to use
+multiple color scales in the same `ggplot2` plot.
 
 
 ```{r}
@@ -74,15 +88,12 @@ library(patchwork)
 ***
 
 The chart we're going to reproduce today is made of two separated plots, a 
-linechart and a stacked area chart. We'll do the linechart first.
-
-First of all, let's get started by creating the objects that are going to hold 
-the data for us. Note these values are inferred from the original plot and not 
-something computed from the original data source.
-
-And let's also define the colors:
+[line chart](https://www.r-graph-gallery.com/line-plot.html) and a 
+[stacked area chart](https://www.r-graph-gallery.com/stacked-area-graph.html). 
+These charts use different datasets that are created below:
 
 ```{r}
+# First, define colors.
 BROWN <- "#AD8C97"
 BROWN_DARKER <- "#7d3a46"
 GREEN <- "#2FC1D3"
@@ -92,6 +103,8 @@ GREY_DARKER <- "#5C5B5D"
 RED <- "#E3120B"
 ```
 <br>
+
+The dataset for the line chart:
 
 ```{r}
 regions <- c(
@@ -113,7 +126,9 @@ line_labels<- data.frame(
   color = c(BLUE, GREEN, BROWN_DARKER)
 )
 ```
+<br>
 
+And the dataset for the stacked area chart:
 
 ```{r}
 regions <- c(
@@ -141,49 +156,57 @@ stacked_labels <- data.frame(
   color = c("white", "white", BROWN_DARKER, GREY_DARKER)
 )
 ```
-
-
 <br>
+
+Note these values are inferred from the original plot and not something computed
+from the original data source.
 
 # Basic linechart
 ***
 
-Creating a [basic linechart](https://www.r-graph-gallery.com/line-plot.html) 
-with ggplot 2 is quite simple. 
+Let's get started by creating the line chart first. This is a line chart that
+has dots drawn on top of it. In `ggplot2` this is as easy as adding a call to
+`geom_point()` after `geom_line()` to ensure the dots are on top of the lines.
 
-```{r, fig.width=8, fig.height=6, dpi=300, out.width="80%"}
-plt1 <- ggplot(line_data, aes(year, percent, group = region)) +
-  geom_line(aes(color = region), size = 3) +
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
+# Aesthetics defined in the `ggplot()` call are reused in the 
+# `geom_line()` and `geom_point()` calls.
+plt1 <- ggplot(line_data, aes(year, percent)) +
+  geom_line(aes(color = region), size = 2.4) +
   geom_point(
     aes(fill = region), 
     size = 5, 
-    pch = 21, 
+    pch = 21, # Type of point that allows us to have both color (border) and fill.
     color = "white", 
-    stroke = 1
+    stroke = 1 # The width of the border, i.e. stroke.
   ) +
+  # Set values for the color and the fill
   scale_color_manual(values = c(BLUE, GREEN, BROWN)) +
-  scale_fill_manual(values = c(BLUE, GREEN, BROWN))  + 
+  scale_fill_manual(values = c(BLUE, GREEN, BROWN)) + 
+  # Do not include any legend
   theme(legend.position = "none")
 
 plt1
 ```
 <br>
 
+It's been a fair start so far! There's still lot to do! Let's continue with 
+some layout customizations.
+
 # Customize layout
 ***
 
-The next step is to customize the layout: modify the axes configuration, change
-the color of the background, remove the tick marks, add grid lines, 
-change the fonts, and more. Sounds like things to change? 
-Come on, it's not going to bee too hard!
+The next step is to customize the layout: change colors, modify axis labels, add
+grid lines, and many more exciting changes! Let's do it!
 
-```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
 plt1 <- plt1 + 
   scale_x_continuous(
     limits = c(2007.5, 2021.5),
     expand = c(0, 0), # The horizontal axis does not extend to either side
-    breaks = c(2008, 2012, 2016, 2020),
-    labels = c("2008", "12", "16", "20")
+    breaks = c(2008, 2012, 2016, 2020),  # Set custom break locations
+    labels = c("2008", "12", "16", "20") # And custom labels on those breaks!
   ) +
   scale_y_continuous(
     limits = c(0, 32),
@@ -197,12 +220,13 @@ plt1 <- plt1 +
     panel.grid = element_blank(),
     # But add grid lines for the vertical axis, customizing color and size 
     panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3),
-    # Remove tick marks by setting their length to 0
+    # Remove tick marks on the vertical axis by setting their length to 0
     axis.ticks.length.y = unit(0, "mm"), 
+    # But keep tick marks on horizontal axis
     axis.ticks.length.x = unit(2, "mm"),
     # Remove the title for both axes
     axis.title = element_blank(),
-    # Only bottom line of the vertical axis is painted in black
+    # Only the bottom line of the vertical axis is painted in black
     axis.line.x.bottom = element_line(color = "black"),
     # Remove labels from the vertical axis
     axis.text.y = element_blank(),
@@ -214,70 +238,65 @@ plt1
 ```
 <br>
 
-# Add labels
+It definitely starts to look very nice! 🤩
+
+# Add annotations and title
 ***
 
-Customizing the layout was a big step towards to the final chart. But there's 
-still work to be done. 
-
-So far, the chart doesn't indicate anything about which disease is represented 
-by each bar. Isn't it frustrating? So now it is a good idea to add labels to the 
-bars. Let's do it!
+The chart doesn't still indicate anything about the regions represented by each
+line, or the meaning of the vertical axis. It cannot be left like that. 
+This is a good time to improve that!
 
 The following chunk uses both `geom_text()` and `geom_shadowtext()`. The first
-one is used to draw regular text within the bars of the diseases with a count
-equal or above 8. On the other hand `geom_shadowtext()` is used to draw text
-with shadow to the right of the bars of the diseases with a count below 8. This
-shadow is a subtle but important detail that hides the grid line at 10 that
-passes behind the text.
+one is used to draw regular text to indicate the values of the horizontal grid 
+lines that serve as a reference. On the other hand, `geom_shadowtext()` is used
+to add the labels for the lines. The shadow added covers the horizontal line 
+behind the label for Latin America and the Caribbean region. 
 
-```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+In addition, `new_scale_color()` is used to add a new color scale, the one
+used for the region labels. Although the colors are the same than those added
+above, `geom_shadowtext()` uses a different data set and thus is considered
+a new color scale.
+
+Finally, the last step is to add a proper title. Note this title mixes bold and 
+regular text, which is very easy thanks to the `ggtext` package.
+
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
+
+# Add labels for the lines
 plt1 <- plt1 + 
   new_scale_color() + 
   geom_shadowtext(
     aes(x, y, label = labels, color = color),
     data = line_labels,
-    hjust = 0,
-    bg.colour = "white",
-    bg.r = 0.2,
+    hjust = 0, # Align to the left
+    bg.colour = "white", # Shadow color (or background color)
+    bg.r = 0.4, # Radius of the background. The higher the value the bigger the shadow.
     family = "Econ Sans Cnd",
-    size = 6,
-    inherit.aes = FALSE
+    size = 6
   ) + 
-  scale_color_identity()
+  scale_color_identity() # Use the colors in the 'color' variable as they are.
 
+# Add labels for the horizontal lines
 plt1 <- plt1 + 
   geom_text(
     data = data.frame(x = 2021.5, y = seq(0, 30, by = 5)),
     aes(x, y, label = y),
-    hjust = 1,
-    vjust = 0,
-    nudge_y = 30 * 0.01, # The pad is equal to 1% of the vertical range (35 - 0)
+    hjust = 1, # Align to the right
+    vjust = 0, # Align to the bottom
+    nudge_y = 32 * 0.01, # The pad is equal to 1% of the vertical range (32 - 0)
     family = "Econ Sans Cnd",
-    size = 6,
-    inherit.aes = FALSE
+    size = 6
   )
 
-plt1
-```
-<br>
-
-# Add annotations and final tweaks
-***
-
-Adding titles is one of those steps that are simple from the technical point of 
-view but can make a huge difference in the quality of the chart. 
-
-The next chunk shows how to add a title and a subtitle to a ggplot2 chart using
-the `labs()` function. Later, their aspect is customized using `theme()`.
-
-
-```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+# Add title
 plt1 <- plt1 +
   labs(
     title = "**Selected regions,** % of child population",
   ) + 
   theme(
+    # theme_markdown() is provided by ggtext and means the title contains 
+    # Markdown that should be parsed as such (the '**' symbols)
     plot.title = element_markdown(
       family = "Econ Sans Cnd", 
       size = 18
@@ -294,11 +313,7 @@ plt1
 
 Thanks to the `geom_area()` function, it is quite straightforward to create a 
 [stacked area chart](https://www.r-graph-gallery.com/stacked-area-graph.html) 
-in Matplotlib. 
-
-
-
-
+in `ggplot2`. 
 
 ```{r}
 plt2 <- ggplot(stacked_data) +
@@ -308,12 +323,12 @@ plt2 <- ggplot(stacked_data) +
 
 plt2
 ```
-
+<br>
 
 # Customize layout
 ***
 
-```{r, fig.width=8, fig.height=6, dpi=300, out.width="90%"}
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
 
 plt2 <- plt2 + 
   scale_x_continuous(
@@ -355,9 +370,7 @@ plt2
 # Add labels and annotations
 ***
 
-Again, the pad is equal to 1% of the vertical range.
-
-```{r}
+```{r, fig.width=8, fig.height=6, dpi=300, out.width="70%"}
 plt2 <- plt2 + 
   geom_text(
     aes(x, y, label = labels, color = color),
@@ -376,7 +389,7 @@ plt2 <- plt2 +
     aes(x, y, label = y),
     hjust = 1,
     vjust = 0,
-    nudge_y = 300 * 0.01,
+    nudge_y = 300 * 0.01, # Again, the pad is equal to 1% of the vertical range.
     family = "Econ Sans Cnd",
     size = 6,
     inherit.aes = FALSE
@@ -411,13 +424,13 @@ plt2
 ```
 
 
+# Combine charts
+***
 
-```{r}
+```{r, fig.width=14, fig.height=7.2, dpi=300, out.width="90%"}
 plt1 <- plt1 + theme(plot.margin = margin(0, 0.05, 0, 0, "npc"))
 plt2 <- plt2 + theme(plot.margin = margin(0, 0, 0.05, 0, "npc"))
-
 plt <- plt1 | plt2
-
 title_theme <- theme(
   plot.title = element_text(
     family = "Econ Sans Cnd", 
@@ -431,7 +444,6 @@ title_theme <- theme(
     margin = margin(0.4, 0, 0, 0, "npc")
   )
 )
-
 plt <- plt + plot_annotation(
     title = "All work, no play",
     subtitle = "Children in child labour*",
@@ -440,20 +452,22 @@ plt <- plt + plot_annotation(
   theme(
     plot.margin = margin(0.075, 0, 0.1, 0, "npc"),
   )
-```
-
-
-```{r}
-png("plot.png", width = 14, height = 7.2, res = 300, units = "in")
 
 plt
+```
+<br>
 
+
+# Add final annotations with the `grid` library
+***
+
+```{r, fig.width=14, fig.height=7.2, dpi=300, out.width="90%"}
+plt
 grid.lines(
   x = c(0, 1),
   y = 1,
   gp = gpar(col = "#e5001c", lwd = 4)
 )
-
 # Add rectangle on top-left
 # lwd = 0 means the rectangle does not have an outer line
 # 'just' gives the horizontal and vertical justification
@@ -465,15 +479,13 @@ grid.rect(
   just = c("left", "top"),
   gp = gpar(fill = "#e5001c", lwd = 0)
 )
-
-
 grid.text(
   'Source: "Child Labour: Global estimates 2020, trends and the road forward", ILO and UNICEF', 
   x = 0.005, 
   y = 0.06, 
   just = c("left", "bottom"),
   gp = gpar(
-    col = GREY,
+    col = "grey50",
     fontsize = 16,
     fontfamily = "Econ Sans Cnd"
   )
@@ -484,80 +496,7 @@ grid.text(
   y = 0.005, 
   just = c("left", "bottom"),
   gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Milo TE W01"
-  )
-)
-
-dev.off()
-```
-
-
-This is how far we were able to get with ggplot2 alone. It's quite evident the 
-chart does not look like the original chart on top. It's still missing the 
-red line and rectangle on top, which is like a watermark of visualizations made
-by The Economist.
-
-We're going to use the `grid` library for this task. `grid` is a low-level 
-plotting library that comes with any `R` installation by default and provides 
-many plotting primitive functions. It is also the library that `ggplot2` uses to 
-create the charts under the hood, and that's why we can combine them in the 
-same chart.
-
-
-```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
-# Make room for annotations
-plt <- plt + 
-  theme(
-    plot.margin = margin(0.05, 0, 0.1, 0.01, "npc")
-  )
-
-# Print the ggplot2 plot
-plt
-
-# Add horizontal line on top
-# It goes from x = 0 (left) to x = 1 (right) on the very top of the chart (y = 1)
-# You can think of 'gp' and 'gpar' as 'graphical parameters'.
-# There we indicate the line color and width
-grid.lines(
-  x = c(0, 1),
-  y = 1,
-  gp = gpar(col = "#e5001c", lwd = 4)
-)
-
-# Add rectangle on top-left
-# lwd = 0 means the rectangle does not have an outer line
-# 'just' gives the horizontal and vertical justification
-grid.rect(
-  x = 0,
-  y = 1,
-  width = 0.05,
-  height = 0.025,
-  just = c("left", "top"),
-  gp = gpar(fill = "#e5001c", lwd = 0)
-)
-
-# We have two captions, so we use grid.text instead of 
-# the caption provided by  ggplot2.
-grid.text(
-  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
-  x = 0.005, 
-  y = 0.06, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-grid.text(
-  "The Economist", 
-  x = 0.005, 
-  y = 0.005, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
+    col = "grey50",
     fontsize = 16,
     fontfamily = "Milo TE W01"
   )
@@ -565,9 +504,6 @@ grid.text(
 ```
 <br>
 
-Just comparing the sizes of the chunks you can see it definitely takes a 
-considerable amount of extra work to get the details done. 
-But in the end... Aren't they're worth it?
 
 # The extra mile
 ***
@@ -584,164 +520,6 @@ you can notice by comparing the position of the rectangle on top with the titles
 
 This extra step consists of removing the titles generated with `ggplot2` and
 replacing them with text drawn with the `grix.text()` function.
-
-
-```{r, fig.width=12, fig.height=7, dpi=300, out.width="90%"}
-plt <- plt + 
-  labs(title = NULL, subtitle = NULL) +
-  theme(
-    plot.margin = margin(0.15, 0, 0.1, 0.01, "npc")
-  )
-
-plt 
-
-grid.text(
-  "Escape artists", 
-  0, 
-  0.925,
-  just = c("left", "bottom"),
-  gp = gpar(
-    fontsize = 22,
-    fontface = "bold",
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.text(
-  "Number of laboratory-acquired infections, 1970-2021", 
-  0, 
-  0.875,
-  just = c("left", "bottom"),
-  gp = gpar(
-    fontsize = 20,
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.lines(
-  x = c(0, 1),
-  y = 1,
-  gp = gpar(col = "#e5001c", lwd = 4)
-)
-
-grid.rect(
-  x = 0,
-  y = 1,
-  width = 0.05,
-  height = 0.025,
-  just = c("left", "top"),
-  gp = gpar(fill = "#e5001c", lwd = 0)
-)
-
-grid.text(
-  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
-  x = 0.005, 
-  y = 0.06, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.text(
-  "The Economist", 
-  x = 0.005, 
-  y = 0.005, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Milo TE W01"
-  )
-)
-```
-<br>
-
-It's so satisfying to have nail it after so much work!
-
-# Final notes
-***
-
-If you attempt to save the plot above with `ggsave()` you'll end up with a 
-file that only reflects what is done with `ggplot2`. The right way to save
-this chart that mixes `ggplot2` and `grid` is to use more low-level functions
-such as `png()`. For example
-
-```{r, eval=FALSE}
-
-# Open file to store the plot
-png("plot.png", width = 12, height = 7, units = "in", res = 300)
-
-# Print the plot
-plt 
-
-grid.text(
-  "Escape artists", 
-  0, 
-  0.925,
-  just = c("left", "bottom"),
-  gp = gpar(
-    fontsize = 22,
-    fontface = "bold",
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.text(
-  "Number of laboratory-acquired infections, 1970-2021", 
-  0, 
-  0.875,
-  just = c("left", "bottom"),
-  gp = gpar(
-    fontsize = 20,
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.lines(
-  x = c(0, 1),
-  y = 1,
-  gp = gpar(col = "#e5001c", lwd = 4)
-)
-
-grid.rect(
-  x = 0,
-  y = 1,
-  width = 0.05,
-  height = 0.025,
-  just = c("left", "top"),
-  gp = gpar(fill = "#e5001c", lwd = 0)
-)
-
-grid.text(
-  "Sources: Laboratory-Acquired Infection Database; American Biological Safety Association", 
-  x = 0.005, 
-  y = 0.06, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Econ Sans Cnd"
-  )
-)
-
-grid.text(
-  "The Economist", 
-  x = 0.005, 
-  y = 0.005, 
-  just = c("left", "bottom"),
-  gp = gpar(
-    col = GREY,
-    fontsize = 16,
-    fontfamily = "Milo TE W01"
-  )
-)
-
-# Close connection
-dev.off()
-```
 
 
 <!-- Close container -->
