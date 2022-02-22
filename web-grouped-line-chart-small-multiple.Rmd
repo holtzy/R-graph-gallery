@@ -1,0 +1,185 @@
+---
+title: "Grouped line chart with small multiple"
+descriptionMeta: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
+descriptionTop: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
+sectionText: "Line chart section"
+sectionLink: "lollipop-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/lollipop.html"
+url: "web-grouped-line-chart-small-multiple"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Introduction
+***
+
+
+This plot has been initially published by Abdul Madjid, as a contribution to the [TidyTuesday challenge](https://github.com/AbdoulMa/TidyTuesday/tree/main/2021_w19). 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Packages
+***
+
+The code works pretty much the same way, but it is important to note that the X axis can represent a categorical variable as well. In this case, the lollipop chart is a good replacement of the [barplot](barplot.html).
+
+The [ggtext](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) package allows to customize fonts on the chart. It notably allows to use specific fonts, like `Lato` in this example. You can read more about its usage [here](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html).
+
+```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
+library(tidytuesdayR)
+library(tidyverse)
+library(ragg)
+
+# Manage custom fonts
+library(ggtext)
+library(sysfonts)
+library(showtext)
+font_add_google("Lato", "Lato")
+font_add_google("Source Sans Pro", "Source Sans Pro")
+font_add_google("Inconsolata", "Inconsolata")
+showtext_auto()
+```
+
+```{r fig.showtext=TRUE, fig.align='center'}
+plot(1, pch = 16, cex = 3)
+text(1, 1.1, "A fancy dot", family = "lobster", col = "steelblue", cex = 3)
+```
+
+
+# Dataset
+***
+
+Description of the dataset
+
+
+# Data wrangling
+***
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2021, week = 19)
+water_data <- pluck(tuesdata,"water")
+data_wrangled <- water_data %>% 
+  filter(!is.na(install_year), !is.na(country_name)) %>% 
+  mutate(install_decade = install_year %/% 10, 
+         install_decade = install_decade * 10) %>%  
+  filter(between( install_decade,  1970,2020)) %>% 
+  group_by(country_name, install_decade)  %>% 
+  summarize(nb_install = n()) %>% 
+  pivot_wider(names_from = install_decade, values_from = nb_install) %>% 
+  filter(across(everything(), ~!is.na(.))) %>% # Just keep those with data available
+  pivot_longer(
+    cols = -country_name,
+    names_to = "decade",
+    values_to = "nb_install"
+  ) %>% 
+  group_by(decade) %>% 
+  mutate(country_name = str_to_upper(country_name),
+         rank = rank(-nb_install)) %>%  
+  arrange(country_name,decade)
+
+# For detach from the facets  
+data_wrangled_bis <- data_wrangled %>% 
+  mutate(country = country_name) %>% 
+  select(everything(), -country_name)
+```
+
+
+# Plot
+***
+
+```{r}
+decades <- data_wrangled %>% 
+  filter(country_name ==str_to_upper("Ethiopia")) %>% 
+  pull(decade) 
+ranks <- data_wrangled %>% 
+  filter(country_name ==str_to_upper("Ethiopia")) %>% 
+  pull(rank) 
+decades_legend <-  tibble(
+  country_name = str_to_upper("Ethiopia"),
+  decades = c(first(decades) ,last(decades)),
+  ranks = c(first(ranks),last(ranks)),
+  vjusts = -0.1
+) %>% 
+  mutate(
+    decades_labels = str_c(str_sub(decades,-2,-1),"s"),
+    labels = glue::glue("<b>#{ranks}</b> in <br>{decades_labels}")
+  )
+```
+Fonts are missing, TODO
+
+```{r, fig.showtext=TRUE}
+data_wrangled %>% 
+  ggplot() + 
+  geom_line(data = data_wrangled_bis,aes(x = decade, y = rank , group = country), color = "grey75",size = .7) + 
+  geom_line(aes( x = decade, y = rank , group = country_name), size = 1.1, color = "#0b53c1") +
+  geom_point(aes(x = decade, y = rank), shape = 21, fill = "white", color = "#0b53c1", stroke = 1.3,  size = 2.8) +
+  geom_richtext(data = decades_legend, aes(x = decades, y = ranks, label = labels, vjust = vjusts), label.color = NA,fill = NA, family="Lato", fontface = "italic", size =3 ) +
+   labs(
+     title = str_to_upper("Ranking some countries by the number<br>of water sources installations by decade"),
+     caption = "Data from Water Point Data Exchange.<br>
+      <span>&#xf099;</span>**@issa_madjid**"
+   ) + 
+  scale_y_reverse(
+    name = NULL
+  ) + 
+   scale_x_discrete(
+     name = NULL, 
+     labels = function(x) {paste0(str_sub(x,-2,-1),"s")}
+   ) + 
+   coord_cartesian(clip = "off") + 
+  facet_wrap(vars(country_name)) + 
+  theme_minimal(base_family = "Inconsolata") +
+   theme(
+     plot.background = element_rect(fill = "#f9fbfc"),
+     panel.grid.major = element_blank(),
+     panel.grid.minor = element_blank(),
+     axis.text.y = element_blank(),
+     axis.text =  element_text(color = "black"),
+     plot.title = element_markdown(face = "bold", hjust = 0.5, size = rel(1.8), margin = margin(t=10, b = 15)),
+     plot.subtitle = element_markdown(size = rel(0.9)),
+     plot.caption = element_markdown(family = "Source Sans Pro",size = rel(.8), margin = margin(t = 10)),
+     strip.text = element_text( face = "bold", size = rel(1.1)),
+     plot.margin = margin(t= 15, r = 10,b = 20, l = 10)
+   )
+```
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
