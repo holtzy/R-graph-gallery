@@ -30,50 +30,53 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 
 
-# Grouped barchart
+# Dataset
 ***
 
-<div class = "row">
+The dataset used in this post has 5 columns:
 
-<div class = "col-md-6  col-sm-12 align-self-center">
+  - the first column is called `x` and actually provides the month of the year, from January to December
+  - the columns 2 to 5 provide a numeric value for 4 employees of a company respectively. Let's say it's the amount of money they brought or spend each month.
 
-A grouped barplot display a numeric value for a set of entities split in groups and subgroups. Before trying to build one, check how to make a [basic barplot](218-basic-barplots-with-ggplot2.html) with `R` and `ggplot2`.
+The dataset is stored on [github](https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/stacked_barplot_negative_values.csv) and can be loaded as follow:
 
-A few explanation about the code below:
-
-- input dataset must provide 3 columns: the numeric value (`value`), and 2 categorical variables for the group (`specie`) and the subgroup (`condition`) levels.
-- in the `aes()` call, x is the group (`specie`), and the subgroup (`condition`) is given to the `fill` argument.
-- in the `geom_bar()` call, `position="dodge"` must be specified to have the bars one beside each other.
-
-</div>
-
-
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
- # library
-library(ggplot2)
-library(tidyr)
+```{r out.width = "100%"}
 
 # Load the dataset that is stored on the web
+data <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/stacked_barplot_negative_values.csv", header=T, sep=",")
 
-# Grouped
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-    geom_bar(position="dodge", stat="identity")
- 
-```
-</div>
-</div>
-
-
-
-```{r thecode, eval=FALSE}
 ```
 
+<br/>
+
+This is an overview of how it looks like:
+
+```{r}
+library(knitr)
+kable(head(data, 4))
+```
 
 
+<br/>
+
+To work with `ggplot2` and more generally with the `tidyverse`, it's necessary to transform it to a "long" or "tidy" format. This is totally doable thanks to the `tidyr` package:
+
+```{r}
+# Load the package
+library(tidyr)
+library(dplyr)
+
+# transform the format
+data_long <- gather(data, group, value, groupA:groupD) %>%
+  arrange(factor(x, levels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct"))) %>% 
+  mutate(x=factor(x, levels=unique(x)))
+
+# And that's the result!
+kable(head(data_long, 4))
+```
 
 
+Note: sorting the data is annoying and is described more in depth [here](https://r-graph-gallery.com/267-reorder-a-variable-in-ggplot2.html)
 
 
 
@@ -100,10 +103,7 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-A stacked barplot is very similar to the grouped barplot above. The subgroups are just displayed on top of each other, not beside.
-
-The only thing to change to get this figure is to switch the `position` argument to `stack`.
-
+It's now pretty straightforward to build the stacked barplot. Pretty much the same guideline that this [specific post](https://r-graph-gallery.com/48-grouped-barplot-with-ggplot2.html) are applied. It's important to notice that the negative values are automatically located below the 0 baseline, without any additional work required.
 
 
 </div>
@@ -114,17 +114,10 @@ The only thing to change to get this figure is to switch the `position` argument
 ```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
  # library
 library(ggplot2)
- 
-# create a dataset
-specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
-condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
-value <- abs(rnorm(12 , 0 , 15))
-data <- data.frame(specie,condition,value)
- 
-# Stacked
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-    geom_bar(position="stack", stat="identity")
- 
+
+# plot
+ggplot(data_long, aes(fill=group, y=value, x=x)) + 
+  geom_bar(position="stack", stat="identity")
 ```
 </div>
 </div>
@@ -139,56 +132,33 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Percent stacked barchart
+# Stacked barchart polish
 ***
 
 <div class = "row">
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-Once more, there is not much to do to switch to a percent stacked barplot. Just switch to `position="fill"`. Now, the percentage of each subgroup is represented, allowing to study the evolution of their proportion in the whole.
+As always, a few polish steps to make the chart looks better with proper axis titles, better theme and a classic `viridis` color palette.
 
 </div>
 
 
 <div class = "col-md-6  col-sm-12">
 
-```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+```{r thecode3, echo=FALSE, warning=FALSE, comment=FALSE, out.width = "100%", fig.height=7}
  # library
 library(ggplot2)
- 
-# create a dataset
-specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
-condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
-value <- abs(rnorm(12 , 0 , 15))
-data <- data.frame(specie,condition,value)
- 
-# Stacked + percent
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-    geom_bar(position="fill", stat="identity")
- 
+library(hrbrthemes)
+library(viridis)
+
+# plot
+ggplot(data_long, aes(fill=group, y=value, x=x)) + 
+  geom_bar(position="stack", stat="identity") + 
+  scale_fill_viridis(discrete=TRUE, name="") +
+  theme_ipsum() +
+  ylab("Money input") + 
+  xlab("Month")
 ```
 </div>
 </div>
@@ -209,52 +179,6 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 
 
 
-# Grouped barchart customization
-***
-
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
-
-As usual, some customization are often necessary to make the chart look better and personnal. Let's:
-
-- add a [title](ggplot2-package.html)
-- use a [theme](ggplot2-package.html)
-- change color palette. See more [here](ggplot2-color.html).
-- customize axis titles
-
-</div>
-
-
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
-# library
-library(ggplot2)
-library(viridis)
-library(hrbrthemes)
-
-# create a dataset
-specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
-condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
-value <- abs(rnorm(12 , 0 , 15))
-data <- data.frame(specie,condition,value)
- 
-# Small multiple
-ggplot(data, aes(fill=condition, y=value, x=specie)) + 
-    geom_bar(position="stack", stat="identity") +
-    scale_fill_viridis(discrete = T) +
-    ggtitle("Studying 4 species..") +
-    theme_ipsum() +
-    xlab("")
-```
-</div>
-</div>
-
-
-
-```{r thecode4, eval=FALSE}
-```
 
 
 
@@ -264,57 +188,6 @@ ggplot(data, aes(fill=condition, y=value, x=specie)) +
 
 
 
-
-
-
-
-
-
-
-# Small multiple
-***
-
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
-
-Small multiple can be used as an alternative of stacking or grouping. It is straightforward to make thanks to the `facet_wrap()` function.
-
-</div>
-
-
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode5, echo=FALSE, out.width = "100%", fig.height=7}
-# library
-library(ggplot2)
-library(viridis)
-library(hrbrthemes)
-
-# create a dataset
-specie <- c(rep("sorgho" , 3) , rep("poacee" , 3) , rep("banana" , 3) , rep("triticum" , 3) )
-condition <- rep(c("normal" , "stress" , "Nitrogen") , 4)
-value <- abs(rnorm(12 , 0 , 15))
-data <- data.frame(specie,condition,value)
- 
-# Graph
-ggplot(data, aes(fill=condition, y=value, x=condition)) + 
-    geom_bar(position="dodge", stat="identity") +
-    scale_fill_viridis(discrete = T, option = "E") +
-    ggtitle("Studying 4 species..") +
-    facet_wrap(~specie) +
-    theme_ipsum() +
-    theme(legend.position="none") +
-    xlab("")
-
-```
-</div>
-</div>
-
-
-
-```{r thecode5, eval=FALSE}
-```
 
 
 
