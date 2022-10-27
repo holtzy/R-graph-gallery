@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-79254642-1');
+  </script>
+  <script>
+  var getOutboundLink = function(url) {
+    gtag('event', 'click', {
+      'event_category': 'outbound',
+      'event_label': url,
+      'transport_type': 'beacon',
+      'event_callback': function(){document.location = url;}
+    });
+  }
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-3523953066677938",
+            enable_page_level_ads: true
+       });
+  </script>
+  <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+
+<meta charset="utf-8">
+<title>Introduction to waffle charts with
+R &#8211; the R Graph Gallery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="This post explains how to build a
+basic waffle chart with R and the waffle package. It provides several
+reproducible examples with explanation and R code.">
+<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
+<meta name="author" content="Yan Holtz">
+<link rel="icon" href="img/logo/R_single_small.png">
+
+<!-- Control appearance when shared by social media -->
+<meta property="og:title" content="Introduction to waffle charts with
+R" />
+<meta property="og:image" content="img/overview_RGG.png" />
+<meta property="og:description" content="This post explains how to build
+a basic waffle chart with R and the waffle package. It provides several
+reproducible examples with explanation and R code." />
+<meta property='og:url' content="https://www.r-graph-gallery.com/342-introduction-to-waffle-plot-with-R.html" />
+<meta property="og:type" content="website" />
+
+<!-- Bootstrap core CSS -->
+<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom fonts for this template -->
+<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<!-- Custom styles for this template -->
+<link href="css/agency.css" rel="stylesheet">
+
+<!-- JQUERY -->
+<script src="vendor/jquery/jquery.min.js"></script>
+
+</head>
+
+
+
+
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+
+
+<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+<script>
+  $(function(){
+    $("#mainNav").load("html_chunk/menu.html");
+  });
+</script>
+
+<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+<div id="modal_menu_insertion"> </div>
+<script>
+  $(function(){
+    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+  });
+</script>
+
+
+
+<!-- Header = Title in big + social media Icon + quick description -->
+<header class="masthead" style="padding-bottom: 30px;">
+  <div class="textlanding">
+      <center><h1>Introduction to waffle charts with R</h1></center>
+      <hr class="short_hr">
+      <br>
+      <ul class="list-inline social-buttons">
+        <li class="list-inline-item">
+          <a href="https://twitter.com/R_Graph_Gallery">
+            <i class="fa fa-twitter"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://github.com/holtzy">
+            <i class="fa fa-github" style="color: white"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+            <i class="fa fa-linkedin"></i>
+          </a>
+        </li>
+        <li class="list-inline-item social-buttons">
+          <a href="https://www.yan-holtz.com">
+            <i class="fa fa-home"></i>
+          </a>
+        </li>
+      </ul>
+      <center><p style="max-width: 600px; margin-top: 40px">This post
+explains how to build a basic waffle chart with R and the <a
+href="https://github.com/hrbrmstr/waffle">waffle</a> package. It
+provides several reproducible examples with explanation and R
+code.</p></center>
+      <div style="text-align:center">
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='waffle-chart.html'>Waffle
+section</a>
+         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/waffle.html'>Data
+to Viz</a>
+      </div>
+  </div>
+</header>
+
+
+
+<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+<div id="position_for_images"></div>
+<script>
+  $(function(){
+    $("#position_for_images").load("html_chunk/images.html");
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- STYLE for chart pages but not the rest of tthe website -->
+<style>
+  img {
+    margin-top: 20px;
+  }
+</style>
+
+
+
+<div class="container">
+<div id="the-waffle-package" class="section level1">
+<h1>The <code>waffle</code> package</h1>
+<hr />
+<p>The <a href="https://github.com/hrbrmstr/waffle">waffle</a> package
+is the best way to build a waffle chart in R. You can read more about
+this package on its <a href="https://github.com/hrbrmstr/waffle">github
+page</a>. Something important to note is that you can’t install it
+directly from the CRAN. Instead, use this command line:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;waffle&quot;</span>, <span class="at">repos =</span> <span class="st">&quot;https://cinc.rud.is&quot;</span>)</span></code></pre></div>
+<p><br/></p>
+<p>There are 2 main ways to build a waffle chart using this library:</p>
+<ul>
+<li>using the <code>geom_waffle</code> geom inside a
+<code>ggplot2</code> call</li>
+<li>using the <code>waffle()</code> function</li>
+</ul>
+<p>We will focus on the second option in this blogpost.</p>
+</div>
+<div id="data-input-vector" class="section level1">
+<h1>Data input: vector</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The waffle function accepts 2 kinds of input: a vector or a data
+frame.</p>
+<p>Let’s start with a first example based on a vector input. The vector
+is a list of values. Each value will be represented as a set of
+rectangles. The <code>rows</code> argument controls how many rows will
+be displayed on the chart.</p>
+<p>By default, categories will be labeled A, B, C.. and so on. We will
+see later how to customize this.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="342-introduction-to-waffle-plot-with-R_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the library</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(waffle)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">5</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Waffle chart</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">waffle</span>(x, <span class="at">rows =</span> <span class="dv">8</span>)</span></code></pre></div>
+</div>
+<div id="data-input-data-frame" class="section level1">
+<h1>Data input: data frame</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>We can also build a <a href="waffle-chart.html">waffle plot</a> from
+a data frame.</p>
+<p>Here a simple example with pizza topings.</p>
+<p>The data frame requires 2 columns: the first one provides the labels,
+the second the quantities of each group.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="342-introduction-to-waffle-plot-with-R_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;waffle&quot;, repos = &quot;https://cinc.rud.is&quot;)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(waffle)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a simple data frame</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>mypizza <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ingredients =</span> <span class="fu">c</span>(<span class="st">&quot;Cheese&quot;</span>,<span class="st">&quot;Tomatoes&quot;</span>,<span class="st">&quot;Mushroom&quot;</span>,<span class="st">&quot;Pepperoni&quot;</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vals =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">5</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">waffle</span>(mypizza)</span></code></pre></div>
+</div>
+<div id="waffle-chart-with-customization" class="section level1">
+<h1>Waffle chart with customization</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The waffle function allows a lot of customization to make the graphic
+more pleasant. In this example:</p>
+<ul>
+<li>a title is added (<code>title</code> attribute)</li>
+<li>the width of the grid is controled with <code>size</code></li>
+<li>some custom colors are picked to match the ingredient
+(<code>colors</code>)</li>
+<li>the legend is put at the bottom of the chart
+(<code>legend_pos</code>)</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="342-introduction-to-waffle-plot-with-R_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(waffle)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a simple data frame</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mypizza <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ingredients =</span> <span class="fu">c</span>(<span class="st">&quot;Cheese&quot;</span>,<span class="st">&quot;Tomatoes&quot;</span>,<span class="st">&quot;Mushroom&quot;</span>,<span class="st">&quot;Pepperoni&quot;</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vals =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">25</span>, <span class="dv">20</span>, <span class="dv">5</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">waffle</span>(mypizza, </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>   <span class="at">rows =</span> <span class="dv">7</span>, <span class="co"># Numbers of rows</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>   <span class="at">size =</span> <span class="dv">1</span>, <span class="co"># width of the separator between blocks</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>   <span class="at">colors =</span> <span class="fu">c</span>(<span class="st">&quot;#E8D630&quot;</span>, <span class="st">&quot;#FF0000&quot;</span>, <span class="st">&quot;#582900&quot;</span>,<span class="st">&quot;#A91101&quot;</span>), <span class="co"># Colors of each group</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>   <span class="at">legend_pos =</span> <span class="st">&quot;bottom&quot;</span>, <span class="co"># Position of the legend</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>   <span class="at">title =</span> <span class="st">&quot;Most popular toppings on a pizza&quot;</span> <span class="co"># Title</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>) </span></code></pre></div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<hr />
+<p>That’s a very quick introduction to waffle charts with R using the
+<code>waffle</code> package. There is much more you can do using this
+package, so feel free to visit the <a href="waffle-chart.html">waffle
+section</a> of the gallery tp browse more examples.</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="scatterplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterPlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="heatmap.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Heatmap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Heatmap</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="correlogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Correlogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Correlogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubblePlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="connected-scatterplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterConnected150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connected scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata">
+      <a class="portfolio-link"  href="2d-density-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/2dDensity150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density 2d</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+
+
+
+
+
+<!-- ============================ CONTACT SECTION ============================ -->
+<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br><br><br>
+        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
+        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
+        <div style="text-align:center">
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
+           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
+         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================ FOOTER SECTION ============================ -->
+<footer class="bg-light" id="myFooter">
+  <div class="container" >
+    <div class="row">
+      <div class="col-md-4">
+        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+
+
+<!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom scripts for this template -->
+<script src="js/agency.min.js"></script>
+
+</body>
+</html>
