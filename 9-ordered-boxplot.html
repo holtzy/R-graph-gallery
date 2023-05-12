@@ -1,170 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>Ordering boxplots in base R &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post is dedicated to boxplot ordering in base R. It describes 3 common use cases of reordering issue with code and explanation"
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Ordering boxplots in base R" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post is dedicated to boxplot ordering in base R. It describes 3 common use cases of reordering issue with code and explanation"
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/9-ordered-boxplot.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Ordering boxplots in base R &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post is dedicated to boxplot ordering in base R. It describes 3 common use cases of reordering issue with code and explanation">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Ordering boxplots in base R" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post is dedicated to boxplot ordering in base R. It describes 3 common use cases of reordering issue with code and explanation" />
-<meta property='og:url' content="https://www.r-graph-gallery.com/9-ordered-boxplot.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Ordering boxplots in base R</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post is dedicated to <a href="boxplot.html">boxplot</a> ordering in base R. It describes 3 common use cases of reordering issue with code and explanation.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='boxplot.html'>Boxplot Section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/caveat/boxplot.html'>Boxplot pitfalls</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Ordering boxplots in base R</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post is dedicated to
+            <a href="boxplot.html">boxplot</a> ordering in base R. It describes
+            3 common use cases of reordering issue with code and explanation.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="boxplot.html"
+            >Boxplot Section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/caveat/boxplot.html"
+            >Boxplot pitfalls</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container">
-<h1 id="reordering-category-by-median">Reordering category by median</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The most common need is to reorder categories by increasing median. It allows to quickly spot what group has the highest value and how categories are ranked.</p>
-<p>It is doable using the <code>reorder()</code> function in combination with the <code>with()</code> function as suggested below:</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-1-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create data : 7 varieties / 20 samples per variety / a numeric value for each sample</span></a>
+    <div class="container">
+      <h1 id="reordering-category-by-median">Reordering category by median</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            The most common need is to reorder categories by increasing median.
+            It allows to quickly spot what group has the highest value and how
+            categories are ranked.
+          </p>
+          <p>
+            It is doable using the <code>reorder()</code> function in
+            combination with the <code>with()</code> function as suggested
+            below:
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="9-ordered-boxplot_files/figure-html/unnamed-chunk-1-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb1">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Create data : 7 varieties / 20 samples per variety / a numeric value for each sample</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">20</span>)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T),</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4">        <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">30</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">70</span> , <span class="dt">replace=</span>T) )</a>
@@ -174,19 +199,38 @@
 <a class="sourceLine" id="cb1-8" data-line-number="8">new_order &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">reorder</span>(variety , note, median , <span class="dt">na.rm=</span>T))</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9"> </a>
 <a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Draw the boxplot using this new order</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">boxplot</span>(data<span class="op">$</span>note <span class="op">~</span><span class="st"> </span>new_order , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span> , <span class="dt">col=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a></code></pre></div>
-<h1 id="give-a-specific-order">Give a specific order</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p><a href="boxplot.html">Boxplot</a> categories are provided in a column of the input data frame. This column needs to be a <code>factor</code>, and has several <code>levels</code>. Categories are displayed on the chart following the order of this factor, often in alphabetical order.</p>
-<p>Sometimes, we need to show groups in a specific order (A,D,C,B here). This can be done by reordering the levels, using the <code>factor()</code> function.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">#Creating data </span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">boxplot</span>(data<span class="op">$</span>note <span class="op">~</span><span class="st"> </span>new_order , <span class="dt">ylab=</span><span class="st">&quot;sickness&quot;</span> , <span class="dt">col=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">boxwex=</span><span class="fl">0.4</span> , <span class="dt">main=</span><span class="st">&quot;&quot;</span>)</a></code></pre>
+      </div>
+      <h1 id="give-a-specific-order">Give a specific order</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            <a href="boxplot.html">Boxplot</a> categories are provided in a
+            column of the input data frame. This column needs to be a
+            <code>factor</code>, and has several <code>levels</code>. Categories
+            are displayed on the chart following the order of this factor, often
+            in alphabetical order.
+          </p>
+          <p>
+            Sometimes, we need to show groups in a specific order (A,D,C,B
+            here). This can be done by reordering the levels, using the
+            <code>factor()</code> function.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="9-ordered-boxplot_files/figure-html/unnamed-chunk-3-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb2">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">#Creating data </span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;A&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&quot;D&quot;</span>, <span class="dv">20</span>))</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">value &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">sample</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), </a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">       <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T), <span class="kw">sample</span>(<span class="dv">3</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) )</a>
@@ -200,19 +244,35 @@
 <a class="sourceLine" id="cb2-12" data-line-number="12"> </a>
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#The plot is now ordered !</span></a>
 <a class="sourceLine" id="cb2-14" data-line-number="14"><span class="kw">boxplot</span>(data<span class="op">$</span>value <span class="op">~</span><span class="st"> </span>data<span class="op">$</span>names , <span class="dt">col=</span><span class="kw">rgb</span>(<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="fl">0.4</span>,<span class="fl">0.6</span>) , <span class="dt">ylab=</span><span class="st">&quot;value&quot;</span> , </a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="dt">xlab=</span><span class="st">&quot;names in desired order&quot;</span>)</a></code></pre></div>
-<h1 id="grouped">Grouped and ordered boxplot</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>In a grouped boxplot, categories are organized in groups and subgroups. For instance, let’s take several varieties (group) that are grown in high or low temperature (subgroup).</p>
-<p>Here both subgroups are represented one beside each other, and groups are ranked by increasing median:</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="9-ordered-boxplot_files/figure-html/unnamed-chunk-5-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Create dummy data</span></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="dt">xlab=</span><span class="st">&quot;names in desired order&quot;</span>)</a></code></pre>
+      </div>
+      <h1 id="grouped">Grouped and ordered boxplot</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            In a grouped boxplot, categories are organized in groups and
+            subgroups. For instance, let’s take several varieties (group) that
+            are grown in high or low temperature (subgroup).
+          </p>
+          <p>
+            Here both subgroups are represented one beside each other, and
+            groups are ranked by increasing median:
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="9-ordered-boxplot_files/figure-html/unnamed-chunk-5-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb3">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Create dummy data</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">variety &lt;-<span class="st"> </span><span class="kw">rep</span>( <span class="kw">c</span>(<span class="st">&quot;soldur&quot;</span>, <span class="st">&quot;silur&quot;</span>, <span class="st">&quot;lloyd&quot;</span>, <span class="st">&quot;pescadou&quot;</span>, <span class="st">&quot;X4582&quot;</span>, <span class="st">&quot;Dudur&quot;</span>, <span class="st">&quot;Classic&quot;</span>), <span class="dt">each=</span><span class="dv">40</span>)</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">treatment &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;high&quot;</span> , <span class="dv">20</span>) , <span class="kw">rep</span>(<span class="st">&quot;low&quot;</span> , <span class="dv">20</span>)) , <span class="dv">7</span>)</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">note &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="kw">rep</span>(<span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T) , <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dv">20</span> , <span class="dt">replace=</span>T)),<span class="dv">2</span>), </a>
@@ -248,167 +308,186 @@
 <a class="sourceLine" id="cb3-34" data-line-number="34"><span class="co"># Add a legend</span></a>
 <a class="sourceLine" id="cb3-35" data-line-number="35"><span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;High treatment&quot;</span>, <span class="st">&quot;Low treatment&quot;</span>), </a>
 <a class="sourceLine" id="cb3-36" data-line-number="36">       <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;slateblue1&quot;</span> , <span class="st">&quot;tomato&quot;</span>),</a>
-<a class="sourceLine" id="cb3-37" data-line-number="37">       <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">pt.cex =</span> <span class="dv">3</span>, <span class="dt">cex =</span> <span class="fl">1.2</span>,  <span class="dt">horiz =</span> F, <span class="dt">inset =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>))</a></code></pre></div>
-<!-- Close container -->
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item" >
-      <a class="portfolio-link"  href="violin.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Violin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Violin</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="density-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Density150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Density</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link" href="histogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Histogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="boxplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Box1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Boxplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="ridgeline-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Ridgeline</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+<a class="sourceLine" id="cb3-37" data-line-number="37">       <span class="dt">pch =</span> <span class="dv">15</span>, <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">pt.cex =</span> <span class="dv">3</span>, <span class="dt">cex =</span> <span class="fl">1.2</span>,  <span class="dt">horiz =</span> F, <span class="dt">inset =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>))</a></code></pre>
       </div>
+      <!-- Close container -->
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="violin.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Violin150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Violin</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="density-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Density150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Density</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="histogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Histogram150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Histogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="boxplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Box1150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Boxplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="ridgeline-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Joyplot150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Ridgeline</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

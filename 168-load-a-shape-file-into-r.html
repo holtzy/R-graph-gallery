@@ -1,182 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>Open and Plot Shapefiles in R &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Open and Plot Shapefiles in R" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/168-load-a-shape-file-into-r.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Open and Plot Shapefiles in R &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Open and Plot Shapefiles in R" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/168-load-a-shape-file-into-r.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Open and Plot Shapefiles in R</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">Shapefiles are a common way to store geospatial data. This post explains how to read it with <code>R</code> and the <code>rgdal</code> package, and how to plot it in base <code>R</code> or with <code>ggplot2</code>.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='map.html'>Background map section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/map.html'>About Maps</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Open and Plot Shapefiles in R</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            Shapefiles are a common way to store geospatial data. This post
+            explains how to read it with <code>R</code> and the
+            <code>rgdal</code> package, and how to plot it in base
+            <code>R</code> or with <code>ggplot2</code>.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="map.html"
+            >Background map section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/map.html"
+            >About Maps</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 80px">
-<p>If you did not find the geospatial data you need in existing R packages (see the <a href="maps.html">map section</a>), you need to find this information elsewhere on the web.</p>
-<p>Usually, you will find it as a <em>shape file</em> format. This format is composed by several files that you need to keep together in the same folder.</p>
-<p><u>Note</u>: if you found a <code>.geoJSON</code> file, read <a href="325-background-map-from-geojson-format-in-r.html">this post</a> instead.</p>
-<h1 id="find-and-download-a-shapefile.">Find and download a shapefile.</h1>
-<hr />
-<p>You need to dig the internet to find the shape file you are interested in. For instance, <a href="http://thematicmapping.org/downloads/world_borders.php">this URL</a> will redirect you to a zipped shape file containing the worl boundaries.</p>
-<p>You can download it and unzip it with R:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
+    <div class="container" style="padding-top: 80px">
+      <p>
+        If you did not find the geospatial data you need in existing R packages
+        (see the <a href="maps.html">map section</a>), you need to find this
+        information elsewhere on the web.
+      </p>
+      <p>
+        Usually, you will find it as a <em>shape file</em> format. This format
+        is composed by several files that you need to keep together in the same
+        folder.
+      </p>
+      <p>
+        <u>Note</u>: if you found a <code>.geoJSON</code> file, read
+        <a href="325-background-map-from-geojson-format-in-r.html">this post</a>
+        instead.
+      </p>
+      <h1 id="find-and-download-a-shapefile.">
+        Find and download a shapefile.
+      </h1>
+      <hr />
+      <p>
+        You need to dig the internet to find the shape file you are interested
+        in. For instance,
+        <a href="http://thematicmapping.org/downloads/world_borders.php"
+          >this URL</a
+        >
+        will redirect you to a zipped shape file containing the worl boundaries.
+      </p>
+      <p>You can download it and unzip it with R:</p>
+      <div class="sourceCode" id="cb1">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span> , <span class="dt">destfile=</span><span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># You now have it in your current working directory, have a look!</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre></div>
-<h1 id="read-it-with-rgdal">Read it with <code>rgdal</code></h1>
-<hr />
-<p>The <code>rgdal</code> package offers the <code>readOGR()</code> function that allows to read shapefile using the following syntax.</p>
-<p>As a result you get a geospatial object (<code>my_spdf</code> here) that contains all the information we need for further mapping. Please try th following command to understand how this object works:</p>
-<ul>
-<li><code>summary(my_spdf)</code>: tells you the max and min coordinates, the kind of projection in use</li>
-<li><code>length(my_spdf)</code>: how many regions you have</li>
-<li><code>head(my_spdf@data)</code>: the firs few rows of the data slot associated with the regions</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre>
+      </div>
+      <h1 id="read-it-with-rgdal">Read it with <code>rgdal</code></h1>
+      <hr />
+      <p>
+        The <code>rgdal</code> package offers the
+        <code>readOGR()</code> function that allows to read shapefile using the
+        following syntax.
+      </p>
+      <p>
+        As a result you get a geospatial object (<code>my_spdf</code> here) that
+        contains all the information we need for further mapping. Please try th
+        following command to understand how this object works:
+      </p>
+      <ul>
+        <li>
+          <code>summary(my_spdf)</code>: tells you the max and min coordinates,
+          the kind of projection in use
+        </li>
+        <li><code>length(my_spdf)</code>: how many regions you have</li>
+        <li>
+          <code>head(my_spdf@data)</code>: the firs few rows of the data slot
+          associated with the regions
+        </li>
+      </ul>
+      <div class="sourceCode" id="cb2">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(rgdal)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">my_spdf &lt;-<span class="st"> </span><span class="kw">readOGR</span>( </a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dsn=</span> <span class="kw">paste0</span>(<span class="kw">getwd</span>(),<span class="st">&quot;/DATA/world_shape_file/&quot;</span>) , </a>
@@ -184,33 +236,69 @@
 <a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">verbose=</span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb2-7" data-line-number="7">)</a>
 <a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre></div>
-<h1 id="plot-it-with-base-r">Plot it with <code>base R</code></h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The basic <code>plot()</code> function knows how to plot a geospatial object. Thus you just need to pass it <code>my_spdf</code> and add a couple of options to customize the output.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Basic plot of this shape file:</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre>
+      </div>
+      <h1 id="plot-it-with-base-r">Plot it with <code>base R</code></h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            The basic <code>plot()</code> function knows how to plot a
+            geospatial object. Thus you just need to pass it
+            <code>my_spdf</code> and add a couple of options to customize the
+            output.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb3">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Basic plot of this shape file:</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">plot</span>(my_spdf, <span class="dt">col=</span><span class="st">&quot;#f2f2f2&quot;</span>, <span class="dt">bg=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">lwd=</span><span class="fl">0.25</span>, <span class="dt">border=</span><span class="dv">0</span> )</a></code></pre></div>
-<h1 id="plot-it-with-ggplot2">Plot it with <code>ggplot2</code></h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>It is totally possible (and advised imo) to build the map with <a href="ggplot2-package.html">ggplot2</a>. However, ggplot2 takes as input data frames, not geospatial data.</p>
-<p><code>my_spdf</code> thus needs to be transformed using the <code>tidy()</code> function of the <code>broom</code> package. The <code>region</code> argument of this function expect one of the column name if the <span class="citation">@data</span> slot. It will be the region name in the new dataframe.</p>
-<p>Once the data frame is created, it is plotted using the <code>geom_polygon()</code> function as described below.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># &#39;fortify&#39; the data to get a dataframe format required by ggplot2</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">plot</span>(my_spdf, <span class="dt">col=</span><span class="st">&quot;#f2f2f2&quot;</span>, <span class="dt">bg=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">lwd=</span><span class="fl">0.25</span>, <span class="dt">border=</span><span class="dv">0</span> )</a></code></pre>
+      </div>
+      <h1 id="plot-it-with-ggplot2">Plot it with <code>ggplot2</code></h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            It is totally possible (and advised imo) to build the map with
+            <a href="ggplot2-package.html">ggplot2</a>. However, ggplot2 takes
+            as input data frames, not geospatial data.
+          </p>
+          <p>
+            <code>my_spdf</code> thus needs to be transformed using the
+            <code>tidy()</code> function of the <code>broom</code> package. The
+            <code>region</code> argument of this function expect one of the
+            column name if the <span class="citation">@data</span> slot. It will
+            be the region name in the new dataframe.
+          </p>
+          <p>
+            Once the data frame is created, it is plotted using the
+            <code>geom_polygon()</code> function as described below.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb4">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># &#39;fortify&#39; the data to get a dataframe format required by ggplot2</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(broom)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">spdf_fortified &lt;-<span class="st"> </span><span class="kw">tidy</span>(my_spdf, <span class="dt">region =</span> <span class="st">&quot;NAME&quot;</span>)</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
@@ -218,178 +306,213 @@
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(ggplot2)</a>
 <a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">ggplot</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>( <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>() </a></code></pre></div>
-<!-- Close container -->
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>() </a></code></pre>
       </div>
+      <!-- Close container -->
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

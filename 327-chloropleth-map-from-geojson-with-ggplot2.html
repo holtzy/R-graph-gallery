@@ -1,191 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>Choropleth map with R and ggplot2 &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Choropleth map with R and ggplot2" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/327-chloropleth-map-from-geojson-with-ggplot2.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Choropleth map with R and ggplot2 &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Choropleth map with R and ggplot2" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/327-chloropleth-map-from-geojson-with-ggplot2.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Choropleth map with R and ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post describes how to build a
+            <a href="choropleth-map.html">choropleth map</a> with
+            <code>R</code> and the <code>ggplot2</code> package. It shows how to
+            load geospatial data in R, merge region features and build the map.
+            Reproducible code is provided.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="choropleth-map.html"
+            >Choropleth section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/choropleth.html"
+            >About Maps</a
+          >
+        </div>
+      </div>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Choropleth map with R and ggplot2</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
+    <div class="container" style="padding-top: 100px">
+      <p>Two inputs are needed to build a choropleth map:</p>
+      <ul>
+        <li>
+          A geospatial object providing region boundaries (city districts of the
+          south of France in this example). Data are available at the geoJSON
+          format
+          <a href="https://github.com/gregoiredavid/france-geojson">here</a>,
+          and this post explains in detail how to read and represent geoJSON
+          format with R.
         </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
+        <li>
+          A numeric variable that we use to color each geographical unit. Here
+          we will use the number of restaurant per city. The data has been found
+          <a href="https://www.insee.fr/fr/accueil">here</a>. (Thanks
+          <span class="citation">[@joelgombin]</span>(<a
+            href="https://twitter.com/joelgombin"
+            class="uri"
+            >https://twitter.com/joelgombin</a
+          >)).
         </li>
       </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post describes how to build a <a href="choropleth-map.html">choropleth map</a> with <code>R</code> and the <code>ggplot2</code> package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='choropleth-map.html'>Choropleth section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/choropleth.html'>About Maps</a>
-      </div>
-  </div>
-</header>
-
-
-
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 100px">
-<p>Two inputs are needed to build a choropleth map:</p>
-<ul>
-<li>A geospatial object providing region boundaries (city districts of the south of France in this example). Data are available at the geoJSON format <a href="https://github.com/gregoiredavid/france-geojson">here</a>, and this post explains in detail how to read and represent geoJSON format with R.</li>
-<li>A numeric variable that we use to color each geographical unit. Here we will use the number of restaurant per city. The data has been found <a href="https://www.insee.fr/fr/accueil">here</a>. (Thanks <span class="citation">[@joelgombin]</span>(<a href="https://twitter.com/joelgombin" class="uri">https://twitter.com/joelgombin</a>)).</li>
-</ul>
-<h1 id="find-and-download-a-.geojson-file">Find and download a <code>.geoJSON</code> file</h1>
-<hr />
-<p>This step has been extensively describe in <a href="325-background-map-from-geojson-format-in-r/">chart #325</a>. The geojsonio library allows to read this type of format in R. To plot it with ggplot2, we first need to transform it to a data frame using the tidy function of the broom library. Then, the geom_polygon() function allows to represent this type of object !</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
+      <h1 id="find-and-download-a-.geojson-file">
+        Find and download a <code>.geoJSON</code> file
+      </h1>
+      <hr />
+      <p>
+        This step has been extensively describe in
+        <a href="325-background-map-from-geojson-format-in-r/">chart #325</a>.
+        The geojsonio library allows to read this type of format in R. To plot
+        it with ggplot2, we first need to transform it to a data frame using the
+        tidy function of the broom library. Then, the geom_polygon() function
+        allows to represent this type of object !
+      </p>
+      <div class="sourceCode" id="cb1">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre>
+      </div>
+      <div class="sourceCode" id="cb2">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
 <a class="sourceLine" id="cb2-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre></div>
-<h1 id="basic-background-map">Basic background map</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>We now have a geospatial object called <code>spdf</code>. This object could be plotted as is using the <code>plot()</code> function as explained <a href="choropleth-map-in-r.html">here</a>.</p>
-<p>However, an additionnal step is required to plot it with <code>ggplot2</code> that expects a data frame as input. It is possible to make the convertion using the <code>tidy</code> function of the <code>broom</code> package as shown below.</p>
-<p>Finally, <code>geom_polygon</code> is used to plot the shape.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode10-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">#plot(spdf)</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre>
+      </div>
+      <h1 id="basic-background-map">Basic background map</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            We now have a geospatial object called <code>spdf</code>. This
+            object could be plotted as is using the <code>plot()</code> function
+            as explained <a href="choropleth-map-in-r.html">here</a>.
+          </p>
+          <p>
+            However, an additionnal step is required to plot it with
+            <code>ggplot2</code> that expects a data frame as input. It is
+            possible to make the convertion using the <code>tidy</code> function
+            of the <code>broom</code> package as shown below.
+          </p>
+          <p>Finally, <code>geom_polygon</code> is used to plot the shape.</p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode10-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb3">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">#plot(spdf)</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co"># I need to fortify the data AND keep trace of the commune code! (Takes ~2 minutes)</span></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">library</span>(broom)</a>
@@ -196,24 +257,161 @@
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">ggplot</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>( <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill=</span><span class="st">&quot;white&quot;</span>, <span class="dt">color=</span><span class="st">&quot;grey&quot;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre></div>
-<h1 id="read-the-numeric-variable">Read the numeric variable</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The number of restaurant per city district has been found on the internet and a clean version is stored on the gallery website. It is thus easy to read it with read.table. Before doing a choropleth map, it is a good practice to check the distribution of your variable.</p>
-<p>Here, we have a ‘long tail’ distribution: a few cities have a lot of restaurant. Thus we will probably need to apply a log scale to our color palette. It will avoid that all the variation is absorbed by these high values.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["reg"],"name":[1],"type":["int"],"align":["right"]},{"label":["dep"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["depcom"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["dciris"],"name":[4],"type":["fctr"],"align":["left"]},{"label":["an"],"name":[5],"type":["int"],"align":["right"]},{"label":["typequ"],"name":[6],"type":["fctr"],"align":["left"]},{"label":["nb_equip"],"name":[7],"type":["int"],"align":["right"]}],"data":[{"1":"84","2":"01","3":"01001","4":"01001","5":"2016","6":"A504","7":"1","_rn_":"1"},{"1":"84","2":"01","3":"01004","4":"01004_0101","5":"2016","6":"A504","7":"7","_rn_":"2"},{"1":"84","2":"01","3":"01004","4":"01004_0102","5":"2016","6":"A504","7":"15","_rn_":"3"},{"1":"84","2":"01","3":"01004","4":"01004_0201","5":"2016","6":"A504","7":"11","_rn_":"4"},{"1":"84","2":"01","3":"01004","4":"01004_0202","5":"2016","6":"A504","7":"3","_rn_":"5"},{"1":"84","2":"01","3":"01005","4":"01005","5":"2016","6":"A504","7":"4","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p><img src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode2-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># read data</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre>
+      </div>
+      <h1 id="read-the-numeric-variable">Read the numeric variable</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            The number of restaurant per city district has been found on the
+            internet and a clean version is stored on the gallery website. It is
+            thus easy to read it with read.table. Before doing a choropleth map,
+            it is a good practice to check the distribution of your variable.
+          </p>
+          <p>
+            Here, we have a ‘long tail’ distribution: a few cities have a lot of
+            restaurant. Thus we will probably need to apply a log scale to our
+            color palette. It will avoid that all the variation is absorbed by
+            these high values.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div data-pagedtable="false">
+            <script data-pagedtable-source type="application/json">
+              {
+                "columns": [
+                  {
+                    "label": [""],
+                    "name": ["_rn_"],
+                    "type": [""],
+                    "align": ["left"]
+                  },
+                  {
+                    "label": ["reg"],
+                    "name": [1],
+                    "type": ["int"],
+                    "align": ["right"]
+                  },
+                  {
+                    "label": ["dep"],
+                    "name": [2],
+                    "type": ["fctr"],
+                    "align": ["left"]
+                  },
+                  {
+                    "label": ["depcom"],
+                    "name": [3],
+                    "type": ["fctr"],
+                    "align": ["left"]
+                  },
+                  {
+                    "label": ["dciris"],
+                    "name": [4],
+                    "type": ["fctr"],
+                    "align": ["left"]
+                  },
+                  {
+                    "label": ["an"],
+                    "name": [5],
+                    "type": ["int"],
+                    "align": ["right"]
+                  },
+                  {
+                    "label": ["typequ"],
+                    "name": [6],
+                    "type": ["fctr"],
+                    "align": ["left"]
+                  },
+                  {
+                    "label": ["nb_equip"],
+                    "name": [7],
+                    "type": ["int"],
+                    "align": ["right"]
+                  }
+                ],
+                "data": [
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01001",
+                    "4": "01001",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "1",
+                    "_rn_": "1"
+                  },
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01004",
+                    "4": "01004_0101",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "7",
+                    "_rn_": "2"
+                  },
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01004",
+                    "4": "01004_0102",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "15",
+                    "_rn_": "3"
+                  },
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01004",
+                    "4": "01004_0201",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "11",
+                    "_rn_": "4"
+                  },
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01004",
+                    "4": "01004_0202",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "3",
+                    "_rn_": "5"
+                  },
+                  {
+                    "1": "84",
+                    "2": "01",
+                    "3": "01005",
+                    "4": "01005",
+                    "5": "2016",
+                    "6": "A504",
+                    "7": "4",
+                    "_rn_": "6"
+                  }
+                ],
+                "options": {
+                  "columns": { "min": {}, "max": [10] },
+                  "rows": { "min": [10], "max": [10] },
+                  "pages": {}
+                }
+              }
+            </script>
+          </div>
+          <p>
+            <img
+              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode2-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb4">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># read data</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;;&quot;</span>)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(data)</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
@@ -221,34 +419,66 @@
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb4-7" data-line-number="7">data <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>nb_equip)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;skyblue&#39;</span>, <span class="dt">color=</span><span class="st">&#39;#69b3a2&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_log10</span>()</a></code></pre></div>
-<h1 id="merge-geospatial-and-numeric-data">Merge geospatial and numeric data</h1>
-<hr />
-<p>This is a key step in choropleth map: your 2 inputs must have a id in common to make the link between them!</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Make the merge</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;skyblue&#39;</span>, <span class="dt">color=</span><span class="st">&#39;#69b3a2&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_log10</span>()</a></code></pre>
+      </div>
+      <h1 id="merge-geospatial-and-numeric-data">
+        Merge geospatial and numeric data
+      </h1>
+      <hr />
+      <p>
+        This is a key step in choropleth map: your 2 inputs must have a id in
+        common to make the link between them!
+      </p>
+      <div class="sourceCode" id="cb5">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Make the merge</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">spdf_fortified =<span class="st"> </span>spdf_fortified <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">left_join</span>(. , data, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>=<span class="st">&quot;depcom&quot;</span>))</a>
 <a class="sourceLine" id="cb5-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co"># Note that if the number of restaurant is NA, it is in fact 0</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">spdf_fortified<span class="op">$</span>nb_equip[ <span class="kw">is.na</span>(spdf_fortified<span class="op">$</span>nb_equip)] =<span class="st"> </span><span class="fl">0.001</span></a></code></pre></div>
-<h1 id="read-the-numeric-variable-1">Read the numeric variable</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>We can make a first basic choropleth map. We just need to add fill = our value in the aesthetic of our polygons.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode3-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">spdf_fortified<span class="op">$</span>nb_equip[ <span class="kw">is.na</span>(spdf_fortified<span class="op">$</span>nb_equip)] =<span class="st"> </span><span class="fl">0.001</span></a></code></pre>
+      </div>
+      <h1 id="read-the-numeric-variable-1">Read the numeric variable</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            We can make a first basic choropleth map. We just need to add fill =
+            our value in the aesthetic of our polygons.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode3-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb6">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">ggplot</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> nb_equip, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group)) <span class="op">+</span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre></div>
-<h1 id="customized-choropleth-map-with-r-and-ggplot2">Customized choropleth map with R and ggplot2</h1>
-<hr />
-<p>There is a bit of work to do to get a descent figure. We need to change the color palette, improve the legend, use a log scale transformation for the colorscale, change background and add titles and explanation. Here is the code to do that, and the final result!</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(viridis)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre>
+      </div>
+      <h1 id="customized-choropleth-map-with-r-and-ggplot2">
+        Customized choropleth map with R and ggplot2
+      </h1>
+      <hr />
+      <p>
+        There is a bit of work to do to get a descent figure. We need to change
+        the color palette, improve the legend, use a log scale transformation
+        for the colorscale, change background and add titles and explanation.
+        Here is the code to do that, and the final result!
+      </p>
+      <div class="sourceCode" id="cb7">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(viridis)</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> nb_equip, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
@@ -271,179 +501,219 @@
 <a class="sourceLine" id="cb7-21" data-line-number="21">    <span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.09</span>)</a>
 <a class="sourceLine" id="cb7-22" data-line-number="22">  ) <span class="op">+</span></a>
 <a class="sourceLine" id="cb7-23" data-line-number="23"><span class="st">  </span><span class="kw">coord_map</span>()</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">p</a></code></pre></div>
-<p><img src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode9-1.png" width="100%" /></p>
-<!-- Close container -->
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+<a class="sourceLine" id="cb7-24" data-line-number="24">p</a></code></pre>
       </div>
+      <p>
+        <img
+          src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode9-1.png"
+          width="100%"
+        />
+      </p>
+      <!-- Close container -->
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

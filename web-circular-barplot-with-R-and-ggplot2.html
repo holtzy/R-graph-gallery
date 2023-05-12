@@ -1,209 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>
+      Circular barplot with R and ggplot2 &#8211; the R Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Circular barplot with R and ggplot2" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Circular barplot with R and ggplot2 &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Circular barplot with R and ggplot2" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Circular barplot with R and ggplot2</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">A highly customized circular barplot with custom annotations and labels to explore the hiking locations in Washington made with <code>R</code> and <code>ggplot2</code>. This blogpost guides you through a step-by-step construction of a custom circular barplots that includes a variety of custom color scales, labels, annotations, and guides</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='spider-or-radar-chart.html'>Radar section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/caveat/spider.html'>Data to Viz</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Circular barplot with R and ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            A highly customized circular barplot with custom annotations and
+            labels to explore the hiking locations in Washington made with
+            <code>R</code> and <code>ggplot2</code>. This blogpost guides you
+            through a step-by-step construction of a custom circular barplots
+            that includes a variety of custom color scales, labels, annotations,
+            and guides
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="spider-or-radar-chart.html"
+            >Radar section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/caveat/spider.html"
+            >Data to Viz</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 100px">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This page showcases the work of <a href="https://tobias-stalder.netlify.app/">Tobias Stadler</a>. You can find the original code on Tobias’ GitHub <a href="https://github.com/toebR/Tidy-Tuesday/blob/master/hiking/script.R">here</a>.</p>
-<p>Thanks to him for accepting sharing his work here! Thanks also to <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the original code into this step-by-step guide! 🙏🙏</p>
-<p>As a teaser, here is the plot we’re gonna try building:</p>
-<center>
-<img src="img/fromTheWeb/dataviz_hiking.png" style="width:70.0%" />
-</center>
-<p><br></p>
-</div>
-<div id="load-packages" class="section level1">
-<h1>Load packages</h1>
-<hr />
-<p>As usually, let’s start by loading some libraries. Today’s plot does not depend on too many packages. All we need is just <code>dplyr</code>, <code>ggplot2</code>, and <code>stringr</code> for some string manipulations.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+    <div class="container" style="padding-top: 100px">
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This page showcases the work of
+          <a href="https://tobias-stalder.netlify.app/">Tobias Stadler</a>. You
+          can find the original code on Tobias’ GitHub
+          <a
+            href="https://github.com/toebR/Tidy-Tuesday/blob/master/hiking/script.R"
+            >here</a
+          >.
+        </p>
+        <p>
+          Thanks to him for accepting sharing his work here! Thanks also to
+          <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split
+          the original code into this step-by-step guide! 🙏🙏
+        </p>
+        <p>As a teaser, here is the plot we’re gonna try building:</p>
+        <center>
+          <img src="img/fromTheWeb/dataviz_hiking.png" style="width: 70%" />
+        </center>
+        <p><br /></p>
+      </div>
+      <div id="load-packages" class="section level1">
+        <h1>Load packages</h1>
+        <hr />
+        <p>
+          As usually, let’s start by loading some libraries. Today’s plot does
+          not depend on too many packages. All we need is just
+          <code>dplyr</code>, <code>ggplot2</code>, and <code>stringr</code> for
+          some string manipulations.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
-<p><br></p>
-<p>Today, the plot is going to be based on the <strong>Bell MT</strong> font. If you are unsure about how to work with custom fonts in <code>R</code>, <a href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2">this post</a> is for you.</p>
-</div>
-<div id="load-and-prepare-the-data" class="section level1">
-<h1>Load and prepare the data</h1>
-<hr />
-<p>This guide shows how to create a beautiful circular barplot to visualize several characteristics of hiking locations in Washington.</p>
-<p>The data for this post comes from <a href="https://www.wta.org/go-outside/hikes?b_start:int=1">Washington Trails Association</a> courtesy of the <a href="https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles">TidyX crew</a>, <a href="https://twitter.com/Ellis_hughes">Ellis Hughes</a> and <a href="https://twitter.com/OSPpatrick">Patrick Ward</a>. This guide uses the dataset released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2020-11-24. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24">here</a>. Thank you all for making this possible!</p>
-<p>Let’s start by loading the dataset:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hike_data <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(<span class="fu">url</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds&#39;</span>))</span></code></pre></div>
-<p><br></p>
-<p>The first step is to extract the <strong>region</strong> from the <code>location</code> column. This is given by the text before the <code>"--"</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>region <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">word</span>(hike_data<span class="sc">$</span>location, <span class="dv">1</span>, <span class="at">sep =</span> <span class="st">&quot; -- &quot;</span>))</span></code></pre></div>
-<p><br></p>
-<p>A similar approach is used to extract the <strong>number of miles</strong>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>length_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">sapply</span>(<span class="fu">strsplit</span>(hike_data<span class="sc">$</span>length, <span class="st">&quot; &quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span></code></pre></div>
-<p><br></p>
-<p>And finally, compute the <strong>cumulative length</strong> and <strong>mean gain</strong> for each region, as well as recording the <strong>number of tracks</strong> per region.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="ot">&lt;-</span> hike_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Today, the plot is going to be based on the
+          <strong>Bell MT</strong> font. If you are unsure about how to work
+          with custom fonts in <code>R</code>,
+          <a
+            href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2"
+            >this post</a
+          >
+          is for you.
+        </p>
+      </div>
+      <div id="load-and-prepare-the-data" class="section level1">
+        <h1>Load and prepare the data</h1>
+        <hr />
+        <p>
+          This guide shows how to create a beautiful circular barplot to
+          visualize several characteristics of hiking locations in Washington.
+        </p>
+        <p>
+          The data for this post comes from
+          <a href="https://www.wta.org/go-outside/hikes?b_start:int=1"
+            >Washington Trails Association</a
+          >
+          courtesy of the
+          <a
+            href="https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles"
+            >TidyX crew</a
+          >, <a href="https://twitter.com/Ellis_hughes">Ellis Hughes</a> and
+          <a href="https://twitter.com/OSPpatrick">Patrick Ward</a>. This guide
+          uses the dataset released for the
+          <a href="https://github.com/rfordatascience/tidytuesday"
+            >TidyTuesday</a
+          >
+          initiative on the week of 2020-11-24. You can find the original
+          announcement and more information about the data
+          <a
+            href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24"
+            >here</a
+          >. Thank you all for making this possible!
+        </p>
+        <p>Let’s start by loading the dataset:</p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hike_data <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(<span class="fu">url</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds&#39;</span>))</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          The first step is to extract the <strong>region</strong> from the
+          <code>location</code> column. This is given by the text before the
+          <code>"--"</code>.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>region <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">word</span>(hike_data<span class="sc">$</span>location, <span class="dv">1</span>, <span class="at">sep =</span> <span class="st">&quot; -- &quot;</span>))</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          A similar approach is used to extract the
+          <strong>number of miles</strong>.
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>length_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">sapply</span>(<span class="fu">strsplit</span>(hike_data<span class="sc">$</span>length, <span class="st">&quot; &quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          And finally, compute the <strong>cumulative length</strong> and
+          <strong>mean gain</strong> for each region, as well as recording the
+          <strong>number of tracks</strong> per region.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="ot">&lt;-</span> hike_data <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_length =</span> <span class="fu">sum</span>(length_num),</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_gain =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(gain)),</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mean_gain =</span> <span class="fu">round</span>(mean_gain, <span class="at">digits =</span> <span class="dv">0</span>))</span></code></pre></div>
-<p><br></p>
-</div>
-<div id="basic-radar-chart" class="section level1">
-<h1>Basic radar chart</h1>
-<hr />
-<p>Converting a plot from cartesian to circular (polar) coordinates in <code>ggplot2</code> is as easy as adding a <code>coord_polar()</code> call to the plot.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_df) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mean_gain =</span> <span class="fu">round</span>(mean_gain, <span class="at">digits =</span> <span class="dv">0</span>))</span></code></pre>
+        </div>
+        <p><br /></p>
+      </div>
+      <div id="basic-radar-chart" class="section level1">
+        <h1>Basic radar chart</h1>
+        <hr />
+        <p>
+          Converting a plot from cartesian to circular (polar) coordinates in
+          <code>ggplot2</code> is as easy as adding a
+          <code>coord_polar()</code> call to the plot.
+        </p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_df) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make custom panel grid</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">yintercept =</span> y), </span>
@@ -249,14 +351,34 @@
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make it circular!</span></span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>()</span>
 <span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="672" /> <br></p>
-<p>Not too bad! It’s clear the plot isn’t ready for publication yet. But the take-home message so far must be about how easy it is to convert one regular plot into a circular plot by using <code>coord_polar()</code>. Now, wanna make it better? Let’s do it!</p>
-</div>
-<div id="add-annotations-and-legend" class="section level1">
-<h1>Add annotations and legend</h1>
-<p>It’s not clear what is represented by the height of the bars in the plot above. There are some vertical tick marks, but they aren’t definitely placed in the right place. And what about the color? What does it mean? Let’s improve this!</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png"
+            width="672"
+          />
+          <br />
+        </p>
+        <p>
+          Not too bad! It’s clear the plot isn’t ready for publication yet. But
+          the take-home message so far must be about how easy it is to convert
+          one regular plot into a circular plot by using
+          <code>coord_polar()</code>. Now, wanna make it better? Let’s do it!
+        </p>
+      </div>
+      <div id="add-annotations-and-legend" class="section level1">
+        <h1>Add annotations and legend</h1>
+        <p>
+          It’s not clear what is represented by the height of the bars in the
+          plot above. There are some vertical tick marks, but they aren’t
+          definitely placed in the right place. And what about the color? What
+          does it mean? Let’s improve this!
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate the bars and the lollipops so the reader understands the scaling</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">11</span>, </span>
@@ -331,14 +453,32 @@
 <span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
 <span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="672" /> <br></p>
-</div>
-<div id="final-chart" class="section level1">
-<h1>Final chart</h1>
-<hr />
-<p>The plot above is much clearer than its previous version. However, it still needs some tweaks to be ready to be published. First of all, default font is replaced with <strong>Bell MT</strong>. It adds a nice touch that makes it look much better. Then, the background is changed to white. The default gray one doesn’t feel quite right for this chart. And finally, we add good labels that make it easier to transmit what this chart is about.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png"
+            width="672"
+          />
+          <br />
+        </p>
+      </div>
+      <div id="final-chart" class="section level1">
+        <h1>Final chart</h1>
+        <hr />
+        <p>
+          The plot above is much clearer than its previous version. However, it
+          still needs some tweaks to be ready to be published. First of all,
+          default font is replaced with <strong>Bell MT</strong>. It adds a nice
+          touch that makes it look much better. Then, the background is changed
+          to white. The default gray one doesn’t feel quite right for this
+          chart. And finally, we add good labels that make it easier to transmit
+          what this chart is about.
+        </p>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Hiking Locations in Washington&quot;</span>,</span>
@@ -368,181 +508,215 @@
 <span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>()</span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Use `ggsave(&quot;plot.png&quot;, plt,width=9, height=12.6)` to save it as in the output</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /> <br></p>
-<p>Simple and beautiful!</p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Barplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Spider / Radar</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Wordcloud</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Parallel</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+        <p>
+          <img
+            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png"
+            width="70%"
+            style="display: block; margin: auto"
+          />
+          <br />
+        </p>
+        <p>Simple and beautiful!</p>
+        <!-- Close container -->
       </div>
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

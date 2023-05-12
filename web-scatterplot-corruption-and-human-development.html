@@ -1,189 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>
+      Scatterplot with regression fit and automatic text repel &#8211; the R
+      Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a custom scatterplot with a regression fit and automatic positioned labels in ggplot2 to explore the relationship between the Corruption Perceptions Index and Human Development Index. Code snippets with explanations are provided."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Scatterplot with regression fit and automatic text repel"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to build a custom scatterplot with a regression fit and automatic positioned labels in ggplot2 to explore the relationship between the Corruption Perceptions Index and Human Development Index. Code snippets with explanations are provided."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-scatterplot-corruption-and-human-development.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Scatterplot with regression fit and automatic text repel &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build a custom scatterplot with a regression fit and automatic positioned labels in ggplot2 to explore the relationship between the Corruption Perceptions Index and Human Development Index. Code snippets with explanations are provided.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Scatterplot with regression fit and automatic text repel" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post explains how to build a custom scatterplot with a regression fit and automatic positioned labels in ggplot2 to explore the relationship between the Corruption Perceptions Index and Human Development Index. Code snippets with explanations are provided." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/web-scatterplot-corruption-and-human-development.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Scatterplot with regression fit and automatic text repel</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">A custom scatterplot with an overlayed regression fit and auto-positioned labels to explore the relationship between the Corruption Perceptions Index and Human Development Index made with <code>R</code> and the <code>tidyverse</code>. This post includes a variety of custom colors, markers, and layout adjustments. The library <code>ggrepel</code> is used to automatically adjust the position of labels in the plots.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='scatterplot.html'>Scatter section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/scatter.html'>Data to Viz</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center>
+          <h1>Scatterplot with regression fit and automatic text repel</h1>
+        </center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            A custom scatterplot with an overlayed regression fit and
+            auto-positioned labels to explore the relationship between the
+            Corruption Perceptions Index and Human Development Index made with
+            <code>R</code> and the <code>tidyverse</code>. This post includes a
+            variety of custom colors, markers, and layout adjustments. The
+            library <code>ggrepel</code> is used to automatically adjust the
+            position of labels in the plots.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="scatterplot.html"
+            >Scatter section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/scatter.html"
+            >Data to Viz</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 100px">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This page showcases the work of <a href="https://clauswilke.com/">Claus O. Wilke</a> in his R package <a href="https://wilkelab.org/practicalgg/index.html">practicalgg</a> that contains step-by-step examples demonstrating how to get the most out of ggplot2. You can find the original code for this example <a href="https://wilkelab.org/practicalgg/articles/corruption_human_development.html">here</a>.</p>
-<p>Thanks to him for accepting sharing his work here! Thanks also to <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the original code into this step-by-step guide! 🙏🙏</p>
-<p>As a teaser, here is the plot we’re building today:</p>
-<center>
-<img src="img/fromTheWeb/web-scatterplot-corruption-and-human-development.png" style="width:75.0%" />
-</center>
-</div>
-<div id="load-packages" class="section level1">
-<h1>Load packages</h1>
-<hr />
-<p>As usual, it is first necessary to load some packages before building the figure. <a href="https://ggrepel.slowkow.com/articles/examples.html">ggrepel</a> provides geoms for <code>ggplot2</code> to repel overlapping text labels. Text labels repel away from each other, away from data points, and away from edges of the plotting area in an automatic fashion. Also, <a href="https://hclwizard.org/r-colorspace/"><code>colorspace</code></a> is loaded to use its function <code>darken()</code>, and <a href="https://wilkelab.org/cowplot/"><code>cowplot</code></a> contributes its <code>theme_minimal_hgrid()</code> built-in theme.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+    <div class="container" style="padding-top: 100px">
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This page showcases the work of
+          <a href="https://clauswilke.com/">Claus O. Wilke</a> in his R package
+          <a href="https://wilkelab.org/practicalgg/index.html">practicalgg</a>
+          that contains step-by-step examples demonstrating how to get the most
+          out of ggplot2. You can find the original code for this example
+          <a
+            href="https://wilkelab.org/practicalgg/articles/corruption_human_development.html"
+            >here</a
+          >.
+        </p>
+        <p>
+          Thanks to him for accepting sharing his work here! Thanks also to
+          <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split
+          the original code into this step-by-step guide! 🙏🙏
+        </p>
+        <p>As a teaser, here is the plot we’re building today:</p>
+        <center>
+          <img
+            src="img/fromTheWeb/web-scatterplot-corruption-and-human-development.png"
+            style="width: 75%"
+          />
+        </center>
+      </div>
+      <div id="load-packages" class="section level1">
+        <h1>Load packages</h1>
+        <hr />
+        <p>
+          As usual, it is first necessary to load some packages before building
+          the figure.
+          <a href="https://ggrepel.slowkow.com/articles/examples.html"
+            >ggrepel</a
+          >
+          provides geoms for <code>ggplot2</code> to repel overlapping text
+          labels. Text labels repel away from each other, away from data points,
+          and away from edges of the plotting area in an automatic fashion.
+          Also,
+          <a href="https://hclwizard.org/r-colorspace/"
+            ><code>colorspace</code></a
+          >
+          is loaded to use its function <code>darken()</code>, and
+          <a href="https://wilkelab.org/cowplot/"><code>cowplot</code></a>
+          contributes its <code>theme_minimal_hgrid()</code> built-in theme.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(colorspace)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code></pre></div>
-</div>
-<div id="load-and-prepare-the-dataset" class="section level1">
-<h1>Load and prepare the dataset</h1>
-<hr />
-<p>Today’s chart uses the <a href="https://wilkelab.org/practicalgg/reference/corruption.html"><code>corruption</code></a> dataset in the <a href="https://wilkelab.org/practicalgg/index.html"><code>practicalgg</code></a> package. This data contains information about Corruption Perceptions Index (CPI) and Human Development Index (HDI) for 176 countries, from 2012 to 2015.</p>
-<p>The original source are the <a href="https://www.transparency.org/en/news/corruption-perceptions-index-2016#table">Corruption Perceptions Index 2016</a> released by <a href="https://transparency.org">Transparency International</a> and the <a href="http://hdr.undp.org/en/data#">Human Development Index</a> made available in the <a href="http://hdr.undp.org/en/">Human Development Reports</a> by the <a href="https://www.undp.org/">United Nations Development Programme</a>. These datasets were merged and made available by <a href="https://clauswilke.com/">Claus O. Wilke</a> as the <code>corruption</code> dataset in his <code>practicalgg</code> package. Thanks to Claus for all the work and making this possible!</p>
-<p>The following chunk loads the data, keeps only observations for the 2015 year, and drops any row that contains a missing value.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>corrupt <span class="ot">&lt;-</span> practicalgg<span class="sc">::</span>corruption <span class="sc">%&gt;%</span> </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code></pre>
+        </div>
+      </div>
+      <div id="load-and-prepare-the-dataset" class="section level1">
+        <h1>Load and prepare the dataset</h1>
+        <hr />
+        <p>
+          Today’s chart uses the
+          <a href="https://wilkelab.org/practicalgg/reference/corruption.html"
+            ><code>corruption</code></a
+          >
+          dataset in the
+          <a href="https://wilkelab.org/practicalgg/index.html"
+            ><code>practicalgg</code></a
+          >
+          package. This data contains information about Corruption Perceptions
+          Index (CPI) and Human Development Index (HDI) for 176 countries, from
+          2012 to 2015.
+        </p>
+        <p>
+          The original source are the
+          <a
+            href="https://www.transparency.org/en/news/corruption-perceptions-index-2016#table"
+            >Corruption Perceptions Index 2016</a
+          >
+          released by
+          <a href="https://transparency.org">Transparency International</a> and
+          the
+          <a href="http://hdr.undp.org/en/data#">Human Development Index</a>
+          made available in the
+          <a href="http://hdr.undp.org/en/">Human Development Reports</a> by the
+          <a href="https://www.undp.org/"
+            >United Nations Development Programme</a
+          >. These datasets were merged and made available by
+          <a href="https://clauswilke.com/">Claus O. Wilke</a> as the
+          <code>corruption</code> dataset in his
+          <code>practicalgg</code> package. Thanks to Claus for all the work and
+          making this possible!
+        </p>
+        <p>
+          The following chunk loads the data, keeps only observations for the
+          2015 year, and drops any row that contains a missing value.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>corrupt <span class="ot">&lt;-</span> practicalgg<span class="sc">::</span>corruption <span class="sc">%&gt;%</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2015</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span></code></pre></div>
-<p><br></p>
-<p>Next, longer region names are split into multiple lines so they fit better in the legend that goes on the top region of the plot.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>corrupt <span class="ot">&lt;-</span> corrupt <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Next, longer region names are split into multiple lines so they fit
+          better in the legend that goes on the top region of the plot.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>corrupt <span class="ot">&lt;-</span> corrupt <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">case_when</span>(</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">==</span> <span class="st">&quot;Middle East and North Africa&quot;</span> <span class="sc">~</span> <span class="st">&quot;Middle East</span><span class="sc">\n</span><span class="st">and North Africa&quot;</span>,</span>
@@ -191,10 +293,20 @@
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      region <span class="sc">==</span> <span class="st">&quot;Sub Saharan Africa&quot;</span> <span class="sc">~</span> <span class="st">&quot;Sub-Saharan</span><span class="sc">\n</span><span class="st">Africa&quot;</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> region <span class="co"># All the other remain the same</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p><br></p>
-<p>And finally, we add a new variable, <code>label</code>, that contains the name of some selected countries. These countries are going to be added to the plot with the <code>geom_text_repel()</code> function from the <code>ggrepel</code> package that is going to automatically adjust their positions to avoid overlap.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>country_highlight <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          And finally, we add a new variable, <code>label</code>, that contains
+          the name of some selected countries. These countries are going to be
+          added to the plot with the <code>geom_text_repel()</code> function
+          from the <code>ggrepel</code> package that is going to automatically
+          adjust their positions to avoid overlap.
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>country_highlight <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;Norway&quot;</span>, <span class="st">&quot;United States&quot;</span>, <span class="st">&quot;Greece&quot;</span>, <span class="st">&quot;Singapore&quot;</span>, <span class="st">&quot;Rwanda&quot;</span>, </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Russia&quot;</span>, <span class="st">&quot;Venezuela&quot;</span>, <span class="st">&quot;Sudan&quot;</span>, <span class="st">&quot;Iraq&quot;</span>, <span class="st">&quot;Ghana&quot;</span>, <span class="st">&quot;Niger&quot;</span>, <span class="st">&quot;Chad&quot;</span>, <span class="st">&quot;Kuwait&quot;</span>, </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Qatar&quot;</span>, <span class="st">&quot;Myanmar&quot;</span>, <span class="st">&quot;Nepal&quot;</span>, <span class="st">&quot;Chile&quot;</span>, <span class="st">&quot;Argentina&quot;</span>, <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;China&quot;</span></span>
@@ -203,15 +315,31 @@
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>corrupt <span class="ot">&lt;-</span> corrupt <span class="sc">%&gt;%</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">ifelse</span>(country <span class="sc">%in%</span> country_highlight, country, <span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p><br></p>
-<p>That’s it for the data preparation step! Let’s build the chart now!</p>
-</div>
-<div id="construct-the-plot" class="section level1">
-<h1>Construct the plot</h1>
-<hr />
-<p>Unlike other guides in this series, this post goes straight to the point and builds the chart in a single chunk of code. The <a href="https://wilkelab.org/practicalgg/articles/corruption_human_development.html">original vignette</a> is already an excellent step-by-step guide on the construction of this plot. Some comments are still added within the code to explain what is going on in certain lines.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Okabe Ito colors</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          That’s it for the data preparation step! Let’s build the chart now!
+        </p>
+      </div>
+      <div id="construct-the-plot" class="section level1">
+        <h1>Construct the plot</h1>
+        <hr />
+        <p>
+          Unlike other guides in this series, this post goes straight to the
+          point and builds the chart in a single chunk of code. The
+          <a
+            href="https://wilkelab.org/practicalgg/articles/corruption_human_development.html"
+            >original vignette</a
+          >
+          is already an excellent step-by-step guide on the construction of this
+          plot. Some comments are still added within the code to explain what is
+          going on in certain lines.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Okabe Ito colors</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The last color is used for the regression fit.</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>region_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#E69F00&quot;</span>, <span class="st">&quot;#56B4E9&quot;</span>, <span class="st">&quot;#009E73&quot;</span>, <span class="st">&quot;#F0E442&quot;</span>, <span class="st">&quot;#0072B2&quot;</span>, <span class="st">&quot;#999999&quot;</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -285,180 +413,213 @@
 <span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="st">&quot;right&quot;</span>,</span>
 <span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),</span>
 <span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.box.spacing =</span> <span class="fu">unit</span>(<span class="dv">0</span>, <span class="st">&quot;pt&quot;</span>)</span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="web-scatterplot-corruption-and-human-development_files/figure-html/unnamed-chunk-5-1.png" width="75%" style="display: block; margin: auto;" /></p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Barplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Spider / Radar</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Wordcloud</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Parallel</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+        <p>
+          <img
+            src="web-scatterplot-corruption-and-human-development_files/figure-html/unnamed-chunk-5-1.png"
+            width="75%"
+            style="display: block; margin: auto"
+          />
+        </p>
+        <!-- Close container -->
       </div>
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

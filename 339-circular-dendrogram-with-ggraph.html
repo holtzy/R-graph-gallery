@@ -1,168 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>
+      Circular dendrogram with R and ggraph &#8211; the R Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post shows how to build a customized circular dendrogram using R and the ggraph package. It provides explanation and reproducible code."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Circular dendrogram with R and ggraph" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post shows how to build a customized circular dendrogram using R and the ggraph package. It provides explanation and reproducible code."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/339-circular-dendrogram-with-ggraph.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Circular dendrogram with R and ggraph &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post shows how to build a customized circular dendrogram using R and the ggraph package. It provides explanation and reproducible code.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Circular dendrogram with R and ggraph" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post shows how to build a customized circular dendrogram using R and the ggraph package. It provides explanation and reproducible code." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/339-circular-dendrogram-with-ggraph.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Circular dendrogram with R and ggraph</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This post shows how to build a customized circular <a href="dendrogram.html">dendrogram</a> using R and the <code>ggraph</code> package. It provides explanation and reproducible code.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='dendrogram.html'>Dendrogram section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/dendrogram.html'>Data to Viz</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Circular dendrogram with R and ggraph</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post shows how to build a customized circular
+            <a href="dendrogram.html">dendrogram</a> using R and the
+            <code>ggraph</code> package. It provides explanation and
+            reproducible code.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="dendrogram.html"
+            >Dendrogram section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/dendrogram.html"
+            >Data to Viz</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 80px;">
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The circular dendrogram of the <code>ggraph</code> library deserves its own page because it can be a bit tricky to adjust the labels. Indeed they need to have a good angle, be flipped upside down on the left part of the chart, and their alignment needs to be adjusted as well.</p>
-<p>The following piece of code should allow you to display them correctly as shown beside. Note that the <a href="334-basic-dendrogram-with-ggraph.html">graph #334</a> gives the basis of dendrogram with ggraph, and that <a href="335-custom-ggraph-dendrogram.html">graph #335</a> presents a few possible customizations.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="339-circular-dendrogram-with-ggraph_files/figure-html/thecode8-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
+    <div class="container" style="padding-top: 80px">
+      <div class="row">
+        <div class="col-md-6 col-sm-12 align-self-center">
+          <p>
+            The circular dendrogram of the <code>ggraph</code> library deserves
+            its own page because it can be a bit tricky to adjust the labels.
+            Indeed they need to have a good angle, be flipped upside down on the
+            left part of the chart, and their alignment needs to be adjusted as
+            well.
+          </p>
+          <p>
+            The following piece of code should allow you to display them
+            correctly as shown beside. Note that the
+            <a href="334-basic-dendrogram-with-ggraph.html">graph #334</a> gives
+            the basis of dendrogram with ggraph, and that
+            <a href="335-custom-ggraph-dendrogram.html">graph #335</a> presents
+            a few possible customizations.
+          </p>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <p>
+            <img
+              src="339-circular-dendrogram-with-ggraph_files/figure-html/thecode8-1.png"
+              width="100%"
+            />
+          </p>
+        </div>
+      </div>
+      <div class="sourceCode" id="cb1">
+        <pre
+          class="sourceCode r"
+        ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggraph)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
@@ -212,220 +245,254 @@
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position=</span><span class="st">&quot;none&quot;</span>,</span>
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin=</span><span class="fu">unit</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="st">&quot;cm&quot;</span>),</span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>))</span></code></pre></div>
-<div id="session-info" class="section level1">
-<h1>Session info</h1>
-<hr />
-<p>Some people reported issues with this example so I’m printing the session info to help tracking the issue.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
-<pre><code>## R version 3.5.3 (2019-03-11)
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.3</span>, <span class="fl">1.3</span>))</span></code></pre>
+      </div>
+      <div id="session-info" class="section level1">
+        <h1>Session info</h1>
+        <hr />
+        <p>
+          Some people reported issues with this example so I’m printing the
+          session info to help tracking the issue.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre>
+        </div>
+        <pre><code>## R version 3.5.3 (2019-03-11)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
 ## Running under: macOS Mojave 10.14.6
-## 
+##
 ## Matrix products: default
 ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
-## 
+##
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
+##
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
+## [1] stats     graphics  grDevices utils     datasets  methods   base
+##
 ## other attached packages:
-##  [1] RColorBrewer_1.1-2 forcats_0.5.1      stringr_1.4.0      dplyr_1.0.6       
-##  [5] purrr_0.3.4        readr_1.4.0        tidyr_1.1.3        tibble_3.1.2      
-##  [9] tidyverse_1.3.1    igraph_1.2.4.1     ggraph_1.0.2       ggplot2_3.3.3     
-## 
+##  [1] RColorBrewer_1.1-2 forcats_0.5.1      stringr_1.4.0      dplyr_1.0.6
+##  [5] purrr_0.3.4        readr_1.4.0        tidyr_1.1.3        tibble_3.1.2
+##  [9] tidyverse_1.3.1    igraph_1.2.4.1     ggraph_1.0.2       ggplot2_3.3.3
+##
 ## loaded via a namespace (and not attached):
-##  [1] ggrepel_0.8.0     Rcpp_1.0.1        lubridate_1.7.10  assertthat_0.2.1 
-##  [5] digest_0.6.20     utf8_1.1.4        ggforce_0.2.1     R6_2.4.0         
-##  [9] cellranger_1.1.0  plyr_1.8.4        backports_1.1.4   reprex_2.0.0     
-## [13] evaluate_0.13     highr_0.8         httr_1.4.2        pillar_1.6.1     
-## [17] rlang_0.4.11      readxl_1.3.1      rstudioapi_0.13   rmarkdown_1.12   
-## [21] labeling_0.3      polyclip_1.10-0   munsell_0.5.0     broom_0.7.6      
-## [25] compiler_3.5.3    modelr_0.1.8      xfun_0.23         pkgconfig_2.0.2  
-## [29] htmltools_0.3.6   tidyselect_1.1.1  gridExtra_2.3     fansi_0.4.0      
-## [33] viridisLite_0.3.0 crayon_1.4.1      dbplyr_2.1.1      withr_2.4.2      
-## [37] MASS_7.3-51.1     grid_3.5.3        jsonlite_1.7.2    gtable_0.3.0     
-## [41] lifecycle_1.0.0   DBI_1.0.0         magrittr_2.0.1    scales_1.0.0     
-## [45] cli_2.5.0         stringi_1.4.3     farver_1.1.0      viridis_0.5.1    
-## [49] fs_1.5.0          xml2_1.3.2        ellipsis_0.3.2    generics_0.0.2   
-## [53] vctrs_0.3.8       tools_3.5.3       glue_1.4.2        tweenr_1.0.1     
-## [57] hms_1.1.0         yaml_2.2.0        colorspace_1.4-1  rvest_1.0.0      
+##  [1] ggrepel_0.8.0     Rcpp_1.0.1        lubridate_1.7.10  assertthat_0.2.1
+##  [5] digest_0.6.20     utf8_1.1.4        ggforce_0.2.1     R6_2.4.0
+##  [9] cellranger_1.1.0  plyr_1.8.4        backports_1.1.4   reprex_2.0.0
+## [13] evaluate_0.13     highr_0.8         httr_1.4.2        pillar_1.6.1
+## [17] rlang_0.4.11      readxl_1.3.1      rstudioapi_0.13   rmarkdown_1.12
+## [21] labeling_0.3      polyclip_1.10-0   munsell_0.5.0     broom_0.7.6
+## [25] compiler_3.5.3    modelr_0.1.8      xfun_0.23         pkgconfig_2.0.2
+## [29] htmltools_0.3.6   tidyselect_1.1.1  gridExtra_2.3     fansi_0.4.0
+## [33] viridisLite_0.3.0 crayon_1.4.1      dbplyr_2.1.1      withr_2.4.2
+## [37] MASS_7.3-51.1     grid_3.5.3        jsonlite_1.7.2    gtable_0.3.0
+## [41] lifecycle_1.0.0   DBI_1.0.0         magrittr_2.0.1    scales_1.0.0
+## [45] cli_2.5.0         stringi_1.4.3     farver_1.1.0      viridis_0.5.1
+## [49] fs_1.5.0          xml2_1.3.2        ellipsis_0.3.2    generics_0.0.2
+## [53] vctrs_0.3.8       tools_3.5.3       glue_1.4.2        tweenr_1.0.1
+## [57] hms_1.1.0         yaml_2.2.0        colorspace_1.4-1  rvest_1.0.0
 ## [61] knitr_1.33        haven_2.3.1</code></pre>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-  <div class="container">
-
-    <p class="mySeryTitle">Related chart types</p>
-    <hr>
-    <div class="row">
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="stacked-barplot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Grouped and Stacked barplot</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="treemap.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Tree150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Treemap</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="doughnut-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Doughnut</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="pie-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Pie150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Pie chart</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="dendrogram.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Dendrogram</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="circle-packing.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Circular packing</div>
+        <!-- Close container -->
       </div>
     </div>
-
-  </div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="stacked-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/GroupedRed150.png"
+                alt=""
+              />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Grouped and Stacked barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="treemap.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Tree150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Treemap</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="doughnut-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Doughnut150.png" alt="" />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Doughnut</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="pie-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Pie150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Pie chart</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="dendrogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Dendrogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Dendrogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circle-packing.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularPacking150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular packing</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

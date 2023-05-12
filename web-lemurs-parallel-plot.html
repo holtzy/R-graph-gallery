@@ -1,194 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>
+      Parallel coordinates chart with ggplot2 &#8211; the R Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a custom parallel coordinate plot in ggplot2 with automatically positioned labels. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Parallel coordinates chart with ggplot2"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to build a custom parallel coordinate plot in ggplot2 with automatically positioned labels. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-lemurs-parallel-plot.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Parallel coordinates chart with ggplot2 &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build a custom parallel coordinate plot in ggplot2 with automatically positioned labels. Step by step code snippets with explanations are provided. Built with R and the tidyverse.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Parallel coordinates chart with ggplot2" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post explains how to build a custom parallel coordinate plot in ggplot2 with automatically positioned labels. Step by step code snippets with explanations are provided. Built with R and the tidyverse." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/web-lemurs-parallel-plot.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Parallel coordinates chart with ggplot2</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">This blogpost explains how to build a parallel coordinate chart to explore the maximum ages recorded for different species of lemurs by sex with <code>R</code> and <code>ggplot2</code>. This article includes a step-by-step walkthrough of the construction of a highly customized parallel coordinate chart that uses a variety of custom fonts, colors, annotations, and legends.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='parallel-plot.html'>Parallel coord section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/parallel.html'>Data to Viz</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Parallel coordinates chart with ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This blogpost explains how to build a parallel coordinate chart to
+            explore the maximum ages recorded for different species of lemurs by
+            sex with <code>R</code> and <code>ggplot2</code>. This article
+            includes a step-by-step walkthrough of the construction of a highly
+            customized parallel coordinate chart that uses a variety of custom
+            fonts, colors, annotations, and legends.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="parallel-plot.html"
+            >Parallel coord section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/parallel.html"
+            >Data to Viz</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 100px">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This page showcases the work of <a href="https://karaman.is/">Georgios Karamanis</a>, built for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative. You can find the original code on his Github repository <a href="https://github.com/gkaramanis/tidytuesday/blob/master/2021/2021-week34/lemurs.R">here</a>.</p>
-<p>Thanks to him for accepting sharing his work here! Thanks also to <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the original code into this step-by-step guide! 🙏🙏</p>
-<p>As a teaser, here is the plot we’re gonna try building:</p>
-<center>
-<img src="https://raw.githubusercontent.com/gkaramanis/tidytuesday/master/2021/2021-week34/plots/lemurs.png" width="70%"/>
-</center>
-<p><br></p>
-</div>
-<div id="load-packages" class="section level1">
-<h1>Load packages</h1>
-<hr />
-<p>Today’s chart uses the <a href="https://tidyverse.tidyverse.org/"><code>tidyverse</code></a> and <a href="https://ggrepel.slowkow.com/"><code>ggrepel</code></a>. The <code>tidyverse</code> is going to load the very well known <code>dplyr</code> and <code>ggplot2</code> libraries, among others, and <code>ggrepel</code> will make it extremely easy to automatically position labels.</p>
-<p><br></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code></pre></div>
-<p><br></p>
-<p>This post uses the <strong>Fira Sans Compressed</strong> and the <strong>Faune</strong> fonts. If you are a little unsure about how to work with custom fonts in R, <a href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2">this post</a> is for you.</p>
-</div>
-<div id="load-and-prepare-the-data" class="section level1">
-<h1>Load and prepare the data</h1>
-<hr />
-<p>The data for this post originally comes from the <a href="https://lemur.duke.edu/">Duke Lemur Center</a> and was cleaned by <a href="https://github.com/rfordatascience/tidytuesday/issues/204">Jesse Mostipak</a>. This guide uses the dataset released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2021-08-24. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-08-24/readme.md">here</a>. Thank you all for making this work possible! 🙏🙏</p>
-<p>Two datasets are needed today. The first one, called <code>lemurs</code>, has information about the lemurs themselves, while <code>taxonomy</code> is going to be helpful to obtain the latin names of the species.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>lemurs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+    <div class="container" style="padding-top: 100px">
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This page showcases the work of
+          <a href="https://karaman.is/">Georgios Karamanis</a>, built for the
+          <a href="https://github.com/rfordatascience/tidytuesday"
+            >TidyTuesday</a
+          >
+          initiative. You can find the original code on his Github repository
+          <a
+            href="https://github.com/gkaramanis/tidytuesday/blob/master/2021/2021-week34/lemurs.R"
+            >here</a
+          >.
+        </p>
+        <p>
+          Thanks to him for accepting sharing his work here! Thanks also to
+          <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split
+          the original code into this step-by-step guide! 🙏🙏
+        </p>
+        <p>As a teaser, here is the plot we’re gonna try building:</p>
+        <center>
+          <img
+            src="https://raw.githubusercontent.com/gkaramanis/tidytuesday/master/2021/2021-week34/plots/lemurs.png"
+            width="70%"
+          />
+        </center>
+        <p><br /></p>
+      </div>
+      <div id="load-packages" class="section level1">
+        <h1>Load packages</h1>
+        <hr />
+        <p>
+          Today’s chart uses the
+          <a href="https://tidyverse.tidyverse.org/"><code>tidyverse</code></a>
+          and <a href="https://ggrepel.slowkow.com/"><code>ggrepel</code></a
+          >. The <code>tidyverse</code> is going to load the very well known
+          <code>dplyr</code> and <code>ggplot2</code> libraries, among others,
+          and <code>ggrepel</code> will make it extremely easy to automatically
+          position labels.
+        </p>
+        <p><br /></p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          This post uses the <strong>Fira Sans Compressed</strong> and the
+          <strong>Faune</strong> fonts. If you are a little unsure about how to
+          work with custom fonts in R,
+          <a
+            href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2"
+            >this post</a
+          >
+          is for you.
+        </p>
+      </div>
+      <div id="load-and-prepare-the-data" class="section level1">
+        <h1>Load and prepare the data</h1>
+        <hr />
+        <p>
+          The data for this post originally comes from the
+          <a href="https://lemur.duke.edu/">Duke Lemur Center</a> and was
+          cleaned by
+          <a href="https://github.com/rfordatascience/tidytuesday/issues/204"
+            >Jesse Mostipak</a
+          >. This guide uses the dataset released for the
+          <a href="https://github.com/rfordatascience/tidytuesday"
+            >TidyTuesday</a
+          >
+          initiative on the week of 2021-08-24. You can find the original
+          announcement and more information about the data
+          <a
+            href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-08-24/readme.md"
+            >here</a
+          >. Thank you all for making this work possible! 🙏🙏
+        </p>
+        <p>
+          Two datasets are needed today. The first one, called
+          <code>lemurs</code>, has information about the lemurs themselves,
+          while <code>taxonomy</code> is going to be helpful to obtain the latin
+          names of the species.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>lemurs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv&quot;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>taxonomy <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/taxonomy.csv&quot;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p><br></p>
-<p>Now let’s compute the largest age recorded and the number of animals by species and sex:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lem_longev <span class="ot">&lt;-</span> lemurs <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Now let’s compute the largest age recorded and the number of animals
+          by species and sex:
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>lem_longev <span class="ot">&lt;-</span> lemurs <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Keep unique combinations of the following variables.</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(dlc_id, taxon, sex, age_max_live_or_dead_y) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Drop observations with Not Determined sex</span></span>
@@ -211,33 +298,61 @@
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clean one of the taxon names that is misspelled</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">taxon =</span> <span class="fu">if_else</span>(taxon <span class="sc">==</span> <span class="st">&quot;CMED&quot;</span>, <span class="st">&quot;CMEAD&quot;</span>, taxon)) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Merge aggregated data with the taxonomy to obtain species names</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(taxonomy)</span></code></pre></div>
-<p><br></p>
-<p>Let’s store the names of the font families in two variables</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>family1 <span class="ot">=</span> <span class="st">&quot;Fira Sans Compressed&quot;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>family2 <span class="ot">=</span> <span class="st">&quot;Faune&quot;</span></span></code></pre></div>
-<p><br></p>
-</div>
-<div id="basic-parallel-plot" class="section level1">
-<h1>Basic parallel plot</h1>
-<hr />
-<p>Let’s get started by plotting a very simple parallel plot. This plot is made of two components: segments and points.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(lem_longev) <span class="sc">+</span> </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(taxonomy)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>Let’s store the names of the font families in two variables</p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>family1 <span class="ot">=</span> <span class="st">&quot;Fira Sans Compressed&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>family2 <span class="ot">=</span> <span class="st">&quot;Faune&quot;</span></span></code></pre>
+        </div>
+        <p><br /></p>
+      </div>
+      <div id="basic-parallel-plot" class="section level1">
+        <h1>Basic parallel plot</h1>
+        <hr />
+        <p>
+          Let’s get started by plotting a very simple parallel plot. This plot
+          is made of two components: segments and points.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(lem_longev) <span class="sc">+</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">y =</span> longev_F, <span class="at">yend =</span> longev_M, <span class="at">x =</span> <span class="dv">1</span>, <span class="at">xend =</span> <span class="dv">2</span>, <span class="at">color =</span> color)) <span class="sc">+</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> longev_F, <span class="at">x =</span> <span class="dv">1</span>, <span class="at">color =</span> color, <span class="at">size =</span> n_F)) <span class="sc">+</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> longev_M, <span class="at">x =</span> <span class="dv">2</span>, <span class="at">color =</span> color, <span class="at">size =</span> n_M)) <span class="sc">+</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_identity</span>()</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-5-1.png" width="70%" /> <br></p>
-</div>
-<div id="add-labels" class="section level1">
-<h1>Add labels</h1>
-<hr />
-<p>That was a pretty good start. Now it’s time to add the labels for the species. This is when the chart gets really insightful because the labels allow us to identify each species and compare them.</p>
-<p>Fortunately, there’s <code>ggrepel</code> which is going to make extremely easy to automatically adjust the position of the labels.</p>
-<p>Let’s do it!</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-5-1.png"
+            width="70%"
+          />
+          <br />
+        </p>
+      </div>
+      <div id="add-labels" class="section level1">
+        <h1>Add labels</h1>
+        <hr />
+        <p>
+          That was a pretty good start. Now it’s time to add the labels for the
+          species. This is when the chart gets really insightful because the
+          labels allow us to identify each species and compare them.
+        </p>
+        <p>
+          Fortunately, there’s <code>ggrepel</code> which is going to make
+          extremely easy to automatically adjust the position of the labels.
+        </p>
+        <p>Let’s do it!</p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(lem_longev, taxon_id <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">!=</span> <span class="dv">0</span>),</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> longev_M, <span class="at">x =</span> <span class="dv">2</span>, <span class="at">label =</span> latin_name),</span>
@@ -252,18 +367,54 @@
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">2.5</span>))</span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-6-1.png" width="70%" /> <br></p>
-<p>It’s worth remarking some arguments in the <code>geom_text_repel()</code> function. First, <code>direction = "y"</code>. This tells the text can only be shifted in the vertical direction, which ensures the labels are horizontally aligned. Then we also have <code>nudge_x</code>, which adjust where the text starts horizontally, and <code>hjust</code> that determines if the text is left aligned (<code>hjust=0</code>) or right aligned (<code>hjust=1</code>).</p>
-</div>
-<div id="clean-and-customize-layout" class="section level1">
-<h1>Clean and customize layout</h1>
-<hr />
-<p>The next step is to add some annotations. First, horizontal lines and labels to indicate the ages on the vertical axis. Then, other labels on the sides telling which side represents which sex.</p>
-<p>This step is also about customizing the legend. This legend is going to tell what is being represented by the dot sizes.</p>
-<p>Finally, the following chunk also changes the background color and removes the tick marks from both axis.</p>
-<p>Notice the plot is built from scratch again. This is because <code>ggplot2</code> uses something known as the <em>painter model</em>, which means that elements are drawn in the same order they are included in the plot. In other words, if you want some labels to be placed behind the segments, you need to add them earlier, as follows:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(lem_longev) <span class="sc">+</span> </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-6-1.png"
+            width="70%"
+          />
+          <br />
+        </p>
+        <p>
+          It’s worth remarking some arguments in the
+          <code>geom_text_repel()</code> function. First,
+          <code>direction = "y"</code>. This tells the text can only be shifted
+          in the vertical direction, which ensures the labels are horizontally
+          aligned. Then we also have <code>nudge_x</code>, which adjust where
+          the text starts horizontally, and <code>hjust</code> that determines
+          if the text is left aligned (<code>hjust=0</code>) or right aligned
+          (<code>hjust=1</code>).
+        </p>
+      </div>
+      <div id="clean-and-customize-layout" class="section level1">
+        <h1>Clean and customize layout</h1>
+        <hr />
+        <p>
+          The next step is to add some annotations. First, horizontal lines and
+          labels to indicate the ages on the vertical axis. Then, other labels
+          on the sides telling which side represents which sex.
+        </p>
+        <p>
+          This step is also about customizing the legend. This legend is going
+          to tell what is being represented by the dot sizes.
+        </p>
+        <p>
+          Finally, the following chunk also changes the background color and
+          removes the tick marks from both axis.
+        </p>
+        <p>
+          Notice the plot is built from scratch again. This is because
+          <code>ggplot2</code> uses something known as the
+          <em>painter model</em>, which means that elements are drawn in the
+          same order they are included in the plot. In other words, if you want
+          some labels to be placed behind the segments, you need to add them
+          earlier, as follows:
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(lem_longev) <span class="sc">+</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add horizontal lines in the bacground representing the years axis</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;segment&quot;</span>, <span class="at">x =</span> <span class="fl">1.1</span>, <span class="at">xend =</span> <span class="fl">1.9</span>, </span>
@@ -330,14 +481,30 @@
 <span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
 <span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-7-1.png" width="70%" /> <br></p>
-</div>
-<div id="final-chart" class="section level1">
-<h1>Final chart</h1>
-<hr />
-<p>The chart above is just one step away from being publication-ready. This final touch consists of adding a good title and a subtitle to clearly describe what you see in the chart, and a caption giving appropriate credit to the author of the visualization and the people who made the data available.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-7-1.png"
+            width="70%"
+          />
+          <br />
+        </p>
+      </div>
+      <div id="final-chart" class="section level1">
+        <h1>Final chart</h1>
+        <hr />
+        <p>
+          The chart above is just one step away from being publication-ready.
+          This final touch consists of adding a good title and a subtitle to
+          clearly describe what you see in the chart, and a caption giving
+          appropriate credit to the author of the visualization and the people
+          who made the data available.
+        </p>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Longest lived lemurs at the Duke Lemur Center&quot;</span>,</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Maximum age recorded in years (living or dead), by species and sex&quot;</span>,</span>
@@ -358,182 +525,214 @@
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>)</span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-8-1.png" width="70%" /></p>
-<p><br></p>
-<p>It’s been so exciting to work on this chart! 🤩</p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Barplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Spider / Radar</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Wordcloud</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Parallel</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+        <p>
+          <img
+            src="web-lemurs-parallel-plot_files/figure-html/unnamed-chunk-8-1.png"
+            width="70%"
+          />
+        </p>
+        <p><br /></p>
+        <p>It’s been so exciting to work on this chart! 🤩</p>
+        <!-- Close container -->
       </div>
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>

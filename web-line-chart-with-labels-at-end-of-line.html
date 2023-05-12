@@ -1,191 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<head>
+      gtag("config", "UA-79254642-1");
+    </script>
+    <script>
+      var getOutboundLink = function (url) {
+        gtag("event", "click", {
+          event_category: "outbound",
+          event_label: url,
+          transport_type: "beacon",
+          event_callback: function () {
+            document.location = url;
+          },
+        });
+      };
+    </script>
 
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
 
-    gtag('config', 'UA-79254642-1');
-  </script>
-  <script>
-  var getOutboundLink = function(url) {
-    gtag('event', 'click', {
-      'event_category': 'outbound',
-      'event_label': url,
-      'transport_type': 'beacon',
-      'event_callback': function(){document.location = url;}
-    });
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-3523953066677938",
-            enable_page_level_ads: true
-       });
-  </script>
-  <!-- Google Analytics + OutboundLink + Google Adsense -->
+    <meta charset="utf-8" />
+    <title>
+      Line chart with labels at end of lines &#8211; the R Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
 
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Line chart with labels at end of lines"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-bigmac-index-with-ggplot2.html"
+    />
+    <meta property="og:type" content="website" />
 
-<meta charset="utf-8">
-<title>Line chart with labels at end of lines &#8211; the R Graph Gallery</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided.">
-<meta name="keywords" content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake">
-<meta name="author" content="Yan Holtz">
-<link rel="icon" href="img/logo/R_single_small.png">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Control appearance when shared by social media -->
-<meta property="og:title" content="Line chart with labels at end of lines" />
-<meta property="og:image" content="img/overview_RGG.png" />
-<meta property="og:description" content="This post explains how to build a custom lineplot with highlighted groups with ggplot2 to explore the evolution of the Big Mac Index. Step by step code snippets with explanations are provided." />
-<meta property='og:url' content="https://www.r-graph-gallery.com/web-bigmac-index-with-ggplot2.html" />
-<meta property="og:type" content="website" />
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
-<!-- Bootstrap core CSS -->
-<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
 
-<!-- Custom fonts for this template -->
-<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
 
-<!-- Custom styles for this template -->
-<link href="css/agency.css" rel="stylesheet">
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
 
-<!-- JQUERY -->
-<script src="vendor/jquery/jquery.min.js"></script>
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
 
-</head>
-
-
-
-
-
-<body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
-
-
-<!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
-<nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
-<script>
-  $(function(){
-    $("#mainNav").load("html_chunk/menu.html");
-  });
-</script>
-
-<!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
-<div id="modal_menu_insertion"> </div>
-<script>
-  $(function(){
-    $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
-  });
-</script>
-
-
-
-<!-- Header = Title in big + social media Icon + quick description -->
-<header class="masthead" style="padding-bottom: 30px;">
-  <div class="textlanding">
-      <center><h1>Line chart with labels at end of lines</h1></center>
-      <hr class="short_hr">
-      <br>
-      <ul class="list-inline social-buttons">
-        <li class="list-inline-item">
-          <a href="https://twitter.com/R_Graph_Gallery">
-            <i class="fa fa-twitter"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://github.com/holtzy">
-            <i class="fa fa-github" style="color: white"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-            <i class="fa fa-linkedin"></i>
-          </a>
-        </li>
-        <li class="list-inline-item social-buttons">
-          <a href="https://www.yan-holtz.com">
-            <i class="fa fa-home"></i>
-          </a>
-        </li>
-      </ul>
-      <center><p style="max-width: 600px; margin-top: 40px">A custom lineplot with annotations to explore the evolution of the Big Mac Index with <code>ggplot2</code>, <code>ggrepel</code> and <code>ggtext</code>. This blogpost will guide you through all the steps to produce a beautiful lineplot with highlighted groups and explain how <code>ggrepel</code> and <code>ggtext</code> are a huge help that make customized plots much easier.</p></center>
-      <div style="text-align:center">
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='line-plot.html'>Line chart Section</a>
-         <a class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger" href='https://www.data-to-viz.com/graph/line.html'>Data to Viz</a>
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Line chart with labels at end of lines</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            A custom lineplot with annotations to explore the evolution of the
+            Big Mac Index with <code>ggplot2</code>, <code>ggrepel</code> and
+            <code>ggtext</code>. This blogpost will guide you through all the
+            steps to produce a beautiful lineplot with highlighted groups and
+            explain how <code>ggrepel</code> and <code>ggtext</code> are a huge
+            help that make customized plots much easier.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="line-plot.html"
+            >Line chart Section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/line.html"
+            >Data to Viz</a
+          >
+        </div>
       </div>
-  </div>
-</header>
+    </header>
 
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
 
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
 
-<!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
-<div id="position_for_images"></div>
-<script>
-  $(function(){
-    $("#position_for_images").load("html_chunk/images.html");
-  });
-</script>
-
-
-
-
-
-
-
-
-
-
-<!-- STYLE for chart pages but not the rest of tthe website -->
-<style>
-  img {
-    margin-top: 20px;
-  }
-</style>
-
-
-
-<div class="container" style="padding-top: 100px">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This page showcases the work of <a href="https://www.cedricscherer.com">Cedric Scherer</a>, built for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative. You can find the original code on his github repository <a href="https://github.com/z3tt/TidyTuesday/blob/master/R/2020_52_BigMacIndex.Rmd">here</a>.</p>
-<p>Thanks to him for accepting sharing his work here! Thanks also to <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the original code into this step-by-step guide!</p>
-<p>This is what we’re gonna build</p>
-<center>
-<img src="img/fromTheWeb/web-line-chart-with-labels-at-end-of-line.png" style="width:90.0%" />
-</center>
-<p>Note the pretty sweet labels at the end of each lines. That’s definitely the most readable way to add labels on a line chart. Much better than the usual unordered legend!</p>
-</div>
-<div id="load-packages" class="section level1">
-<h1>Load packages</h1>
-<hr />
-<p>As usual, it is first necessary to load some packages before building the figure. Today’s chart is going to use the help of <a href="https://ggrepel.slowkow.com/articles/examples.html">ggrepel</a> and <a href="https://wilkelab.org/ggtext/index.html"><code>ggtext</code></a>. <code>ggrepel</code> will make it extremely easy to automatically position labels and <code>ggtext</code> is going to make it possible to use annotations that mix normal text with italic and bold text.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+    <div class="container" style="padding-top: 100px">
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This page showcases the work of
+          <a href="https://www.cedricscherer.com">Cedric Scherer</a>, built for
+          the
+          <a href="https://github.com/rfordatascience/tidytuesday"
+            >TidyTuesday</a
+          >
+          initiative. You can find the original code on his github repository
+          <a
+            href="https://github.com/z3tt/TidyTuesday/blob/master/R/2020_52_BigMacIndex.Rmd"
+            >here</a
+          >.
+        </p>
+        <p>
+          Thanks to him for accepting sharing his work here! Thanks also to
+          <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split
+          the original code into this step-by-step guide!
+        </p>
+        <p>This is what we’re gonna build</p>
+        <center>
+          <img
+            src="img/fromTheWeb/web-line-chart-with-labels-at-end-of-line.png"
+            style="width: 90%"
+          />
+        </center>
+        <p>
+          Note the pretty sweet labels at the end of each lines. That’s
+          definitely the most readable way to add labels on a line chart. Much
+          better than the usual unordered legend!
+        </p>
+      </div>
+      <div id="load-packages" class="section level1">
+        <h1>Load packages</h1>
+        <hr />
+        <p>
+          As usual, it is first necessary to load some packages before building
+          the figure. Today’s chart is going to use the help of
+          <a href="https://ggrepel.slowkow.com/articles/examples.html"
+            >ggrepel</a
+          >
+          and
+          <a href="https://wilkelab.org/ggtext/index.html"
+            ><code>ggtext</code></a
+          >. <code>ggrepel</code> will make it extremely easy to automatically
+          position labels and <code>ggtext</code> is going to make it possible
+          to use annotations that mix normal text with italic and bold text.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(showtext)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Lato&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
-<p>You can read more about the showtext package on this <a href="custom-fonts-in-R-and-ggplot2.html">dedicated post</a>.</p>
-<p><br></p>
-</div>
-<div id="load-and-prepare-the-dataset" class="section level1">
-<h1>Load and prepare the dataset</h1>
-<hr />
-<p>Today’s chart visualizes the price changes (in USD) of a Big Mac based on a 2008 as index year. The original source of the data is <a href="https://github.com/TheEconomist/big-mac-data">TheEconomist</a>, but this post is based on the version released for the <a href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a> initiative on the week of 2020-12-22. You can find the original announcement and more information about the data <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-12-22">here</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_mac_raw <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-22/big-mac.csv&#39;</span>)</span></code></pre></div>
-<p><br></p>
-<p>Once the data is loaded, it’s time to get the data ready for the plot.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_mac <span class="ot">&lt;-</span> df_mac_raw <span class="sc">%&gt;%</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre>
+        </div>
+        <p>
+          You can read more about the showtext package on this
+          <a href="custom-fonts-in-R-and-ggplot2.html">dedicated post</a>.
+        </p>
+        <p><br /></p>
+      </div>
+      <div id="load-and-prepare-the-dataset" class="section level1">
+        <h1>Load and prepare the dataset</h1>
+        <hr />
+        <p>
+          Today’s chart visualizes the price changes (in USD) of a Big Mac based
+          on a 2008 as index year. The original source of the data is
+          <a href="https://github.com/TheEconomist/big-mac-data">TheEconomist</a
+          >, but this post is based on the version released for the
+          <a href="https://github.com/rfordatascience/tidytuesday"
+            >TidyTuesday</a
+          >
+          initiative on the week of 2020-12-22. You can find the original
+          announcement and more information about the data
+          <a
+            href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-12-22"
+            >here</a
+          >.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_mac_raw <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-22/big-mac.csv&#39;</span>)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Once the data is loaded, it’s time to get the data ready for the plot.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_mac <span class="ot">&lt;-</span> df_mac_raw <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract year</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date)) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Subset variables</span></span>
@@ -200,10 +282,20 @@
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Also define the group of countries that are going to be highlighted</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>highlights <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;EUZ&quot;</span>, <span class="st">&quot;CHE&quot;</span>, <span class="st">&quot;DNK&quot;</span>, <span class="st">&quot;SWE&quot;</span>, <span class="st">&quot;BRA&quot;</span>, <span class="st">&quot;ARG&quot;</span>, <span class="st">&quot;GBR&quot;</span>, <span class="st">&quot;USA&quot;</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(highlights)</span></code></pre></div>
-<p><br></p>
-<p>Next, it is important to make sure the plot only shows countries that have a Big Mac Index for 2008, the base year. The <code>price_index</code> for a given country at a certain moment is the difference between the <code>price</code> at that moment and the price for that country in 2008.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> df_mac <span class="sc">%&gt;%</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(highlights)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Next, it is important to make sure the plot only shows countries that
+          have a Big Mac Index for 2008, the base year. The
+          <code>price_index</code> for a given country at a certain moment is
+          the difference between the <code>price</code> at that moment and the
+          price for that country in 2008.
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> df_mac <span class="sc">%&gt;%</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(iso_a3)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  </span>
@@ -224,14 +316,22 @@
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">fct_relevel</span>(group, <span class="st">&quot;other&quot;</span>, <span class="at">after =</span> <span class="cn">Inf</span>),</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">name_lab =</span> <span class="fu">if_else</span>(year <span class="sc">==</span> <span class="dv">2020</span>, name, <span class="cn">NA_character_</span>)</span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
-<p><br></p>
-</div>
-<div id="theme-definition" class="section level1">
-<h1>Theme definition</h1>
-<hr />
-<p>In this occasion, the theme is defined before creating the plot. Have a look at the comments within the code below to have a better understanding of what’s going on here.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This theme extends the &#39;theme_minimal&#39; that comes with ggplot2.</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre>
+        </div>
+        <p><br /></p>
+      </div>
+      <div id="theme-definition" class="section level1">
+        <h1>Theme definition</h1>
+        <hr />
+        <p>
+          In this occasion, the theme is defined before creating the plot. Have
+          a look at the comments within the code below to have a better
+          understanding of what’s going on here.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This theme extends the &#39;theme_minimal&#39; that comes with ggplot2.</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The &quot;Lato&quot; font is used as the base font. This is similar</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># to the original font in Cedric&#39;s work, Avenir Next Condensed.</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;Lato&quot;</span>))</span>
@@ -283,15 +383,30 @@
 <span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove legend</span></span>
 <span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<p><br></p>
-<p>Have you ever seen the <code>element_markdown()</code> in <code>plot.subtitle()</code> above? That function comes with the <code>ggtext()</code> package and makes it possible to use markdown syntax to format the text. It’s like magic!</p>
-</div>
-<div id="basic-chart" class="section level1">
-<h1>Basic chart</h1>
-<hr />
-<p>Today’s chart is a lineplot that visualizes the price changes (in USD) of a Big Mac based on a 2008 as index year. The countries in the vector <code>highlights</code> have different colors to stand out from the rest and make it easier to track their evolution along time. Sounds quite exciting, let’s get started!</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          Have you ever seen the <code>element_markdown()</code> in
+          <code>plot.subtitle()</code> above? That function comes with the
+          <code>ggtext()</code> package and makes it possible to use markdown
+          syntax to format the text. It’s like magic!
+        </p>
+      </div>
+      <div id="basic-chart" class="section level1">
+        <h1>Basic chart</h1>
+        <hr />
+        <p>
+          Today’s chart is a lineplot that visualizes the price changes (in USD)
+          of a Big Mac based on a 2008 as index year. The countries in the
+          vector <code>highlights</code> have different colors to stand out from
+          the rest and make it easier to track their evolution along time.
+          Sounds quite exciting, let’s get started!
+        </p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># The ggplot object has associated the data for the highlighted countries</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  df_mac_indexed_2008 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(group <span class="sc">!=</span> <span class="st">&quot;other&quot;</span>), </span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(year, price_rel, <span class="at">group =</span> iso_a3)</span>
@@ -336,16 +451,39 @@
 <span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color =</span> group),</span>
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> .<span class="dv">9</span></span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-6-1.png" width="100%" /> <br></p>
-<p>That’s a pretty good start! Having different colors for some countries definetely makes it much easier to track their price index evolution.</p>
-</div>
-<div id="add-non-overlapping-labels" class="section level1">
-<h1>Add non-overlapping labels</h1>
-<hr />
-<p>Although colors are a tremendous help, they don’t reveal which country the lines represent. Wouldn’t it be nice to have a label on the end of each line that tells which country it represents?</p>
-<p>It is pretty challenging to add many labels on a plot since labels tend to overlap each other, making the figure unreadable. Fortunately, the <code>ggrepel</code> package is here to help us. It provides an algorithm that will automatically place the labels for us. Let’s do it!</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-6-1.png"
+            width="100%"
+          />
+          <br />
+        </p>
+        <p>
+          That’s a pretty good start! Having different colors for some countries
+          definetely makes it much easier to track their price index evolution.
+        </p>
+      </div>
+      <div id="add-non-overlapping-labels" class="section level1">
+        <h1>Add non-overlapping labels</h1>
+        <hr />
+        <p>
+          Although colors are a tremendous help, they don’t reveal which country
+          the lines represent. Wouldn’t it be nice to have a label on the end of
+          each line that tells which country it represents?
+        </p>
+        <p>
+          It is pretty challenging to add many labels on a plot since labels
+          tend to overlap each other, making the figure unreadable. Fortunately,
+          the <code>ggrepel</code> package is here to help us. It provides an
+          algorithm that will automatically place the labels for us. Let’s do
+          it!
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fl">2008.15</span>, <span class="at">y =</span> <span class="sc">-</span><span class="fl">3.35</span>, </span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;2008&quot;</span>,</span>
@@ -385,15 +523,32 @@
 <span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">3</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
 <span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{format(seq(-4, 3, by = 1), nsmall = 2)}$&quot;</span>)</span>
 <span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>plt </span></code></pre></div>
-<p><img src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-7-1.png" width="100%" /> <br></p>
-<p>Wonderful! It’s amazing how a few annotations can hugely improve the readability of the plot.</p>
-</div>
-<div id="final-chart" class="section level1">
-<h1>Final chart</h1>
-<hr />
-<p>The chart above is pretty close from being publication ready. What’s needed now is a better color palette to improve the appearence of the plot and a good annotations to make the chart more insightful:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>plt </span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-7-1.png"
+            width="100%"
+          />
+          <br />
+        </p>
+        <p>
+          Wonderful! It’s amazing how a few annotations can hugely improve the
+          readability of the plot.
+        </p>
+      </div>
+      <div id="final-chart" class="section level1">
+        <h1>Final chart</h1>
+        <hr />
+        <p>
+          The chart above is pretty close from being publication ready. What’s
+          needed now is a better color palette to improve the appearence of the
+          plot and a good annotations to make the chart more insightful:
+        </p>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(rcartocolor<span class="sc">::</span><span class="fu">carto_pal</span>(<span class="at">n =</span> n, <span class="at">name =</span> <span class="st">&quot;Bold&quot;</span>)[<span class="dv">1</span><span class="sc">:</span>n<span class="dv">-1</span>], <span class="st">&quot;grey50&quot;</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
@@ -402,181 +557,218 @@
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;The &lt;i&gt;index chart&lt;/i&gt; visualizes the price changes (in USD) of a Big Mac based on a 2008 as index year. The &lt;b&gt;Big Mac Index&lt;/b&gt; is published by The Economist as an informal way to provide a test of the&lt;br&gt;extent to which market exchange rates result in goods costing the same in different countries. It &lt;i&gt;seeks to make exchange-rate theory a bit more digestible&lt;/i&gt; and takes its name from the Big Mac,&lt;br&gt;a hamburger sold at McDonald&#39;s restaurants.&quot;</span>,</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Visualization by Cédric Scherer  •  Data by The Economist  •  The index chart shows the 27 countries that provide Big mac prices for all years from 2000 to 2020. In case a country was reported twice per year, the mean value was visualized.&quot;</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre></div>
-<p><img src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-8-1.png" width="100%" /> <br></p>
-<p>Finally, note the <code>&lt;i&gt;</code>, <code>&lt;b&gt;</code>, and <code>&lt;br&gt;</code> tags. It’s <code>ggtext</code> the one who makes that possible. It’s fantastic!</p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Barplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Spider / Radar</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Wordcloud</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Parallel</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
-    </div>
-  </div>
-
-</div>
-</section>
-
-
-
-
-
-
-<!-- ============================ CONTACT SECTION ============================ -->
-<section id="contact" class="bg" style="background-color: white; padding-top: 60px">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 text-center"></div>
-      <div class="col-lg-8 text-center">
-        <br><br><br>
-        <h2 class="section-heading text-uppercase" style="color: black">Contact</h2>
-        <p>This document is a work by <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is highly encouraged. You can fill an issue on <a href="https://github.com/holtzy/D3-graph-gallery/issues">Github</a>, drop me a message on <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send an email pasting <a href="">yan.holtz.data</a> with <a href="">gmail.com</a>.</p>
-        <div style="text-align:center">
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://github.com/holtzy">Github</a>
-           <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="https://twitter.com/R_Graph_Gallery">Twitter</a>
-         </div>
+        <p>
+          <img
+            src="web-line-chart-with-labels-at-end-of-line_files/figure-html/unnamed-chunk-8-1.png"
+            width="100%"
+          />
+          <br />
+        </p>
+        <p>
+          Finally, note the <code>&lt;i&gt;</code>, <code>&lt;b&gt;</code>, and
+          <code>&lt;br&gt;</code> tags. It’s <code>ggtext</code> the one who
+          makes that possible. It’s fantastic!
+        </p>
+        <!-- Close container -->
       </div>
     </div>
-  </div>
-</section>
-
-
-
-<!-- ============================ FOOTER SECTION ============================ -->
-<footer class="bg-light" id="myFooter">
-  <div class="container" >
-    <div class="row">
-      <div class="col-md-4">
-        <span class="copyright">Copyright &copy; the R graph gallery 2018</span>
-      </div>
-      <div class="col-md-4">
-        <ul class="list-inline social-buttons">
-          <li class="list-inline-item">
-            <a href="https://twitter.com/R_Graph_Gallery">
-              <i class="fa fa-twitter"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/holtzy">
-              <i class="fa fa-github"></i>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
             </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
-              <i class="fa fa-linkedin"></i>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
             </a>
-          </li>
-        </ul>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <ul class="list-inline quicklinks">
-          <li class="list-inline-item">
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li class="list-inline-item">
-            <a href="#">Terms of Use</a>
-          </li>
-        </ul>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
 
+    <!-- ============================ FOOTER SECTION ============================ -->
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
 
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
-<script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-
-
-<!-- ============================ JAVASCRIPT SECTION ============================ -->
-
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom scripts for this template -->
-<script src="js/agency.min.js"></script>
-
-</body>
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
 </html>
