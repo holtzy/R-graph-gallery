@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300 )
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container" style="padding-top: 80px">
@@ -30,7 +30,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300
 
 
 
-If you did not find the geospatial data you need in existing R packages (see the [map section](maps.html)), you need to find this information elsewhere on the web. 
+If you did not find the geospatial data you need in existing R packages (see the [map section](map.html)), you need to find this information elsewhere on the web. 
 
 Usually, you will find it as a *shape file* format. This format is composed by several files that you need to keep together in the same folder.
 
@@ -44,13 +44,12 @@ You can download it and unzip it with R:
 
 ```{r, eval=FALSE}
 # Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
-download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip", destfile = "DATA/world_shape_file.zip")
 # You now have it in your current working directory, have a look!
 
 # Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
 unzip("DATA/world_shape_file.zip", junkpaths = FALSE)
 #  -- > You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)
- 
 ```
 
 
@@ -65,17 +64,17 @@ unzip("DATA/world_shape_file.zip", junkpaths = FALSE)
 # Read it with `sf`
 ***
 
-The `sf` package offers the `st_read()` function that allows to read shapefile using the following syntax. 
+The `sf` package offers the `st_read()` and the `read_sf()`` functions that allows to read shapefile using the following syntax. 
 
 As a result you get a geospatial object (`my_sf` here) that contains all the information we need for further mapping. Please try th following command to understand how this object works:
 
-- `print(my_sf)`: tells you the max and min coordinates, the kind of projection in use and the the first few rows of the data slot associated with the regions.
+- `print(my_sf)`: tells you the max and min coordinates, the kind of projection in use and the the first few rows of the data associated with the regions.
 - `nrow(my_sf)`: how many regions you have
 
 ```{r, warning=FALSE, message=FALSE}
-# Read this shape file with the sf library. 
+# Read this shape file with the sf library.
 library(sf)
-my_sf <- st_read("TM_WORLD_BORDERS_SIMPL-0.3.shp", quiet = TRUE)
+my_sf <- read_sf("TM_WORLD_BORDERS_SIMPL-0.3.shp")
 
 # -- > Now you have a sf object (simple feature data frame). You can start doing maps!
 ```
@@ -87,7 +86,7 @@ my_sf <- st_read("TM_WORLD_BORDERS_SIMPL-0.3.shp", quiet = TRUE)
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The basic `plot()` function knows how to plot a geospatial object. Thus you just need to pass it `my_spdf` and add a couple of options to customize the output.
+The basic `plot()` function knows how to plot a geospatial object. Thus you just need to pass it `my_sf` and add a couple of options to customize the output.
 
 </div>
 
@@ -96,8 +95,8 @@ The basic `plot()` function knows how to plot a geospatial object. Thus you just
 
 ```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
 # Basic plot of this shape file:
-par(mar=c(0,0,0,0))
-plot(my_sf$geometry, col="#f2f2f2", bg="skyblue", lwd=0.25, border=0 )
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(my_sf), col = "#f2f2f2", bg = "skyblue", lwd = 0.25, border = 0)
 ```
 </div>
 </div>
@@ -136,8 +135,8 @@ below.
 # Plot it
 library(ggplot2)
 ggplot(my_sf) +
-  geom_sf(fill="#69b3a2", color="white") +
-  theme_void() 
+  geom_sf(fill = "#69b3a2", color = "white") +
+  theme_void()
 ```
 </div>
 </div>
