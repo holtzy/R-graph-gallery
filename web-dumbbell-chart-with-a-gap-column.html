@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Dumbbell Chart with a Gap Column &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a
+custom dumbbell chart with a gap column on the right hand side with R
+and ggplot2. Step by step code snippets with explanations are
+provided."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Dumbbell Chart with a Gap
+Column"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to
+build a custom dumbbell chart with a gap column on the right hand side
+with R and ggplot2. Step by step code snippets with explanations are
+provided."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-dumbbell-chart-with-a-gap-column.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Dumbbell Chart with a Gap Column</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to build a custom dumbbell chart with a gap
+            column on the right hand side with R and ggplot2. Step by step code
+            snippets with explanations are provided. Thanks a lot to Fred Duong
+            for this contribution!
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="lollipop-plot.html"
+            >Lollipop section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/lollipop.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 100px">
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This tutorial by <a href="https://fuhred.com">Fred Duong</a> will show
+          you how to create
+          <a href="https://www.r-graph-gallery.com/lollipop-plot.html"
+            >dumbbell charts</a
+          >
+          with gap columns, similar to the charts you might have seen from
+          <a href="https://twitter.com/pewresearch">Pew and YouGov</a>.
+        </p>
+        <p>
+          The original dumbbell chart built by the Pew Research Center is shown
+          below:
+        </p>
+        <p>
+          <img
+            src="img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-1.png"
+            style="padding: 20px; max-width: 500px"
+            fig-align="center"
+          />
+        </p>
+        <p>
+          We can get pretty close to the chart with <code>ggplot2()</code> (and
+          with a lot more tweaking that we won’t go into here, we could probably
+          <em>exactly</em> recreate the chart!)
+        </p>
+        <p>Here is the final figure that we’ll create.</p>
+        <p>
+          <img
+            src="img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png"
+            style="padding: 20px; max-width: 500px"
+            fig-align="center"
+          />
+        </p>
+        <p>But first, let’s create the basic figure!</p>
+        <p><br /></p>
+      </div>
+      <div id="libraries" class="section level1">
+        <h1>Libraries</h1>
+        <hr />
+        <p>
+          Let’s use the <code>tidyverse</code> that includes
+          <code>ggplot2</code> and `patchwork`` to combine plots.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co">#to combine plots</span></span></code></pre>
+        </div>
+      </div>
+      <div id="data-creation" class="section level1">
+        <h1>Data Creation</h1>
+        <hr />
+        <p>First, we create a tibble that contains the data from the figure.</p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw<span class="ot">=</span><span class="fu">tibble</span>( </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels=</span><span class="fu">c</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Spirituality, faith and religion&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Freedom and independence&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Hobbies and recreation&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Physical and mental health&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;COVID-19&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Pets&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Nature and the outdoors&quot;</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dem=</span><span class="fu">c</span>(<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">13</span>,<span class="dv">13</span>,<span class="dv">8</span>,<span class="dv">5</span>,<span class="dv">5</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Rep=</span><span class="fu">c</span>(<span class="dv">22</span>,<span class="dv">12</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">3</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df<span class="ot">=</span>raw</span></code></pre>
+        </div>
+      </div>
+      <div id="basic-figure" class="section level1">
+        <h1>Basic Figure</h1>
+        <hr />
+        <p>
+          From this tibble, it’s easy to create the base figure. Though you can
+          keep the data in wide format, I find it simpler to wrangle the data
+          into <em>long format</em> first thanks to the
+          <code>pivot_longer</code> function.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_long<span class="ot">=</span>df <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>labels)</span></code></pre>
+        </div>
+        <p>Now let’s build the plot:</p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_long <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value,<span class="at">y=</span>labels)) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group=</span>labels), <span class="at">color=</span><span class="st">&quot;#E7E7E7&quot;</span>, <span class="at">linewidth=</span><span class="fl">3.5</span>) <span class="sc">+</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># note that linewidth is a little larger than the point size </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># so that the line matches the height of the point. why is it </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># like that? i don&#39;t really know</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>name), <span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">&quot;black&quot;</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">&quot;#989898&quot;</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;#436685&quot;</span>, <span class="st">&quot;#BF2F24&quot;</span>))<span class="sc">+</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">1</span>))</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-dumbbell-chart-with-a-gap-column_files/figure-html/unnamed-chunk-3-1.png"
+            width="528"
+          />
+        </p>
+        <p><br /><br /></p>
+        <p>
+          That’s it! Not a ton of code! But, you’ll notice that this is missing
+          a few key formatting features from the original Pew figure:
+        </p>
+        <ol style="list-style-type: decimal">
+          <li>
+            <p>
+              <strong>The y-axis is not sorted</strong>. By default,
+              <code>ggplot()</code> alphabetizes character vectors that are used
+              for the axes. Then, it displays the y-axis values
+              <em>reverse</em> alphabetized. We can manually sort this however
+              we want, but sorting by descending gaps is common. To do this, we
+              will compute the gaps, and then turn the y-axis labels into a
+              factor so that <code>ggplot()</code> respects the order.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>There are no text labels</strong>. Some dumbbell figures
+              have data callouts to the left and right, and some have them
+              underneath or above the points. When it’s to the left and right,
+              it’s a little complicated to implement. There are two issues: 1)
+              Because Democrats and Republicans might switch orders in terms of
+              which is the higher value, you can’t rely just the categories
+              themselves to decide which is left and right (Democrats won’t
+              always be the lower value, for example); and 2) by default,
+              positioning the data callouts will place them right on top of the
+              points. But we will want to nudge the data callouts either to the
+              left or to the right of the points. To solve this, we will create
+              a variable that assesses the maximum value per label (or minimum)
+              to assign the left and right callouts. Then, we can either use two
+              <code>geom_text()</code>s, with each one using
+              <code>filter()</code> on the data to only show the maximum or not
+              the maximum <em>and</em> using the <code>color</code> aesthetic
+              set to political party, or–more simply–use one
+              <code>geom_text()</code> that uses an
+              <code>if_else()</code> statement to assign that conditions on if
+              the value == the maximum value. I’ll show the latter case.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>There is no color legend for the points</strong>. By
+              default, <code>ggplot</code> will attempt to put a typical legend
+              for your color aesthetic that is placed to the right. You’ll see
+              above I turned this off in <code>theme()</code>. It can be much
+              more readable to place the legend above the actual points
+              themselves, as you see from the Pew figure.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>There is no gap column</strong>. The best way I can figure
+              out how to do this is to create a second
+              <code>ggplot</code> object, and use <code>patchwork</code> to
+              stitch it together with the main plot.
+            </p>
+          </li>
+        </ol>
+        <p>
+          The complete figure will solve all four issues, but this requires a
+          lot more tweaking. The complete figure will consist of the main
+          dumbbell figure and a gap figure.
+        </p>
+      </div>
+      <div id="clean-dumbbell-plot-left-part" class="section level1">
+        <h1>Clean Dumbbell plot (left part)</h1>
+        <hr />
+        <p>
+          A few additional data wrangling steps are necessary to complete the
+          final figure:
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df<span class="ot">=</span>raw <span class="sc">%&gt;%</span> <span class="co"># raw is just the generated data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the gap</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gap=</span>Rep<span class="sc">-</span>Dem) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># find the maximum value by label</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(labels) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">max=</span><span class="fu">max</span>(Dem, Rep)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sort the labels by gap value</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># note that its absolute value of gap</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">labels=</span>forcats<span class="sc">::</span><span class="fu">fct_reorder</span>(labels, <span class="fu">abs</span>(gap)))  </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># make into long format for easier plotting  </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>df_long<span class="ot">=</span>df <span class="sc">%&gt;%</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(Dem,Rep)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>df </span></code></pre>
+        </div>
+        <div data-pagedtable="false">
+          <script data-pagedtable-source type="application/json">
+            {
+              "columns": [
+                {
+                  "label": ["labels"],
+                  "name": [1],
+                  "type": ["fct"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["Dem"],
+                  "name": [2],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["Rep"],
+                  "name": [3],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["gap"],
+                  "name": [4],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["max"],
+                  "name": [5],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                }
+              ],
+              "data": [
+                {
+                  "1": "Spirituality, faith and religion",
+                  "2": "8",
+                  "3": "22",
+                  "4": "14",
+                  "5": "22"
+                },
+                {
+                  "1": "Freedom and independence",
+                  "2": "6",
+                  "3": "12",
+                  "4": "6",
+                  "5": "12"
+                },
+                {
+                  "1": "Hobbies and recreation",
+                  "2": "13",
+                  "3": "7",
+                  "4": "-6",
+                  "5": "13"
+                },
+                {
+                  "1": "Physical and mental health",
+                  "2": "13",
+                  "3": "9",
+                  "4": "-4",
+                  "5": "13"
+                },
+                { "1": "COVID-19", "2": "8", "3": "5", "4": "-3", "5": "8" },
+                { "1": "Pets", "2": "5", "3": "2", "4": "-3", "5": "5" },
+                {
+                  "1": "Nature and the outdoors",
+                  "2": "5",
+                  "3": "3",
+                  "4": "-2",
+                  "5": "5"
+                }
+              ],
+              "options": {
+                "columns": { "min": {}, "max": [10] },
+                "rows": { "min": [10], "max": [10] },
+                "pages": {}
+              }
+            }
+          </script>
+        </div>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_long <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre>
+        </div>
+        <div data-pagedtable="false">
+          <script data-pagedtable-source type="application/json">
+            {
+              "columns": [
+                {
+                  "label": ["labels"],
+                  "name": [1],
+                  "type": ["fct"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["gap"],
+                  "name": [2],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["max"],
+                  "name": [3],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["name"],
+                  "name": [4],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["value"],
+                  "name": [5],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                }
+              ],
+              "data": [
+                {
+                  "1": "Spirituality, faith and religion",
+                  "2": "14",
+                  "3": "22",
+                  "4": "Dem",
+                  "5": "8"
+                },
+                {
+                  "1": "Spirituality, faith and religion",
+                  "2": "14",
+                  "3": "22",
+                  "4": "Rep",
+                  "5": "22"
+                },
+                {
+                  "1": "Freedom and independence",
+                  "2": "6",
+                  "3": "12",
+                  "4": "Dem",
+                  "5": "6"
+                },
+                {
+                  "1": "Freedom and independence",
+                  "2": "6",
+                  "3": "12",
+                  "4": "Rep",
+                  "5": "12"
+                },
+                {
+                  "1": "Hobbies and recreation",
+                  "2": "-6",
+                  "3": "13",
+                  "4": "Dem",
+                  "5": "13"
+                },
+                {
+                  "1": "Hobbies and recreation",
+                  "2": "-6",
+                  "3": "13",
+                  "4": "Rep",
+                  "5": "7"
+                }
+              ],
+              "options": {
+                "columns": { "min": {}, "max": [10] },
+                "rows": { "min": [10], "max": [10] },
+                "pages": {}
+              }
+            }
+          </script>
+        </div>
+        <p>
+          The left hand side part of the final plot can then be built as follow:
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set a custom nudge value</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>nudge_value<span class="ot">=</span>.<span class="dv">6</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>p_main<span class="ot">=</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df_long <span class="sc">%&gt;%</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the following 3 lines of code are the same</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>value,<span class="at">y=</span>labels)) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group=</span>labels), <span class="at">color=</span><span class="st">&quot;#E7E7E7&quot;</span>, <span class="at">linewidth=</span><span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>name), <span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># but we want geom_text for the data callouts and the legend</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># data callout</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>value, <span class="at">color=</span>name),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">3.25</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">nudge_x=</span><span class="fu">if_else</span>(</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>              df_long<span class="sc">$</span>value<span class="sc">==</span>df_long<span class="sc">$</span>max, <span class="co"># if it&#39;s the larger value...</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>              nudge_value,   <span class="co"># move it to the right of the point</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>              <span class="sc">-</span>nudge_value), <span class="co"># otherwise, move it to the left of the point</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust=</span><span class="fu">if_else</span>(</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>              df_long<span class="sc">$</span>value<span class="sc">==</span>df_long<span class="sc">$</span>max, <span class="co">#if it&#39;s the larger value</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>              <span class="dv">0</span>, <span class="co"># left justify</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>              <span class="dv">1</span>),<span class="co"># otherwise, right justify      </span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            )<span class="sc">+</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># legend</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>name, <span class="at">color=</span>name), </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span>. <span class="sc">%&gt;%</span> <span class="fu">filter</span>(gap<span class="sc">==</span><span class="fu">max</span>(gap)),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>            <span class="at">nudge_y =</span>.<span class="dv">5</span>, </span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>            <span class="at">fontface=</span><span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">3.25</span>)<span class="sc">+</span>  </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">&quot;black&quot;</span>),</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">&quot;#989898&quot;</span>),</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;%&quot;</span>,<span class="at">y=</span><span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;#436685&quot;</span>, <span class="st">&quot;#BF2F24&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>  <span class="co">#extend the y-axis otherwise the legend is cut off</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">7.5</span>)) <span class="sc">+</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>  <span class="co">#display percentages with % appended</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">scale =</span> <span class="dv">1</span>)) </span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>p_main</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-dumbbell-chart-with-a-gap-column_files/figure-html/unnamed-chunk-5-1.png"
+            width="528"
+          />
+        </p>
+      </div>
+      <div id="gap-section-right-part" class="section level1">
+        <h1>Gap section (right part)</h1>
+        <hr />
+        <p>
+          The Gap figure on the right hand side must be created too. Pew formats
+          the gap values in a particular way:
+        </p>
+        <ol style="list-style-type: decimal">
+          <li><p>Colors by party</p></li>
+          <li><p>Adds “+” to the beginning of the gap value if positive</p></li>
+          <li><p>Adds “R” or “D” to the end of the gap value</p></li>
+        </ol>
+        <p>Let’s do that!</p>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_gap<span class="ot">=</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span>  <span class="co"># note i am using df and not df_long</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">fct_reorder</span>(labels, <span class="fu">abs</span>(gap)), <span class="co">#order label by descending gaps</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># we need a column for the party with the max value</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">gap_party_max=</span><span class="fu">if_else</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>      Rep<span class="sc">==</span>max, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;R&quot;</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;D&quot;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># format gap values</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">gap_label=</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">&quot;+&quot;</span>, <span class="fu">abs</span>(gap), gap_party_max) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">fct_inorder</span>() <span class="co">#turns into factor to bake in the order</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>df_gap</span></code></pre>
+        </div>
+        <div data-pagedtable="false">
+          <script data-pagedtable-source type="application/json">
+            {
+              "columns": [
+                {
+                  "label": ["labels"],
+                  "name": [1],
+                  "type": ["fct"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["Dem"],
+                  "name": [2],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["Rep"],
+                  "name": [3],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["gap"],
+                  "name": [4],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["max"],
+                  "name": [5],
+                  "type": ["dbl"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["label"],
+                  "name": [6],
+                  "type": ["fct"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["gap_party_max"],
+                  "name": [7],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["gap_label"],
+                  "name": [8],
+                  "type": ["fct"],
+                  "align": ["left"]
+                }
+              ],
+              "data": [
+                {
+                  "1": "Spirituality, faith and religion",
+                  "2": "8",
+                  "3": "22",
+                  "4": "14",
+                  "5": "22",
+                  "6": "Spirituality, faith and religion",
+                  "7": "R",
+                  "8": "+14R"
+                },
+                {
+                  "1": "Freedom and independence",
+                  "2": "6",
+                  "3": "12",
+                  "4": "6",
+                  "5": "12",
+                  "6": "Freedom and independence",
+                  "7": "R",
+                  "8": "+6R"
+                },
+                {
+                  "1": "Hobbies and recreation",
+                  "2": "13",
+                  "3": "7",
+                  "4": "-6",
+                  "5": "13",
+                  "6": "Hobbies and recreation",
+                  "7": "D",
+                  "8": "+6D"
+                },
+                {
+                  "1": "Physical and mental health",
+                  "2": "13",
+                  "3": "9",
+                  "4": "-4",
+                  "5": "13",
+                  "6": "Physical and mental health",
+                  "7": "D",
+                  "8": "+4D"
+                },
+                {
+                  "1": "COVID-19",
+                  "2": "8",
+                  "3": "5",
+                  "4": "-3",
+                  "5": "8",
+                  "6": "COVID-19",
+                  "7": "D",
+                  "8": "+3D"
+                },
+                {
+                  "1": "Pets",
+                  "2": "5",
+                  "3": "2",
+                  "4": "-3",
+                  "5": "5",
+                  "6": "Pets",
+                  "7": "D",
+                  "8": "+3D"
+                },
+                {
+                  "1": "Nature and the outdoors",
+                  "2": "5",
+                  "3": "3",
+                  "4": "-2",
+                  "5": "5",
+                  "6": "Nature and the outdoors",
+                  "7": "D",
+                  "8": "+2D"
+                }
+              ],
+              "options": {
+                "columns": { "min": {}, "max": [10] },
+                "rows": { "min": [10], "max": [10] },
+                "pages": {}
+              }
+            }
+          </script>
+        </div>
+        <p>And then the plot:</p>
+        <div class="sourceCode" id="cb9">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p_gap<span class="ot">=</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  df_gap <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gap,<span class="at">y=</span>labels)) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">label=</span>gap_label, <span class="at">color=</span>gap_party_max),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">fontface=</span><span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">3.25</span>) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">7</span>), <span class="co"># 7 because that&#39;s the # of y-axis values</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">label=</span><span class="st">&quot;Diff&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">nudge_y =</span>.<span class="dv">5</span>, <span class="co"># match the nudge value of the main plot legend    </span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">fontface=</span><span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">3.25</span>) <span class="sc">+</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">05</span>, <span class="fl">0.05</span>), </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="fl">7.5</span>) <span class="co"># needs to match main plot</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                  )<span class="sc">+</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">l=</span><span class="dv">0</span>, <span class="at">r=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">0</span>, <span class="at">t=</span><span class="dv">0</span>), <span class="co">#otherwise it adds too much space</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">&quot;#EFEFE3&quot;</span>, <span class="at">color=</span><span class="st">&quot;#EFEFE3&quot;</span>),</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;#436685&quot;</span>, <span class="st">&quot;#BF2F24&quot;</span>))</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>p_gap</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-dumbbell-chart-with-a-gap-column_files/figure-html/unnamed-chunk-7-1.png"
+            width="528"
+          />
+        </p>
+      </div>
+      <div id="combine-figures" class="section level1">
+        <h1>Combine figures</h1>
+        <hr />
+        <p>
+          Use the package <code>patchwork</code> to put together your final
+          figure. You’ll need to play around with <code>plot_layout()</code> a
+          bit to get your figures to fit together how you want.
+        </p>
+        <div class="sourceCode" id="cb10">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p_whole<span class="ot">=</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># syntax from `patchwork`</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  p_main <span class="sc">+</span> p_gap <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">design=</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">area</span>(<span class="at">l=</span><span class="dv">0</span>,  <span class="at">r=</span><span class="dv">45</span>, <span class="at">t=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>), <span class="co"># defines the main figure area</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">area</span>(<span class="at">l=</span><span class="dv">46</span>, <span class="at">r=</span><span class="dv">52</span>, <span class="at">t=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>)  <span class="co"># defines the gap figure area</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  )) </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>p_whole</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-dumbbell-chart-with-a-gap-column_files/figure-html/unnamed-chunk-8-1.png"
+            width="528"
+          />
+        </p>
+      </div>
+      <div id="the-end" class="section level1">
+        <h1>The End</h1>
+        <hr />
+        <p>
+          And there it is! To summarize: making the basic figure is quite easy,
+          but adding all the little extras to make it more readable takes a lot
+          more tweaking.
+        </p>
+        <p>Some final notes:</p>
+        <ul>
+          <li>
+            <p>
+              If you look at the original Pew figure, they sort it by party, and
+              then gap. There is not a built-in tidyverse way to do this, but
+              <code>reorder_within()</code> from the r package
+              <code>tidytext</code> might be able to. See
+              <a href="https://juliasilge.com/blog/reorder-within" class="uri"
+                >https://juliasilge.com/blog/reorder-within</a
+              >.
+            </p>
+          </li>
+          <li>
+            <p>
+              To pull colors from existing figures, I use a free color picker
+              program for Windows called
+              <a href="http://colorcop.net/">Color Cop</a>.
+            </p>
+          </li>
+          <li>
+            <p>
+              Your y-axis labels might be long statements, which don’t
+              automatically wrap and then push the plot area so that it’s more
+              narrow. I find it helpful to use <code>str_wrap()</code> for those
+              cases. See
+              <a
+                href="https://statisticsglobe.com/wrap-long-axis-labels-ggplot2-plot-into-multiple-lines-r"
+                >this tutorial</a
+              >.
+            </p>
+          </li>
+          <li>
+            <p>
+              The dumbbell chart is a variation on the more simple lollipop
+              chart, which only has one datapoint per row. You can find a
+              different implementation of a dumbbell chart on the wonderful
+              resource R Graph Gallery:
+              <a
+                href="https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html"
+                class="uri"
+                >https://r-graph-gallery.com/web-extended-dumbbell-plot-ggplot2.html</a
+              >.
+            </p>
+          </li>
+          <li>
+            <p>
+              This was inspired by
+              <a
+                href="https://twitter.com/AndyLuttrell5/status/1639095164319694849"
+                >this tweet</a
+              >
+              from Andy Luttrell asking for help with the name of the type of
+              chart and how to create it. On the name: it’s called a dumbbell
+              chart because the gap line, if unmodified, is thin. But just as
+              often you see the lines as thick as the points, and then they
+              don’t really look like dumbbells anymore. Maybe it should be
+              called a gap chart.
+            </p>
+          </li>
+          <li>
+            <p>
+              I took the <code>patchwork</code> approach from Kat Hoffman, who
+              used it for forest plots created with ggplot:
+              <a href="https://www.khstats.com/blog/forest-plots/"
+                >https://www.khstats.com/blog/forest-plots</a
+              >.
+            </p>
+          </li>
+          <li>
+            <p>
+              If you have feedback or questions or just want to connect, you can
+              find my contact info on my webpage:
+              <a href="https://fuhred.com">fuhred.com</a>.
+            </p>
+          </li>
+        </ul>
+        <p>
+          Thank you for reading! I hope you had as much fun following along as I
+          did making this! – Fred Duong
+        </p>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
+
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
