@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container">
@@ -39,7 +39,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300
 
 The first step is to build a basic [hexbin map](hexbin-map.html) of the US. Note that the gallery dedicates a [whole section](hexbin-map.html) to this kind of map.
 
-Hexagones boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `st_read() / read_sf()` function. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
+Hexagon boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `st_read() / read_sf()` function. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
 
 </div>
 
@@ -52,13 +52,13 @@ library(tidyverse)
 library(sf)
 library(RColorBrewer)
 
-# Download the Hexagones boundaries at geojson format here: https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
+# Download the Hexagon boundaries at geojson format here: https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
 
 # Load this file. (Note: I stored in a folder called DATA)
 my_sf <- read_sf("DATA/us_states_hexgrid.geojson.json")
 
-# Bit of reformating
-my_sf = my_sf %>%
+# Bit of reformatting
+my_sf <- my_sf %>%
   mutate(google_name = gsub(" \\(United States\\)", "", google_name))
 
 # Show it
@@ -101,9 +101,9 @@ It is totally doable to plot this geospatial object using `ggplot2` and its `geo
 
 ```{r thecode2, echo=FALSE, out.width = "100%", fig.height=4}
 ggplot(my_sf) +
-  geom_sf(fill="skyblue", color="white") +
-  geom_sf_text(aes(label=iso3166_2)) +
-  theme_void() 
+  geom_sf(fill = "skyblue", color = "white") +
+  geom_sf_text(aes(label = iso3166_2)) +
+  theme_void()
 ```
 </div>
 </div>
@@ -133,21 +133,23 @@ Now you probably want to adjust the color of each hexagon, according to the valu
 
 In this post I suggest to represent the number of wedding per thousand people. The data have been found [here](https://www.cdc.gov/nchs/nvss/marriage-divorce.html), and stored on a clean format [here](https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv). 
 
-Let’s start by loading this information and represent its distribution:
+Let's start by loading this information and represent its distribution:
 </div>
 
 
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
-# Load mariage data
-data <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv", header=T, sep=",", na.strings="---")
- 
+# Load marriage data
+data <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv",
+  header = T, sep = ",", na.strings = "---"
+)
+
 # Distribution of the marriage rate?
-data %>% 
-  ggplot( aes(x=y_2015)) + 
-    geom_histogram(bins=20, fill='#69b3a2', color='white') + 
-    scale_x_continuous(breaks = seq(1,30))
+data %>%
+  ggplot(aes(x = y_2015)) +
+  geom_histogram(bins = 20, fill = "#69b3a2", color = "white") +
+  scale_x_continuous(breaks = seq(1, 30))
 ```
 </div>
 </div>
@@ -170,7 +172,7 @@ data %>%
 
 Most of the state have between 5 and 10 weddings per 1000 inhabitants, but there are 2 outliers with high values (16 and 32).
 
-Let’s represent this information on a map. We have a column with the state id in both the geospatial and the numerical datasets. So we can merge both information and plot it.
+Let's represent this information on a map. We have a column with the state id in both the geospatial and the numerical datasets. So we can merge both information and plot it.
 
 Note the use of the `trans = "log"` option in the color scale to decrease the effect of the 2 outliers.
 </div>
@@ -181,13 +183,13 @@ Note the use of the `trans = "log"` option in the color scale to decrease the ef
 ```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
 # Merge geospatial and numerical information
 my_sf_wed <- my_sf %>%
-  left_join(data, by=c("google_name"="state")) 
- 
-# Make a first chloropleth map
+  left_join(data, by = c("google_name" = "state"))
+
+# Make a first choropleth map
 ggplot(my_sf_wed) +
-  geom_sf(aes(fill =  y_2015)) +
+  geom_sf(aes(fill = y_2015)) +
   scale_fill_gradient(trans = "log") +
-  theme_void() 
+  theme_void()
 ```
 </div>
 </div>
@@ -226,30 +228,41 @@ Here is a final version after applying a few customization:
 
 ```{r thecode5, echo=FALSE, out.width = "80%", fig.height=4, fig.align="center"}
 # Prepare binning
-my_sf_wed$bin <- cut( my_sf_wed$y_2015 , breaks=c(seq(5,10), Inf), labels=c("5-6", "6-7", "7-8", "8-9", "9-10", "10+" ), include.lowest = TRUE )
- 
+my_sf_wed$bin <- cut(my_sf_wed$y_2015,
+  breaks = c(seq(5, 10), Inf),
+  labels = c("5-6", "6-7", "7-8", "8-9", "9-10", "10+"),
+  include.lowest = TRUE
+)
+
 # Prepare a color scale coming from the viridis color palette
 library(viridis)
-my_palette <- rev(magma(8))[c(-1,-8)]
- 
+my_palette <- rev(magma(8))[c(-1, -8)]
+
 # plot
 ggplot(my_sf_wed) +
-  geom_sf(aes(fill = bin) , linewidth=0, alpha=0.9) +
-  geom_sf_text(aes(label=iso3166_2), color="white", size=3, alpha=0.6) +
+  geom_sf(aes(fill = bin), linewidth = 0, alpha = 0.9) +
+  geom_sf_text(aes(label = iso3166_2), color = "white", size = 3, alpha = 0.6) +
   theme_void() +
-  scale_fill_manual( 
-    values=my_palette, 
-    name="Wedding per 1000 people in 2015", 
-    guide = guide_legend( keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), label.position = "bottom", title.position = 'top', nrow=1) 
+  scale_fill_manual(
+    values = my_palette,
+    name = "Wedding per 1000 people in 2015",
+    guide = guide_legend(
+      keyheight = unit(3, units = "mm"),
+      keywidth = unit(12, units = "mm"),
+      label.position = "bottom", title.position = "top", nrow = 1
+    )
   ) +
-  ggtitle( "A map of marriage rates, state by state" ) +
+  ggtitle("A map of marriage rates, state by state") +
   theme(
     legend.position = c(0.5, 0.9),
     text = element_text(color = "#22211d"),
-    plot.background = element_rect(fill = "#f5f5f2", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f2", color = NA), 
+    plot.background = element_rect(fill = "#f5f5f2", color = NA),
+    panel.background = element_rect(fill = "#f5f5f2", color = NA),
     legend.background = element_rect(fill = "#f5f5f2", color = NA),
-    plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+    plot.title = element_text(
+      size = 22, hjust = 0.5, color = "#4e4d47",
+      margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")
+    )
   )
 ```
 
