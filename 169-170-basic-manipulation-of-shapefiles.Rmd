@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container">
@@ -32,13 +32,15 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300
 # Get a geospatial object
 ***
 
-The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [map](maps.html) section for possibilities.
+The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [map](map.html) section for possibilities.
 
 Let's get a geospatial object from a shape file available [here](http://thematicmapping.org/downloads/world_borders.php). This step is extensively described in [this post](168-load-a-shape-file-into-r.html) in case you're not familiar with it.
 
 ```{r, eval=FALSE}
 # Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
-download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
+download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip",
+  destfile = "DATA/world_shape_file.zip"
+)
 # You now have it in your current working directory, have a look!
 
 # Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
@@ -51,11 +53,10 @@ system("unzip DATA/world_shape_file.zip")
 And let's load it in R
 
 ```{r}
-# Read this shape file with the sf library. 
+# Read this shape file with the sf library.
 library(sf)
-my_sf <- st_read(file.path(getwd(),
-                             "/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp"),
-  quiet=TRUE
+my_sf <- read_sf(
+  file.path(getwd(), "/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp")
 )
 
 # -- > Now you have a sf object (simple feature data frame). You can start doing maps!
@@ -90,8 +91,11 @@ You can filter the geospatial object to plot only a subset of the regions. The f
 africa <- my_sf[my_sf$REGION == 2, ]
 
 # Plot africa
-par(mar=c(0,0,0,0))
-plot(st_geometry(africa) , xlim=c(-20,60) , ylim=c(-40,35), col="steelblue", lwd=0.5 )
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(africa),
+  xlim = c(-20, 60), ylim = c(-40, 35),
+  col = "steelblue", lwd = 0.5
+)
 ```
 
 </div>
@@ -117,7 +121,7 @@ plot(st_geometry(africa) , xlim=c(-20,60) , ylim=c(-40,35), col="steelblue", lwd
 
 It's a common task to *simplify* the geospatial object. Basically, it decreases the border precision which results in a lighter object that will be plotted faster.
 
-The `rmapshaper` package offers the `gSimplify()` function to makes the simplification. Play with the `keep` argument to control simplification rate.
+The `rmapshaper` package offers the `ms_simplify()` function to makes the simplification. Play with the `keep` argument to control simplification rate.
 
 </div>
 
@@ -130,8 +134,11 @@ library("rmapshaper")
 africaSimple <- ms_simplify(africa, keep = 0.01, keep_shapes = TRUE)
 
 # Plot it
-par(mar=c(0,0,0,0))
-plot(africaSimple$geometry , xlim=c(-20,60) , ylim=c(-40,35), col="#59b2a3", lwd=0.5 )
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(africaSimple),
+  xlim = c(-20, 60), ylim = c(-40, 35),
+  col = "#59b2a3", lwd = 0.5
+)
 ```
 
 </div>
@@ -173,16 +180,16 @@ Another common task is to compute the centroid of each region to add labels. Thi
 # st_centroid(africa, of_largest_polygon = TRUE)
 
 # select big countries only
-africaBig <- africa[which(africa$AREA>75000), ]
+africaBig <- africa[which(africa$AREA > 75000), ]
 
 centroids <- st_centroid(africaBig, of_largest_polygon = TRUE)
 # Small manipulation to add coordinates as columns
 centers <- cbind(centroids, st_coordinates(centroids))
 
-# Show it on the map?
-par(mar=c(0,0,0,0))
-plot(africa$geometry , xlim=c(-20,60) , ylim=c(-40,35), lwd=0.5 )
-text(centers$X, centers$Y, centers$FIPS, cex=.9, col="#69b3a2")
+# Show it on the map
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(africa), xlim = c(-20, 60), ylim = c(-40, 35), lwd = 0.5)
+text(centers$X, centers$Y, centers$FIPS, cex = .9, col = "#69b3a2")
 ```
 
 </div>
