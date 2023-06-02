@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container" style="padding-top: 100px">
@@ -64,18 +64,14 @@ system("unzip DATA/world_shape_file.zip")
 And let's load it in R
 
 ```{r}
-# Read this shape file with the rgdal library. 
-library(rgdal)
-my_spdf <- readOGR( 
-  dsn= paste0(getwd(),"/DATA/world_shape_file/") , 
-  layer="TM_WORLD_BORDERS_SIMPL-0.3",
-  verbose=FALSE
-)
+# Read this shape file with the sf library. 
+library(sf)
+my_sf  <- read_sf(paste0(getwd(), "/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp"))
 
 # Select Africa only
-africa <- my_spdf[my_spdf@data$REGION==2 , ]
+africa <- my_sf[my_sf$REGION==2 , ]
 
-# -- > Now you have a Spdf object (spatial polygon data frame). You can start doing maps!
+# -- > Now you have a sf object (simple feature data frame). You can start doing maps!
 ```
 
 
@@ -103,7 +99,7 @@ Finally, build the map with `plot()` and give the color vector to the `col` argu
 
 ```{r thecode9, echo=FALSE, out.width = "100%", fig.height=7}
 # Plot
-plot(africa , xlim=c(-20,60) , ylim=c(-40,40))
+plot(africa$geometry , xlim=c(-20,60) , ylim=c(-40,40))
 ```
 
 </div>
@@ -133,9 +129,9 @@ plot(africa , xlim=c(-20,60) , ylim=c(-40,40))
 
 In a choropleth map, each region has a color that represents the value of a numeric variable.
 
-In this example, this variable is already available in the `data` slot of the geospatial object. You can have a look to it typing `africa@data` in the terminal.
+In this example, this variable is already available in the `my_sf` object. You can have a look to it typing `my_sf` in the terminal.
 
-This object is a data frame. It is thus possible to visualize the distribution of `POP2005` with a classic histogram made in [ggplot2](ggplot2-package.html)
+It is thus possible to visualize the distribution of `POP2005` with a classic histogram made in [ggplot2](ggplot2-package.html)
 
 </div>
 
@@ -148,10 +144,10 @@ library(dplyr)
 library(ggplot2)
 
 # Make sure the variable you are studying is numeric
-africa@data$POP2005 <- as.numeric( africa@data$POP2005 )
+africa$POP2005 <- as.numeric( africa$POP2005 )
 
 # Distribution of the population per country?
-africa@data %>% 
+africa %>% 
   ggplot( aes(x=as.numeric(POP2005))) + 
     geom_histogram(bins=20, fill='#69b3a2', color='white')
 ```
@@ -195,11 +191,11 @@ my_colors <- brewer.pal(9, "Reds")
 my_colors <- colorRampPalette(my_colors)(30)
  
 # Attribute the appropriate color to each country
-class_of_country <- cut(africa@data$POP2005, 30)
+class_of_country <- cut(africa$POP2005, 30)
 my_colors <- my_colors[as.numeric(class_of_country)]
  
 # Make the plot
-plot(africa , xlim=c(-20,60) , ylim=c(-40,40), col=my_colors ,  bg = "#A6CAE0")
+plot(africa$geometry , xlim=c(-20,60) , ylim=c(-40,40), col=my_colors ,  bg = "#A6CAE0")
 ```
 
 </div>
