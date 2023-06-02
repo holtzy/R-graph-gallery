@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set( warning=FALSE, message=FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container" style="padding-top: 50px" >
@@ -68,20 +68,18 @@ system("unzip DATA/world_shape_file.zip")
 And load it in R
 
 ```{r}
-# Read this shape file with the rgdal library. 
-library(rgdal)
-world_spdf <- readOGR( 
-  dsn= paste0(getwd(),"/DATA/world_shape_file/") , 
-  layer="TM_WORLD_BORDERS_SIMPL-0.3",
-  verbose=FALSE
-)
+# Read this shape file with the sf library. 
+library(sf)
+world_sf <- read_sf(paste0(getwd(),"/DATA/world_shape_file/","TM_WORLD_BORDERS_SIMPL-0.3.shp"))
 
 # Clean the data object
 library(dplyr)
-world_spdf@data$POP2005[ which(world_spdf@data$POP2005 == 0)] = NA
-world_spdf@data$POP2005 <- as.numeric(as.character(world_spdf@data$POP2005)) / 1000000 %>% round(2)
+world_sf <- world_sf %>%
+  mutate(POP2005 = ifelse(POP2005 == 0, NA, 
+                          round(POP2005/ 1000000, 2))
+  )
 
-# -- > Now you have a Spdf object (spatial polygon data frame). You can start doing maps!
+# -- > Now you have a sf object (simple feature data frame). You can start doing maps!
 ```
 
 
@@ -100,7 +98,7 @@ It is now possible to draw a first [choropleth map](choropleth-map.html). Here a
 - make the background map with `leaflet()`, `addTiles()` and `setView()`
 - use `addPolygons()` to add the shape of all country, with a color representing the number of people in the country. 
 
-The resulting map is quite disapointing: China and India having very numerous population, all the variation between other countries gets hard to observe on the map.
+The resulting map is quite disappointing: China and India having very numerous population, all the variation between other countries gets hard to observe on the map.
 
 <center><iframe src="./HtmlWidget/choroplethLeaflet1.html" height="400" width="100%" style="border:none;"></iframe></center>
 
@@ -110,11 +108,11 @@ The resulting map is quite disapointing: China and India having very numerous po
 library(leaflet)
 
 # Create a color palette for the map:
-mypalette <- colorNumeric( palette="viridis", domain=world_spdf@data$POP2005, na.color="transparent")
+mypalette <- colorNumeric( palette="viridis", domain=world_sf$POP2005, na.color="transparent")
 mypalette(c(45,43))
 
 # Basic choropleth with leaflet?
-m <- leaflet(world_spdf) %>% 
+m <- leaflet(world_sf) %>% 
   addTiles()  %>% 
   setView( lat=10, lng=0 , zoom=2) %>%
   addPolygons( fillColor = ~mypalette(POP2005), stroke=FALSE )
@@ -156,8 +154,7 @@ It is a good practice to check the distribution of this variable to understand w
 library(ggplot2)
 
 # Distribution of the population per country?
-world_spdf@data %>% 
-  ggplot( aes(x=as.numeric(POP2005))) + 
+  ggplot(world_sf, aes(x=as.numeric(POP2005))) + 
     geom_histogram(bins=20, fill='#69b3a2', color='white') +
     xlab("Population (M)") + 
     theme_bw()
@@ -205,23 +202,28 @@ Bins
 
 ```{r, eval=FALSE}
 # Color by quantile
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
+m <- leaflet(world_sf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
   addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("YlOrRd", POP2005)(POP2005) )
 m
- 
+
+# # save the widget in a html file if needed.
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet2.html"))
+
 # Numeric palette
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
+m <- leaflet(world_sf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
   addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorNumeric("YlOrRd", POP2005)(POP2005) )
 m
  
+
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet3.html"))
+
 # Bin
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
+m <- leaflet(world_sf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
   addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorBin("YlOrRd", POP2005)(POP2005) )
 m
 
-# save the widget in a html file if needed.
-# library(htmlwidgets)
-# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet2.html"))
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet4.html"))
+
 ```
 
 
@@ -254,18 +256,18 @@ Here is the result and the code:
 # Create a color palette with handmade bins.
 library(RColorBrewer)
 mybins <- c(0,10,20,50,100,500,Inf)
-mypalette <- colorBin( palette="YlOrBr", domain=world_spdf@data$POP2005, na.color="transparent", bins=mybins)
+mypalette <- colorBin( palette="YlOrBr", domain=world_sf$POP2005, na.color="transparent", bins=mybins)
  
 # Prepare the text for tooltips:
 mytext <- paste(
-    "Country: ", world_spdf@data$NAME,"<br/>", 
-    "Area: ", world_spdf@data$AREA, "<br/>", 
-    "Population: ", round(world_spdf@data$POP2005, 2), 
+    "Country: ", world_sf$NAME,"<br/>", 
+    "Area: ", world_sf$AREA, "<br/>", 
+    "Population: ", round(world_sf$POP2005, 2), 
     sep="") %>%
   lapply(htmltools::HTML)
  
 # Final Map
-leaflet(world_spdf) %>% 
+m <- leaflet(world_sf) %>% 
   addTiles()  %>% 
   setView( lat=10, lng=0 , zoom=2) %>%
   addPolygons( 
@@ -286,8 +288,7 @@ leaflet(world_spdf) %>%
 m  
   
 # save the widget in a html file if needed.
-# library(htmlwidgets)
-# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet5.html"))
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet5.html"))
 ```
   
   
