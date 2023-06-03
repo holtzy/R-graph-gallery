@@ -62,7 +62,7 @@ my_sf <- my_sf %>%
   mutate(google_name = gsub(" \\(United States\\)", "", google_name))
 
 # Show it
-plot(my_sf$geometry)
+plot(st_geometry(my_sf))
 ```
 </div>
 </div>
@@ -119,8 +119,11 @@ my_sf <- my_sf %>% left_join(., pop, by = c("google_name" = "state"))
 my_sf_merc <- st_transform(my_sf, 3857)
 cartogram <- cartogram_cont(my_sf_merc, "pop")
 
+# Back to original projection
+cartogram <- st_transform(cartogram, st_crs(my_sf))
+
 # First look!
-plot(cartogram$geometry)
+plot(st_geometry(cartogram))
 ```
 </div>
 </div>
@@ -169,14 +172,13 @@ ggplot(cartogram) +
     panel.background = element_rect(fill = "#f5f5f9", color = NA),
     legend.background = element_rect(fill = "#f5f5f9", color = NA),
     plot.title = element_text(size = 22, hjust = 0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-  ) +
-  coord_sf(crs = 4326)
+  )
 ```
 
 
 To get a satisfying result, let's:
 
-- color hexagones according to their population
+- color hexagons according to their population
 - add legend
 - add background color
 - add title
