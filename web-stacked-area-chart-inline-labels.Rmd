@@ -1,9 +1,9 @@
 ---
 title: "Stacked line chart with inline labels"
-descriptionMeta: "This post explains how to build a clean stacked line chart with inline labels with R and ggplot2. Step by step code snippets with explanations are provided. Built with the tidyverse."
-descriptionTop: "This post shows how to build a clean stacked line chart using <code>R</code>, <code>ggplot2</code> and the <code>tidyverse</code>. This chart is ready for publication. It has a nice <b>color palette</b>, some very clean <b>inline labels</b>, a powerfull <b>title</b> and slick <b>footer</b> with logos."
+descriptionMeta: "This post explains how to build a clean stacked area chart with inline labels with R and ggplot2. Step by step code snippets with explanations are provided. Built with the tidyverse."
+descriptionTop: "This post shows how to build a clean <a href='https://r-graph-gallery.com/stacked-area-graph.html'>stacked area chart</a> using <code>R</code>, <code>ggplot2</code> and the <code>tidyverse</code>. This chart is ready for publication. It has a nice <b>color palette</b>, some very clean <b>inline labels</b>, a powerfull <b>title</b> and slick <b>footer caption</b> with logos."
 sectionText: "Stacked area section"
-sectionLink: "https://r-graph-gallery.com/stacked-area-graph.html"
+sectionLink: "stacked-area-graph.html"
 DataToVizText: "Data to Viz"
 DataToVizLink: "data-to-viz.com/graph/stackedarea.html"
 url: "web-stacked-area-chart-inline-labels"
@@ -54,7 +54,7 @@ Today's plot requires quite a lot of packages to be built. You can install them 
 
 ```{r}
 library(tidyverse)
-library(janitor)
+#library(janitor)
 library(readxl)
 library(ggstream)
 library(showtext)
@@ -62,250 +62,306 @@ library(ggtext)
 ```
 <br>
 
-You are probably familiar with the `tidyverse` already. `readxl` will be used in the next section to load the dataset.
+You are probably familiar with the `tidyverse` already. `readxl` will be used in the next section to load the dataset from a `xlsx` format directly. `ggstream` is used to smooth the area shapes. `showtext` is used to load some custom fonts.
+
+
 
 
 # Load and prepare the data
 ***
 
-This guide shows how to create a beautiful circular barplot to visualize several characteristics of hiking locations in Washington.
+The data is stored on [github](https://github.com/holtzy/R-graph-gallery/blob/master/DATA/wealth_data.xlsx) in a `xslx` file. To reproduce this tutorial, please download the file and run the following line of code. The `read_excel()` function of the `readxl` package makes it easy to load this file directly without requiring the `.csv` format. 
 
-The data for this post comes from [Washington Trails Association](https://www.wta.org/go-outside/hikes?b_start:int=1) courtesy of the [TidyX crew](https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles), [Ellis Hughes](https://twitter.com/Ellis_hughes) and [Patrick Ward](https://twitter.com/OSPpatrick). This guide uses the dataset released for the [TidyTuesday](https://github.com/rfordatascience/tidytuesday) initiative on the week of 2020-11-24. You can find the original announcement and more information about the data [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24). Thank you all for making this possible!
-
-Let's start by loading the dataset:
 
 ```{r}
-hike_data <- readr::read_rds(url("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds"))
+df <- read_excel("~/Desktop/R-graph-gallery/DATA/wealth_data.xlsx")
 ```
-<br>
 
-The first step is to extract the **region** from the `location` column. 
-This is given by the text before the `"--"`.
+Note: do not forget to update the path to point to the file on your computer.
+
+
+
+
+# Basic stacked area chart
+***
+Everything start with a basic **stacked area chart**. You can see many examples in the [stacked area chart section](https://r-graph-gallery.com/stacked-area-graph.html) of the R graph gallery, including beginner level tutorials.
+
+Basically, the `ggplot` function is used to start a chart with `ggplot2`. Then, the `year` column of the dataset (`df`) is used for the `x` axis, `total_wealth` for the Y axis and everything is stacked and colored using the `country` column.
+
+Last but not least, the `geom_area` geom can be used to create a stacked area chart.
+
 
 ```{r}
-hike_data$region <- as.factor(word(hike_data$location, 1, sep = " -- "))
-```
-<br>
+# Stacked area chart with smoothing
+df %>% 
+  ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
+  geom_area() 
+````
 
-A similar approach is used to extract the **number of miles**.
+That's it! 🔥
+We now have a first stacked area chart showing what's happening in our dataset.
 
-```{r}
-hike_data$length_num <- as.numeric(sapply(strsplit(hike_data$length, " "), "[[", 1))
-```
-<br>
 
-And finally, compute the **cumulative length** and **mean gain** for each 
-region, as well as recording the **number of tracks** per region.
-
-```{r}
-plot_df <- hike_data %>%
-  group_by(region) %>%
-  summarise(
-    sum_length = sum(length_num),
-    mean_gain = mean(as.numeric(gain)),
-    n = n()
-  ) %>%
-  mutate(mean_gain = round(mean_gain, digits = 0))
-```
-<br>
-
-# Basic radar chart
+# Smoothing the lines
 ***
 
-Converting a plot from cartesian to circular (polar) coordinates in `ggplot2` 
-is as easy as adding a `coord_polar()` call to the plot.
+It is possible to make the lines smoother thanks to the `geom_stream` geom of the `ggstream` package. It's gonna create a less accurate but more organic and eye catching shape to the graph:
 
 ```{r}
-plt <- ggplot(plot_df) +
-  # Make custom panel grid
-  geom_hline(
-    aes(yintercept = y),
-    data.frame(y = c(0:3) * 1000),
-    color = "lightgrey"
-  ) +
-  # Add bars to represent the cumulative track lengths
-  # str_wrap(region, 5) wraps the text so each line has at most 5 characters
-  # (but it doesn't break long words!)
-  geom_col(
-    aes(
-      x = reorder(str_wrap(region, 5), sum_length),
-      y = sum_length,
-      fill = n
-    ),
-    position = "dodge2",
-    show.legend = TRUE,
-    alpha = .9
-  ) +
-
-  # Add dots to represent the mean gain
-  geom_point(
-    aes(
-      x = reorder(str_wrap(region, 5), sum_length),
-      y = mean_gain
-    ),
-    size = 3,
-    color = "gray12"
-  ) +
-
-  # Lollipop shaft for mean gain per region
-  geom_segment(
-    aes(
-      x = reorder(str_wrap(region, 5), sum_length),
-      y = 0,
-      xend = reorder(str_wrap(region, 5), sum_length),
-      yend = 3000
-    ),
-    linetype = "dashed",
-    color = "gray12"
-  ) +
-
-  # Make it circular!
-  coord_polar()
-
-plt
-```
-<br>
-
-Not too bad! It's clear the plot isn't ready for publication yet. But the 
-take-home message so far must be about how easy it is to convert one regular 
-plot into a circular plot by using `coord_polar()`. 
-Now, wanna make it better? Let's do it!
-
-# Add annotations and legend
-
-It's not clear what is represented by the height of the bars in the plot above. 
-There are some vertical tick marks, but they aren't definitely placed in the right place. 
-And what about the color? What does it mean? Let's improve this!
-
-```{r}
-plt <- plt +
-  # Annotate the bars and the lollipops so the reader understands the scaling
-  annotate(
-    x = 11,
-    y = 1300,
-    label = "Mean Elevation Gain\n[FASL]",
-    geom = "text",
-    angle = -67.5,
-    color = "gray12",
-    size = 2.5,
-    family = "Bell MT"
-  ) +
-  annotate(
-    x = 11,
-    y = 3150,
-    label = "Cummulative Length [FT]",
-    geom = "text",
-    angle = 23,
-    color = "gray12",
-    size = 2.5,
-    family = "Bell MT"
-  ) +
-  # Annotate custom scale inside plot
-  annotate(
-    x = 11.7,
-    y = 1100,
-    label = "1000",
-    geom = "text",
-    color = "gray12",
-    family = "Bell MT"
-  ) +
-  annotate(
-    x = 11.7,
-    y = 2100,
-    label = "2000",
-    geom = "text",
-    color = "gray12",
-    family = "Bell MT"
-  ) +
-  annotate(
-    x = 11.7,
-    y = 3100,
-    label = "3000",
-    geom = "text",
-    color = "gray12",
-    family = "Bell MT"
-  ) +
-  # Scale y axis so bars don't start in the center
-  scale_y_continuous(
-    limits = c(-1500, 3500),
-    expand = c(0, 0),
-    breaks = c(0, 1000, 2000, 3000)
-  ) +
-  # New fill and legend title for number of tracks per region
-  scale_fill_gradientn(
-    "Amount of Tracks",
-    colours = c("#6C5B7B", "#C06C84", "#F67280", "#F8B195")
-  ) +
-  # Make the guide for the fill discrete
-  guides(
-    fill = guide_colorsteps(
-      barwidth = 15, barheight = .5, title.position = "top", title.hjust = .5
-    )
-  ) +
-  theme(
-    # Remove axis ticks and text
-    axis.title = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text.y = element_blank(),
-    # Use gray text for the region names
-    axis.text.x = element_text(color = "gray12", size = 12),
-    # Move the legend to the bottom
-    legend.position = "bottom",
-  )
-
-plt
-```
-<br>
+# Stacked area chart with smoothing
+df %>% 
+  ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
+  geom_stream(type = "ridge", bw=1) 
+````
 
 
-# Final chart
+# Color scale and stacking order
 ***
 
-The plot above is much clearer than its previous version. However, it still
-needs some tweaks to be ready to be published. First of all, 
-default font is replaced with **Bell MT**. It adds a nice touch that makes it look
-much better. Then, the background is changed to white. The default gray 
-one doesn't feel quite right for this chart. And finally, we add good labels 
-that make it easier to transmit what this chart is about.
+What looks especially good in Gilbert's chart is the color palette. Let's build a vector of color that we then inject into the chart using the `scale_fill_manual` and `scale_color_manual` functions:
+
+```{r}
+#Color palette
+pal=c("#003f5c",
+      "#2f4b7c",
+      "#665191",
+      "#a05195",
+      "#d45087",
+      "#f95d6a",
+      "#ff7c43",
+      "#ffa600")
+
+# Stacking order
+order <- c("United States", "China", "Japan", "Germany", "United Kingdom", "France", "India", "Other")
+
+# Use them for the plot
+df %>% 
+  arrange(total_wealth) %>%
+  mutate(country = factor(country, levels=order)) %>% 
+  ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
+  geom_stream(type = "ridge" ,bw=1) +
+  
+  scale_fill_manual(values=pal) +
+  scale_color_manual(values=pal) +
+  scale_x_continuous(breaks=c(2000,2005,2010,2015,2021),labels = c("2000","2005","2010","2015","2021")) +
+  scale_y_continuous(expand = c(0,0)) +
+  coord_cartesian(clip = "off") 
+````
 
 
-```{r, fig.width=9, fig.height=12.6, out.width="70%", fig.align="center"}
-plt <- plt +
-  # Add labels
-  labs(
-    title = "\nHiking Locations in Washington",
-    subtitle = paste(
-      "\nThis Visualisation shows the cummulative length of tracks,",
-      "the amount of tracks and the mean gain in elevation per location.\n",
-      "If you are an experienced hiker, you might want to go",
-      "to the North Cascades since there are a lot of tracks,",
-      "higher elevations and total length to overcome.",
-      sep = "\n"
-    ),
-    caption = "\n\nData Visualisation by Tobias Stalder\ntobias-stalder.netlify.app\nSource: TidyX Crew (Ellis Hughes, Patrick Ward)\nLink to Data: github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md"
+
+
+# Using custom fonts
+***
+
+Before adding the title, legend and inline labels we need to load some **custom fonts**.
+
+This is made possible thanks to the `showtext` package and its `font_add_google()` function. Using custom fonts can be a bit tricky. Fortunately, I wrote a [complete tutorial](https://r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) just in case the following code sounds strange to you.
+
+```{r}
+# Name of the fonts we need
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+
+# Use the font_add_google() function to load fonts from the web
+font_add_google(family=font, font, db_cache = FALSE)
+font_add_google(family=font2, font2, db_cache = FALSE)
+
+fa_path <- systemfonts::font_info(family = "Font Awesome 6 Brands")[["path"]]
+font_add(family = "fa-brands", regular = fa_path)
+
+theme_set(theme_minimal(base_family = font2, base_size = 3))
+
+bg <- "white"
+txt_col <- "black"
+
+showtext_auto(enable = TRUE)
+```
+<br>
+
+Since we are talking about thext, let's also create the caption text that appear at the bottom of the figure:
+
+```{r}
+caption_text  <- str_glue("**Data:**  James Davies, Rodrigo Lluberas and Anthony Shorrocks, Credit Suisse Global Wealth Databook 2022<br>",
+                          "**Design:** Gilbert Fontana <br><br>",
+                          "<span style='font-family: \"fa-brands\"'>&#xf09b;</span> gilbertfontana<br>",
+                          "<span style='font-family: \"fa-brands\"'>&#xf099;</span> GilbertFontana<br>",
+                          "<span style='font-family: \"fa-brands\"'>&#xf16d;</span> gilbert.fontana"
+)
+``` 
+
+
+
+
+# Color, legends, titles and labels
+***
+
+The final figure can now be created:
+
+- the basic stacked area chart with great color is made as described above
+- the title is used thanks to the `annotate()` function
+- all inline labels are built 1 by 1, thanks to the `annotate()` function again
+- vertical segments are made made one by one using the `geom_segment()` function
+
+```{r}
+plot <- df %>% 
+  arrange(total_wealth) %>%
+  mutate(country = factor(country, levels=order)) %>% 
+  ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
+  geom_stream(type = "ridge" ,bw=1) +
+  
+  #Title
+  annotate("text", x = 2000, y = 410000,
+           label = "Aggregated\nHousehold\nWealth",
+           hjust=0,
+           size=15,
+           lineheight=.9,
+           fontface="bold", family=font,
+           color="black") +
+  
+  #USA
+  annotate("text", x = 2021.2, y = 420000,
+           label = "USA $145,793B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold", family=font2,
+           color=pal[1]) +
+  #China
+  annotate("text", x = 2021.2, y = 300000,
+           label = "China $85,107B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[2]) +
+  #Japan
+  annotate("text", x = 2021.2, y = 245000,
+           label = "Japan $25,692B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[3]) +
+  #Germany
+  annotate("text", x = 2021.2, y = 220000,
+           label = "Germany $17,489B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[4]) +
+  #UK
+  annotate("text", x = 2021.2, y = 200000,
+           label = "UK $16,261B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[5]) +
+  #France
+  annotate("text", x = 2021.2, y = 183000,
+           label = "France $16,159B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[6]) +
+  #India
+  annotate("text", x = 2021.2, y = 165000,
+           label = "India $14,225B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[7]) +
+  #Other
+  annotate("text", x = 2021.2, y = 80000,
+           label = "Rest of the world $142,841B",
+           hjust=0,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=pal[8]) +
+  
+  ## Vertical segments
+  geom_segment(aes(x = 2000, y = 0, xend = 2000, yend = 117426+20000),color="black") +
+  geom_point(aes(x = 2000, y = 117426+20000),color="black") +
+  annotate("text", x = 2000, y = 117426+30000,
+           label = "$117,844B",
+           hjust=0.5,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=txt_col) +
+  
+  geom_segment(aes(x = 2005, y = 0, xend = 2005, yend = 181731+20000),color="black") +
+  geom_point(aes(x = 2005, y = 181731+20000),color="black") +
+  annotate("text", x = 2005, y = 181731+30000,
+           label = "$182,350B",
+           hjust=0.5,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=txt_col) +
+  
+  geom_segment(aes(x = 2010, y = 0, xend = 2010, yend = 250932+20000),color="black") +
+  geom_point(aes(x = 2010, y = 250932+20000),color="black") +
+  annotate("text", x = 2010, y = 250932+30000,
+           label = "$251,885B",
+           hjust=0.5,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=txt_col) +
+  
+  geom_segment(aes(x = 2015, y = 0, xend = 2015, yend = 296203+25000),color="black") +
+  geom_point(aes(x = 2015, y = 296203+25000),color="black") +
+  annotate("text", x = 2015, y = 296203+35000,
+           label = "$297,698B",
+           hjust=0.5,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=txt_col) +
+  
+  geom_segment(aes(x = 2021, y = 0, xend = 2021, yend = 461370+50000),color="black") +
+  geom_point(aes(x = 2021, y = 461370+50000),color="black") +
+  annotate("text", x = 2021, y = 461370+50000,
+           label = "$463,567B",
+           hjust=1.1,
+           size=3,
+           lineheight=.8,
+           fontface="bold",family=font2,
+           color=txt_col) +
+  
+  #Color scale
+  scale_fill_manual(values=pal) +
+  scale_color_manual(values=pal) +
+  scale_x_continuous(breaks=c(2000,2005,2010,2015,2021),labels = c("2000","2005","2010","2015","2021")) +
+  scale_y_continuous(expand = c(0,0)) +
+  
+  #Last customization
+  coord_cartesian(clip = "off") +
+  xlab("") +
+  ylab("") +
+  labs(caption = caption_text #"Data: Flash Eurobarometer, Number 509 (October 2022)"
   ) +
-  # Customize general theme
   theme(
-
-    # Set default color and font family for the text
-    text = element_text(color = "gray12", family = "Bell MT"),
-
-    # Customize the text in the title, subtitle, and caption
-    plot.title = element_text(face = "bold", size = 25, hjust = 0.05),
-    plot.subtitle = element_text(size = 14, hjust = 0.05),
-    plot.caption = element_text(size = 10, hjust = .5),
-
-    # Make the background white and remove extra grid lines
-    panel.background = element_rect(fill = "white", color = "white"),
+    axis.line.x = element_line(linewidth = .75),
     panel.grid = element_blank(),
-    panel.grid.major.x = element_blank()
+    axis.text.y=element_blank(),
+    axis.text.x = element_text(color=txt_col, size=10,margin = margin(5,0,0,0)),
+    plot.margin = margin(20,120,20,20),
+    legend.position = "none",
+    plot.caption = element_markdown(hjust=0, margin=margin(10,0,0,0), size=8, color=txt_col, lineheight = 1.2),
   )
-# Use `ggsave("plot.png", plt,width=9, height=12.6)` to save it as in the output
-plt
 ```
 <br>
 
-Simple and beautiful!
+<center>
+![](img/fromTheWeb/web-stacked-area-chart-inline-labels.png){ width=70% }
+</center>
 
 
 <!-- Close container -->
@@ -313,5 +369,5 @@ Simple and beautiful!
 
 ```{r, echo=FALSE}
 # Correlation | Ranking | Evolution..
-htmltools::includeHTML("htmlChunkRelatedRanking.html")
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
 ```
