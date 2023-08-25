@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Add statistical details to charts with
+<strong>ggstatsplot</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to build a
+basic waffle chart with R and the waffle package. It provides several
+reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Add statistical details to charts
+with <strong>ggstatsplot</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+build a basic waffle chart with R and the waffle package. It provides
+several reproducible examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Add statistical details to charts with
+<strong>ggstatsplot</strong></h1></center>
+        <hr class="short_hr" />
+        <br />
+        <img src="../img/r-package-img/ggstatsplot.png" alt="" width="100px" />
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">The
+<code>ggstatsplot</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to facilitate the creation of visualizations
+<strong>accompanied by statistical details</strong>.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="<a
+href="https://github.com/IndrajeetPatil/ggstatsplot"
+class="uri">https://github.com/IndrajeetPatil/ggstatsplot</a>"
+            >Documentation</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+
+<div id="in-a-nutshell" class="section level1">
+<h1>In a nutshell:</h1>
+<hr />
+<p><strong>goal</strong>: facilitate the creation of visualizations
+accompanied by statistical details</p>
+<p>✍️ <strong>author</strong>: Indrajeet Patil</p>
+<p>📘 <strong>documentation</strong>: <a
+href="https://indrajeetpatil.github.io/ggstatsplot/">github</a></p>
+<p>⭐️ <em>more than 1000 stars</em></p>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>Getting started with <code>ggstatsplot</code> is straightforward.</p>
+<p>First, ensure you have <code>ggplot2</code> installed. Then, you can
+install <code>ggstatsplot</code> directly from CRAN: using the
+<code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;waffle&quot;</span>, <span class="at">repos =</span> <span class="st">&quot;https://cinc.rud.is&quot;</span>)</span></code></pre></div>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<p>The <code>ggstatsplot</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to facilitate the creation of visualizations
+<strong>accompanied by statistical details</strong>.</p>
+<p>It streamlines the process of <strong>integrating statistical
+tests</strong> with informative plots, making it easier for researchers
+and data analysts to communicate their findings effectively.</p>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>There are 2 main ways to build a waffle chart using this library:</p>
+<ul>
+<li>using the <code>geom_waffle</code> geom inside a
+<code>ggplot2</code> call</li>
+<li>using the <code>waffle()</code> function</li>
+</ul>
+<p>We will focus on the second option in this blogpost.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggstatsplot)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>ggstatsplot<span class="sc">::</span><span class="fu">ggbetweenstats</span>(<span class="at">data =</span> mtcars, <span class="at">x =</span> am, <span class="at">y =</span> mpg, <span class="at">type =</span> <span class="st">&quot;p&quot;</span>)</span></code></pre></div>
+<p><img src="ggstatsplot_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div id="gallery-of-ggstatsplot-examples" class="section level3">
+<h3>Gallery of ggstatsplot examples</h3>
+<hr />
+<section class="bg" id="portfolio" style="padding-top: 10px">
+<div class="container">
+<center>
+<img src="img/other/boxplot_explanation.png" width="70%"></img>
+</center>
+<center>
+<p>
+<i>Anatomy of a boxplot -
+<a href="https://www.data-to-viz.com/caveat/boxplot.html">Explanation</a>
+-
+<a href="https://www.leansigmacorporation.com/box-plot-with-minitab/">Image
+source</a></i>
+</p>
+</center>
+<br><br>
+<div class="mySeryTitle">
+Warning
+</div>
+<hr>
+<p>
+<a href="https://www.data-to-viz.com/caveat/boxplot.html">Boxplot</a> is
+probably the most commonly used chart type to compare distribution of
+several groups. However, you should keep in mind that data
+<u>distribution is hidden</u> behind each box. For instance, a normal
+distribution could look exactly the same as a bimodal distribution.
+Please read
+<a href="https://www.data-to-viz.com/caveat/boxplot.html">more
+explanation</a> on this matter, and consider a
+<a href="violin.html">violin plot</a> or a
+<a href="ridgeline-plot.html">ridgline chart</a> instead.
+</p>
+<div id="portfolio-items" class="row">
+<div class="col-md-4 col-sm-6 portfolio-item">
+<a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html">
+<div class="portfolio-hover">
+<div class="portfolio-hover-content">
+<p>
+Basic boxplot
+</p>
+<hr>
+<p class="explanation_portfolio">
+The basic boxplot hides information: how does the underlying
+distribution look like? What are the category sample sizes?
+</p>
+</div>
+</div>
+<img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot22.png" alt="">
+</a>
+</div>
+<div class="col-md-4 col-sm-6 portfolio-item">
+<a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html">
+<div class="portfolio-hover">
+<div class="portfolio-hover-content">
+<p>
+Add individual observation
+</p>
+<hr>
+<p class="explanation_portfolio">
+See how low group C sample size actually is?
+</p>
+</div>
+</div>
+<img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot2.png" alt="">
+</a>
+</div>
+<div class="col-md-4 col-sm-6 portfolio-item">
+<a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html">
+<div class="portfolio-hover">
+<div class="portfolio-hover-content">
+<p>
+Violin plot
+</p>
+<hr>
+<p class="explanation_portfolio">
+See group B? It would be a shame to miss out this bimodal distribution.
+</p>
+</div>
+</div>
+<img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot23.png" alt="">
+</a>
+</div>
+</div>
+</div>
+</section/>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="scatterplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterPlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="heatmap.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Heatmap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Heatmap</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="correlogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Correlogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Correlogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubblePlot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="connected-scatterplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ScatterConnected150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connected scatter</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata">
+      <a class="portfolio-link"  href="2d-density-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/2dDensity150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density 2d</div>
+    </div>
+  </div>
+
+</div>
+</section>
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
