@@ -64,11 +64,35 @@ ggstatsplot::ggbetweenstats(data = mtcars, x = am, y = mpg, type = "p")
 ***
 Getting started with `ggstatsplot` is straightforward. 
 
-First, ensure you have `ggplot2` installed. Then, you can install `ggstatsplot` directly from CRAN: using the `install.packages` function:
+First, ensure you have `ggplot2` installed. Then, you can install `ggstatsplot` directly from CRAN using the `install.packages` function:
 
 ```{r eval=FALSE}
 install.packages("waffle", repos = "https://cinc.rud.is")
 ```
+
+
+
+
+
+# Basic usage 
+***
+
+The `ggstatsplot` package comes with about **9 functions**, each of them targeting a **specific statistical test**.
+
+For instance, the `ggscatterstats()` function visualizes the relationship between 2 variables `x` and `y` using a [scatterplot](https://r-graph-gallery.com/scatterplot.html). It runs a **linear regression** and draw a regression line that provides a visual representation of the linear relationship between the two variables. The shaded region around it represents the **confidence interval**.
+
+The **marginal histograms** on the top and right side of the plot show the distribution of the `x` and `y` variables, respectively. Additionally, the plot provides statistical details like **correlation coefficient**, **p-value**, and **sample size**.
+
+Here is an example using the famous `mtcars` dataset, checking the relationship between the `hp` and `mpg` columns:
+
+```{r}
+ggscatterstats(data = mtcars, x = hp, y = mpg)
+```
+
+Now, let's try to summarize the power of `ggstatsplot` through its main functions:
+
+
+
 
 
 # Key features
@@ -76,44 +100,91 @@ install.packages("waffle", repos = "https://cinc.rud.is")
 
 Here is an overview of the main function offered by ggstatsplot with a short description of what they do:
 
-- `ggbetweenstats()` &rarr; Creates violin plots for comparisons between groups or conditions, accompanied by results from statistical tests.
-- `ggwithinstats()` &rarr; Designed for repeated measures designs, this function visualizes paired data and provides associated statistical tests.
-- `gghistostats()` &rarr; Generates histograms to visualize the distribution of a numeric variable and checks if its mean is significantly different from a specified value with a one-sample test.
-- `ggdotplotstats()` &rarr; Similar to `gghistostats()`, but intended for labeled numeric variables.
-- `ggscatterstats()` &rarr; Creates a scatterplot with marginal distributions overlaid on the axes and results from statistical tests in the subtitle.
-- `ggcorrmat()` &rarr; Produces a correlalogram (a matrix of correlation coefficients) with statistical details.
-- `ggpiestats()` &rarr; Creates a pie chart for categorical or nominal variables with results from contingency table analysis included in the subtitle.
-- `ggbarstats()` &rarr; An alternative to `ggpiestats()`, this function creates bar charts for categorical data with associated statistical tests.
-- `ggcoefstats()` &rarr; Generates dot-and-whisker plots for regression models and meta-analysis.
+## &rarr; ggbetweenstats
+`ggbetweenstats()` creates [violin plots](https://r-graph-gallery.com/violin.html) for comparisons between groups or conditions, accompanied by results from statistical tests.
 
-For more details and examples, refer to the [official documentation](https://indrajeetpatil.github.io/ggstatsplot/).
-
-
-
-# Basic usage 
-***
-
-There are 2 main ways to build a waffle chart using this library:
-
-- using the `geom_waffle` geom inside a `ggplot2` call
-- using the `waffle()` function
-
-We will focus on the second option in this blogpost.
+Example:
 
 ```{r}
-library(ggstatsplot)
 ggstatsplot::ggbetweenstats(data = mtcars, x = am, y = mpg, type = "p")
 ```
 
-### Gallery of ggstatsplot examples
+
+
+## &rarr; ggwithinstats
+`ggwithinstats()` is used to display data distributions, descriptive statistics, and statistical tests for different groups within the same variable. 
+
+The function is particularly useful for visualizing and testing differences **within** a single categorical variable.
+
+Here's a simple example using the mtcars dataset that comes built-in with R:
+
+```{r}
+ggwithinstats(
+  data = bugs_long,
+  x = condition,
+  y = desire,
+  type = "nonparametric", ## type of statistical test
+  xlab = "Condition", ## label for the x-axis
+  ylab = "Desire to kill an artrhopod", ## label for the y-axis
+  package = "yarrr", ## package from which color palette is to be taken
+  palette = "info2", ## choosing a different color palette
+  title = "Comparison of desire to kill bugs",
+  caption = "Source: Ryan et al., 2013"
+) + ## modifying the plot further
+  ggplot2::scale_y_continuous(
+    limits = c(0, 10),
+    breaks = seq(from = 0, to = 10, by = 1)
+  )
+```
+
+
+
+## &rarr; gghistostats
+
+`gghistostats()` generates histograms to visualize the distribution of a numeric variable and checks if its mean is significantly different from a specified value with a one-sample test:
+
+```{r}
+gghistostats(
+  data       = ggplot2::msleep,
+  x          = awake,
+  title      = "Amount of time spent awake",
+  test.value = 12,
+  binwidth   = 1
+)
+```
+
+## &rarr; Other functions
+
+Several other functions are available:
+- `ggdotplotstats()` &rarr; Similar to `gghistostats()`, but intended for labeled numeric variables.
+
+- `ggscatterstats()` &rarr; Creates a scatterplot with marginal distributions overlaid on the axes and results from statistical tests in the subtitle.
+
+- `ggcorrmat()` &rarr; Produces a correlalogram (a matrix of correlation coefficients) with statistical details.
+
+- `ggpiestats()` &rarr; Creates a pie chart for categorical or nominal variables with results from contingency table analysis included in the subtitle.
+
+- `ggbarstats()` &rarr; An alternative to `ggpiestats()`, this function creates bar charts for categorical data with associated statistical tests.
+
+- `ggcoefstats()` &rarr; Generates dot-and-whisker plots for regression models and meta-analysis.
+
+Those functions are described more in depth in other pages of the R graph gallery.
+
+
+
+# Gallery of ggstatsplot examples
 ***
 
-<section class="bg" id="portfolio" style="padding-top: 10px"> <div class="container"> <center><img src="img/other/boxplot_explanation.png" width="70%"></img></center> <center><p><i>Anatomy of a boxplot - <a href="https://www.data-to-viz.com/caveat/boxplot.html">Explanation</a> - <a href="https://www.leansigmacorporation.com/box-plot-with-minitab/">Image source</a></i></p></center> <br><br><div class="mySeryTitle">Warning</div><hr> <p><a href="https://www.data-to-viz.com/caveat/boxplot.html">Boxplot</a> is probably the most commonly used chart type to compare distribution of several groups. However, you should keep in mind that data <u>distribution is hidden</u> behind each box. For instance, a normal distribution could look exactly the same as a bimodal distribution. Please read <a href="https://www.data-to-viz.com/caveat/boxplot.html">more explanation</a> on this matter, and consider a <a href="violin.html">violin plot</a> or a <a href="ridgeline-plot.html">ridgline chart</a> instead.</p><div id="portfolio-items" class="row"> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Basic boxplot</p><hr> <p class="explanation_portfolio">The basic boxplot hides information: how does the underlying distribution look like? What are the category sample sizes?</p></div></div><img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot22.png" alt=""> </a> </div><div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Add individual observation</p><hr> <p class="explanation_portfolio">See how low group C sample size actually is?</p></div></div><img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot2.png" alt=""> </a> </div><div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="89-box-and-scatter-plot-with-ggplot2.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Violin plot</p><hr> <p class="explanation_portfolio">See group B? It would be a shame to miss out this bimodal distribution.</p></div></div><img class="img-fluid imgOfPortfolio" src="img/graph/89-box-and-scatter-plot-with-ggplot23.png" alt=""> </a> </div></div></div></section/>
+<section class="bg" id="portfolio" style="padding-top: 10px"> <div class="container"> <div id="portfolio-items" class="row"> <div class="col-md-4 col-sm-12 portfolio-item"> <a class="portfolio-link" href="web-violinplot-with-ggstatsplot.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>ggStatsPlot</p><hr> <p class="explanation_portfolio">Compare the distribution of 3 groups using a combination of boxplot and violin plot with ggStatsPlot.<br/><br/>Probably better than a barplot if you have several values per group!</p></div></div><img class="img-fluid imgOfPortfolio" src="../img/fromTheWeb/web-violinplot-with-ggstatsplot-square.png" alt="combination of violin plot and boxplot using ggstatsplot"> </a> </div></div></div></section>
+
+
 
 
 
 <!-- Close container -->
 </div>
+
+
 
 
 
