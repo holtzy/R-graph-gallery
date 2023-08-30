@@ -43,17 +43,14 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Basic Stacked area chart with R &#8211; the R Graph Gallery</title>
+    <title>Stacked area chart with R &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta
-      name="description"
-      content="This post provides the basics concerning stacked area chart with R and ggplot2. It takes into account several input format types and show how to customize the output."
-    />
+    <meta name="description" content="This post provides the basics concerning stacked area chart with R and ggplot2. It takes into account several input format types and show how to customize the output." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,12 +59,9 @@
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Basic Stacked area chart with R" />
+    <meta property="og:title" content="Stacked area chart with R" />
     <meta property="og:image" content="img/overview_RGG.png" />
-    <meta
-      property="og:description"
-      content="This post provides the basics concerning stacked area chart with R and ggplot2. It takes into account several input format types and show how to customize the output."
-    />
+    <meta property="og:description" content="This post provides the basics concerning stacked area chart with R and ggplot2. It takes into account several input format types and show how to customize the output." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/136-stacked-area-chart.html"
@@ -111,7 +105,7 @@
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
-        <center><h1>Basic Stacked area chart with R</h1></center>
+        <center><h1>Stacked area chart with R</h1></center>
         <hr class="short_hr" />
         <br />
         <ul class="list-inline social-buttons">
@@ -137,12 +131,7 @@
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">
-            This post provides the basics concerning
-            <a href="stacked-area-graph.html">stacked area chart</a> with R and
-            <code>ggplot2</code>. It takes into account several input format
-            types and show how to customize the output.
-          </p>
+          <p style="max-width: 600px; margin-top: 40px">This post provides the basics concerning <a href="stacked-area-graph.html">stacked area chart</a> with R and <code>ggplot2</code>. It takes into account several input format types and show how to customize the output.</p>
         </center>
         <div style="text-align: center">
           <a
@@ -167,6 +156,7 @@
       });
     </script>
 
+    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -175,287 +165,206 @@
     </style>
 
     <div class="container">
-      <h1 id="most-basic-stacked-area-with-ggplot2">
-        Most basic stacked area with ggplot2
-      </h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The data frame used as input to build a stacked area chart requires
-            3 columns:
-          </p>
-          <ul>
-            <li>
-              <code>x</code>: numeric variable used for the X axis, often it is
-              a time.
-            </li>
-            <li>
-              <code>y</code>: numeric variable used for the Y axis. What are we
-              looking at?
-            </li>
-            <li><code>group</code>: one shape will be done per group.</li>
-          </ul>
-          <p>The chart is built using the <code>geom_area()</code> function.</p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="136-stacked-area-chart_files/figure-html/thecode-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Packages</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"> </a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># create data</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">time &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">7</span>),<span class="dt">each=</span><span class="dv">7</span>))  <span class="co"># x Axis</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">value &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">49</span>, <span class="dv">10</span>, <span class="dv">100</span>)               <span class="co"># y Axis</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">group &lt;-<span class="st"> </span><span class="kw">rep</span>(LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>],<span class="dt">times=</span><span class="dv">7</span>)        <span class="co"># group, one shape per group</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(time, value, group)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># stacked area chart</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="st">    </span><span class="kw">geom_area</span>()</a></code></pre>
-      </div>
-      <h1 id="control-stacking-order-with-ggplot2">
-        Control stacking order with <code>ggplot2</code>
-      </h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The gallery offers a post dedicated to
-            <a href="267-reorder-a-variable-in-ggplot2.html"
-              >reordering with ggplot2</a
-            >. This step can be tricky but the code below shows how to:
-          </p>
-          <ul>
-            <li>
-              give a specific order with the <code>factor()</code> function.
-            </li>
-            <li>order alphabetically using <code>sort()</code></li>
-            <li>order following values at a specific data</li>
-          </ul>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="136-stacked-area-chart_files/figure-html/thecode2-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Give a specific order:</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;G&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;C&quot;</span>) )</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Plot again</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">    </span><span class="kw">geom_area</span>()</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># Note: you can also sort levels alphabetically:</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">myLevels &lt;-<span class="st"> </span><span class="kw">levels</span>(data<span class="op">$</span>group)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span><span class="kw">sort</span>(myLevels) )</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># Note: sort followinig values at time = 5</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">myLevels &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="st">  </span><span class="kw">filter</span>(time<span class="op">==</span><span class="dv">6</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="st">  </span><span class="kw">arrange</span>(value)</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span>myLevels<span class="op">$</span>group )</a></code></pre>
-      </div>
-      <h1 id="proportional-stacked-area-chart">
-        Proportional stacked area chart
-      </h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            In a proportional stacked area graph, the sum of each year is always
-            equal to hundred and value of each group is represented through
-            percentages.
-          </p>
-          <p>
-            To make it, you have to calculate these percentages first. This can
-            be done using <code>dplyr</code> of with <code>base R</code>.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="136-stacked-area-chart_files/figure-html/thecode3-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Compute percentages with dplyr</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">data &lt;-<span class="st"> </span>data  <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(time, group) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">sum</span>(value)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">percentage =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n))</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># Plot</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>percentage, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">    </span><span class="kw">geom_area</span>(<span class="dt">alpha=</span><span class="fl">0.6</span> , <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;black&quot;</span>)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co"># Note: compute percentages without dplyr:</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">my_fun &lt;-<span class="st"> </span><span class="cf">function</span>(vec){ </a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">  <span class="kw">as.numeric</span>(vec[<span class="dv">2</span>]) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(data<span class="op">$</span>value[data<span class="op">$</span>time<span class="op">==</span>vec[<span class="dv">1</span>]]) <span class="op">*</span><span class="dv">100</span> </a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">}</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">data<span class="op">$</span>percentage &lt;-<span class="st"> </span><span class="kw">apply</span>(data , <span class="dv">1</span> , my_fun)</a></code></pre>
-      </div>
-      <h1 id="color-style">Color &amp; Style</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-4 col-sm-12 align-self-center">
-          <p>Let’s improve the chart general appearance:</p>
-          <ul>
-            <li>usage of the <code>viridis</code> color scale</li>
-            <li>
-              <code>theme_ipsum</code> of the <code>hrbrthemes</code> package
-            </li>
-            <li>add title with <code>ggtitle</code></li>
-          </ul>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="136-stacked-area-chart_files/figure-html/thecode4-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Library</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(viridis)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(hrbrthemes)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Plot</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="st">    </span><span class="kw">geom_area</span>(<span class="dt">alpha=</span><span class="fl">0.6</span> , <span class="dt">size=</span>.<span class="dv">5</span>, <span class="dt">colour=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete =</span> T) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;The race between ...&quot;</span>)</a></code></pre>
-      </div>
-      <!-- Close container -->
-    </div>
-    <!-- ============================ RELATED SECTION ============================ -->
-    <section
-      class="bg-light"
-      id="portfolio_landing"
-      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
-    >
-      <div class="container">
-        <p class="mySeryTitle">Related chart types</p>
-        <hr />
-        <div class="row">
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Map150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="choropleth-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Choropleth150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Choropleth</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="hexbin-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/MapHexbin150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Hexbin map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="cartogram.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Cartogram150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Cartogram</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="connection-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/ConnectedMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Connection</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="bubble-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/BubbleMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Bubble map</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div id="stacked-area-with-ggplot2" class="section level1">
+<h1>Stacked area with ggplot2</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The data frame used as input to build a stacked area chart requires 3 columns:</p>
+<ul>
+<li><code>x</code>: numeric variable used for the X axis, often it is a time.</li>
+<li><code>y</code>: numeric variable used for the Y axis. What are we looking at?</li>
+<li><code>group</code>: one shape will be done per group.</li>
+</ul>
+<p>The chart is built using the <code>geom_area()</code> function.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="136-stacked-area-chart_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># Packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co"># create data</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>time &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">rep</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">7</span>),<span class="dt">each=</span><span class="dv">7</span>))  <span class="co"># x Axis</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>value &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">49</span>, <span class="dv">10</span>, <span class="dv">100</span>)               <span class="co"># y Axis</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>group &lt;-<span class="st"> </span><span class="kw">rep</span>(LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>],<span class="dt">times=</span><span class="dv">7</span>)        <span class="co"># group, one shape per group</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(time, value, group)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="co"># stacked area chart</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="st">    </span><span class="kw">geom_area</span>()</span></code></pre></div>
+</div>
+<div id="control-stacking-order-with-ggplot2" class="section level1">
+<h1>Control stacking order with <code>ggplot2</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The gallery offers a post dedicated to <a href="267-reorder-a-variable-in-ggplot2.html">reordering with ggplot2</a>. This step can be tricky but the code below shows how to:</p>
+<ul>
+<li>give a specific order with the <code>factor()</code> function.</li>
+<li>order alphabetically using <code>sort()</code></li>
+<li>order following values at a specific data</li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="136-stacked-area-chart_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Give a specific order:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;G&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;C&quot;</span>) )</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="co"># Plot again</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="st">    </span><span class="kw">geom_area</span>()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a><span class="co"># Note: you can also sort levels alphabetically:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>myLevels &lt;-<span class="st"> </span><span class="kw">levels</span>(data<span class="op">$</span>group)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span><span class="kw">sort</span>(myLevels) )</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="co"># Note: sort following values at time = 5</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>myLevels &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a><span class="st">  </span><span class="kw">filter</span>(time<span class="op">==</span><span class="dv">6</span>) <span class="op">%&gt;%</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a><span class="st">  </span><span class="kw">arrange</span>(value)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>data<span class="op">$</span>group &lt;-<span class="st"> </span><span class="kw">factor</span>(data<span class="op">$</span>group , <span class="dt">levels=</span>myLevels<span class="op">$</span>group )</span></code></pre></div>
+</div>
+<div id="proportional-stacked-area-chart" class="section level1">
+<h1>Proportional stacked area chart</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>In a proportional stacked area graph, the sum of each year is always equal to hundred and value of each group is represented through percentages.</p>
+<p>To make it, you have to calculate these percentages first. This can be done using <code>dplyr</code> of with <code>base R</code>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="136-stacked-area-chart_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># Compute percentages with dplyr</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">library</span>(dplyr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>data &lt;-<span class="st"> </span>data  <span class="op">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="st">  </span><span class="kw">group_by</span>(time, group) <span class="op">%&gt;%</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">sum</span>(value)) <span class="op">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">percentage =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="co"># Plot</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>percentage, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a><span class="st">    </span><span class="kw">geom_area</span>(<span class="dt">alpha=</span><span class="fl">0.6</span> , <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">colour=</span><span class="st">&quot;black&quot;</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a><span class="co"># Note: compute percentages without dplyr:</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>my_fun &lt;-<span class="st"> </span><span class="cf">function</span>(vec){ </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>  <span class="kw">as.numeric</span>(vec[<span class="dv">2</span>]) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(data<span class="op">$</span>value[data<span class="op">$</span>time<span class="op">==</span>vec[<span class="dv">1</span>]]) <span class="op">*</span><span class="dv">100</span> </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a>}</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>data<span class="op">$</span>percentage &lt;-<span class="st"> </span><span class="kw">apply</span>(data , <span class="dv">1</span> , my_fun)</span></code></pre></div>
+</div>
+<div id="color-style" class="section level1">
+<h1>Color &amp; style</h1>
+<hr />
+<div class="row">
+<div class="col-md-4 col-sm-12 align-self-center">
+<p>Let’s improve the chart general appearance:</p>
+<ul>
+<li>usage of the <code>viridis</code> color scale</li>
+<li><code>theme_ipsum</code> of the <code>hrbrthemes</code> package</li>
+<li>add title with <code>ggtitle</code></li>
+</ul>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="136-stacked-area-chart_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># Library</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">library</span>(viridis)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="kw">library</span>(hrbrthemes)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="co"># Plot</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span>time, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a><span class="st">    </span><span class="kw">geom_area</span>(<span class="dt">alpha=</span><span class="fl">0.6</span> , <span class="dt">size=</span>.<span class="dv">5</span>, <span class="dt">colour=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a><span class="st">    </span><span class="kw">scale_fill_viridis</span>(<span class="dt">discrete =</span> T) <span class="op">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a><span class="st">    </span><span class="kw">theme_ipsum</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;The race between ...&quot;</span>)</span></code></pre></div>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
 
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -587,18 +496,18 @@
     </footer>
 
     <script>
+
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $("tr.header")
-          .parent("thead")
-          .parent("table")
-          .addClass("table table-condensed");
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
-    </script>
 
+          </script>
+
+    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
