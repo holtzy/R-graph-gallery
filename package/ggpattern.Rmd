@@ -1,5 +1,5 @@
 ---
-title: "Enhance Your ggplot2 Visualizations with **ggpattern**"
+title: "Filled areas with geometric and image-based patterns"
 logo: "ggpattern"
 descriptionMeta: "This post explains how to add patterns to ggplot2 visualizations with R and the ggpattern package. It provides several reproducible examples with explanation and R code."
 descriptionTop: "The `ggpattern` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to add **pattern aesthetics** to your ggplot2 visualizations.<br/>This post showcases the **key features** of `ggpattern` and provides a set of **graph examples** using the package."
@@ -31,26 +31,66 @@ The `ggpattern` package in R is an extension of the [ggplot2](https://r-graph-ga
 
 <div class = "col-md-5  col-sm-12 align-self-center">
 
-It allows you to **add patterns** like stripes, crosses, and more to your ggplot2 plots, making your visualizations more informative and engaging.
+It allows you to add patterns like **stripes**, **crosses**, **custom images** and more to your ggplot2 plots, making your visualizations more informative and engaging. 
+
 
 ✍️ **author** &rarr; Mike FC
 
 📘 **documentation** &rarr; [github](https://coolbutuseless.github.io/package-ggpattern/)
 
 ⭐️ *more than 500 stars on github*
+
 </div>
+
 
 <div class = "col-md-7  col-sm-12">
 ```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+# libs
+library(ggplot2)
 library(ggpattern)
-# Example ggpattern code here
+
+# Create data
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3, 12, 5, 18, 45)
+  )
+
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_col_pattern(
+    aes(pattern_fill = name), 
+    pattern = 'stripe',
+    fill    = 'white',
+    colour  = 'black'
+  )
 ```
 </div>
 </div>
 
+This package can be especially useful if you need to publish some **black and white** content.
+
+
 ```{r, eval=FALSE}
-# Example ggpattern code here
+# libs
+library(ggplot2)
+library(ggpattern)
+
+# Create data
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3, 12, 5, 18, 45)
+  )
+
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_col_pattern(
+    aes(pattern_fill = name), 
+    pattern = 'stripe',
+    fill    = 'white',
+    colour  = 'black'
+  )
 ```
+
 
 # Installation
 ***
@@ -62,28 +102,98 @@ First, ensure you have `ggplot2` installed. Then, you can install `ggpattern` di
 install.packages("ggpattern", repos = "https://cinc.rud.is")
 ```
 
+
 # Basic usage 
 ***
-The `ggpattern` package comes with a variety of **pattern aesthetics** that can be easily integrated into your ggplot2 visualizations.
+The `ggpattern` package comes with a variety of **pattern aesthetics** that can be easily integrated into your `ggplot2` visualizations.
 
-Here is an example using the famous `mtcars` dataset, adding stripes to bars in a bar chart:
+Let's take an example with the `geom_col_pattern()` aesthetics. It does pretty much the same task as the `geom_col()` aesthetics of `ggplot2` that is used for [bar charts](https://r-graph-gallery.com/218-basic-barplots-with-ggplot2.html). 
+
+But it adds options to use some **patterns** into rectangles.
+
+The aesthetics comes with a number of options described in the next section. For each, you have to decide:
+
+- if you want it to depend on a value of the dataset, put it inside the `aes()` call. Below, the color of the pattern is mapped to the `name` columnn since `pattern_fill` is **in** the `aes()` function.
+
+- if you want it to be the same for all shapes, put it outside the `aes()` call. For instance, all bars will be using `crosshatch` below.
 
 ```{r}
-# Example ggpattern code here
-```
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_col_pattern(
+    aes(pattern_fill = name), 
+    pattern = 'crosshatch',
+    fill    = 'white',
+    colour  = 'black'
+  )
+````
 
-# Key features
+
+
+# Customization
 ***
-Here is an overview of the main features offered by ggpattern:
 
-## &rarr; Pattern Aesthetics
-`ggpattern` allows you to add various types of patterns to your ggplot2 visualizations, such as stripes, crosses, and more.
+It is possible to customize pretty much everything on the pattern you are building.
 
-Example:
+- `colour` and `fill` control the shape outline and the shape content colors.
+
+- `pattern` controls the pattern type. It can be: 'stripe' (default), 'crosshatch', 'point', 'circle' or 'none'
+
+- `pattern_alpha` controls the pattern transparency
+
+- `pattern_angle` controls the angle 🤷‍♀️
+
+- `pattern_colour` and `pattern_fill` control the outline and fill colors
+
+Type `help(geom_col_pattern)` to get some more details on all the available options!
+
 
 ```{r}
-# Example ggpattern code here
+# Bar chart using ggpattern with comments
+ggplot(data, aes(x=name, y=value, fill= name)) + # Usual ggplot2 call, "name" for the x axis, "value" for the y axis
+  geom_col_pattern(
+    pattern = "circle",
+    pattern_alpha = 0.8,
+    pattern_fill = "white",
+    pattern_colour  = '#69b3a2',
+    pattern_size = 1.3
+  )
 ```
+
+
+# Mapping pattern to data
+***
+You can map the pattern features to the data in use. 
+
+For instance, the following example use a very different look for each group of the dataset. To do so, the arguments described above are placed inside the `aes()` call:
+
+```{r}
+# Bar chart using ggpattern with comments
+ggplot(data, aes(x=name, y=value)) + # Usual ggplot2 call, "name" for the x axis, "value" for the y axis
+  geom_col_pattern(
+    aes(
+      pattern_fill = name,
+      fill= name,
+      pattern = name,
+    ),  
+    colour  = 'black'
+  )
+```
+
+
+# Other aesthetics
+***
+
+Several other aesthetics are available, allowing to fill any kind of chart types with pattern. Names are always matching the original `ggplot2` names.
+
+To put it in a nutshell:
+
+- `geom_boxplot_pattern` can be used for [boxplot](https://r-graph-gallery.com/boxplot.html)
+- `geom_density_pattern` for [density charts](https://r-graph-gallery.com/density-plot.html)
+- `geom_map_pattern` for maps
+- `geom_violin_pattern` for violin charts
+
+And many more are on the list. Here is an overview of other examples in the gallery using the `ggpattern` library:
 
 <!-- Close container -->
 </div>
