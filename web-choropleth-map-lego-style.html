@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Lego Choropleth map with
+R &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to build a
+choropleth map with R using a lego style. The project is made using
+ggplot2 and the tidyverse. The post provides explanation and
+reproducible code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Lego Choropleth map with R" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+build a choropleth map with R using a lego style. The project is made
+using ggplot2 and the tidyverse. The post provides explanation and
+reproducible code." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-choropleth-map-lego-style.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Lego Choropleth map with R</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This blogpost
+explains how to build a lego <a
+href="https://r-graph-gallery.com/choropleth-map.html">choropleth
+map</a> to check the proportion of people doing sport on the french
+territory. The lego style is implemented in <code>R</code> using the
+<code>ggplot2</code> and <code>sf</code> packages. This article includes
+a step-by-step walkthrough of the map construction, together with its
+final reproducible code.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="choropleth-map.html"
+            >Choropleth map section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/choropleth.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 100px">
+<div id="load-data" class="section level1">
+<h1>1. Load data</h1>
+<hr />
+<p>To create our Lego map, we will need these packages:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse) </span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
+<p>We will also need a base map with the data, which may be downloaded
+at <a
+href="https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg">this
+link</a> or loaded directy in R as shown below:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>map<span class="ot">&lt;-</span>sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg&#39;</span>)</span></code></pre></div>
+<p>Data for this map come from the <a
+href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs">Observatoire
+des Territoires</a>.</p>
+</div>
+<div id="make-choropleth" class="section level1">
+<h1>2. Make choropleth</h1>
+<hr />
+<p>In this map, the “value” column contains the percentage of members of
+a sports association by department, which can be used to make a
+choropleth:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(map, <span class="fu">aes</span>(<span class="at">fill=</span>value))<span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>()</span></code></pre></div>
+<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Before moving further, we will just make a few modifications to this
+map to transform the gradient into value classes and plot the results in
+an appropriate way:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create classes</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>clean<span class="ot">&lt;-</span>map<span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">clss=</span><span class="fu">case_when</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">18</span><span class="sc">~</span><span class="st">&quot;1&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">~</span><span class="st">&quot;2&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">22</span><span class="sc">~</span><span class="st">&quot;3&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">24</span><span class="sc">~</span><span class="st">&quot;4&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">26</span><span class="sc">~</span><span class="st">&quot;5&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="cn">TRUE</span><span class="sc">~</span><span class="st">&quot;6&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  ))</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># Set color palette</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>pal <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#bb3e03&quot;</span>,<span class="st">&quot;#ee9b00&quot;</span>,<span class="st">&quot;#e9d8a6&quot;</span>,<span class="st">&quot;#94d2bd&quot;</span>,<span class="st">&quot;#0a9396&quot;</span>,<span class="st">&quot;#005f73&quot;</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># Set color background</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>bck <span class="ot">&lt;-</span> <span class="st">&quot;#001219&quot;</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># Set theme </span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>theme_custom <span class="ot">&lt;-</span> <span class="fu">theme_void</span>()<span class="sc">+</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">1</span>,<span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span>bck,<span class="at">color=</span><span class="cn">NA</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>,<span class="at">color=</span><span class="st">&quot;white&quot;</span>,<span class="at">face=</span><span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color=</span><span class="st">&quot;white&quot;</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>  )</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co"># Make choropleth</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="fu">ggplot</span>(clean, <span class="fu">aes</span>(<span class="at">fill=</span>clss))<span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  <span class="fu">geom_sf</span>()<span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill=</span><span class="st">&quot;Member of a sport association&quot;</span>)<span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>    <span class="at">fill=</span><span class="fu">guide_legend</span>(</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>      <span class="at">nrow=</span><span class="dv">1</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>      <span class="at">title.position=</span><span class="st">&quot;top&quot;</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>      <span class="at">label.position=</span><span class="st">&quot;bottom&quot;</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>    )</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    <span class="at">values=</span>pal,</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  theme_custom</span></code></pre></div>
+<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="convert-to-lego-style" class="section level1">
+<h1>3. Convert to Lego style</h1>
+<hr />
+<p>This choropleth is already looking better, but we can give it a more
+original style: <strong>the Lego-style</strong>!</p>
+<p>First steps of the data preparation are: - create a grid over the map
+area, which will then be the boundaries of the bricks ; - extract the
+centroid of each cell, which will then be the center of the brick.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Make grid</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>grd<span class="ot">&lt;-</span><span class="fu">st_make_grid</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    clean, <span class="co"># map name </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">60</span>) <span class="co"># number of cells per longitude/latitude</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="co"># convert back to sf object</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">st_sf</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="co"># add a unique id to each cell </span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="co"># (will be useful later to get back centroids data)</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id=</span><span class="fu">row_number</span>())</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  </span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co"># Extract centroids</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>cent<span class="ot">&lt;-</span>grd<span class="sc">%&gt;%</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="fu">st_centroid</span>()</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co"># Take a look at the results</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="fu">geom_sf</span>(grd,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry))<span class="sc">+</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry),<span class="at">pch=</span><span class="dv">21</span>,<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>You can see where we are going with this, right?</p>
+<p>But in order to project the data onto the map, we now need <strong>to
+perform an intersection between the centroids and the base map</strong>.
+We will then bring this information back into the grid using the unique
+identifier <em>‘id’</em> we created in the previous step.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Intersect centroids with basemap</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>cent_clean<span class="ot">&lt;-</span>cent<span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">st_intersection</span>(clean)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Make a centroid without geom</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># (convert from sf object to tibble)</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>cent_no_geom <span class="ot">&lt;-</span> cent_clean<span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Join with grid thanks to id column</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>grd_clean<span class="ot">&lt;-</span>grd<span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="co">#filter(id%in%sel)%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">left_join</span>(cent_no_geom)</span></code></pre></div>
+<p>We are now ready to make the map, combining what we saw with the
+choropleth and the grid above!</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="co"># drop_na() is one way to suppress the cells outside the country</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    grd_clean<span class="sc">%&gt;%</span><span class="fu">drop_na</span>(), </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry,<span class="at">fill=</span>clss)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent_clean,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry),<span class="at">fill=</span><span class="cn">NA</span>,<span class="at">pch=</span><span class="dv">21</span>,<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill=</span><span class="st">&quot;Member of a sport association&quot;</span>)<span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">fill=</span><span class="fu">guide_legend</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>      <span class="at">nrow=</span><span class="dv">1</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>      <span class="at">title.position=</span><span class="st">&quot;top&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>      <span class="at">label.position=</span><span class="st">&quot;bottom&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    )</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">values=</span>pal,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  theme_custom</span></code></pre></div>
+<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Depending on the resolution of your figure, you may need to modify
+certain parameters, such as the size of the centroids, for optimal
+rendering. But the advantage of this method is that it can be applied to
+<strong>any type of map traditionally represented as a
+choropleth</strong>, to give it a more original touch.</p>
+</div>
+<div id="the-icing-on-the-cake" class="section level1">
+<h1>4. The icing on the cake</h1>
+<hr />
+<p>When I developed this method, I wanted to add a 3D effect to the map,
+so that the bricks would stand out. I finally chose to do this
+<strong>by adding a second centroid, slightly offset to the right, below
+the real centroid</strong>. I use this centroid to create a shaded
+effect below the map, as explained below:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Set offset</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># (value here is not fixed, it depends on your map, system of coordinates, etc...)</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>off <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Create second centroid</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>cent_off <span class="ot">&lt;-</span> cent_clean<span class="sc">%&gt;%</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="co"># Extract longitude and latitude and add offset to longitude</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="at">lon=</span><span class="fu">st_coordinates</span>(.)[,<span class="dv">1</span>]<span class="sc">+</span>off,</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="at">lat=</span><span class="fu">st_coordinates</span>(.)[,<span class="dv">2</span>],</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="co"># Drop old geometry</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>()<span class="sc">%&gt;%</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="co"># Make new geometry based on new {lon;lat}</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords=</span><span class="fu">c</span>(<span class="st">&#39;lon&#39;</span>,<span class="st">&#39;lat&#39;</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  <span class="co"># Specify Coordinates Reference System</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  <span class="fu">st_set_crs</span>(<span class="fu">st_crs</span>(cent_clean))</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co"># Make map !</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>    grd_clean<span class="sc">%&gt;%</span><span class="fu">drop_na</span>(), </span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry,<span class="at">fill=</span>clss)</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>  <span class="co"># Centroid for shaded effect</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent_off,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry),<span class="at">color=</span><span class="fu">alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.5</span>),<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  <span class="co"># &#39;Real&#39; centroid</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent_clean,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry,<span class="at">color=</span>clss),<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent_clean,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry),<span class="at">fill=</span><span class="cn">NA</span>,<span class="at">pch=</span><span class="dv">21</span>,<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill=</span><span class="st">&quot;Member of a sport association&quot;</span>)<span class="sc">+</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>    <span class="at">color=</span><span class="st">&#39;none&#39;</span>,</span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>    <span class="at">fill=</span><span class="fu">guide_legend</span>(</span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a>      <span class="at">nrow=</span><span class="dv">1</span>,</span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>      <span class="at">title.position=</span><span class="st">&quot;top&quot;</span>,</span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>      <span class="at">label.position=</span><span class="st">&quot;bottom&quot;</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>    )</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>    <span class="at">values=</span>pal,</span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>pal)<span class="sc">+</span></span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  theme_custom</span></code></pre></div>
+<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Now feel free to adapt this tutorial to your project!</p>
+<p><strong>Author</strong> <a
+href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br>
+<strong>Data</strong> <a
+href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs">Observatoire
+des Territoires</a></p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
