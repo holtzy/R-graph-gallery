@@ -139,11 +139,11 @@ reproducible code provided." />
         <center>
           <p style="max-width: 600px; margin-top: 40px">This blogpost
 explains how to build a <strong>Dorling Cartogram</strong> with
-<code>R</code>. A dorling cartogram is a mix between a <a
-href="https://r-graph-gallery.com/cartogram.html">cartogram</a> and a <a
-href="https://r-graph-gallery.com/bubble-map.html">bubble
-map</a>.<br/>The dorling cartogram is implemented in <code>R</code>
-using the <code>ggplot2</code> and <code>sf</code> packages. This
+<code>R</code>. A dorling cartogram is a variation of a <a
+href="https://r-graph-gallery.com/cartogram.html">cartogram</a>, close
+to a <a href="https://r-graph-gallery.com/bubble-map.html">bubble
+map</a>.<br/>The chart is implemented using the <code>ggplot2</code>,
+<code>cartogram</code>, <code>sf</code> and a few other packages. This
 article includes a step-by-step walkthrough of the map construction,
 together with its final reproducible code.</p>
         </center>
@@ -238,8 +238,8 @@ agricultural land per country:</p>
 <div id="make-dorling-cartogram" class="section level1">
 <h1>2. Make Dorling cartogram</h1>
 <hr />
-<p>It is really to make a Dorling cartogram with the {cartogram}
-library!</p>
+<p>It is really straightforward to make a Dorling cartogram with the
+{cartogram} library!</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Making Dorling cartogram based on total agricultural land</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>dorl<span class="ot">&lt;-</span>cartogram<span class="sc">::</span><span class="fu">cartogram_dorling</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  map, <span class="at">weight=</span><span class="st">&#39;total&#39;</span>, <span class="at">k =</span> <span class="dv">5</span>,</span>
@@ -270,9 +270,9 @@ map as background when plotting a Dorling cartogram:</p>
 <p><img src="web-dorling-cartogram-with-R_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Up to this point, we have a classic Dorling cartogram, with circles
 proportional to total agricultural land, which is easy to plot with
-geom_sf(). But, in order to add supplementary variables to our map, we
-will extract some features from this map: <strong>the radius and the
-coordinates of the centroids for each circus</strong>.</p>
+<code>geom_sf()</code>. But, in order to add supplementary variables to
+our map, we will extract some features from this map: <strong>the radius
+and the coordinates of the centroids for each circus</strong>.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Compute area and radius for each circus of the cartogram</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>dorl<span class="ot">&lt;-</span>dorl<span class="sc">%&gt;%</span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -291,7 +291,8 @@ coordinates of the centroids for each circus</strong>.</p>
 <span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>dorl2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(dorl,<span class="at">X=</span>centr[,<span class="dv">1</span>],<span class="at">Y=</span>centr[,<span class="dv">2</span>])<span class="sc">%&gt;%</span></span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>total)</span></code></pre></div>
 <p>With these features, we may now make the same map as before, but
-using the geom_circle() function from the {ggforce} package.</p>
+using the <code>geom_circle()</code> function from the {ggforce}
+package.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="co"># World basemap</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
@@ -380,8 +381,8 @@ China:</p>
 <span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>  <span class="fu">circleFun</span>(</span>
 <span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>    <span class="fu">c</span>(dorl2<span class="sc">$</span>X[<span class="dv">1</span>],dorl2<span class="sc">$</span>Y[<span class="dv">1</span>]),dorl2<span class="sc">$</span>rad_grass[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">2</span>, <span class="at">start=</span><span class="fl">0.5</span>, <span class="at">end=</span><span class="fl">1.5</span></span>
 <span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>  ))</span></code></pre></div>
-<p>These half-circles will be added to the map using the geom_polygon()
-function, which allows to join points.</p>
+<p>These half-circles will be added to the map using the
+<code>geom_polygon()</code> function, which allows to join points.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="co"># World basemap</span></span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
@@ -461,7 +462,8 @@ loop</strong>.</p>
 <p><img src="web-dorling-cartogram-with-R_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>Now feel free to adapt this tutorial to your project! For example, it
 is also possible to represent more than two sub-variables per circle, by
-modifying the start and end arguments of the circleFun() function.</p>
+modifying the start and end arguments of the <code>circleFun()</code>
+function.</p>
 <p><strong>Author</strong> <a
 href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br>
 <strong>Data</strong> <a
