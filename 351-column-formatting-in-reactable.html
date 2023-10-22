@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Column formatting with
+reactable &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to use the
+reactable package to build interactive tables with custom formatting in
+R. It provides several reproducible examples with explanation and R
+code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Column formatting with
+reactable" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+use the reactable package to build interactive tables with custom
+formatting in R. It provides several reproducible examples with
+explanation and R code." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/351-column-formatting-in-reactable.html.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Column formatting with reactable</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to build an <a href="table.html">interactive table</a> with
+the <code>reactable</code> package. It provides several reproducible
+examples on how to <strong>format the columns</strong></p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="correlogram.html"
+            >Correlogram section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/correlogram.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="default-table-with-reactable" class="section level1">
+<h1>Default table with reactable</h1>
+<hr />
+<p>Simply pass a table or dataframe as the first argument to the
+<code>reactable</code> function.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;reactable&quot;</span>) <span class="co"># load the package</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Create the dataset </span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">date =</span> <span class="fu">as.POSIXct</span>(<span class="fu">c</span>(<span class="st">&quot;2019-01-02 3:22:15&quot;</span>, <span class="st">&quot;2019-03-15 09:15:55&quot;</span>, <span class="st">&quot;2019-09-22 14:20:00&quot;</span>), <span class="at">tz =</span> <span class="st">&quot;America/New_York&quot;</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">currency =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">temperature =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">percentage =</span> <span class="fu">c</span>(<span class="fl">0.12</span>, <span class="fl">0.23</span>, <span class="fl">0.34</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>tab <span class="ot">=</span> <span class="fu">reactable</span>(df)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">saveWidget</span>(tab, <span class="at">file=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/HtmlWidget/column-formatting-reactable-1.html&quot;</span>))</span></code></pre></div>
+<div class="col-md-6 col-sm-12">
+<center>
+<iframe src="HtmlWidget/column-formatting-reactable-1.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="date-formatting" class="section level1">
+<h1>Date formatting</h1>
+<hr />
+<p>Use the <code>colFormat</code> function to <strong>format the
+date</strong>. You can also use the <code>format</code> argument to
+<strong>customize the date format</strong>.</p>
+<p>There is 3 date format: <code>datetime</code>, <code>date</code> and
+<code>time</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>datetimes <span class="ot">=</span> <span class="fu">as.POSIXct</span>(<span class="fu">c</span>(<span class="st">&quot;2019-01-02 3:22:15&quot;</span>, <span class="st">&quot;2019-03-15 09:15:55&quot;</span>, <span class="st">&quot;2019-09-22 14:20:00&quot;</span>),</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>                        <span class="at">tz =</span> <span class="st">&quot;America/New_York&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">datetime =</span> datetimes,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">date =</span> datetimes,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">time =</span> datetimes,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">time_24h =</span> datetimes,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">datetime_pt_BR =</span> datetimes</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>tab <span class="ot">=</span> <span class="fu">reactable</span>(data, <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>                <span class="at">datetime =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">datetime =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                <span class="at">date =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">date =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>                <span class="at">time =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">time =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                <span class="at">time_24h =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">time =</span> <span class="cn">TRUE</span>, <span class="at">hour12 =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                <span class="at">datetime_pt_BR =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">datetime =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;pt-BR&quot;</span>))</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>))</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co"># Save the widget</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="fu">saveWidget</span>(tab, <span class="at">file=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/HtmlWidget/column-formatting-reactable-2.html&quot;</span>))</span></code></pre></div>
+<div class="col-md-6 col-sm-12">
+<center>
+<iframe src="HtmlWidget/column-formatting-reactable-2.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="currency-formatting" class="section level1">
+<h1>Currency formatting</h1>
+<hr />
+<p>In the <code>colFormat</code> function, use the <code>currency</code>
+argument to <strong>format the currency</strong>. You mainly have to
+specify the <code>locales</code> argument to <strong>customize the
+currency format</strong>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">USD =</span> <span class="fu">c</span>(<span class="fl">12.12</span>, <span class="fl">2141.213</span>, <span class="fl">0.42</span>, <span class="fl">1.55</span>, <span class="dv">34414</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">EUR =</span> <span class="fu">c</span>(<span class="fl">10.68</span>, <span class="fl">1884.27</span>, <span class="fl">0.37</span>, <span class="fl">1.36</span>, <span class="fl">30284.32</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">INR =</span> <span class="fu">c</span>(<span class="fl">861.07</span>, <span class="fl">152122.48</span>, <span class="fl">29.84</span>, <span class="dv">110</span>, <span class="fl">2444942.63</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">JPY =</span> <span class="fu">c</span>(<span class="dv">1280</span>, <span class="dv">226144</span>, <span class="fl">44.36</span>, <span class="dv">164</span>, <span class="fl">3634634.61</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">MAD =</span> <span class="fu">c</span>(<span class="fl">115.78</span>, <span class="fl">20453.94</span>, <span class="fl">4.01</span>, <span class="dv">15</span>, <span class="fl">328739.73</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>tab <span class="ot">=</span> <span class="fu">reactable</span>(data, <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">USD =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">currency =</span> <span class="st">&quot;USD&quot;</span>, <span class="at">separators =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;en-US&quot;</span>)),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">EUR =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">currency =</span> <span class="st">&quot;EUR&quot;</span>, <span class="at">separators =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;de-DE&quot;</span>)),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">INR =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">currency =</span> <span class="st">&quot;INR&quot;</span>, <span class="at">separators =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;hi-IN&quot;</span>)),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">JPY =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">currency =</span> <span class="st">&quot;JPY&quot;</span>, <span class="at">separators =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;ja-JP&quot;</span>)),</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">MAD =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">currency =</span> <span class="st">&quot;MAD&quot;</span>, <span class="at">separators =</span> <span class="cn">TRUE</span>, <span class="at">locales =</span> <span class="st">&quot;ar-MA&quot;</span>))</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>))</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># Save the widget</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="fu">saveWidget</span>(tab, <span class="at">file=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/HtmlWidget/column-formatting-reactable-3.html&quot;</span>))</span></code></pre></div>
+<div class="col-md-6 col-sm-12">
+<center>
+<iframe src="HtmlWidget/column-formatting-reactable-3.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="numeric-value-formatting" class="section level1">
+<h1>Numeric value formatting</h1>
+<hr />
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">temperature =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">percentage =</span> <span class="fu">c</span>(<span class="fl">0.12</span>, <span class="fl">0.23</span>, <span class="fl">0.34</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>tab <span class="ot">=</span> <span class="fu">reactable</span>(df, <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">temperature =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">suffix =</span> <span class="st">&quot; °C&quot;</span>)),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">percentage =</span> <span class="fu">colDef</span>(<span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">percent =</span> <span class="cn">TRUE</span>, <span class="at">prefix =</span> <span class="st">&quot;Percent: &quot;</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>))</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="fu">saveWidget</span>(tab, <span class="at">file=</span><span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/HtmlWidget/column-formatting-reactable-4.html&quot;</span>))</span></code></pre></div>
+<div class="col-md-6 col-sm-12">
+<center>
+<iframe src="HtmlWidget/column-formatting-reactable-4.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<hr />
+<p>This post explains how to build an interactive <a
+href="table.html">table</a> with <code>reactable</code> and how to
+format the columns.</p>
+<p>I encourage you to check the <a
+href="package/reactable.html">reactable page</a> to learn more about
+it.</p>
+</div>
+</div>
+<!-- Close container -->
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section
+  class="bg-light"
+  id="portfolio_landing"
+  style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+>
+  <div class="container">
+    <p class="mySeryTitle">Related chart types</p>
+    <hr />
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="scatterplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/ScatterPlot150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Scatter</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="heatmap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/Heatmap150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Heatmap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="correlogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/Correlogram150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Correlogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="bubble-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/BubblePlot150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Bubble</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="connected-scatterplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/ScatterConnected150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Connected scatter</div>
+      </div>
+      <div
+        class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata"
+      >
+        <a class="portfolio-link" href="2d-density-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/2dDensity150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Density 2d</div>
+      </div>
+    </div>
+  </div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
