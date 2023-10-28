@@ -1,0 +1,151 @@
+---
+title: "Create beautiful tables with **gt**"
+logo: "gt"
+descriptionMeta: "This post explains how to make really nice looking tables with the gt package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `gt` package in R is a powerful tool for creating **elegant and customizable tables** for data visualization and reporting. It offers a user-friendly way to **design and style tables** in RMarkdown documents and Shiny applications."
+documentationLink: "https://gt.rstudio.com"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `gt` package in R is a powerful tool for creating **elegant and customizable tables** for data visualization and reporting.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers options for formatting, styling, and theming tables, as well as support for handling complex data structures and creating publication-ready tables with ease.
+
+✍️ **author** &rarr; Richard Iannone
+
+📘 **documentation** &rarr; [github](https://gt.rstudio.com)
+
+⭐️ *more than 1000 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(gt)
+library(dplyr)
+
+# Create a simple data frame
+data <- data.frame(
+  Country = c("USA", "China", "India", "Brazil"),
+  Population = c(331, 1441, 1393, 212),
+  GDP = c(21.43, 14.34, 2.87, 1.49)
+)
+
+
+data %>%
+  gt() %>%
+  fmt_number(columns = c("Population", "GDP"), suffix = " M")
+
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `gt`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("gt")
+```
+
+# Basic usage 
+***
+
+We generally use the `dplyr` package in combination of `gt` for better code readability.
+
+Here's a basic example with **default rendering**:
+
+```{r}
+library(gt)
+library(dplyr)
+
+# Create a simple data frame
+data = data.frame(
+  Country = c("USA", "China", "India", "Brazil"),
+  Capitals = c("Washington D.C.", "Beijing", "New Delhi", "Brasília"),
+  Population = c(331, 1441, 1393, 212),
+  GDP = c(21.43, 14.34, 2.87, 1.49)
+)
+
+# Alternatively you can do (same output):
+#gt(data)
+
+# Use the gt function
+data %>%
+  gt()
+```
+
+# Key features
+***
+
+## &rarr; Title and Subtitle
+You can add and customize **title and subtitle** with the `tab_header()` function. Moreover, by using the `md()` function we can insert some **markdown styling** inside the texts.
+
+Example:
+
+```{r}
+data %>%
+  gt() %>%
+    tab_header(title = md("What a **nice title**"),
+               subtitle = md("Pretty *cool subtitle* too, `isn't it?`"))
+```
+
+## &rarr; Footer and source
+You can use the `tab_footnote()` function with the `footnote` and `locations` arguments to add references to your tables. 
+
+Example:
+
+```{r}
+data %>%
+  gt() %>%
+  tab_footnote(
+    footnote = "Source: James & al., 2020",
+    locations = cells_body(columns = Country, rows = 3)
+  )
+```
+
+## &rarr; Sub-header
+The `tab_spanner()` function lets you **group columns** into categories.
+
+Example:
+
+```{r}
+data %>%
+  gt() %>%
+   tab_spanner(
+    label = "Number",
+    columns = c(GDP, Population)) %>%
+  tab_spanner(
+    label = "Label",
+    columns = c(Country, Capitals)
+  )
+```
+
+
+# Gallery of gt examples
+***
+
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class='portfolio-item col-sm-6 col-md-6'><a class=portfolio-link href=../350-custom-title-in-gt-table.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Customize title<hr><p class=explanation_portfolio>You can apply some very nice customizations to your gt table</div></div><img alt='Customize title'class='img-fluid imgOfPortfolio'src=../img/graph/350-custom-title-in-gt-table.png></a></div><div class='portfolio-item col-sm-6 col-md-6'><a class=portfolio-link href=../351-custom-footer-and-references-with-gt-table.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Customize footer <hr><p class=explanation_portfolio>The footer of your gt tables can easily be customized</div></div><img alt='Customize footer 'class='img-fluid imgOfPortfolio'src=../img/graph/351-custom-footer-and-references-with-gt-table.png></a></div></div></div></section>
+
+<!-- Close container -->
+</div>

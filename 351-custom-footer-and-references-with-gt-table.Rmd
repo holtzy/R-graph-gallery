@@ -1,0 +1,213 @@
+---
+title: "Customize your footer in your gt tables"
+descriptionMeta: "This post explains how to build customize the footer in a table with the gt package."
+descriptionTop: "This post explains how to customize the footer in a table with the gt package. It provides several reproducible examples with explanation and R code."
+sectionText: "Table section"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/waffle.html"
+url: "351-custom-footer-and-references-in-gt-table.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# The `gt` package
+***
+
+The [gt](https://r-graph-gallery.com/package/gt.html) package is an excellent way to **create and customize nice table output** in R. You can read more about this package on its [github page](https://github.com/rstudio/gt). You can install it directly from the CRAN by running the following:
+
+```{r eval=FALSE}
+install.packages("gt")
+```
+
+<br/>
+
+
+# Default gt table
+***
+
+<div class = "row">
+
+Tables from `gt` are sober but highly customizable
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+```{r thecode, echo=TRUE, fig.height=7, out.width="100%"}
+library(gt)
+library(dplyr)
+
+# dataset
+data = data.frame(
+  Planet = c("Earth", "Mars", "Jupiter", "Venus"),
+  Moons = c(1, 2, 79, 0),
+  Distance_from_Sun = c(149.6, 227.9, 778.3, 108.2),
+  Diameter = c(12742, 6779, 139822, 12104)
+)
+
+# create and display the gt table (equivalent to "gt(data)")
+data %>%
+  gt()
+```
+</div>
+</div>
+
+
+
+
+
+
+# Add a simple footer in markdown
+***
+
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The most practical and intuitive way to create a gt table is to use it in **combination** of the `dplyr` package.
+
+Thanks to the `tab_footnote()` function, we can super easily add a footer. And with the `md()` function we can write it in **markdown**.
+
+```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
+library(gt)
+library(dplyr)
+
+# create and display the gt table 
+data %>%
+  gt() %>%
+    tab_footnote(footnote = md("This text is the footer of this **table**"))
+```
+</div>
+</div>
+
+
+
+
+
+
+# Footer with reference
+***
+
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+If your footer is intended to **refer to a table element**, you can add the `location` argument to specify which part of the table your footnote refers to. 
+
+
+```{r thecode3, echo=TRUE, fig.height=7, out.width="100%"}
+library(gt)
+library(dplyr)
+
+# create and display the gt table 
+data %>%
+  gt() %>%
+    tab_footnote(footnote = md("Measured in **millions** of Km"),
+                 locations = cells_column_labels(columns = Distance_from_Sun))
+```
+</div>
+</div>
+
+
+
+
+# Footer with mutliple references
+***
+
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Adding **multiple references** is just as easy as adding one: just add as much as you need the `tab_footnote()` function
+
+
+```{r thecode4, echo=TRUE, out.width = "100%", fig.height=7}
+library(gt)
+library(dplyr)
+
+# create and display the gt table 
+data %>%
+  gt() %>%
+    tab_footnote(footnote = md("Measured in **millions** of Km"),
+                 locations = cells_column_labels(columns = Distance_from_Sun)) %>%
+    tab_footnote(footnote = md("Measured in **Km**"),
+                 locations = cells_column_labels(columns = Diameter))
+```
+</div>
+</div>
+
+
+
+
+
+
+# Change the type of element that indicates the reference
+***
+
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+In this example, we now indicate the footer with letters (in upper case) thanks to the `opt_footnote_marks()` function.
+
+```{r thecode5, echo=TRUE, out.width = "100%", fig.height=7}
+library(gt)
+library(dplyr)
+
+# create and display the gt table 
+data %>%
+  gt() %>%
+    tab_footnote(footnote = md("Measured in **millions** of Km"),
+                 locations = cells_column_labels(columns = Distance_from_Sun)) %>%
+    tab_footnote(footnote = md("Measured in **Km**"),
+                 locations = cells_column_labels(columns = Diameter)) %>%
+    tab_footnote(footnote = md("The original data are from *Some Organization*")) %>%
+    opt_footnote_marks(marks = "LETTERS")
+```
+</div>
+</div>
+
+
+
+
+
+
+# Conclusion
+***
+
+We now know how to customize your table footer with the `gt` package. There is much more you can do using this package, so feel free to visit the [gt table section](package/gt.html) of the gallery to learn more about it and check other examples.
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
+
+
+
+
