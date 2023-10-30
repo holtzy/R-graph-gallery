@@ -1,0 +1,251 @@
+---
+title: "Highlight specific elements in a line chart"
+descriptionMeta: "This post explains how to showcase elements in a line chart with ggplot2 and gghighlight. It considers a dataset that includes multiple time series to see how the package behave."
+descriptionTop: "This post explains how to **highlight elements** in a line chart with [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) and [gghighlight](https://www.r-graph-gallery.com/package/gghighlight.html). Highlighting elements on a chart is a very powerful dataviz technique. It leads the reader to the important message you are trying to convey, making the figure more insightful."
+sectionText: "Linechart section"
+sectionLink: "line-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "www.data-to-viz.com/graph/line.html"
+url: "354-highlight-specific-elements-in-line-chart.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Dataset
+***
+
+The dataset has three columns:
+
+- `Date`: This column contains dates starting from January 1, 2020, and continuing for 100 days.
+
+- `Value`: This column holds numbers. These numbers are created by adding random amounts to each other in a cumulative way. It's like keeping a running total of random values.
+
+- `Type`: This column categorizes each row with one of three labels: `a`, `b`, or `c`.
+
+```{r out.width = "100%"}
+# dataset with 3 lines named "a", "b" and "c"
+set.seed(1)
+period = 100
+df = data.frame(Date = seq(as.Date("2020-01-01"),
+                           by = "day",
+                           length.out = period), 
+                Value = c(cumsum(rnorm(period)),
+                          cumsum(rnorm(period)),
+                          cumsum(rnorm(period))),
+                Type = c(rep("a", period),
+                         rep("b", period),
+                         rep("c", period)))
+```
+
+<br/>
+
+
+# Package
+*** 
+
+For this post, we need the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) and [gghighlight](https://www.r-graph-gallery.com/package/gghighlight.html) packages.
+
+```{r}
+# Install the packages if not already done
+# install.packages("ggplot2")
+# install.packages("gghighlight")
+
+# Load the package
+library(ggplot2)
+library(gghighlight)
+```
+
+
+
+
+
+
+
+
+
+
+
+# Default line chart in ggplot2
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Here's what the default line chart output looks like with `ggplot2`:
+
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type))
+```
+</div>
+</div>
+
+
+
+
+
+# Highlight specific lines
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+With the `gghighlight()` function and some criterion, we can indicate **which line** will be displayed.
+
+In this case, it's all lines where the maximum `Value` is greater than 10.
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+```{r thecode3, echo=TRUE, fig.height=7, message=FALSE, warning=FALSE, comment=FALSE, out.width="100%"}
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type)) +
+  gghighlight(max(Value) > 10)
+```
+</div>
+</div>
+
+
+
+# Properties of faded out lines
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gghighlight()` function has an argument named **unhighlighted_params** that allows us to define what are the properties to use for the lines that does not meet our criterion.
+
+In this case, we reduce the line width, change the color to blue and lower the opacity (`alpha`). We also change the line to `dashed`. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+```{r}
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type), linewidth=1) +
+  gghighlight(max(Value) > 10,
+              unhighlighted_params = list(linewidth = 0.3,
+                                          colour = alpha("blue", 0.7),
+                                          linetype = "dashed"))
+```
+</div>
+</div>
+
+
+
+
+
+# A more complex example
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gghighlight` package is also very useful when **combined with other packages** such as [hrbrthemes](https://r-graph-gallery.com/package/hrbrthemes.html) and [patchwork](https://r-graph-gallery.com/package/patchwork.html).
+
+In this example we use the power of `gghighlight` with the simplicity of `patchwork` for stacking graphs and `hrbrthemes'` beautiful themes. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+```{r thecode5, fig.height=6}
+library(hrbrthemes)
+library(patchwork)
+
+plot1 = ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type), linewidth=0.4, color='#4393C3') +
+  gghighlight(max(Value) > 10,
+              unhighlighted_params = list(linewidth = 0.3,
+                                          colour = alpha("darkred", 0.7),
+                                          linetype = "dotted"),
+              use_direct_label = FALSE) +
+  theme_bw() + xlab("") + ylab("")
+
+plot2 = ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type), linewidth=0.4, color='#4393C3') +
+  gghighlight(min(Value) < -10,
+              unhighlighted_params = list(linewidth = 0.3,
+                                          colour = alpha("darkred", 0.7),
+                                          linetype = "dotted"),
+              use_direct_label = FALSE) +
+  theme_bw() 
+
+plot1 / plot2 + plot_annotation(title = 'This chart is built with gghighlight')
+```
+</div>
+</div>
+
+
+
+
+
+# Conclusion
+***
+
+In this post, we look at how to use the [gghighlight](https://www.r-graph-gallery.com/package/gghighlight.html) package to **highlight specific elements** of a multi-part line chart. To find out more about how to customize a line chart, see the [dedicated section](https://r-graph-gallery.com/line-plot.html). 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

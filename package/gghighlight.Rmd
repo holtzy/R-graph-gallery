@@ -1,0 +1,197 @@
+---
+title: "Highlight specific elements in your charts with **gghighlight**"
+logo: "gghighlight"
+descriptionMeta: "This post explains how to showcase specific lines, bars or points in you ggplot2 plots using the gghighlight package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `gghighlight` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **highlighting** elements.<br/>This post showcases the **key features** of `gghighlight` and provides a set of **graph examples** using the package."
+documentationLink: "yutannihilation.github.io/gghighlight/articles/gghighlight.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `gghighlight` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **highlighting** elements.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It mainly offers a `gghighlight()` function that highlights geoms.
+
+✍️ **author** &rarr; Hiroaki Yutani
+
+📘 **documentation** &rarr; [github](https://github.com/yutannihilation/gghighlight)
+
+⭐️ *more than 500 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(gghighlight)
+
+set.seed(123)
+period <- 365
+df <- data.frame(
+  Date = seq(as.Date("2020-01-01"),
+    by = "day",
+    length.out = period
+  ),
+  Value = c(
+    cumsum(rnorm(period)),
+    cumsum(rnorm(period)),
+    cumsum(rnorm(period))
+  ),
+  Type = c(
+    rep("a", period),
+    rep("b", period),
+    rep("c", period)
+  )
+)
+
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type)) +
+  gghighlight(max(Value) > 15)
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `gghighlight`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("gghighlight")
+```
+
+# Basic usage 
+***
+
+The `gghighlight` package allows you to showcase specific elements in your ggplot2 charts.
+
+Here's a basic example on a line charts with multiple lines. At the end of the usual `ggplot2` call, the `gghighlight()` function is called with a single argument. 
+
+This argument is the condition that a group should respect to be highlighted.
+
+```{r}
+library(ggplot2)
+library(gghighlight)
+
+# dataset with 3 lines named "a", "b" and "c"
+set.seed(1)
+period <- 365
+df <- data.frame(
+  Date = seq(as.Date("2020-01-01"),
+    by = "day",
+    length.out = period
+  ),
+  Value = c(
+    cumsum(rnorm(period)),
+    cumsum(rnorm(period)),
+    cumsum(rnorm(period))
+  ),
+  Type = c(
+    rep("a", period),
+    rep("b", period),
+    rep("c", period)
+  )
+)
+
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type)) +
+  gghighlight(min(Value) < -15) # highlight the group if its min value is below -15
+```
+
+# Key features
+***
+
+## &rarr; Highlight a histogram with multiple groups
+Use a facetted version with `facet_wrap(~ Species)` and the gghighlight feature allow us to showcase distribution of each group while **maintaining the background distributions** for other variables.
+
+Example:
+
+```{r}
+library(ggplot2)
+library(gghighlight)
+
+# load the iris dataset
+data(iris)
+
+# show distribution of Sepal.Length of each species
+ggplot(iris, aes(Sepal.Length, fill = Species)) +
+  geom_histogram() +
+  gghighlight() +
+  facet_wrap(~Species)
+```
+
+## &rarr; Highlight points in a scatter plot
+You can highlight specific points by indicating the properties of the points in question.
+
+Example:
+
+```{r}
+library(ggplot2)
+library(gghighlight)
+
+# create dataset
+set.seed(1)
+df_scatter <- data.frame(
+  xvalue = rnorm(n = 100),
+  yvalue = rnorm(n = 100)
+)
+
+# show distribution of Sepal.Length of each species
+ggplot(df_scatter, aes(xvalue, yvalue)) +
+  geom_point() +
+  gghighlight(yvalue > 1.5, xvalue < 1)
+```
+
+## &rarr; Specify properties of unhighlighted
+You can define the style of elements outside your filters using the `unhighlighted_params` argument.
+
+Example:
+
+```{r}
+library(ggplot2)
+library(gghighlight)
+
+ggplot(df) +
+  geom_line(aes(Date, Value, colour = Type)) +
+  gghighlight(min(Value) < -15,
+    unhighlighted_params = list(
+      linewidth = 0.3,
+      colour = alpha("lightblue", 0.8)
+    )
+  )
+```
+
+
+
+
+# Gallery of gghighlight examples
+***
+
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class='portfolio-item col-sm-6 col-md-4'><a class=portfolio-link href=web-line-chart-small-multiple-all-group-greyed-out.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Line chart with small multiple<hr><p class=explanation_portfolio>A line chart with small multiple where all groups are repeated                 (but greyed-out) on each pannel.</div></div><img alt='Line chart with small multiple'class='img-fluid imgOfPortfolio'src=../img/fromTheWeb/we-line-chart-consumer-confidence.png></a></div><div class='portfolio-item col-sm-6 col-md-4'><a class=portfolio-link href=354-highlight-specific-elements-in-line-chart.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Highlight group on line chart<hr><p class=explanation_portfolio>Easily highlight interesting groups on a line chart using                     the gghighlight package</div></div><img alt='Highlight group on line chart'class='img-fluid imgOfPortfolio'src=../img/graph/354-highlight-specific-elements-in-line-chart-1.png></a></div><div class='portfolio-item col-sm-6 col-md-4'><a class=portfolio-link href=354-highlight-specific-elements-in-line-chart.html><div class=portfolio-hover><div class=portfolio-hover-content><p>highlight groups<hr><p class=explanation_portfolio>Combination of gghighlight, patchwork and hrbrthemes to get                     2 combined highlighted line charts.</div></div><img alt='highlight groups'class='img-fluid imgOfPortfolio'src=../img/graph/354-highlight-specific-elements-in-line-chart-2.png></a></div></div></div></section>
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
