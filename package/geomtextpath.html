@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Beautiful Plots with Texts with
+<strong>geomtextpath</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+plots with texts or to combine chart and text in your ggplot2 plots
+using the geomtextpath package. It provides several reproducible
+examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Beautiful Plots with Texts with
+<strong>geomtextpath</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create plots with texts or to combine chart and text in your ggplot2
+plots using the geomtextpath package. It provides several reproducible
+examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Beautiful Plots with Texts with
+<strong>geomtextpath</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">This post explains how to create plots with
+texts or to <strong>combine chart and text</strong> in your ggplot2
+plots using the geomtextpath package.<br/>This post showcases the
+<strong>key features</strong> of <code>geomtextpath</code> and provides
+a set of <strong>graph examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/AllanCameron/geomtextpath"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/geomtextpath.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{geomtextpath}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>geomtextpath</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of <strong>adding text in
+charts</strong>, especially when you need the text to <strong>follow a
+curved path</strong>.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of functions inspired by <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>,
+with the advantage of making it <strong>much easier</strong> to add text
+following a (curved) path.</p>
+<p>✍️ <strong>author</strong> → Allan Cameron</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://allancameron.github.io/geomtextpath/articles/geomtextpath.html">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-1-1.png" width="85%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>geomtextpath</code>, you can install it
+directly from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;geomtextpath&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>geomtextpath</code> package needs the x and y coordinates,
+the label, and you’re good to go!</p>
+<p>Here’s a basic example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(geomtextpath)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>t <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">1000</span>) <span class="sc">*</span> pi</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>spiral <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x    =</span> <span class="fu">sin</span>(t) <span class="sc">*</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                    <span class="at">y    =</span> <span class="fu">cos</span>(t) <span class="sc">*</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                    <span class="at">text =</span> <span class="fu">paste</span>(<span class="st">&quot;From elegant bar charts to mesmerizing scatterplots,&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>                                 <span class="st">&quot;crafting stunning visualizations in R is powerful,&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                                 <span class="st">&quot;you can bring your data to life, revealing insights.&quot;</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>                     )</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">ggplot</span>(spiral, <span class="fu">aes</span>(x, y, <span class="at">label =</span> text)) <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="fu">geom_textpath</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">text_only =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="text-in-a-box" class="section level2">
+<h2>→ Text in a box</h2>
+<p>You can have the text in a box thanks to the
+<code>geom_labelpath()</code> function.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(spiral, <span class="fu">aes</span>(x, y, <span class="at">label =</span> text)) <span class="sc">+</span> </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_labelpath</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="at">fill =</span> <span class="st">&quot;#F6F6FF&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.55</span>)</span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="text-on-density-chart" class="section level2">
+<h2>→ Text on density chart</h2>
+<p>The <code>geom_textdensity()</code> can be used to plot group name
+directly on the curve of a density chart. You can <strong>adjust the
+position</strong> of the text with the <code>vjust</code> and
+<code>hjust</code> arguments (numerical value or
+“xmid”/“ymax”/“auto”).</p>
+<p>Example with the iris dataset:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">colour =</span> Species, <span class="at">label =</span> Species)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">geom_textdensity</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">fontface =</span> <span class="dv">2</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">hjust =</span> <span class="st">&quot;ymid&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="labelled-trend-lines" class="section level2">
+<h2>→ Labelled trend lines</h2>
+<p>You can add trend lines with the group label on top with the
+<code>geom_labelsmooth()</code> function</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Petal.Length, <span class="at">color =</span> Species)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">geom_labelsmooth</span>(<span class="fu">aes</span>(<span class="at">label =</span> Species), <span class="at">fill =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                <span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>                <span class="at">size =</span> <span class="dv">4</span>, <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">boxlinewidth =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">&#39;none&#39;</span>) <span class="co"># remove legend</span></span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="reference-lines" class="section level2">
+<h2>→ Reference lines</h2>
+<p>You can add reference lines with your own label thanks to the
+<code>geom_texthline()</code>, <code>geom_textvline()</code> and
+<code>geom_textabline()</code> functions.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(mpg, disp)) <span class="sc">+</span> </span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">geom_texthline</span>(<span class="at">yintercept =</span> <span class="dv">200</span>, <span class="at">label =</span> <span class="st">&quot;displacement threshold&quot;</span>, </span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                 <span class="at">hjust =</span> <span class="fl">0.8</span>, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">geom_textvline</span>(<span class="at">xintercept =</span> <span class="dv">20</span>, <span class="at">label =</span> <span class="st">&quot;consumption threshold&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.8</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                 <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">vjust =</span> <span class="fl">1.3</span>, <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="fu">geom_textabline</span>(<span class="at">slope =</span> <span class="dv">15</span>, <span class="at">intercept =</span> <span class="sc">-</span><span class="dv">100</span>, <span class="at">label =</span> <span class="st">&quot;partition line&quot;</span>, </span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                  <span class="at">color =</span> <span class="st">&quot;green3&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.6</span>, <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.2</span>)</span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="d-density-contours" class="section level2">
+<h2>→ 2D density contours</h2>
+<p>2D density contours become now very easy to create with the
+<code>geom_labeldensity2d()</code> and
+<code>geom_textdensity2d()</code></p>
+<p>Example:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">100</span>, <span class="at">mean=</span><span class="dv">10</span>),</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                <span class="at">y =</span> <span class="fu">rnorm</span>(<span class="at">n=</span><span class="dv">100</span>, <span class="at">mean=</span><span class="dv">10</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(x, y)) <span class="sc">+</span> </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">geom_labeldensity2d</span>() <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="geomtextpath_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+<div id="gallery-of-geomtextpath-examples" class="section level1">
+<h1>Gallery of geomtextpath examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=web-dumbbell-chart-with-a-gap-column.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dumbbell plot with gap section
+<hr>
+<p class=explanation_portfolio>
+An extended dumbbell plot originally published by the Pew research
+center. Clean design with a gap section on the right hand side.
+</div>
+</div>
+<img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=line-chart-dual-Y-axis-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dual Y axis
+<hr>
+<p class=explanation_portfolio>
+A few examples showing how to use the sec.axis argument to add a second
+Y axis.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<a class=portfolio-link href=web-circular-lollipop-plot-with-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Circular lollipop chart
+<hr>
+<p class=explanation_portfolio>
+A circular lollipop chart with customized layout, in circle legend and
+groups.<br><br>A work by <b>Cédric Scherer</b> for the
+<b>TidyTuesday</b> challenge.
+</div>
+</div>
+<img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<div class=portfolio-item>
+<a class=portfolio-link href=web-lineplots-and-area-chart-the-economist.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Line and Area charts by The Economist
+<hr>
+<p class=explanation_portfolio>
+Learn how to mimick the style of The Economist with libraries like
+ggplot2, geomtextpath, grid, ggtext and more.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
