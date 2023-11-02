@@ -1,0 +1,176 @@
+---
+title: "Avoid overlapping text with **ggrepel**"
+logo: "ggrepel"
+descriptionMeta: "This post explains how to avoid overlapped text with automatic positioning in ggplot2 plots using the ggrepel package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to avoid overlapped text with automatic positioning in [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) plots using the `ggrepel` package.<br/>This post showcases the **key features** of `ggrepel` and provides a set of **graph examples** using the package."
+documentationLink: "github.com/slowkow/ggrepel"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `ggrepel` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **avoiding overlapped texts in plots**.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers 2 main functions: `geom_text_repel()` and `geom_label_repel()`
+
+✍️ **author** &rarr; Kamil Slowikowski
+
+📘 **documentation** &rarr; [github](https://github.com/slowkow/ggrepel)
+
+⭐️ *more than 1000 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(ggrepel)
+data(mtcars)
+
+ggplot(mtcars, aes(wt, mpg, label = rownames(mtcars))) +
+  geom_text_repel() +
+  geom_point(color = 'red') +
+  theme_classic(base_size = 16)
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `ggrepel`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("ggrepel")
+```
+
+# Basic usage 
+***
+
+The `ggrepel` package allows you to display labels using a single geom and invert the functions `geom_text_repel()` and `geom_label_repel()` without constraint:
+
+Here's a basic example:
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+data(iris)
+
+ggplot(iris, aes(Sepal.Width, Sepal.Length, label=Species, color=Species)) +
+  geom_text_repel()
+```
+
+# Key features
+***
+
+## &rarr; Combining scatter plot with labels
+You can labels on individual data points with the `geom_label_repel()` function. All points will not be displayed if there is not enough room for them, but you can force it with the max.overlaps argument (check below).
+
+Example:
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+data(iris)
+
+ggplot(iris, aes(Sepal.Width, Sepal.Length, label=Species, color=Species)) +
+  geom_label_repel() +
+  geom_point() + 
+  theme_classic(base_size = 16) +
+  theme(legend.position = "none") 
+```
+
+## &rarr; Display only some specific labels
+The easiest way to display only some labels is to create a new column on your dataframe with a non-empty value only for the observations you're interested in. 
+
+Example:
+
+```{r}
+# Create a new columns with the label only for row 2,3 and 14
+mtcars$car = ""
+idx_to_label = c(2, 20, 14)
+mtcars$car[idx_to_label] = rownames(mtcars)[idx_to_label]
+
+# Display the result
+ggplot(mtcars, aes(wt, mpg, label = car)) +
+  geom_text_repel() +
+  geom_point(color = ifelse(mtcars$car == "", "grey50", "red"))
+```
+
+## &rarr; For maximum overlapping
+The `geoms` provided by `ggrepel` try do avoid as much as possible overlapping, with a maximum of 10 by default. However, you can change this value if overlapping is not a problem for you with the `max.overlaps` argument!
+
+Example:
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+data(iris)
+
+ggplot(iris, aes(Sepal.Width, Sepal.Length, label=Species, color=Species)) +
+  geom_text_repel(max.overlaps=nrow(iris)) + # ensure all data points are displayed
+  geom_point() + 
+  theme_classic(base_size = 10) +
+  theme(legend.position = "none") 
+```
+
+## &rarr; Parallel coordinates plot
+Parallel coordinates plot are easy to create with `ggrepel` combined with the `geom_segement()` function from [ggplot2](https://r-graph-gallery.com/ggplot2-package.html)
+
+Example:
+
+```{r}
+library(hrbrthemes)
+df = data.frame(x1 = 1,
+                y1 = rnorm(10),
+                x2 = 2,
+                y2 = rnorm(10),
+                lab = state.name[1:10])
+
+ggplot(df, aes(x1, y1, xend = x2, yend = y2, label = lab, col = lab)) +
+  geom_segment(size = 0.5) +
+  guides(color = "none") + # remove legend
+  theme_bw() + # change background color and overall theme
+  geom_text_repel(nudge_x = -0.2, direction = "y", hjust = "right") +
+  geom_text_repel(aes(x2, y2), nudge_x = 0.1, direction = "y", hjust = "left")
+```
+
+## &rarr; Change label style properties
+Thanks to the `color`, `bg.color` and `bg.r`, you can change colors of your labels.
+
+Example:
+
+```{r}
+mtcars$car = rownames(mtcars)
+
+ggplot(mtcars, aes(wt, mpg, label = car)) +
+  geom_point(color = "red") +
+  geom_text_repel(color = "white",     # text color
+                  bg.color = "grey30", # shadow color
+                  bg.r = 0.12)          # shadow radius
+```
+
+
+# Gallery of ggrepel examples
+***
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../101_Manhattan_plot.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Manhattan plot<hr><p class=explanation_portfolio>Labels on top of a Manhattan plot</div></div><img alt="Manhattan plot"class="img-fluid imgOfPortfolio"src=../img/graph/101_Manhattan_plot3.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../330-bubble-map-with-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Bubble Map<hr><p class=explanation_portfolio>Labels on a map, built with ggrepel</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/330-bubble-map-with-ggplot22.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><a class=portfolio-link href=../connected_scatterplot_ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Connected Scatter Plot<hr><p class=explanation_portfolio>Use connected scatterplot with 3 numeric variable to show an evolution</div></div><img alt="Connected Scatter Plot"class="img-fluid imgOfPortfolio"src=../img/graph/connected_scatterplot_ggplot23.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><div class=portfolio-item><a class=portfolio-link href=../web-scatterplot-and-ggrepel.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Nice Scatter plot<p class=explanation_portfolio>Thanks to ggrepel, scatter plot without overlapping is now possible</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-scatterplot-and-ggrepel-square.png></a></div><div class="portfolio-item col-sm-8 col-md-5"><div class=portfolio-item><a class=portfolio-link href=../web-scatterplot-corruption-and-human-development.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Scatter plot with trend line<p class=explanation_portfolio>Beautiful scatterplot with both non-linear trend line and labels</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-scatterplot-corruption-and-human-development-square.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>
