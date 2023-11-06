@@ -1,0 +1,199 @@
+---
+title: "Scatter plot with trend lines and labels on top"
+descriptionMeta: "This post explains how to add a text or labels on the trend line in a scatter with one or multiple groups. It uses the ggplot2 and geomtextpath packages."
+descriptionTop: "This post explains how to add a text or labels on the trend line in a scatter with one or multiple groups. It uses the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) and [geomtextpath](https://www.r-graph-gallery.com/package/geomtextpath.html)  packages for creating the chart and making it nice."
+sectionText: "Scatter plot section"
+sectionLink: "scatterplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "www.data-to-viz.com/graph/scatter.html"
+url: "362-scatter-plot-with-trend-line-and-labels.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+
+# Package
+*** 
+
+For this post, we need the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) and [geomtextpath](https://www.r-graph-gallery.com/package/geomtextpath.html) packages. 
+
+```{r}
+# Install the packages if not already done
+# install.packages("ggplot2")
+# install.packages("geomtextpath")
+
+# Load the package
+library(ggplot2)
+library(geomtextpath)
+```
+
+
+
+
+
+
+
+
+
+
+
+# Default scatter plot in ggplot2
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Here's what the default scatter plot output looks like with `ggplot2`:
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+```{r thecode1, echo=FALSE, out.width = "100%", fig.height=7}
+data(iris)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point() +
+  theme(legend.position = "none")
+```
+</div>
+</div>
+
+
+
+
+
+# Add trend line with label on top
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+With the `geom_labelsmooth()` function, we add a trend line with a label on it!
+
+It has the following arguments:
+
+- `fill`: the background color of the label
+
+- `method`: type of trend wanted. In our case, `lm` means the ordinary least squared estimator (linear regression). Check the [function documentation](https://rdrr.io/cran/geomtextpath/man/geom_textsmooth.html) for available possibilities
+
+- `size`, `linewidth` and `boxlinewidth`: define the properties of the text and its box
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+```{r thecode2, echo=TRUE, fig.height=7, message=FALSE, warning=FALSE, comment=FALSE, out.width="100%"}
+library(hrbrthemes)
+data(iris)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point() +
+  geom_labelsmooth(aes(label = 'My Label'), fill = "white",
+                method = "lm", formula = y ~ x,
+                size = 6, linewidth = 2, boxlinewidth = 0.6) +
+  theme_bw() + guides(color = 'none') # remove legend
+```
+</div>
+</div>
+
+
+
+# Multiple groups trend lines with labels
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+In the case of a multi-group scatter plot, the `geom_labelsmooth()` function works just as simply:
+
+- we add `color=Species`
+
+- we change `label = 'My Label'` to `label = Species`
+
+And that's it!
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+```{r thecode3, echo=TRUE, fig.height=7, message=FALSE, warning=FALSE, comment=FALSE, out.width="100%"}
+library(hrbrthemes)
+data(iris)
+
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) +
+  geom_point() +
+  geom_labelsmooth(aes(label = Species), fill = "white",
+                method = "lm", formula = y ~ x,
+                size = 3, linewidth = 1, boxlinewidth = 0.4) +
+  theme_bw() + guides(color = 'none') # remove legend
+```
+</div>
+</div>
+
+
+
+
+
+# Conclusion
+***
+
+In this post, we look at how to use the [geomtexpath](https://www.r-graph-gallery.com/package/geomtextpath.html) package to **create scatter plots with trend lines and labels**. To find out more about how to customize a scatter plot, see the [dedicated section](https://r-graph-gallery.com/scatterplot.html). 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
