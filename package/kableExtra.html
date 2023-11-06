@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Beaufitul HTML tables with
+<strong>kableExtra</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+and style tables using the kableExtra package. It provides several
+reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Beaufitul HTML tables with
+<strong>kableExtra</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create and style tables using the kableExtra package. It provides
+several reproducible examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Beaufitul HTML tables with
+<strong>kableExtra</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">This post explains how to create and style
+tables using the <code>kableExtra</code>.<br/>This post showcases the
+<strong>key features</strong> of <code>kableExtra</code> and provides a
+set of <strong>table examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/haozhu233/kableExtra"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/kableExtra.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{kableExtra}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>kableExtra</code> package offers style features from
+<strong>html and css</strong> with syntax based on the pipe symbol
+<code>%&gt;%</code>.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of features that relies on <code>kable()</code>
+output to create fully customized tables.</p>
+<p>✍️ <strong>author</strong> → Hao Zhu</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://github.com/haozhu233/kableExtra">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<table class="table table-striped lightable-paper" style="font-size: 16px; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Sepal.Length
+</th>
+<th style="text-align:center;">
+Sepal.Width
+</th>
+<th style="text-align:center;">
+Petal.Length
+</th>
+<th style="text-align:center;">
+Petal.Width
+</th>
+<th style="text-align:center;">
+Species
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+5.1
+</td>
+<td style="text-align:center;color: rgba(31, 158, 137, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(31, 158, 137, 1) !important;">
+3.5 </a>
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(38, 129, 142, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.9
+</td>
+<td style="text-align:center;color: rgba(68, 1, 84, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(68, 1, 84, 1) !important;">
+3.0 </a>
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(57, 85, 140, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.7
+</td>
+<td style="text-align:center;color: rgba(62, 74, 137, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(62, 74, 137, 1) !important;">
+3.2 </a>
+</td>
+<td style="text-align:center;">
+1.3
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(72, 32, 114, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.6
+</td>
+<td style="text-align:center;color: rgba(72, 40, 120, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(72, 40, 120, 1) !important;">
+3.1 </a>
+</td>
+<td style="text-align:center;">
+1.5
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(68, 1, 84, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+5.0
+</td>
+<td style="text-align:center;color: rgba(53, 183, 121, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(53, 183, 121, 1) !important;">
+3.6 </a>
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(47, 108, 142, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+5.4
+</td>
+<td style="text-align:center;color: rgba(253, 231, 37, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(253, 231, 37, 1) !important;">
+3.9 </a>
+</td>
+<td style="text-align:center;">
+1.7
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(67, 191, 113, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.4">
+0.4
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+4.6
+</td>
+<td style="text-align:center;color: rgba(38, 130, 142, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(38, 130, 142, 1) !important;">
+3.4 </a>
+</td>
+<td style="text-align:center;">
+1.4
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(68, 1, 84, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.3">
+0.3
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+5.0
+</td>
+<td style="text-align:center;color: rgba(38, 130, 142, 1) !important;">
+<a href="https://r-graph-gallery.com/table.html" style="color: rgba(38, 130, 142, 1) !important;">
+3.4 </a>
+</td>
+<td style="text-align:center;">
+1.5
+</td>
+<td style="text-align:center;color: white !important;background-color: rgba(47, 108, 142, 1) !important;" data-toggle="popover" data-container="body" data-trigger="hover" data-placement="right" data-content="am: 0.2">
+0.2
+</td>
+<td style="text-align:center;">
+setosa
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>kableExtra</code>, you can install it
+directly from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;kableExtra&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>kableExtra</code> package has multiple themes:
+<code>kable_paper</code>, <code>kable_classic</code>,
+<code>kable_classic_2</code>, <code>kable_minimal</code>,
+<code>kable_material</code> and <code>kable_material_dark</code>.</p>
+<p>Here’s a basic example with the dark one:</p>
+<div class="row">
+<div class="col-md-12 col-sm-12">
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">head</span>(iris) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">kbl</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">kable_material_dark</span>(<span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>))</span></code></pre></div>
+<table class=" lightable-material-dark lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+Sepal.Length
+</th>
+<th style="text-align:right;">
+Sepal.Width
+</th>
+<th style="text-align:right;">
+Petal.Length
+</th>
+<th style="text-align:right;">
+Petal.Width
+</th>
+<th style="text-align:left;">
+Species
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.1
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+<td style="text-align:right;">
+1.4
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.9
+</td>
+<td style="text-align:right;">
+3.0
+</td>
+<td style="text-align:right;">
+1.4
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.7
+</td>
+<td style="text-align:right;">
+3.2
+</td>
+<td style="text-align:right;">
+1.3
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.6
+</td>
+<td style="text-align:right;">
+3.1
+</td>
+<td style="text-align:right;">
+1.5
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.0
+</td>
+<td style="text-align:right;">
+3.6
+</td>
+<td style="text-align:right;">
+1.4
+</td>
+<td style="text-align:right;">
+0.2
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.4
+</td>
+<td style="text-align:right;">
+3.9
+</td>
+<td style="text-align:right;">
+1.7
+</td>
+<td style="text-align:right;">
+0.4
+</td>
+<td style="text-align:left;">
+setosa
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="colors" class="section level2">
+<h2>→ Colors</h2>
+<p>You can personalized every color aspect of the table. In this example
+we show <strong>5 different ways</strong> to apply a color, a gradient
+of colors or a list of colors to kable columns.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>df <span class="ot">=</span> iris[<span class="fu">order</span>(iris<span class="sc">$</span>Petal.Length, <span class="at">decreasing =</span> T),] <span class="co"># sort by petal length value</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># gradient color</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>colfunc <span class="ot">=</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">&quot;purple&quot;</span>, <span class="st">&quot;orange&quot;</span>))</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>n_color <span class="ot">=</span> <span class="dv">8</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>colors <span class="ot">=</span> <span class="fu">colfunc</span>(n_color) <span class="co"># generate 8 colors, from purple to orange</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># generate the table</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="fu">head</span>(df, <span class="dv">8</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">align =</span> <span class="st">&quot;c&quot;</span>) <span class="sc">%&gt;%</span> <span class="co"># center the columns</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">kable_paper</span>(<span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>)) <span class="sc">%&gt;%</span> <span class="co"># add strips and hover</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">2</span>, <span class="at">color=</span><span class="st">&#39;red&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">3</span>, <span class="at">background=</span>colors) <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">4</span>, <span class="at">color=</span>colors) <span class="sc">%&gt;%</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">5</span>, <span class="at">background=</span><span class="st">&#39;lightblue&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">6</span>, <span class="at">color=</span><span class="fu">c</span>(<span class="st">&quot;pink&quot;</span>,<span class="st">&quot;pink&quot;</span>,<span class="st">&quot;pink&quot;</span>,<span class="st">&quot;yellow&quot;</span>,<span class="st">&quot;pink&quot;</span>,<span class="st">&quot;green&quot;</span>,<span class="st">&quot;pink&quot;</span>,<span class="st">&quot;pink&quot;</span>))</span></code></pre></div>
+<table class=" lightable-paper lightable-striped lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:center;">
+Sepal.Length
+</th>
+<th style="text-align:center;">
+Sepal.Width
+</th>
+<th style="text-align:center;">
+Petal.Length
+</th>
+<th style="text-align:center;">
+Petal.Width
+</th>
+<th style="text-align:center;">
+Species
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+119
+</td>
+<td style="text-align:center;color: red !important;">
+7.7
+</td>
+<td style="text-align:center;background-color: #A020F0 !important;">
+2.6
+</td>
+<td style="text-align:center;color: #A020F0 !important;">
+6.9
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.3
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+118
+</td>
+<td style="text-align:center;color: red !important;">
+7.7
+</td>
+<td style="text-align:center;background-color: #AD33CD !important;">
+3.8
+</td>
+<td style="text-align:center;color: #AD33CD !important;">
+6.7
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.2
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+123
+</td>
+<td style="text-align:center;color: red !important;">
+7.7
+</td>
+<td style="text-align:center;background-color: #BB46AB !important;">
+2.8
+</td>
+<td style="text-align:center;color: #BB46AB !important;">
+6.7
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.0
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+106
+</td>
+<td style="text-align:center;color: red !important;">
+7.6
+</td>
+<td style="text-align:center;background-color: #C85989 !important;">
+3.0
+</td>
+<td style="text-align:center;color: #C85989 !important;">
+6.6
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.1
+</td>
+<td style="text-align:center;color: yellow !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+132
+</td>
+<td style="text-align:center;color: red !important;">
+7.9
+</td>
+<td style="text-align:center;background-color: #D66C66 !important;">
+3.8
+</td>
+<td style="text-align:center;color: #D66C66 !important;">
+6.4
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.0
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+108
+</td>
+<td style="text-align:center;color: red !important;">
+7.3
+</td>
+<td style="text-align:center;background-color: #E37E44 !important;">
+2.9
+</td>
+<td style="text-align:center;color: #E37E44 !important;">
+6.3
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+1.8
+</td>
+<td style="text-align:center;color: green !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+110
+</td>
+<td style="text-align:center;color: red !important;">
+7.2
+</td>
+<td style="text-align:center;background-color: #F19222 !important;">
+3.6
+</td>
+<td style="text-align:center;color: #F19222 !important;">
+6.1
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+2.5
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+131
+</td>
+<td style="text-align:center;color: red !important;">
+7.4
+</td>
+<td style="text-align:center;background-color: #FFA500 !important;">
+2.8
+</td>
+<td style="text-align:center;color: #FFA500 !important;">
+6.1
+</td>
+<td style="text-align:center;background-color: lightblue !important;">
+1.9
+</td>
+<td style="text-align:center;color: pink !important;">
+virginica
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="images-and-link" class="section level2">
+<h2>→ Images and Link</h2>
+<p><code>kableExtra</code> allows you to add images and url links
+directly into columns.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>df_img <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">name =</span> <span class="fu">c</span>(<span class="st">&quot;Grace Wahba&quot;</span>,<span class="st">&quot;Ragnar Frisch&quot;</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                    <span class="at">field =</span> <span class="fu">c</span>(<span class="st">&quot;Machine Learning&quot;</span>, <span class="st">&quot;Econometrics&quot;</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                    <span class="at">image =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                    )</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>df_img <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> T, <span class="at">align =</span> <span class="st">&quot;c&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">kable_paper</span>(<span class="at">full_width =</span> T) <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">link =</span> <span class="fu">c</span>(<span class="st">&quot;https://en.wikipedia.org/wiki/Grace_Wahba&quot;</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>                          <span class="st">&quot;https://en.wikipedia.org/wiki/Ragnar_Frisch&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">2</span>, <span class="at">bold=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">3</span>, <span class="at">image =</span> <span class="fu">spec_image</span>(<span class="fu">c</span>(<span class="st">&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Grace_Wahba_1986.jpg/440px-Grace_Wahba_1986.jpg&quot;</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>                                      <span class="st">&quot;https://upload.wikimedia.org/wikipedia/commons/a/a1/Uio_frisch_2006_0025.jpg&quot;</span>),</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>                                    <span class="dv">200</span>, <span class="dv">200</span>) <span class="co"># dimensions of the images</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>              )</span></code></pre></div>
+<table class=" lightable-paper" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+name
+</th>
+<th style="text-align:center;">
+field
+</th>
+<th style="text-align:center;">
+image
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+<a href="https://en.wikipedia.org/wiki/Grace_Wahba"> Grace Wahba </a>
+</td>
+<td style="text-align:center;font-weight: bold;">
+Machine Learning
+</td>
+<td style="text-align:center;">
+<html>
+<body>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Grace_Wahba_1986.jpg/440px-Grace_Wahba_1986.jpg" width="64" height="64">
+</body>
+</html>
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+<a href="https://en.wikipedia.org/wiki/Ragnar_Frisch"> Ragnar Frisch
+</a>
+</td>
+<td style="text-align:center;font-weight: bold;">
+Econometrics
+</td>
+<td style="text-align:center;">
+<html>
+<body>
+<img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Uio_frisch_2006_0025.jpg" width="64" height="64">
+</body>
+</html>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="chart-in-cells" class="section level2">
+<h2>→ Chart in cells</h2>
+<p>The <code>kableExtra</code> package proposes 3 plotting tools:
+<code>spec_hist</code>, <code>spec_boxplot</code>, and
+<code>spec_plot</code>. We split the iris dataset according to the
+<code>Species</code> column.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>df <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">Species =</span> <span class="fu">c</span>(<span class="st">&#39;Setosa&#39;</span>, <span class="st">&#39;Versicolor&#39;</span>, <span class="st">&#39;Virginica&#39;</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>                <span class="at">boxplots =</span> <span class="st">&quot;&quot;</span>, <span class="at">histograms =</span> <span class="st">&quot;&quot;</span>, <span class="at">plots1 =</span> <span class="st">&quot;&quot;</span>, <span class="at">plots2 =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>sepal_length_list <span class="ot">=</span> <span class="fu">split</span>(iris<span class="sc">$</span>Sepal.Length, iris<span class="sc">$</span>Species)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">kable_paper</span>(<span class="at">full_width =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">2</span>, <span class="at">image =</span> <span class="fu">spec_boxplot</span>(sepal_length_list)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">3</span>, <span class="at">image =</span> <span class="fu">spec_hist</span>(sepal_length_list)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">4</span>, <span class="at">image =</span> <span class="fu">spec_plot</span>(sepal_length_list, <span class="at">same_lim =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">5</span>, <span class="at">image =</span> <span class="fu">spec_plot</span>(sepal_length_list, <span class="at">polymin =</span> <span class="dv">5</span>))</span></code></pre></div>
+<table class=" lightable-paper" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Species
+</th>
+<th style="text-align:left;">
+boxplots
+</th>
+<th style="text-align:left;">
+histograms
+</th>
+<th style="text-align:left;">
+plots1
+</th>
+<th style="text-align:left;">
+plots2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Setosa
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="7.95,8.22 7.95,3.78 12.89,3.78 12.89,8.22 " style="stroke-width: 0.75; stroke: none; fill: #D3D3D3;"></polygon><line x1="10.42" y1="8.22" x2="10.42" y2="3.78" style="stroke-width: 0.75; stroke: #FF0000; stroke-linecap: butt;"></line><line x1="1.78" y1="6.00" x2="7.95" y2="6.00" style="stroke-width: 0.75;"></line><line x1="20.30" y1="6.00" x2="12.89" y2="6.00" style="stroke-width: 0.75;"></line><line x1="1.78" y1="7.11" x2="1.78" y2="4.89" style="stroke-width: 0.75;"></line><line x1="20.30" y1="7.11" x2="20.30" y2="4.89" style="stroke-width: 0.75;"></line><polygon points="7.95,8.22 7.95,3.78 12.89,3.78 12.89,8.22 " style="stroke-width: 0.75; stroke: none;"></polygon></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
+</g><defs><clippath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="0.54" y="8.85" width="2.47" height="2.81" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="3.01" y="8.14" width="2.47" height="3.52" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="5.48" y="6.74" width="2.47" height="4.93" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="7.95" y="3.22" width="2.47" height="8.44" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="10.42" y="3.92" width="2.47" height="7.74" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="12.89" y="7.44" width="2.47" height="4.22" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="15.36" y="10.25" width="2.47" height="1.41" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="17.83" y="9.55" width="2.47" height="2.11" style="stroke-width: 0.38; fill: #D3D3D3;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polyline points="3.42,8.86 4.26,9.43 5.10,10.00 5.94,10.29 6.78,9.14 7.62,8.00 8.46,10.29 9.30,9.14 10.14,10.86 10.98,9.43 11.82,8.00 12.66,9.72 13.50,9.72 14.34,11.14 15.18,6.86 16.02,7.14 16.86,8.00 17.70,8.86 18.54,7.14 19.38,8.86 20.22,8.00 21.06,8.86 21.90,10.29 22.74,8.86 23.58,9.72 24.42,9.14 25.26,9.14 26.10,8.57 26.94,8.57 27.78,10.00 28.62,9.72 29.46,8.00 30.30,8.57 31.14,7.71 31.98,9.43 32.82,9.14 33.66,7.71 34.50,9.43 35.34,10.86 36.18,8.86 37.02,9.14 37.86,10.57 38.70,10.86 39.54,9.14 40.38,8.86 41.22,9.72 42.06,8.86 42.90,10.29 43.74,8.29 44.58,9.14 " style="stroke-width: 1.50; stroke: #D3D3D3;"></polyline><rect x="13.62" y="10.42" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="14.46" y="6.14" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="3.42,9.14 3.42,8.86 4.26,9.43 5.10,10.00 5.94,10.29 6.78,9.14 7.62,8.00 8.46,10.29 9.30,9.14 10.14,10.86 10.98,9.43 11.82,8.00 12.66,9.72 13.50,9.72 14.34,11.14 15.18,6.86 16.02,7.14 16.86,8.00 17.70,8.86 18.54,7.14 19.38,8.86 20.22,8.00 21.06,8.86 21.90,10.29 22.74,8.86 23.58,9.72 24.42,9.14 25.26,9.14 26.10,8.57 26.94,8.57 27.78,10.00 28.62,9.72 29.46,8.00 30.30,8.57 31.14,7.71 31.98,9.43 32.82,9.14 33.66,7.71 34.50,9.43 35.34,10.86 36.18,8.86 37.02,9.14 37.86,10.57 38.70,10.86 39.54,9.14 40.38,8.86 41.22,9.72 42.06,8.86 42.90,10.29 43.74,8.29 44.58,9.14 44.58,9.14 " style="stroke-width: 1.50; stroke: none; fill: #D3D3D3;"></polygon><rect x="13.62" y="10.42" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="14.46" y="6.14" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Versicolor
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="17.83,8.22 17.83,3.78 26.47,3.78 26.47,8.22 " style="stroke-width: 0.75; stroke: none; fill: #D3D3D3;"></polygon><line x1="21.53" y1="8.22" x2="21.53" y2="3.78" style="stroke-width: 0.75; stroke: #FF0000; stroke-linecap: butt;"></line><line x1="9.19" y1="6.00" x2="17.83" y2="6.00" style="stroke-width: 0.75;"></line><line x1="35.11" y1="6.00" x2="26.47" y2="6.00" style="stroke-width: 0.75;"></line><line x1="9.19" y1="7.11" x2="9.19" y2="4.89" style="stroke-width: 0.75;"></line><line x1="35.11" y1="7.11" x2="35.11" y2="4.89" style="stroke-width: 0.75;"></line><polygon points="17.83,8.22 17.83,3.78 26.47,3.78 26.47,8.22 " style="stroke-width: 0.75; stroke: none;"></polygon></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
+</g><defs><clippath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="4.25" y="10.33" width="6.17" height="1.33" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="10.42" y="8.11" width="6.17" height="3.56" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="16.59" y="3.22" width="6.17" height="8.44" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="22.77" y="6.33" width="6.17" height="5.33" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="28.94" y="8.11" width="6.17" height="3.56" style="stroke-width: 0.38; fill: #D3D3D3;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polyline points="3.42,3.43 4.26,5.14 5.10,3.71 5.94,7.71 6.78,4.86 7.62,7.14 8.46,5.43 9.30,9.43 10.14,4.57 10.98,8.57 11.82,9.14 12.66,6.57 13.50,6.29 14.34,6.00 15.18,7.43 16.02,4.29 16.86,7.43 17.70,6.86 18.54,5.71 19.38,7.43 20.22,6.57 21.06,6.00 21.90,5.43 22.74,6.00 23.58,5.14 24.42,4.57 25.26,4.00 26.10,4.29 26.94,6.29 27.78,7.14 28.62,7.71 29.46,7.71 30.30,6.86 31.14,6.29 31.98,8.00 32.82,6.29 33.66,4.29 34.50,5.43 35.34,7.43 36.18,7.71 37.02,7.71 37.86,6.00 38.70,6.86 39.54,9.14 40.38,7.43 41.22,7.14 42.06,7.14 42.90,5.71 43.74,8.86 44.58,7.14 " style="stroke-width: 1.50; stroke: #D3D3D3;"></polyline><rect x="8.58" y="8.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="2.70" y="2.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="3.42,9.14 3.42,3.43 4.26,5.14 5.10,3.71 5.94,7.71 6.78,4.86 7.62,7.14 8.46,5.43 9.30,9.43 10.14,4.57 10.98,8.57 11.82,9.14 12.66,6.57 13.50,6.29 14.34,6.00 15.18,7.43 16.02,4.29 16.86,7.43 17.70,6.86 18.54,5.71 19.38,7.43 20.22,6.57 21.06,6.00 21.90,5.43 22.74,6.00 23.58,5.14 24.42,4.57 25.26,4.00 26.10,4.29 26.94,6.29 27.78,7.14 28.62,7.71 29.46,7.71 30.30,6.86 31.14,6.29 31.98,8.00 32.82,6.29 33.66,4.29 34.50,5.43 35.34,7.43 36.18,7.71 37.02,7.71 37.86,6.00 38.70,6.86 39.54,9.14 40.38,7.43 41.22,7.14 42.06,7.14 42.90,5.71 43.74,8.86 44.58,7.14 44.58,9.14 " style="stroke-width: 1.50; stroke: none; fill: #D3D3D3;"></polygon><rect x="8.58" y="8.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="2.70" y="2.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Virginica
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="25.23,8.22 25.23,3.78 33.88,3.78 33.88,8.22 " style="stroke-width: 0.75; stroke: none; fill: #D3D3D3;"></polygon><line x1="28.94" y1="8.22" x2="28.94" y2="3.78" style="stroke-width: 0.75; stroke: #FF0000; stroke-linecap: butt;"></line><line x1="17.83" y1="6.00" x2="25.23" y2="6.00" style="stroke-width: 0.75;"></line><line x1="46.22" y1="6.00" x2="33.88" y2="6.00" style="stroke-width: 0.75;"></line><line x1="17.83" y1="7.11" x2="17.83" y2="4.89" style="stroke-width: 0.75;"></line><line x1="46.22" y1="7.11" x2="46.22" y2="4.89" style="stroke-width: 0.75;"></line><polygon points="25.23,8.22 25.23,3.78 33.88,3.78 33.88,8.22 " style="stroke-width: 0.75; stroke: none;"></polygon><circle cx="9.19" cy="6.00" r="0.54" style="stroke-width: 0.75;"></circle></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)">
+</g><defs><clippath id="cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw"><rect x="0.00" y="2.88" width="48.00" height="9.12"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwyLjg4fDEyLjAw)"><rect x="4.25" y="11.22" width="6.17" height="0.44" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="10.42" y="11.66" width="6.17" height="0.00" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="16.59" y="8.11" width="6.17" height="3.56" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="22.77" y="3.22" width="6.17" height="8.44" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="28.94" y="7.22" width="6.17" height="4.44" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="35.11" y="9.00" width="6.17" height="2.67" style="stroke-width: 0.38; fill: #D3D3D3;"></rect><rect x="41.28" y="9.00" width="6.17" height="2.67" style="stroke-width: 0.38; fill: #D3D3D3;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewbox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clippath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clippath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polyline points="3.42,5.43 4.26,6.86 5.10,3.14 5.94,5.43 6.78,4.86 7.62,1.71 8.46,9.43 9.30,2.57 10.14,4.29 10.98,2.86 11.82,4.86 12.66,5.14 13.50,4.00 14.34,7.14 15.18,6.86 16.02,5.14 16.86,4.86 17.70,1.43 18.54,1.43 19.38,6.29 20.22,3.71 21.06,7.43 21.90,1.43 22.74,5.43 23.58,4.29 24.42,2.86 25.26,5.71 26.10,6.00 26.94,5.14 27.78,2.86 28.62,2.28 29.46,0.86 30.30,5.14 31.14,5.43 31.98,6.00 32.82,1.43 33.66,5.43 34.50,5.14 35.34,6.29 36.18,3.71 37.02,4.29 37.86,3.71 38.70,6.86 39.54,4.00 40.38,4.29 41.22,4.29 42.06,5.43 42.90,4.86 43.74,5.71 44.58,6.57 " style="stroke-width: 1.50; stroke: #D3D3D3;"></polyline><rect x="7.74" y="8.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="28.74" y="0.14" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+<td style="text-align:left;">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svglite" width="48.00pt" height="12.00pt" viewBox="0 0 48.00 12.00">
+<defs>
+<style type="text/css">
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  </style>
+</defs><rect width="100%" height="100%" style="stroke: none; fill: none;"></rect><defs><clipPath id="cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw"><rect x="0.00" y="0.00" width="48.00" height="12.00"></rect></clipPath></defs><g clip-path="url(#cpMC4wMHw0OC4wMHwwLjAwfDEyLjAw)"><polygon points="3.42,9.14 3.42,5.43 4.26,6.86 5.10,3.14 5.94,5.43 6.78,4.86 7.62,1.71 8.46,9.43 9.30,2.57 10.14,4.29 10.98,2.86 11.82,4.86 12.66,5.14 13.50,4.00 14.34,7.14 15.18,6.86 16.02,5.14 16.86,4.86 17.70,1.43 18.54,1.43 19.38,6.29 20.22,3.71 21.06,7.43 21.90,1.43 22.74,5.43 23.58,4.29 24.42,2.86 25.26,5.71 26.10,6.00 26.94,5.14 27.78,2.86 28.62,2.28 29.46,0.86 30.30,5.14 31.14,5.43 31.98,6.00 32.82,1.43 33.66,5.43 34.50,5.14 35.34,6.29 36.18,3.71 37.02,4.29 37.86,3.71 38.70,6.86 39.54,4.00 40.38,4.29 41.22,4.29 42.06,5.43 42.90,4.86 43.74,5.71 44.58,6.57 44.58,9.14 " style="stroke-width: 1.50; stroke: none; fill: #D3D3D3;"></polygon><rect x="7.74" y="8.71" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect><rect x="28.74" y="0.14" width="1.44" height="1.44" style="stroke-width: 1.50; stroke: none; fill: #FF0000;"></rect></g>
+</svg>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="gallery-of-kableextra-examples" class="section level1">
+<h1>Gallery of kableExtra examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=web-dumbbell-chart-with-a-gap-column.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Custom colors with kableExtra
+<hr>
+<p class=explanation_portfolio>
+This post explains how to custom colors, with unique color or gradient
+of colors, using the kableExtra package
+</div>
+</div>
+<img alt="Custom colors with kableExtra"class="img-fluid imgOfPortfolio"src=../img/graph/362-customize-colors-in-kableExtra-3.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=line-chart-dual-Y-axis-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Add image and link
+<p class=explanation_portfolio>
+A few examples showing how to add images and links into your kableExtra
+tables
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/363-add-images-and-links-in-kableExtra-1.png></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>

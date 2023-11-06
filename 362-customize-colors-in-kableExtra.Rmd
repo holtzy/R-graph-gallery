@@ -1,0 +1,188 @@
+---
+title: "Customize colors in a kable table with kableExtra"
+descriptionMeta: "This post explains how to customize colors in a kable output with the kableExtra package. We'll see how to add a color, several colors or a color gradient to a row or column."
+descriptionTop: "This post explains how to customize colors in a kable output with kableExtra package. We'll go through several examples to see how to add a color, several colors or a color gradient to a row or column with [kableExtra](https://r-graph-gallery.com/package/kableExtra.html)."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/area.html"
+url: "361-customize-colors-in-kableExtra"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+library(kableExtra)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+We create a simple dataset with 3 columns to showcase the **color features** of [kableExtra](https://r-graph-gallery.com/package/kableExtra.html)
+
+
+```{r}
+df = data.frame(Temp = c(1,2,3,4),
+                Rain = c(12, 42, 17, 9),
+                Hum = c(21, 24, 71, 90)
+                )
+```
+
+
+
+
+# Default kable table output
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The [kableExtra](https://r-graph-gallery.com/package/kableExtra.html) relies on the `kable` package and allows the use of the `%>%` (pipe) symbole. The main function is named `kbl()` and is similar to `kable()`.
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+df %>%
+  kbl() %>%
+  kable_styling()
+```
+</div>
+</div>
+
+
+
+
+# Change color of a row or column
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `row_spec()` and `column_spec()` functions have a `color` and `background` arguments that will **change the colors**, either of the background or the cell content. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+df %>%
+  kbl(align = "c") %>% # center the columns
+  kable_styling(full_width = F) %>%
+  column_spec(2, color = "red") %>%
+  row_spec(3, color = "blue") %>%
+  column_spec(1, background = "green") %>%
+  row_spec(4, background = "yellow")
+```
+</div>
+</div>
+
+
+
+# Use a list of colors
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `color` and `background` argument can also takes a vector of colors:
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+df %>%
+  kbl(align = "c") %>% # center the columns
+  kable_styling(full_width = F) %>%
+  column_spec(3, background = c("blue", "red", "black", "blue"))
+```
+</div>
+</div>
+
+
+
+
+# Gradient of color
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+In order to have a gradient of colors, we need to use the `colorRampPalette()` function in order to generate a vector of colors.
+
+We also sort the dataframe with the `Rain` column so that the **colors will be proportional** to the values in this column.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+# gradient color
+colfunc = colorRampPalette(c("darkred", "magenta"))
+n_color = nrow(df)
+colors = colfunc(n_color) # generate nrow(df) (number of rows in df) colors, from darkred to magenta
+
+df = df[order(df$Rain, decreasing = TRUE),] # sort (decreasing) by Rain values
+
+df %>%
+  kbl(align = "c") %>% # center the columns
+  kable_styling(full_width = F) %>%
+  column_spec(3, background = colors) %>%
+  column_spec(2, color = colors)
+```
+</div>
+</div>
+
+
+
+
+# Conclusion
+
+This post explained how to custom colors in a table using the [kableExtra](https://r-graph-gallery.com/package/kableExtra.html) library. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/kableExtra.html) or the [table section](https://r-graph-gallery.com/table.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```
