@@ -1,0 +1,219 @@
+---
+title: "Create interactive table with **DT**"
+logo: "DT"
+descriptionMeta: "This post explains how display R data object (such as dataframe) as HTML pages with filtering, searching and many other features. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how display R data object (such as dataframe) as `HTML` pages with **filtering**, **searching** and even use **callback javascript functions**. It provides several reproducible examples with explanation and R code.<br>We showcase the **key features** of `DT` and provides a set of **table examples** using the package."
+documentationLink: "github.com/rstudio/DT"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `DT` package is a interface for the `DataTable` JavaScript library in R. It can be used for rendering interactive and dynamic tables in **R Markdown** documents and **Shiny** web applications.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It (mainly) offers a `datatable()` function that creates an **HTML widget** that display a table. This table is interactive and dynamic thanks to the use of `JavaScript`. 
+
+✍️ **author** &rarr; Yihui Xie
+
+📘 **documentation** &rarr; [github](https://github.com/rstudio/DT)
+
+⭐️ *more than 500 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.wiDTh = "85%", fig.align='center'}
+library(DT)
+data(iris)
+
+table = datatable(iris, class = 'cell-border stripe',
+          caption = 'Table 1: The mtcars dataset is a famous dataset about cars and their properties.',
+          filter = 'top', options = list(pageLength = 5, autoWidth = TRUE))
+
+library(htmlwidgets)
+saveWidget(table, file="../HtmlWidget/dt-table-quick.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-quick.html" height="500" width="600" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+# Installation
+***
+To get started with `DT`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("DT")
+```
+
+# Basic usage 
+***
+
+The `DT` package allows you to combine multiple plots using simple **arithmetic operators** like `+`, `/`, and `|`.
+
+Here's a basic example:
+
+```{r}
+library(DT)
+data(mtcars)
+
+table = datatable(mtcars)
+
+# save the widget
+library(htmlwidgets)
+saveWidget(table, file="../HtmlWidget/dt-table-basic.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-basic.html" height="700" width="700" style="border:none;"></iframe></center>
+
+# Key features
+***
+
+<br>
+
+## &rarr; Use CSS classes
+In the `datatable()` function, there is a `cell` argument that can take CSS classes. The available ones are: `display`, `cell-border`, `compact`	`hover`, `nowrap`, `order-column`, `row-border`, `stripe`. 
+
+Example using `cell-border`, `stripe`, `hover` and `compact`:
+
+```{r}
+library(DT)
+
+table = datatable(
+  mtcars, 
+  class = 'cell-border stripe hover compact'
+)
+
+# save the widget
+library(htmlwidgets)
+saveWidget(table, file="../HtmlWidget/dt-table-1.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-1.html" height="700" width="700" style="border:none;"></iframe></center>
+
+<br>
+
+## &rarr; Add caption
+Thanks to the `caption` argument and the `htmltools` library, you can add customized caption to the table.
+
+Example:
+
+```{r}
+library(DT)
+library(htmltools)
+data(mtcars)
+
+table = datatable(
+  mtcars,
+  caption = tags$caption(
+    style = 'caption-side: bottom; text-align: center;',
+    'Table 1: ', em('The mtcars dataset is a dataset about cars properties')
+  )
+)
+
+# save widget
+library(htmltools)
+saveWidget(table, file="../HtmlWidget/dt-table-2.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-2.html" height="700" width="700" style="border:none;"></iframe></center>
+
+<br>
+
+## &rarr; Filtering
+The `datatable()` function has a filtering option. Depending on the type of variable, the filtering might differ:
+- **quantitative** columns: range slider
+- **qualitative** columns: select from all possible categories
+
+Example:
+
+```{r}
+library(DT)
+data(mtcars)
+
+table = datatable(mtcars,
+          filter = 'top', # put filters on top of the table
+          )
+
+# save widget
+library(htmltools)
+saveWidget(table, file="../HtmlWidget/dt-table-3.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-3.html" height="700" width="700" style="border:none;"></iframe></center>
+
+<br>
+
+## &rarr; Callback JavaScript functions
+You can apply JavaScript functions to your tables with the `callback` argument. The following example starts the table on the second page.
+
+Example:
+
+```{r}
+library(DT)
+data(mtcars)
+
+table = datatable(mtcars,
+                  callback = JS('table.page("next").draw(false);'))
+
+# save widget
+library(htmltools)
+saveWidget(table, file="../HtmlWidget/dt-table-4.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-4.html" height="700" width="700" style="border:none;"></iframe></center>
+
+<br>
+
+## &rarr; Custom style with colors, urls...
+For this example, we'll create a specific dataset for better understanding.
+
+Example:
+
+```{r}
+library(DT)
+
+# create dataset
+data = matrix(c(
+  '<b>Bold</b>', '<em>Emphasize</em>', '<a href="https://r-graph-gallery.com/package/dt.html">Click here</a>',
+  '<a href="#" onclick="alert(\'This message is displayed thanks to DT table!\');">Click there</a>'),
+  2)
+#change columns name
+colnames(data) = c('<span style="color:red">Red column</span>', '<em>Italic column</em>')
+
+table = datatable(data,
+                  escape = FALSE # this argument allows the content of the cells to be interpreted as HTML
+                  )
+
+# save widget
+library(htmltools)
+saveWidget(table, file="../HtmlWidget/dt-table-5.html")
+```
+
+<center><iframe src="../HtmlWidget/dt-table-5.html" height="700" width="700" style="border:none;"></iframe></center>
+
+# Gallery of DT examples
+***
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=web-dumbbell-chart-with-a-gap-column.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dumbbell plot with gap section<hr><p class=explanation_portfolio>An extended dumbbell plot originally published by the Pew research center. Clean design with a gap section on the right hand side.</div></div><img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=line-chart-dual-Y-axis-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dual Y axis<hr><p class=explanation_portfolio>A few examples showing how to use the sec.axis argument to add a second Y axis.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><a class=portfolio-link href=web-circular-lollipop-plot-with-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Circular lollipop chart<hr><p class=explanation_portfolio>A circular lollipop chart with customized layout, in circle legend and groups.<br><br>A work by <b>Cédric Scherer</b> for the <b>TidyTuesday</b> challenge.</div></div><img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><div class=portfolio-item><a class=portfolio-link href=web-lineplots-and-area-chart-the-economist.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Line and Area charts by The Economist<hr><p class=explanation_portfolio>Learn how to mimick the style of The Economist with libraries like ggplot2, DT, grid, ggtext and more.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>

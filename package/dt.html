@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Create interactive table with <strong>DT</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how display R
+data object (such as dataframe) as HTML pages with filtering, searching
+and many other features. It provides several reproducible examples with
+explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Create interactive table with
+<strong>DT</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how
+display R data object (such as dataframe) as HTML pages with filtering,
+searching and many other features. It provides several reproducible
+examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Create interactive table with <strong>DT</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">This post explains how display R data object
+(such as dataframe) as <code>HTML</code> pages with
+<strong>filtering</strong>, <strong>searching</strong> and even use
+<strong>callback javascript functions</strong>. It provides several
+reproducible examples with explanation and R code.<br>We showcase the
+<strong>key features</strong> of <code>DT</code> and provides a set of
+<strong>table examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/rstudio/DT"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/DT.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{DT}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>DT</code> package is a interface for the
+<code>DataTable</code> JavaScript library in R. It can be used for
+rendering interactive and dynamic tables in <strong>R Markdown</strong>
+documents and <strong>Shiny</strong> web applications.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It (mainly) offers a <code>datatable()</code> function that creates
+an <strong>HTML widget</strong> that display a table. This table is
+interactive and dynamic thanks to the use of
+<code>JavaScript</code>.</p>
+<p>✍️ <strong>author</strong> → Yihui Xie</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://github.com/rstudio/DT">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<center>
+<iframe src="../HtmlWidget/dt-table-quick.html" height="500" width="600" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>DT</code>, you can install it directly from
+CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;DT&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>DT</code> package allows you to combine multiple plots
+using simple <strong>arithmetic operators</strong> like <code>+</code>,
+<code>/</code>, and <code>|</code>.</p>
+<p>Here’s a basic example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(mtcars)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-basic.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-basic.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<p><br></p>
+<div id="use-css-classes" class="section level2">
+<h2>→ Use CSS classes</h2>
+<p>In the <code>datatable()</code> function, there is a
+<code>cell</code> argument that can take CSS classes. The available ones
+are: <code>display</code>, <code>cell-border</code>,
+<code>compact</code> <code>hover</code>, <code>nowrap</code>,
+<code>order-column</code>, <code>row-border</code>,
+<code>stripe</code>.</p>
+<p>Example using <code>cell-border</code>, <code>stripe</code>,
+<code>hover</code> and <code>compact</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  mtcars, </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">&#39;cell-border stripe hover compact&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-1.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-1.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="add-caption" class="section level2">
+<h2>→ Add caption</h2>
+<p>Thanks to the <code>caption</code> argument and the
+<code>htmltools</code> library, you can add customized caption to the
+table.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  mtcars,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">caption =</span> tags<span class="sc">$</span><span class="fu">caption</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">style =</span> <span class="st">&#39;caption-side: bottom; text-align: center;&#39;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="st">&#39;Table 1: &#39;</span>, <span class="fu">em</span>(<span class="st">&#39;The mtcars dataset is a dataset about cars properties&#39;</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  )</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-2.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-2.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="filtering" class="section level2">
+<h2>→ Filtering</h2>
+<p>The <code>datatable()</code> function has a filtering option.
+Depending on the type of variable, the filtering might differ: -
+<strong>quantitative</strong> columns: range slider -
+<strong>qualitative</strong> columns: select from all possible
+categories</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(mtcars,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>          <span class="at">filter =</span> <span class="st">&#39;top&#39;</span>, <span class="co"># put filters on top of the table</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>          )</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-3.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-3.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="callback-javascript-functions" class="section level2">
+<h2>→ Callback JavaScript functions</h2>
+<p>You can apply JavaScript functions to your tables with the
+<code>callback</code> argument. The following example starts the table
+on the second page.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(mtcars,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                  <span class="at">callback =</span> <span class="fu">JS</span>(<span class="st">&#39;table.page(&quot;next&quot;).draw(false);&#39;</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-4.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-4.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="custom-style-with-colors-urls" class="section level2">
+<h2>→ Custom style with colors, urls…</h2>
+<p>For this example, we’ll create a specific dataset for better
+understanding.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># create dataset</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="st">&#39;&lt;b&gt;Bold&lt;/b&gt;&#39;</span>, <span class="st">&#39;&lt;em&gt;Emphasize&lt;/em&gt;&#39;</span>, <span class="st">&#39;&lt;a href=&quot;https://r-graph-gallery.com/package/dt.html&quot;&gt;Click here&lt;/a&gt;&#39;</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="st">&#39;&lt;a href=&quot;#&quot; onclick=&quot;alert(</span><span class="sc">\&#39;</span><span class="st">This message is displayed thanks to DT table!</span><span class="sc">\&#39;</span><span class="st">);&quot;&gt;Click there&lt;/a&gt;&#39;</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="dv">2</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#change columns name</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;&lt;span style=&quot;color:red&quot;&gt;Red column&lt;/span&gt;&#39;</span>, <span class="st">&#39;&lt;em&gt;Italic column&lt;/em&gt;&#39;</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>table <span class="ot">=</span> <span class="fu">datatable</span>(data,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                  <span class="at">escape =</span> <span class="cn">FALSE</span> <span class="co"># this argument allows the content of the cells to be interpreted as HTML</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                  )</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="fu">saveWidget</span>(table, <span class="at">file=</span><span class="st">&quot;../HtmlWidget/dt-table-5.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/dt-table-5.html" height="700" width="700" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="gallery-of-dt-examples" class="section level1">
+<h1>Gallery of DT examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=web-dumbbell-chart-with-a-gap-column.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dumbbell plot with gap section
+<hr>
+<p class=explanation_portfolio>
+An extended dumbbell plot originally published by the Pew research
+center. Clean design with a gap section on the right hand side.
+</div>
+</div>
+<img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=line-chart-dual-Y-axis-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dual Y axis
+<hr>
+<p class=explanation_portfolio>
+A few examples showing how to use the sec.axis argument to add a second
+Y axis.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<a class=portfolio-link href=web-circular-lollipop-plot-with-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Circular lollipop chart
+<hr>
+<p class=explanation_portfolio>
+A circular lollipop chart with customized layout, in circle legend and
+groups.<br><br>A work by <b>Cédric Scherer</b> for the
+<b>TidyTuesday</b> challenge.
+</div>
+</div>
+<img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<div class=portfolio-item>
+<a class=portfolio-link href=web-lineplots-and-area-chart-the-economist.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Line and Area charts by The Economist
+<hr>
+<p class=explanation_portfolio>
+Learn how to mimick the style of The Economist with libraries like
+ggplot2, DT, grid, ggtext and more.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
