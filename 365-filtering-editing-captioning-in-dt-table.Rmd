@@ -1,0 +1,223 @@
+---
+title: "Filtering, captioning and editing in tables with DT"
+descriptionMeta: "This post explains how to add a filter parameter, a caption and edit cells in tables with the DT package. We'll go through several examples with reproducible R code."
+descriptionTop: "This post explains how to add a **filter** parameter , a **caption** and **edit** cells in tables with the [DT](https://r-graph-gallery.com/package/DT.html) package. We'll go over several examples of how you can display interactive tables with customized features.<br>You can find out more about DT in the [dedicated section](https://r-graph-gallery.com/package/DT.html)."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "365-filtering-editing-captioning-in-dt-table"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+# install it if never done it before
+#install.packages("DT")
+
+library(DT)
+```
+
+<br/>
+
+
+
+# Dataset
+***
+
+For this post, we'll use a dataset with different data types such as integer, numeric, factor, logical, and character.
+
+```{r}
+df = data.frame(
+  integer_col = as.integer(c(1, 2, 3)),             # Integer column
+  numeric_col = c(1.1, 2.2, 3.3),                   # Numeric column
+  factor_col = factor(c("level1", "level2", "level3")), # Factor column
+  logical_col = c(TRUE, FALSE, TRUE),                # Logical column
+  character_col = c("a", "b", "c")                 # Character column
+)
+```
+
+
+
+
+# Filtering
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+By default, [DT](https://r-graph-gallery.com/package/DT.html) tables have no filters. However, the `datatable()` function has a `filter` argument with very useful properties, depending on the type of data.
+
+Integer and numeric columns have **range sliders**, while other variables have a choice of all possible values. 
+
+*Keep in mind*: make sure your variables have the **right type** so that the filters match. You may need to manually change the type of some of your columns. 
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+table = datatable(df,
+                  filter = 'top') # put it at the top of the table
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-filtering.html")
+```
+
+<center><iframe src="HtmlWidget/dt-filtering.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+# Captioning
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Thanks to the `caption` argument, we can easily add a caption to our table. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+table = datatable(
+  df,
+  caption = tags$caption(style = 'caption-side: bottom; text-align: center;',
+                         'Table 1: ',
+                         em('This is a legend that you can customize')
+                         )
+  )
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-captioning.html")
+```
+
+<center><iframe src="HtmlWidget/dt-captioning.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+# Editing
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The cells can be edited directly into the table by **double clicking** on it, changing the value and then clicking outside. It's also possible to make **only specific** as editable.
+
+In the case you want all cells to be **editable**, put `editable='cell'` in the `datatable()` function. Otherwise, put a list in argument of the `editable` argument like in the example below that allows editing in column 1, 3 and 5, for all rows:
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+table = datatable(df,
+                  editable = list(target = 'row',
+                                  disable = list(columns = c(1, 3, 5))))
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-editing.html")
+```
+
+<center><iframe src="HtmlWidget/dt-editing.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+
+# All in once
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Here's what the output looks like when we put all together the features we've seen before:
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+df = rbind(df, df, df) # add more rows
+table = datatable(df,
+                  editable = list(target = 'row',
+                                  disable = list(columns = c(1, 3, 5))),
+                  caption = tags$caption(style = 'caption-side: bottom; text-align: center;',
+                                         'Table 1: ',
+                                         em('This is a legend that you can customize')),
+                  filter = 'top')
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-all-features.html")
+```
+
+<center><iframe src="HtmlWidget/dt-all-features.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+
+
+# Conclusion
+
+This post explained how to add a filter parameter, a caption and edit cells in [DT](https://r-graph-gallery.com/package/DT.html) table. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/DT.html) or the [table section](https://r-graph-gallery.com/table.html).
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

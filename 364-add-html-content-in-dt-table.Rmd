@@ -1,0 +1,236 @@
+---
+title: "Put html content in tables with DT"
+descriptionMeta: "This post explains how to add html content in tables with the DT package. We'll go through several examples with reproducible R code."
+descriptionTop: "This post explains how to add html content in tables with the [DT](https://r-graph-gallery.com/package/DT.html) package. We'll go through how to change colors, emphasize, add links or images."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "364-add-html-content-in-dt-table"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+# install it if never done it before
+#install.packages("DT")
+
+library(DT)
+```
+
+<br/>
+
+
+# HTML in the DT package
+***
+
+The [DT](https://r-graph-gallery.com/package/DT.html) package in R integrates the `DataTables` JavaScript library to create interactive tables in R markdown documents or Shiny web applications. It means that we basically can have HTML content in our cells and make [DT](https://r-graph-gallery.com/package/DT.html) interpret it (or not!) for rendering.
+
+For more info about this, check out the [dedicated section](https://r-graph-gallery.com/package/DT.html).
+
+
+
+
+# Custom text styling
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+HTML can super easily highlight specific part of a text: the `<strong>` or `<b>` tags make text bold, the `<em>` or `<i>` tags italicize text to convey emphasis, while the style attribute is used to apply colors and underline text. The `<u>` tag can also specifically underline text.
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+# text formatting
+col = c('<b>Bold</b>',
+              '<em>Emphasize</em>',
+              '<u>Underline</u>',
+              '<p style="color:red;">Red</p>')
+df = data.frame(col = col)
+
+table = datatable(df,
+                  escape=FALSE) # allows text cell interpreted as HTML
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-html-1.html")
+```
+
+<center><iframe src="HtmlWidget/dt-html-1.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+# Links and messages
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `DT` package can include links that trigger `JavaScript` **alerts**, **link** to external websites, or **ask** for user confirmation before proceeding. Try clicking on the cell below to see what they do!
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+# links and messages
+col = c('<a href="#" onclick="alert(\'R Graph Gallery post about the DT package\');">Click there</a>',
+        '<a href="https://r-graph-gallery.com/package/dt.html">Click here</a>',
+        '<a href="#" onclick="if(confirm(\'Learn the DT package?\')) alert(\'Confirmed\');" title="Confirm before proceeding">Confirmation?</a>',
+        '<a href="#" onclick="alert(\'You clicked on more resources!\');" title="Click for resources">More resources</a>')
+df = data.frame(col = col)
+
+table = datatable(df,
+                  escape=FALSE) # allows text cell interpreted as HTML
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-html-2.html")
+```
+
+<center><iframe src="HtmlWidget/dt-html-2.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+# Images
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `color` and `background` argument can also takes a vector of colors:
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+col = c('<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" width="100" height="100">', # changed dimensions
+        '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="transform: rotate(90deg);" width="100" height="100">', # rotated
+        '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="border: 5px solid black;" width="100" height="100">', # added border
+        '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="transform: rotate(90deg); border: 5px solid black;" width="200" height="100">') # combined
+df = data.frame(col = col)
+
+table = datatable(df,
+                  escape=FALSE) # allows text cell interpreted as HTML
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-html-3.html")
+```
+
+<center><iframe src="HtmlWidget/dt-html-3.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+# All in once
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Here's what the output looks like when we put all together the features we've seen before:
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+# images
+col1 = c('<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" width="100" height="100">', # changed dimensions
+              '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="transform: rotate(90deg);" width="100" height="100">', # rotated
+              '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="border: 5px solid black;" width="100" height="100">', # added border
+              '<img src="https://r-graph-gallery.com/img/logo/R_single_medium.png" style="transform: rotate(90deg); border: 5px solid black;" width="120" height="80">') # combined
+
+# links and messages
+col2 = c('<a href="#" onclick="alert(\'R Graph Gallery post about the DT package\');">Click there</a>',
+        '<a href="https://r-graph-gallery.com/package/dt.html">Click here</a>',
+        '<a href="#" onclick="if(confirm(\'Learn the DT package?\')) alert(\'Confirmed\');" title="Confirm before proceeding">Confirmation?</a>',
+        '<a href="#" onclick="alert(\'You clicked on more resources!\');" title="Click for resources">More resources</a>')
+
+# text formatting
+col3 = c('<b>Bold</b>',
+              '<em>Emphasize</em>',
+              '<u>Underline</u>',
+              '<p style="color:red;">Red</p>')
+
+df = data.frame(col1 = col1,
+                col2 = col2,
+                col3 = col3)
+
+table = datatable(df,
+                  escape=FALSE) # allows text cell interpreted as HTML
+
+# save widget
+library(htmltools)
+saveWidget(table, file="HtmlWidget/dt-html-4.html")
+```
+
+<center><iframe src="HtmlWidget/dt-html-4.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+</div>
+
+
+
+
+
+
+
+# Conclusion
+
+This post explained how to add HTML content in [DT](https://r-graph-gallery.com/package/DT.html) table cells, such images, links or `JavaScript` trigger. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/DT.html) or the [table section](https://r-graph-gallery.com/table.html).
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```
