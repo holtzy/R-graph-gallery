@@ -1,0 +1,180 @@
+---
+title: "Automate the creation of a summary table with gtsummary"
+descriptionMeta: "This post use the gtsummary package to create a table that summarizes a dataset with descriptive, inferential statistics and more. We'll go through several examples with reproducible R code."
+descriptionTop: "This post use the [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) package to create a table that summarizes a dataset with descriptive, inferential statistics and more. We'll go through several examples with reproducible code using the  [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) package."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "367-automate-data-summary-table-with-gtsummary"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+# install.packages("gtsummary")
+library(gtsummary)
+```
+
+<br/>
+
+
+# Default output for summary table
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) uses the `tbl_summary()` to generate the summary table and works well with the `%>%` symbol.
+
+It automatically **detects data type** and use it to decides what type of statistics to compute. By default, it's:
+- **median, 1st and 3rd quartile** for numeric columns
+- **number of observations** and proportion for categorical columns
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+library(gtsummary)
+
+# create dataset
+data("Titanic")
+df = as.data.frame(Titanic)
+
+# create the table
+df %>%
+  tbl_summary()
+```
+</div>
+</div>
+
+
+
+
+# Add p-values and statistical details
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+If you want to add p-values to the table, you **have to** add `by=variable_name` in the `tbl_summary()` function. This happens because p-values are used to compare things between them.
+
+The variable in the `by` argument will be used to **split the dataset** into multiple sub-samples (2 if it's dichotomous, 3 if there are 3 distinct labels in the variable, etc). Those samples will be **compared** for each column in the dataset, and the test done depends on the type of data.
+
+In this case, we add:
+- `add_p()` to create a new column for p-values
+- `add_overall()` to add a new column for descriptive statistics for the whole sample
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtsummary)
+
+# create dataset
+data("Titanic")
+df = as.data.frame(Titanic)
+
+# create the table
+df %>%
+  tbl_summary(by=Survived) %>%
+  add_overall() %>%
+  add_p() #%>%
+  #add_stat_label()
+```
+</div>
+</div>
+
+
+
+# Add a column based on a custom function 
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+Thanks to the `add_stat()` function, we can create new column based on our own functions.
+
+Below, we define an **anova** function that returns the p-values of an **ANOVA** and pass it to the `add_stat()` function.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtsummary)
+
+# create dataset
+data("iris")
+df = as.data.frame(iris)
+
+my_anova = function(data, variable, by, ...) {
+  result = aov(as.formula(paste(variable, "~", by)), data = data)
+  summary(result)[[1]]$'Pr(>F)'[1] # Extracting the p-value for the group effect
+}
+
+# create the table
+df %>%
+  tbl_summary(by=Species) %>%
+  add_overall() %>%
+  add_p() %>%
+  add_stat(fns = everything() ~ my_anova) %>%
+  modify_header(
+    list(
+      add_stat_1 ~ "**p-value**",
+      all_stat_cols() ~ "**{level}**"
+    )
+  ) %>%
+  modify_footnote(
+    add_stat_1 ~ "ANOVA")
+```
+</div>
+</div>
+
+
+
+
+
+# Conclusion
+
+This post explained how to create summary table using the [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) library. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/gtsummary.html) or the [table section](https://r-graph-gallery.com/table.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```
