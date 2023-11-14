@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Create interactive table with
+<strong>reactable</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+interactive tables with the reactable package in R. It provides a set of
+reproducible examples and explanations for each feature." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Create interactive table with
+<strong>reactable</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create interactive tables with the reactable package in R. It provides a
+set of reproducible examples and explanations for each feature." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Create interactive table with
+<strong>reactable</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>reactable</code> package in R is
+designed to simplify the process of <strong>creating interactive
+tables</strong>.<br/>This post showcases the <strong>key
+features</strong> of <code>reactable</code> and provides a set of
+<strong>table examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/glin/reactable"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/reactable.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{reactable}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>reactable</code> package in R is a powerful and flexible
+tool for creating <strong>interactive and customizable</strong> tables
+in web applications and R Shiny dashboards.</p>
+<p>It mainly provides one function: <code>reactable()</code> allowing to
+create a table from a data frame.</p>
+<p>✍️ <strong>author</strong> → Greg Lin</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://glin.github.io/reactable/index.html">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+<p>This is how a default <code>reactable</code> table looks like:</p>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c1bc63161b4ad3e3bfd6" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c1bc63161b4ad3e3bfd6">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["Mazda RX4","Mazda RX4 Wag","Datsun 710","Hornet 4 Drive","Hornet Sportabout","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Merc 450SE","Merc 450SL","Merc 450SLC","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Fiat 128","Honda Civic","Toyota Corolla","Toyota Corona","Dodge Challenger","AMC Javelin","Camaro Z28","Pontiac Firebird","Fiat X1-9","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],"mpg":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"cyl":[6,6,4,6,8,6,8,4,4,6,6,8,8,8,8,8,8,4,4,4,4,8,8,8,8,4,4,4,8,6,8,4],"disp":[160,160,108,258,360,225,360,146.7,140.8,167.6,167.6,275.8,275.8,275.8,472,460,440,78.7,75.7,71.1,120.1,318,304,350,400,79,120.3,95.1,351,145,301,121],"hp":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"drat":[3.9,3.9,3.85,3.08,3.15,2.76,3.21,3.69,3.92,3.92,3.92,3.07,3.07,3.07,2.93,3,3.23,4.08,4.93,4.22,3.7,2.76,3.15,3.73,3.08,4.08,4.43,3.77,4.22,3.62,3.54,4.11],"wt":[2.62,2.875,2.32,3.215,3.44,3.46,3.57,3.19,3.15,3.44,3.44,4.07,3.73,3.78,5.25,5.424,5.345,2.2,1.615,1.835,2.465,3.52,3.435,3.84,3.845,1.935,2.14,1.513,3.17,2.77,3.57,2.78],"qsec":[16.46,17.02,18.61,19.44,17.02,20.22,15.84,20,22.9,18.3,18.9,17.4,17.6,18,17.98,17.82,17.42,19.47,18.52,19.9,20.01,16.87,17.3,15.41,17.05,18.9,16.7,16.9,14.5,15.5,14.6,18.6],"vs":[0,0,1,1,0,1,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,0,1,0,0,0,1],"am":[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1],"gear":[4,4,4,3,3,3,3,4,4,4,4,3,3,3,3,3,3,4,4,4,3,3,3,3,3,4,5,5,5,5,5,4],"carb":[4,4,1,1,2,1,4,2,2,4,4,3,3,3,4,4,4,1,2,1,1,2,2,4,2,1,2,2,4,6,8,2]},"columns":[{"id":".rownames","name":"","type":"character","sortable":false,"filterable":false,"rowHeader":true},{"id":"mpg","name":"mpg","type":"numeric"},{"id":"cyl","name":"cyl","type":"numeric"},{"id":"disp","name":"disp","type":"numeric"},{"id":"hp","name":"hp","type":"numeric"},{"id":"drat","name":"drat","type":"numeric"},{"id":"wt","name":"wt","type":"numeric"},{"id":"qsec","name":"qsec","type":"numeric"},{"id":"vs","name":"vs","type":"numeric"},{"id":"am","name":"am","type":"numeric"},{"id":"gear","name":"gear","type":"numeric"},{"id":"carb","name":"carb","type":"numeric"}],"dataKey":"5b3b1b9433e88dd26cbc4c3644e92607"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<center>
+<iframe src="../HtmlWidget/reactable0.html" height="700" width="100%" style="border:none;">
+</iframe>
+</center>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>reactable</code>, you can install it
+directly from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;reactable&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>reactable</code> package provides one main function:
+<code>reactable()</code>. It takes a data frame as input and returns an
+interactive table.</p>
+<p>This is how the table above was produced:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">reactable</span>(mtcars,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">defaultColDef =</span> <span class="fu">colDef</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">minWidth =</span> <span class="dv">100</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">width =</span> <span class="dv">150</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">list</span>(<span class="at">padding =</span> <span class="st">&quot;0 10px&quot;</span>), <span class="at">html =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  )</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># table</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># library(htmltools)</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co"># saveWidget(table, file=&quot;../HtmlWidget/reactable1.html&quot;)</span></span></code></pre></div>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="searching" class="section level2">
+<h2>→ Searching</h2>
+<p>You can enable searching by setting the <code>searchable</code>
+argument to <code>TRUE</code>.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">reactable</span>(mtcars, <span class="at">searchable =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>table</span></code></pre></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-69bb7b8e7e9d13c43590" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-69bb7b8e7e9d13c43590">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["Mazda RX4","Mazda RX4 Wag","Datsun 710","Hornet 4 Drive","Hornet Sportabout","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Merc 450SE","Merc 450SL","Merc 450SLC","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Fiat 128","Honda Civic","Toyota Corolla","Toyota Corona","Dodge Challenger","AMC Javelin","Camaro Z28","Pontiac Firebird","Fiat X1-9","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],"mpg":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"cyl":[6,6,4,6,8,6,8,4,4,6,6,8,8,8,8,8,8,4,4,4,4,8,8,8,8,4,4,4,8,6,8,4],"disp":[160,160,108,258,360,225,360,146.7,140.8,167.6,167.6,275.8,275.8,275.8,472,460,440,78.7,75.7,71.1,120.1,318,304,350,400,79,120.3,95.1,351,145,301,121],"hp":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"drat":[3.9,3.9,3.85,3.08,3.15,2.76,3.21,3.69,3.92,3.92,3.92,3.07,3.07,3.07,2.93,3,3.23,4.08,4.93,4.22,3.7,2.76,3.15,3.73,3.08,4.08,4.43,3.77,4.22,3.62,3.54,4.11],"wt":[2.62,2.875,2.32,3.215,3.44,3.46,3.57,3.19,3.15,3.44,3.44,4.07,3.73,3.78,5.25,5.424,5.345,2.2,1.615,1.835,2.465,3.52,3.435,3.84,3.845,1.935,2.14,1.513,3.17,2.77,3.57,2.78],"qsec":[16.46,17.02,18.61,19.44,17.02,20.22,15.84,20,22.9,18.3,18.9,17.4,17.6,18,17.98,17.82,17.42,19.47,18.52,19.9,20.01,16.87,17.3,15.41,17.05,18.9,16.7,16.9,14.5,15.5,14.6,18.6],"vs":[0,0,1,1,0,1,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,0,1,0,0,0,1],"am":[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1],"gear":[4,4,4,3,3,3,3,4,4,4,4,3,3,3,3,3,3,4,4,4,3,3,3,3,3,4,5,5,5,5,5,4],"carb":[4,4,1,1,2,1,4,2,2,4,4,3,3,3,4,4,4,1,2,1,1,2,2,4,2,1,2,2,4,6,8,2]},"columns":[{"id":".rownames","name":"","type":"character","sortable":false,"filterable":false,"rowHeader":true},{"id":"mpg","name":"mpg","type":"numeric"},{"id":"cyl","name":"cyl","type":"numeric"},{"id":"disp","name":"disp","type":"numeric"},{"id":"hp","name":"hp","type":"numeric"},{"id":"drat","name":"drat","type":"numeric"},{"id":"wt","name":"wt","type":"numeric"},{"id":"qsec","name":"qsec","type":"numeric"},{"id":"vs","name":"vs","type":"numeric"},{"id":"am","name":"am","type":"numeric"},{"id":"gear","name":"gear","type":"numeric"},{"id":"carb","name":"carb","type":"numeric"}],"searchable":true,"dataKey":"5b3b1b9433e88dd26cbc4c3644e92607"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># library(htmltools)</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># saveWidget(table, file=&quot;../HtmlWidget/reactable2.html&quot;)</span></span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/reactable2.html" height="700" width="100%" style="border:none;">
+</iframe>
+</center>
+</div>
+<div id="filtering" class="section level2">
+<h2>→ Filtering</h2>
+<p>You can enable filtering by setting the <code>filterable</code>
+argument to <code>TRUE</code>.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">reactable</span>(mtcars, <span class="at">filterable =</span> <span class="cn">TRUE</span>, <span class="at">minRows =</span> <span class="dv">10</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>table</span></code></pre></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c5653cbc7f7a7f13cb0c" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c5653cbc7f7a7f13cb0c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["Mazda RX4","Mazda RX4 Wag","Datsun 710","Hornet 4 Drive","Hornet Sportabout","Valiant","Duster 360","Merc 240D","Merc 230","Merc 280","Merc 280C","Merc 450SE","Merc 450SL","Merc 450SLC","Cadillac Fleetwood","Lincoln Continental","Chrysler Imperial","Fiat 128","Honda Civic","Toyota Corolla","Toyota Corona","Dodge Challenger","AMC Javelin","Camaro Z28","Pontiac Firebird","Fiat X1-9","Porsche 914-2","Lotus Europa","Ford Pantera L","Ferrari Dino","Maserati Bora","Volvo 142E"],"mpg":[21,21,22.8,21.4,18.7,18.1,14.3,24.4,22.8,19.2,17.8,16.4,17.3,15.2,10.4,10.4,14.7,32.4,30.4,33.9,21.5,15.5,15.2,13.3,19.2,27.3,26,30.4,15.8,19.7,15,21.4],"cyl":[6,6,4,6,8,6,8,4,4,6,6,8,8,8,8,8,8,4,4,4,4,8,8,8,8,4,4,4,8,6,8,4],"disp":[160,160,108,258,360,225,360,146.7,140.8,167.6,167.6,275.8,275.8,275.8,472,460,440,78.7,75.7,71.1,120.1,318,304,350,400,79,120.3,95.1,351,145,301,121],"hp":[110,110,93,110,175,105,245,62,95,123,123,180,180,180,205,215,230,66,52,65,97,150,150,245,175,66,91,113,264,175,335,109],"drat":[3.9,3.9,3.85,3.08,3.15,2.76,3.21,3.69,3.92,3.92,3.92,3.07,3.07,3.07,2.93,3,3.23,4.08,4.93,4.22,3.7,2.76,3.15,3.73,3.08,4.08,4.43,3.77,4.22,3.62,3.54,4.11],"wt":[2.62,2.875,2.32,3.215,3.44,3.46,3.57,3.19,3.15,3.44,3.44,4.07,3.73,3.78,5.25,5.424,5.345,2.2,1.615,1.835,2.465,3.52,3.435,3.84,3.845,1.935,2.14,1.513,3.17,2.77,3.57,2.78],"qsec":[16.46,17.02,18.61,19.44,17.02,20.22,15.84,20,22.9,18.3,18.9,17.4,17.6,18,17.98,17.82,17.42,19.47,18.52,19.9,20.01,16.87,17.3,15.41,17.05,18.9,16.7,16.9,14.5,15.5,14.6,18.6],"vs":[0,0,1,1,0,1,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,0,1,0,0,0,1],"am":[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1],"gear":[4,4,4,3,3,3,3,4,4,4,4,3,3,3,3,3,3,4,4,4,3,3,3,3,3,4,5,5,5,5,5,4],"carb":[4,4,1,1,2,1,4,2,2,4,4,3,3,3,4,4,4,1,2,1,1,2,2,4,2,1,2,2,4,6,8,2]},"columns":[{"id":".rownames","name":"","type":"character","sortable":false,"filterable":false,"rowHeader":true},{"id":"mpg","name":"mpg","type":"numeric"},{"id":"cyl","name":"cyl","type":"numeric"},{"id":"disp","name":"disp","type":"numeric"},{"id":"hp","name":"hp","type":"numeric"},{"id":"drat","name":"drat","type":"numeric"},{"id":"wt","name":"wt","type":"numeric"},{"id":"qsec","name":"qsec","type":"numeric"},{"id":"vs","name":"vs","type":"numeric"},{"id":"am","name":"am","type":"numeric"},{"id":"gear","name":"gear","type":"numeric"},{"id":"carb","name":"carb","type":"numeric"}],"filterable":true,"minRows":10,"dataKey":"5b3b1b9433e88dd26cbc4c3644e92607"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co"># library(htmltools)</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># saveWidget(table, file=&quot;../HtmlWidget/reactable3.html&quot;)</span></span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/reactable3.html" height="700" width="100%" style="border:none;">
+</iframe>
+</center>
+</div>
+<div id="grouping-and-aggregating" class="section level2">
+<h2>→ Grouping and Aggregating</h2>
+<p>You can enable <strong>grouping and aggregating</strong> by setting
+the <code>groupBy</code> argument to the name of a column and by adding
+the <code>aggregate</code> argument in each column definition.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">reactable</span>(iris,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="at">groupBy =</span> <span class="st">&quot;Species&quot;</span>, <span class="co"># Group by the Species column</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">list</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">Sepal.Length =</span> <span class="fu">colDef</span>(<span class="at">aggregate =</span> <span class="st">&quot;max&quot;</span>), <span class="co"># max value</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">Sepal.Width =</span> <span class="fu">colDef</span>(<span class="at">aggregate =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">format =</span> <span class="fu">colFormat</span>(<span class="at">digits =</span> <span class="dv">1</span>)), <span class="co"># mean value</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">Petal.Length =</span> <span class="fu">colDef</span>(<span class="at">aggregate =</span> <span class="st">&quot;unique&quot;</span>), <span class="co"># unique values</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">Petal.Width =</span> <span class="fu">colDef</span>(<span class="at">aggregate =</span> <span class="st">&quot;min&quot;</span>) <span class="co"># min value</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  )</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>table</span></code></pre></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d42c3aa785790def2753" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d42c3aa785790def2753">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Sepal.Length":[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9,5.4,4.8,4.8,4.3,5.8,5.7,5.4,5.1,5.7,5.1,5.4,5.1,4.6,5.1,4.8,5,5,5.2,5.2,4.7,4.8,5.4,5.2,5.5,4.9,5,5.5,4.9,4.4,5.1,5,4.5,4.4,5,5.1,4.8,5.1,4.6,5.3,5,7,6.4,6.9,5.5,6.5,5.7,6.3,4.9,6.6,5.2,5,5.9,6,6.1,5.6,6.7,5.6,5.8,6.2,5.6,5.9,6.1,6.3,6.1,6.4,6.6,6.8,6.7,6,5.7,5.5,5.5,5.8,6,5.4,6,6.7,6.3,5.6,5.5,5.5,6.1,5.8,5,5.6,5.7,5.7,6.2,5.1,5.7,6.3,5.8,7.1,6.3,6.5,7.6,4.9,7.3,6.7,7.2,6.5,6.4,6.8,5.7,5.8,6.4,6.5,7.7,7.7,6,6.9,5.6,7.7,6.3,6.7,7.2,6.2,6.1,6.4,7.2,7.4,7.9,6.4,6.3,6.1,7.7,6.3,6.4,6,6.9,6.7,6.9,5.8,6.8,6.7,6.7,6.3,6.5,6.2,5.9],"Sepal.Width":[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1,3.7,3.4,3,3,4,4.4,3.9,3.5,3.8,3.8,3.4,3.7,3.6,3.3,3.4,3,3.4,3.5,3.4,3.2,3.1,3.4,4.1,4.2,3.1,3.2,3.5,3.6,3,3.4,3.5,2.3,3.2,3.5,3.8,3,3.8,3.2,3.7,3.3,3.2,3.2,3.1,2.3,2.8,2.8,3.3,2.4,2.9,2.7,2,3,2.2,2.9,2.9,3.1,3,2.7,2.2,2.5,3.2,2.8,2.5,2.8,2.9,3,2.8,3,2.9,2.6,2.4,2.4,2.7,2.7,3,3.4,3.1,2.3,3,2.5,2.6,3,2.6,2.3,2.7,3,2.9,2.9,2.5,2.8,3.3,2.7,3,2.9,3,3,2.5,2.9,2.5,3.6,3.2,2.7,3,2.5,2.8,3.2,3,3.8,2.6,2.2,3.2,2.8,2.8,2.7,3.3,3.2,2.8,3,2.8,3,2.8,3.8,2.8,2.8,2.6,3,3.4,3.1,3,3.1,3.1,3.1,2.7,3.2,3.3,3,2.5,3,3.4,3],"Petal.Length":[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5,1.5,1.6,1.4,1.1,1.2,1.5,1.3,1.4,1.7,1.5,1.7,1.5,1,1.7,1.9,1.6,1.6,1.5,1.4,1.6,1.6,1.5,1.5,1.4,1.5,1.2,1.3,1.4,1.3,1.5,1.3,1.3,1.3,1.6,1.9,1.4,1.6,1.4,1.5,1.4,4.7,4.5,4.9,4,4.6,4.5,4.7,3.3,4.6,3.9,3.5,4.2,4,4.7,3.6,4.4,4.5,4.1,4.5,3.9,4.8,4,4.9,4.7,4.3,4.4,4.8,5,4.5,3.5,3.8,3.7,3.9,5.1,4.5,4.5,4.7,4.4,4.1,4,4.4,4.6,4,3.3,4.2,4.2,4.2,4.3,3,4.1,6,5.1,5.9,5.6,5.8,6.6,4.5,6.3,5.8,6.1,5.1,5.3,5.5,5,5.1,5.3,5.5,6.7,6.9,5,5.7,4.9,6.7,4.9,5.7,6,4.8,4.9,5.6,5.8,6.1,6.4,5.6,5.1,5.6,6.1,5.6,5.5,4.8,5.4,5.6,5.1,5.1,5.9,5.7,5.2,5,5.2,5.4,5.1],"Petal.Width":[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1,0.2,0.2,0.1,0.1,0.2,0.4,0.4,0.3,0.3,0.3,0.2,0.4,0.2,0.5,0.2,0.2,0.4,0.2,0.2,0.2,0.2,0.4,0.1,0.2,0.2,0.2,0.2,0.1,0.2,0.2,0.3,0.3,0.2,0.6,0.4,0.3,0.2,0.2,0.2,0.2,1.4,1.5,1.5,1.3,1.5,1.3,1.6,1,1.3,1.4,1,1.5,1,1.4,1.3,1.4,1.5,1,1.5,1.1,1.8,1.3,1.5,1.2,1.3,1.4,1.4,1.7,1.5,1,1.1,1,1.2,1.6,1.5,1.6,1.5,1.3,1.3,1.3,1.2,1.4,1.2,1,1.3,1.2,1.3,1.3,1.1,1.3,2.5,1.9,2.1,1.8,2.2,2.1,1.7,1.8,1.8,2.5,2,1.9,2.1,2,2.4,2.3,1.8,2.2,2.3,1.5,2.3,2,2,1.8,2.1,1.8,1.8,1.8,2.1,1.6,1.9,2,2.2,1.5,1.4,2.3,2.4,1.8,1.8,2.1,2.4,2.3,1.9,2.3,2.5,2.3,1.9,2,2.3,1.8],"Species":["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","versicolor","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica","virginica"]},"columns":[{"id":"Sepal.Length","name":"Sepal.Length","type":"numeric","aggregate":"max"},{"id":"Sepal.Width","name":"Sepal.Width","type":"numeric","aggregate":"mean","format":{"cell":{"digits":1},"aggregated":{"digits":1}}},{"id":"Petal.Length","name":"Petal.Length","type":"numeric","aggregate":"unique"},{"id":"Petal.Width","name":"Petal.Width","type":"numeric","aggregate":"min"},{"id":"Species","name":"Species","type":"factor"}],"groupBy":["Species"],"dataKey":"c81947451ade206877bf1b0b5ce82e02"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># library(htmltools)</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># saveWidget(table, file=&quot;../HtmlWidget/reactable4.html&quot;)</span></span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/reactable4.html" height="700" width="100%" style="border:none;">
+</iframe>
+</center>
+</div>
+<div id="theming" class="section level2">
+<h2>→ Theming</h2>
+<p>You can customize the appearance of the table by setting the
+<code>theme</code> argument to a <code>reactableTheme</code> object. You
+can also use the <code>striped</code> or <code>highlight</code>
+arguments to <strong>add stripes</strong> or <strong>highlight</strong>
+the hovered row.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>table <span class="ot">&lt;-</span> <span class="fu">reactable</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>, ],</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">striped =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">highlight =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">reactableTheme</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="at">borderColor =</span> <span class="st">&quot;#dfe2e5&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="at">stripedColor =</span> <span class="st">&quot;#f6f8fa&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">highlightColor =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">cellPadding =</span> <span class="st">&quot;8px 12px&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="at">style =</span> <span class="fu">list</span>(<span class="at">fontFamily =</span> <span class="st">&quot;-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif&quot;</span>),</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">searchInputStyle =</span> <span class="fu">list</span>(<span class="at">width =</span> <span class="st">&quot;100%&quot;</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>  ))</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>table</span></code></pre></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4b634f4b0e741f9c35a1" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4b634f4b0e741f9c35a1">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Sepal.Length":[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9,5.4,4.8,4.8,4.3,5.8,5.7,5.4,5.1,5.7,5.1,5.4,5.1,4.6,5.1,4.8,5,5,5.2,5.2,4.7],"Sepal.Width":[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1,3.7,3.4,3,3,4,4.4,3.9,3.5,3.8,3.8,3.4,3.7,3.6,3.3,3.4,3,3.4,3.5,3.4,3.2],"Petal.Length":[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5,1.5,1.6,1.4,1.1,1.2,1.5,1.3,1.4,1.7,1.5,1.7,1.5,1,1.7,1.9,1.6,1.6,1.5,1.4,1.6],"Petal.Width":[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1,0.2,0.2,0.1,0.1,0.2,0.4,0.4,0.3,0.3,0.3,0.2,0.4,0.2,0.5,0.2,0.2,0.4,0.2,0.2,0.2],"Species":["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]},"columns":[{"id":"Sepal.Length","name":"Sepal.Length","type":"numeric"},{"id":"Sepal.Width","name":"Sepal.Width","type":"numeric"},{"id":"Petal.Length","name":"Petal.Length","type":"numeric"},{"id":"Petal.Width","name":"Petal.Width","type":"numeric"},{"id":"Species","name":"Species","type":"factor"}],"highlight":true,"striped":true,"theme":{"borderColor":"#dfe2e5","stripedColor":"#f6f8fa","highlightColor":"red","cellPadding":"8px 12px","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"},"searchInputStyle":{"width":"100%"}},"dataKey":"17a57cee4a0d0f3e43fc51c028070b99"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># save widget</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co"># library(htmltools)</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co"># saveWidget(table, file=&quot;../HtmlWidget/reactable5.html&quot;)</span></span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/reactable5.html" height="700" width="100%" style="border:none;">
+</iframe>
+</center>
+</div>
+</div>
+<div id="gallery-of-reactable-examples" class="section level1">
+<h1>Gallery of reactable examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class='portfolio-item col-sm-6 col-md-6'>
+<a class=portfolio-link href=../350-introduction-to-reactable.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Custom colors with table rows with reactable
+<hr>
+<p class=explanation_portfolio>
+How to customize the colors of rows, borders and when mouse is over
+</div>
+</div>
+<img alt='Custom colors with table rows with reactable'class='img-fluid imgOfPortfolio'src=../img/graph/350-introduction-to-reactable-2.png></a>
+</div>
+<div class='portfolio-item col-sm-8 col-md-5'>
+<a class=portfolio-link href=../351-column-formatting-in-reactable.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Columns formatting
+<hr>
+<p class=explanation_portfolio>
+How to format columns with reactable
+</div>
+</div>
+<img alt='Column formatting'class='img-fluid imgOfPortfolio'src=../img/graph/351-column-formatting-in-reactable.png></a>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>

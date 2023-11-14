@@ -1,0 +1,205 @@
+---
+title: "Create interactive table with **reactable**"
+logo: "reactable"
+descriptionMeta: "This post explains how to create interactive tables with the reactable package in R. It provides a set of reproducible examples and explanations for each feature."
+descriptionTop: "The `reactable` package in R is designed to simplify the process of **creating interactive tables**.<br/>This post showcases the **key features** of `reactable` and provides a set of **table examples** using the package."
+documentationLink: "github.com/glin/reactable"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `reactable` package in R is a powerful and flexible tool for creating **interactive and customizable** tables in web applications and R Shiny dashboards.
+
+It mainly provides one function: `reactable()` allowing to create a table from a data frame.
+
+✍️ **author** &rarr; Greg Lin
+
+📘 **documentation** &rarr; [github](https://glin.github.io/reactable/index.html)
+
+⭐️ *more than 500 stars on github*
+
+This is how a default `reactable` table looks like:
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library("reactable")
+
+# Create the table
+table <- reactable(mtcars)
+table 
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable0.html")
+```
+
+<center><iframe src="../HtmlWidget/reactable0.html" height="700" width="100%" style="border:none;"></iframe></center>
+
+
+
+
+
+# Installation
+***
+To get started with `reactable`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("reactable")
+```
+
+
+
+
+# Basic usage 
+***
+
+The `reactable` package provides one main function: `reactable()`. It takes a data frame as input and returns an interactive table.
+
+This is how the table above was produced:
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+table <- reactable(mtcars,
+  defaultColDef = colDef(
+    minWidth = 100,
+    width = 150,
+    style = list(padding = "0 10px"), html = TRUE
+  )
+)
+# table
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable1.html")
+```
+
+
+
+# Key features
+***
+
+## &rarr; Searching
+You can enable searching by setting the `searchable` argument to `TRUE`.
+
+Example:
+
+```{r}
+table <- reactable(mtcars, searchable = TRUE)
+table
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable2.html")
+```
+
+
+<center><iframe src="../HtmlWidget/reactable2.html" height="700" width="100%" style="border:none;"></iframe></center>
+
+
+
+
+## &rarr; Filtering
+
+You can enable filtering by setting the `filterable` argument to `TRUE`.
+
+Example:
+
+```{r}
+table <- reactable(mtcars, filterable = TRUE, minRows = 10)
+table
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable3.html")
+```
+
+
+<center><iframe src="../HtmlWidget/reactable3.html" height="700" width="100%" style="border:none;"></iframe></center>
+
+
+
+
+## &rarr; Grouping and Aggregating
+
+You can enable **grouping and aggregating** by setting the `groupBy` argument to the name of a column and by adding the `aggregate` argument in each column definition.
+
+Example:
+
+```{r}
+table <- reactable(iris,
+  groupBy = "Species", # Group by the Species column
+  columns = list(
+    Sepal.Length = colDef(aggregate = "max"), # max value
+    Sepal.Width = colDef(aggregate = "mean", format = colFormat(digits = 1)), # mean value
+    Petal.Length = colDef(aggregate = "unique"), # unique values
+    Petal.Width = colDef(aggregate = "min") # min value
+  )
+)
+table
+
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable4.html")
+```
+
+
+<center><iframe src="../HtmlWidget/reactable4.html" height="700" width="100%" style="border:none;"></iframe></center>
+
+
+
+
+
+## &rarr; Theming
+
+You can customize the appearance of the table by setting the `theme` argument to a `reactableTheme` object. You can also use the `striped` or `highlight` arguments to **add stripes** or **highlight** the hovered row.
+
+Example:
+
+```{r}
+table <- reactable(
+  iris[1:30, ],
+  striped = TRUE,
+  highlight = TRUE,
+  theme = reactableTheme(
+    borderColor = "#dfe2e5",
+    stripedColor = "#f6f8fa",
+    highlightColor = "red",
+    cellPadding = "8px 12px",
+    style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+    searchInputStyle = list(width = "100%")
+  ))
+table
+
+# save widget
+# library(htmltools)
+# saveWidget(table, file="../HtmlWidget/reactable5.html")
+```
+
+
+<center><iframe src="../HtmlWidget/reactable5.html" height="700" width="100%" style="border:none;"></iframe></center>
+
+
+
+
+
+# Gallery of reactable examples
+***
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class='portfolio-item col-sm-6 col-md-6'><a class=portfolio-link href=../350-introduction-to-reactable.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Custom colors with table rows with reactable<hr><p class=explanation_portfolio>How to customize the colors of rows, borders and when mouse is over</div></div><img alt='Custom colors with table rows with reactable'class='img-fluid imgOfPortfolio'src=../img/graph/350-introduction-to-reactable-2.png></a></div><div class='portfolio-item col-sm-8 col-md-5'><a class=portfolio-link href=../351-column-formatting-in-reactable.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Columns formatting<hr><p class=explanation_portfolio>How to format columns with reactable</div></div><img alt='Column formatting'class='img-fluid imgOfPortfolio'src=../img/graph/351-column-formatting-in-reactable.png></a></div></div></div></section>
+
+<!-- Close container -->
+</div>
