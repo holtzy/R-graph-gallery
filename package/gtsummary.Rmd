@@ -1,0 +1,185 @@
+---
+title: "Create summary and presentation ready tables with **gtsummary**"
+logo: "gtsummary"
+descriptionMeta: "This post explains how to use the gtsummary package for creating table summary, especially with descriptive statistics, regression models, medical values or demographics data. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to use the `gtsummary` package for creating table summary, especially with descriptive statistics, regression models, medical values or demographics data.<br/>This post showcases the **key features** of `gtsummary` and provides a set of **table examples** using the package."
+documentationLink: "github.com/ddsjoberg/gtsummary"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `gtsummary` package in R is made for creating tables that summarize information, statistics or more in a given dataset. You can use it in combination of the pipe `%>%` symbol for easy-to-read code **and** publication-ready tables! 
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+The main function is `tbl_summary()` that becomes very powerful when combined with other functions available. If you're working a regression problem, you have the `tbl_regression()` function. If you need to merge some tables, you have `tbl_merge()`. Those are just examples of things you can do!
+
+✍️ **author** &rarr; Daniel D. Sjoberg
+
+📘 **documentation** &rarr; [github](https://github.com/ddsjoberg/gtsummary)
+
+⭐️ *more than 800 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(gtsummary)
+
+# Create a simple dataset
+set.seed(123) # for reproducible example
+sample_data <- data.frame(
+  age = round(rnorm(100, mean = 50, sd = 10)), 
+  sex = sample(c("Male", "Female"), 100, replace = TRUE), 
+  bmi = rnorm(100, mean = 25, sd = 5),
+  treatment = sample(c("Placebo", "Drug"), 100, replace = TRUE)
+)
+
+# Use gtsummary to create a table
+tbl_summary(
+  data = sample_data,
+  by = treatment, # split table by treatment group
+  type = all_continuous() ~ "continuous2", # set variable type
+  missing = "no" # exclude missing data
+) %>%
+  add_difference()
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `gtsummary`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("gtsummary")
+```
+
+# Basic usage 
+***
+
+The `gtsummary` package lets you automatically **summarize** information about your dataset. In the following case, we use the `tbl_summary()` function to obtain the main information on the iris dataset. The package **detects the variable type** and generates the appropriate summary type.
+
+```{r}
+data(iris)
+library(gtsummary)
+
+iris %>%
+  tbl_summary()
+```
+
+
+
+# Key features
+***
+
+## &rarr; Regression model results
+With the `tbl_regression()` function, we can super easily display the statistical results of a regression model.
+
+Example with a logistic regression on the Titanic dataset:
+
+```{r}
+# load dataset
+data(Titanic)
+df = as.data.frame(Titanic)
+
+# load library
+library(gtsummary)
+
+# create the model
+model = glm(Survived ~ Age + Class + Sex + Freq, family=binomial, data=df)
+
+# generate table 
+model %>%
+  tbl_regression() %>% # regression summary function
+  add_global_p() %>% # add p-values
+  bold_labels() %>% # make label in bold
+  italicize_levels() # make categories in label in italic
+```
+
+
+
+## &rarr; Summarize table
+As its name suggests it, the `gtsummary` package makes very easy to generate summary of your dataset. In practice, it uses the `tbl_summary()` function to compute **descriptive statistics** for every column in your dataset depending to the type of variable.
+
+What's even better is that you can add **inferential statistics** (like *p-values*) to these tables to make them even more informative!
+
+Example:
+
+```{r}
+# load dataset and filter to keep just a few columns
+data(mtcars) 
+mtcars = mtcars %>%
+  select(vs, mpg, drat, hp, gear)
+
+# load package
+library(gtsummary)
+
+# create summary table
+mtcars %>%
+  tbl_summary(
+    by=vs, # group by the `vs` variable (dichotomous: 0 or 1)
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})", # will display: mean (standard deviation)
+      all_categorical() ~ "{n} / {N} ({p}%)" # will display: n / N (percentage)
+    )
+  ) %>%
+  add_overall() %>% # statistics for all observations
+  add_p() %>% # add p-values
+  bold_labels() %>% # make label in bold
+  italicize_levels() # make categories in label in italic
+```
+
+## &rarr; Custom style of the table
+The package has a whole set of functions that can be used to **custom what your table looks like**. You can even call functions from others packages such as [gt](https://r-graph-gallery.com/package/gt.html)
+
+Example:
+
+```{r}
+data(iris)
+library(gtsummary)
+library(gt)
+
+iris %>%
+  tbl_summary(by=Species) %>%
+  add_overall() %>% # info ignoring the `by` argument
+  add_n() %>% # number of observations
+  modify_header(label ~ "**Variables from the dataset**") %>% # title of the variables
+  modify_spanning_header(c("stat_0", "stat_1", "stat_2", "stat_3") ~ "*Descriptive statistics of the iris flowers*, grouped by Species") %>%
+  as_gt() %>%
+  gt::tab_source_note(gt::md("*The iris dataset is probably the **most famous** dataset in the world*"))
+```
+
+
+
+
+# Gallery of gtsummary examples
+***
+
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class='portfolio-item col-sm-6 col-md-6'><a class=portfolio-link href=../367-automate-data-summary-table-with-gtsummary.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Summary table<p class=explanation_portfolio>Create summary table with both descriptive and inferential statistics, and even add your own custom functions!</div></div><img alt='Summary table'class='img-fluid imgOfPortfolio'src=../img/graph/367-automate-data-summary-table-with-gtsummary.png></a></div><div class='portfolio-item col-sm-6 col-md-6'><a class=portfolio-link href=../366-regression-models-with-gtsummary.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Regression results<p class=explanation_portfolio>Automatically display all results from your regression</div></div><img alt='Regression results'class='img-fluid imgOfPortfolio'src=../img/graph/366-regression-models-with-gtsummary-1.png></a></div><div class='portfolio-item col-sm-6 col-md-10'><a class=portfolio-link href=../366-regression-models-with-gtsummary.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Compare model results<p class=explanation_portfolio>How to add results from 2 different models into one single summary table</div></div><img alt='Compare model results'class='img-fluid imgOfPortfolio'src=../img/graph/366-regression-models-with-gtsummary-2.png></a></div></div></div></section>
+
+
+
+
+
+
+
+<!-- Close container -->
+</div>
