@@ -1,0 +1,233 @@
+---
+title: "Plotting inside gt table with gtExtras"
+descriptionMeta: "This post use the gtExtras package to create table with plots inside cells such as density chart, line chart, barplot and even more."
+descriptionTop: "This post use the [gtExtras](https://r-graph-gallery.com/package/gtExtras.html) package to create table with plots inside cells such as density chart, line chart, barplot and even more. We'll go through several examples of how to aggregate and manipulate data for this purpose, as well as choosing the chart type with [gtExtras](https://r-graph-gallery.com/package/gtExtras.html)."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "368-plotting-in-cells-with-gtextras"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+# install.packages("gtExtras")
+library(gtExtras)
+```
+
+<br/>
+
+
+# Data format
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+If you want to put **charts in the cells** of a table, you necessarily need to **aggregate your data** at some point. This is because you can't really create any chart with a single value. 
+
+In this post, we'll work with the iris dataset. This dataset has 5 columns: 4 quantitative and 1 qualitative (Species, with 3 distinct labels). A simple way to aggregate these data is to **group by the Species column**. 
+
+It implies that we will have a new dataset with 3 rows and as much column. Now that we have `grouped by` the dataset, we need to use an **aggregation measure** for the quantitative columns. And because we want to create chart for those cols, the *aggregation* will be the list of all values for the given species.
+
+Here's how to do it:
+
+```{r}
+# load packages
+library(gt)
+library(gtExtras)
+library(dplyr)
+
+# load the dataset
+data(iris)
+
+# create aggregated dataset
+agg_iris = iris %>%
+  group_by(Species) %>%
+  summarize(
+    Sepal.L = list(Sepal.Length),
+    Sepal.W = list(Sepal.Width),
+    Petal.L = list(Petal.Length),
+    Petal.W = list(Petal.Width)
+    )
+
+# display the table with default output with gt package
+agg_iris %>%
+  gt()
+```
+
+
+
+
+# Line chart
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gt_plt_sparkline()` creates a line chart in table cells. It requires to add a line of code for each column you want to display. In our case, it means **one line of code for each column**.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtExtras)
+
+agg_iris %>%
+  gt() %>%
+  gt_plt_sparkline(Sepal.L) %>%
+  gt_plt_sparkline(Sepal.W) %>%
+  gt_plt_sparkline(Petal.L) %>%
+  gt_plt_sparkline(Petal.W)
+```
+</div>
+</div>
+
+
+
+# Distribution chart
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gt_plt_dist()` creates a distribution chart chart in table cells. The **type of chart** depend on the `type` argument, as in the example below. 
+
+Let's see what the available charts look like with this function:
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtExtras)
+
+agg_iris %>%
+  gt() %>%
+  gt_plt_dist(
+    Sepal.L,
+    type = "density" 
+  ) %>%
+  gt_plt_dist( 
+    Sepal.W,
+    type = "boxplot"
+  ) %>%
+  gt_plt_dist( 
+    Petal.L,
+    type = "histogram"
+  ) %>%
+  gt_plt_dist(
+    Petal.W,
+    type = "rug_strip"
+  )
+```
+</div>
+</div>
+
+
+
+
+# Bar chart
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gt_plt_bar_pct()` does not require aggregate data. The chart is actually a score bar that measures **how close** the value in the cell is to the maximum value in that column.
+
+This means that the highest value in the table has its bar full.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtExtras)
+
+head(iris) %>%
+  gt() %>%
+  gt_plt_bar_pct(
+    Sepal.Length,
+    labels = TRUE
+  ) %>%
+  gt_plt_bar_pct(
+    Sepal.Width,
+    labels=FALSE,
+    fill = "forestgreen"
+  )
+```
+</div>
+</div>
+
+
+
+# Summary chart
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `gt_plt_summary()` can, in just one single line of code, summarizes your entire dataset.
+
+If you have **correctly specify** the data type in your dataframe, it will **automatically aggregates** columns and display the right chart for them!
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(gtExtras)
+
+iris %>%
+  gt_plt_summary()
+```
+</div>
+</div>
+
+
+
+# Conclusion
+
+This post explained how to add various plots in table cells using the [gtExtras](https://r-graph-gallery.com/package/gtExtras.html) library. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/gtExtras.html) or the [table section](https://r-graph-gallery.com/table.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

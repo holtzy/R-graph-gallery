@@ -1,0 +1,361 @@
+---
+title: "Interactive table with inline labels, images and charts"
+descriptionMeta: "Interactive table made in R with reactable that has labels, images and charts."
+descriptionTop: "Interactive table made in `R` with [reactable](https://r-graph-gallery.com/package/reactable.html) that has **labels**, **images** and **charts**.<br> This blogpost guides you through the construction of this table made by [szymanskir](https://github.com/szymanskir)."
+sectionText: "Table section"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com.html"
+url: "web-interactive-table-with-inline-labels-images-and-charts"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message=FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+## About
+***
+
+This page showcases the work of [szymanskir](https://github.com/szymanskir) that 
+introduces packages to make [`ggplot2`](https://ggplot2.tidyverse.org/) plots 
+more beautiful. You can find the original code and where the data are from on [this repo](https://github.com/szymanskir/table-contest-2022/tree/main).
+
+
+## Load packages
+***
+
+Let's start by loading the packages needed to build the table:
+
+```{r}
+library(magrittr)
+library(reactable)
+library(htmlwidgets)
+library(htmltools)
+library(echarts4r)
+```
+
+<br>
+
+## Load and prepare the dataset
+***
+
+Today's data can be easily accessed on the github of the gallery by using the following code:
+
+```{r data}
+# REMOVE WHEN MERGING
+# url = 'https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/tidyverse-packages.RDS'
+# data_table <- readRDS(url)
+data_table <- readRDS("DATA/tidyverse-packages.RDS")
+```
+
+<br>
+
+## Create the table
+***
+
+The table mainly relies on the [reactable](https://r-graph-gallery.com/package/reactable.html) package and some cool `html/css/javascript` features.
+
+First, we need to define a few functions.
+
+- `create_history_download_chart()`: creates an interactive line chart using the `echarts4r` package, **displaying download history data**. It sets up the chart with customized dimensions, hides the legend and y-axis, and includes a tooltip feature that shows formatted information about the downloads **when the user hovers** over the chart points.
+
+```{r }
+create_history_download_chart <- function(downloads_data) {
+  echarts4r::e_chart(downloads_data, x = start, height = "80px", width = "256px") %>% 
+    echarts4r::e_line(downloads, symbol = "none") %>% 
+    echarts4r::e_legend(show = FALSE) %>% 
+    echarts4r::e_axis(axis = "y", show = FALSE) %>% 
+    echarts4r::e_tooltip(
+      trigger = "axis",
+      
+      # Creates custom tooltip content
+      formatter = htmlwidgets::JS("
+        function(params) {
+          const downloadsDate = params[0].value[0];
+          const downloadsDateLabel = new Date(downloadsDate).
+            toLocaleString('en-Us', { month: 'short', year: 'numeric' });
+          
+          const downloadsCount = params[0].value[1];
+          const downloadsCountLabel = echarts.format.addCommas(params[0].value[1]);
+          return `
+            ${downloadsDateLabel}
+            <br/>
+            ${downloadsCountLabel}
+          `;
+        }
+      ")
+    ) %>% 
+    # Prevents the plot toolitp from being hidden in case
+    # it goes over the table boundaries
+    htmlwidgets::onRender(
+      htmlwidgets::JS("
+        function(el, x) {
+          el.parentElement.style.overflow = 'visible';
+        }
+      ")
+    )
+}
+```
+
+- `number_value_icon_cell()`: creates a cell for a web page that contains an icon and a number. It uses `HTML` and `CSS` to position the icon (defined by the icon argument) to the left of the number (defined by the value argument), ensuring the **icon is neatly aligned and sized correctly**.
+
+```{r }
+number_value_icon_cell <- function(value, icon) {
+  htmltools::div(
+    style = "
+      display: flex;
+      justify-content: flex-end
+    ",
+    htmltools::img(
+      src = knitr::image_uri(icon),
+      height = "24px",
+      width = "24px",
+      style = "
+        vertical-align: bottom;
+        margin-right: 4px;
+      "
+    ),
+    value
+  )
+}
+```
+
+`create_table()`:
+
+- **Table Creation**: The function takes a dataset (all_data) and creates an interactive table using reactable::reactable. This table will display various information about software packages.
+
+- **Column Customization**:
+  - hex_sticker: A custom column to display package hex stickers (logos), names, and descriptions. It uses HTML and CSS for styling and layout.
+  - repo_url, package_name, description: These columns are part of the dataset but are hidden from the table view.
+  - stargazers, watchers, tags: These columns show numerical data (like GitHub stars, watchers, and tags), each accompanied by an icon.
+  - download_stats: Displays monthly download statistics, likely in a chart format.
+  - top_5_contributors: Shows avatars of the top five contributors to the package repository.
+
+- **Styling and Layout**: The table uses custom styling for headers and cells, including center alignment, font customization, and layout adjustments. It employs CSS for additional effects like hover transitions on contributor avatars and links.
+Additional Features:
+
+- Custom CSS styles are included to enhance interactivity, like hover effects on contributor avatars and repository URLs.
+
+```{r }
+create_table <- function(all_data) {
+  table <- reactable::reactable(
+    all_data,
+    defaultColDef = reactable::colDef(
+      headerStyle = "text-align: center"
+    ),
+    columns = list(
+      hex_sticker = reactable::colDef(
+        name = "",
+        cell = function(value, row_index) {
+          row_data <- all_data[row_index, ]
+          
+          # Display Hex along with title and
+          # repository description
+          htmltools::div(
+            style = "
+              display: flex; 
+              align-items: center; 
+            ",
+            htmltools::div(
+              htmltools::img(
+                src = value,
+                alt = glue::glue("Hex sticker of {row_data$package_name}"),
+                height = "80px"
+              )
+            ),
+            htmltools::div(
+              style = "
+                margin-left: 24px
+              ",
+              htmltools::div(
+                style = "
+                  font-weight: 700;
+                ",
+                htmltools::a(
+                  style = "
+                    color: #38577f;
+                  ",
+                  class = "package_repo_url",
+                  href = row_data$repo_url,
+                  target = "_blank",
+                  row_data$package_name
+                ),
+              ),
+              htmltools::div(
+                style = "
+                  font-size: 14px;
+                  font-style: italic;
+                  color: hsl(201, 23%, 34%);
+                  line-height: 20px
+                ",
+                row_data$description
+              )
+            )
+          )
+        },
+        width = 384
+      ),
+      
+      # Hide unused columns
+      repo_url = reactable::colDef(show = FALSE),
+      package_name = reactable::colDef(show = FALSE),
+      description = reactable::colDef(show = FALSE),
+      
+      # Render repo stats in form of <ICON> <NUMBER>
+      stargazers = reactable::colDef(
+        name = "Stargazers",
+        cell = function(value) {
+          number_value_icon_cell(value, "img/graph/star.svg")
+        },
+        width = 112
+      ),
+      watchers = reactable::colDef(
+        name = "Watchers",
+        cell = function(value) {
+          number_value_icon_cell(value, "img/graph/eye.svg")
+        },
+        width = 112
+      ),
+      tags = reactable::colDef(
+        name = "Tags",
+        cell = function(value) {
+          number_value_icon_cell(value, "img/graph/tag.svg")
+        },
+        width = 80
+      ),
+      download_stats = reactable::colDef(
+        name = "Monthly Downloads",
+        cell = function(value) {
+          create_history_download_chart(value)
+        },
+        width = 256,
+        style = "overflow: visible;"
+      ),
+      
+      # Display contributor avatars as image bubbles
+      top_5_contributors = reactable::colDef(
+        name = "Top Five Contributors",
+        cell = function(value) {
+          htmltools::div(
+            purrr::map(
+              value,
+              ~htmltools::span(
+                htmltools::img(
+                  src = .x$avatar_url,
+                  alt = glue::glue("GitHub avatar of {.x$login}"),
+                  class = "contributor",
+                  height = "44px", 
+                  style = "
+                    border-radius: 100%;
+                    box-shadow: rgba(27, 31, 36, 0.15) 0px 0px 0px 1px
+                  "
+                ) %>% htmltools::a(href = .x$html_url, target="_blank") %>% 
+                  htmltools::tags$abbr(title = .x$login)
+              )
+            )
+          )
+        },
+        width = 256
+      )
+    ),
+    
+    # Center Vertically the content of each column
+    # and use custom font
+    theme = reactable::reactableTheme(
+      cellStyle = list(
+        display = "flex",
+        flexDirection = "column",
+        justifyContent = "center"
+      ),
+      style = list(
+        fontFamily = "Lato, sans-serif"
+      )
+    ),
+    fullWidth = FALSE,
+    sortable = FALSE
+  ) %>% 
+    # Add titleto the table
+    htmlwidgets::prependContent(
+      htmltools::div(
+        style = "
+          width: 1200px;
+        ",
+        htmltools::div("Tidyverse in Numbers",
+                       style = "padding: 0px 4px; font-size: 28px; font-weight: 700; font-family: Lato, sans-serif;")
+      )
+    )
+  
+  
+  # Include custom styling as it's impossible to
+  # use the :hover in inline CSS
+  htmltools::browsable(htmltools::tagList(
+    htmltools::tags$head(
+      htmltools::tags$style("
+        .contributor {
+          margin: 0px 2px;
+          transition: all 0.2s ease-in-out;
+        }
+        
+        .contributor:hover {
+          transform: translateY(-6px);
+          transition: all 0.2s ease-in-out;
+        }
+        
+        .package_repo_url {
+          text-decoration: none;
+        }
+        
+        .package_repo_url:hover {
+          text-decoration: underline;
+        }
+      ")
+    ),
+    return(table)
+  ))
+}
+
+```
+
+Now we just have to create the table thanks to our functions:
+
+```{r}
+create_table(data_table)
+```
+
+<center><iframe src="HtmlWidget/web-interactive-table-with-inline-labels-images-and-charts.html" height="700" width="1000" style="border:none;"></iframe></center>
+
+
+# Conclusion
+
+This post explains how to reproduce an interactive table built with [reactable](https://r-graph-gallery.com/package/reactable.html) by [szymanskir](https://github.com/szymanskir). The table has very nice features such as images when `CSS` features, interactive charts and statistics.
+
+If you want to learn more about `reactable`, check out the [dedicated section](https://r-graph-gallery.com/package/reactable.html). Check also the [table section](https://r-graph-gallery.com/table.html)
+
+<br>
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
