@@ -1,0 +1,219 @@
+---
+title: "Interactive table with images and charts"
+descriptionMeta: "Interactive table made in R with reactable that has images and charts in it."
+descriptionTop: "Interactive table made in `R` with [reactable](https://r-graph-gallery.com/package/reactable.html) that has **images** and **charts** in it.<br> This blogpost guides you through the construction of this table made by [Tanya Shapiro](https://github.com/tashapiro)."
+sectionText: "Table section"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com.html"
+url: "web-interactive-table-with-images-charts-and-more"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message=FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+## About
+***
+
+This page showcases the work of [Tanya Shapiro](https://github.com/tashapiro). Thanks to her for agreeing to share her work here!
+
+The table uses the [reactable](https://r-graph-gallery.com/package/reactable.html) package to create an **interactive table** on the best female tennis player and their titles. It uses Wikipedia data and has the following features on each row:
+
+- clickable columns
+
+- barplot
+
+- photo of the player
+
+- some statistics
+
+- footer and header
+
+
+## Load packages
+***
+
+Let's start by loading the packages needed to build the table:
+
+```{r}
+library(tidyverse)
+library(reactablefmtr)
+library(reactable)
+library(htmltools)
+library(sysfonts)
+library(showtext)
+library(webshot2)
+```
+
+<br>
+
+## Load and prepare the dataset
+***
+
+Today's data can be easily accessed on the github of the gallery by using the following code:
+
+```{r data}
+# REMOVE WHEN MERGING
+# url = 'https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/tennis-best-players.csv'
+# df = readRDS(url)
+df = read.csv2("DATA/tennis-best-players.csv", sep=',')
+```
+
+<br>
+
+## Create the table
+***
+
+Now let's create the table:
+
+```{r }
+# create custom color palette for scale fill
+pal_scale <- c("#F4FFFD", "#E9DAEC", "#A270E5", "#43009A")
+
+table <- reactable(df %>% select(rank, player, region, australian_open, french_open, us_open, wimbledon, titles),
+  theme = reactableTheme(
+    style = list(fontFamily = "sans-serif"),
+    borderColor = "#DADADA"
+  ),
+  defaultPageSize = 11,
+  defaultColDef = colDef(
+    vAlign = "center",
+    align = "center",
+    headerVAlign = "center",
+    style = color_scales(df, span = 4:7, colors = pal_scale),
+    headerStyle = list(fontFamily = "sans-serif"),
+    width = 90
+  ),
+  columnGroups = list(
+    colGroup(name = "", columns = c("player", "region", "titles"), headerStyle = list(fontFamily = "sans-serif"), align = "left"),
+    colGroup(name = "Event", columns = c("australian_open", "us_open", "french_open", "wimbledon"), headerStyle = list(fontFamily = "Roboto"))
+  ),
+  columns = list(
+    rank = colDef(show = FALSE),
+    player = colDef(
+      name = "Player (First Title - Last Title)",
+      align = "left", width = 250,
+      cell = function(value) {
+        # image <- img(src = paste0("https://raw.githubusercontent.com/holtzy/R-graph-gallery/main/img/fromTheWeb/",str_replace_all(tolower(value)," ","_"),".png"), style = "height: 33px;", alt = value)
+        image <- img(src = paste0("https://raw.githubusercontent.com/tashapiro/tanya-data-viz/main/tennis/images/", str_replace_all(tolower(value), " ", "_"), ".png"), style = "height: 33px;", alt = value)
+        tagList(
+          div(style = "display: inline-block;vertical-align:middle;width:50px", image),
+          div(
+            style = "display: inline-block;vertical-align:middle;",
+            div(style = "vertical-align:middle;", value),
+            div(style = "vertical-align:middle;font-size:8pt;color:#8C8C8C;", paste0("(", df[df$player == value, ]$years), ")")
+          )
+        )
+      }
+    ),
+    region = colDef(
+      name = "Region",
+      align = "left",
+      cell = function(value, index) {
+        image <- img(src = value, style = "width:60px;height:20px;", alt = value)
+        player <- df$player[index]
+        if (player %in% c("Monica Seles", "Molla Bjurstedt Mallory")) {
+          tagList(div(style = "display:inline-block;vertical-align:middle;width:80px", image, "*"))
+        } else {
+          tagList(div(style = "display:inline-block;vertical-align:middle;width:50px", image))
+        }
+      },
+      width = 120
+    ),
+    australian_open = colDef(name = "AU Open"),
+    french_open = colDef(name = "FR Open"),
+    us_open = colDef(name = "US Open"),
+    wimbledon = colDef(name = "Wmbl"),
+    titles = colDef(
+      name = "Total Titles",
+      width = 180,
+      class = "border-left",
+      align = "left",
+      cell = data_bars(df,
+        fill_color = "#7814ff",
+        text_position = "outside-end",
+        bar_height = 10,
+        text_size = 12,
+        min_value = 5,
+        max_value = 32,
+        background = "transparent"
+      )
+    )
+  )
+)
+
+
+
+# add title, subtitle, footnote and source
+# note, I downloaded fonts locally - sans-serif & Font Awesome Branded Icons
+table_final <- table %>%
+  # title & subtitle
+  htmlwidgets::prependContent(
+    tagList( # get tennis logo for the headr
+      tags$img(src = "https://pngimg.com/uploads/tennis/tennis_PNG10416.png", style = "width:50px;height:34px;display:inline-block;vertical-align:middle;"),
+      # tags$h1("trophy  ",style="font-family:'Font Awesome 6 Free';margin-bottom:0;display:inline-block;vertical-align:middle;padding-right:10px;"),
+      tags$div("Grand Slam Legends", style = "font-size:32px;font-weight:bold;font-family:sans-serif;margin-bottom:0;display:inline-block;vertical-align:middle;"),
+      tags$h3("Top Women's Tennis Players by Singles Championship Titles", style = "font-family:sans-serif;margin-bottom:0;margin-top:0;font-weight:400;color:#8C8C8C;padding-left:10px;")
+    )
+  ) %>%
+  # footnote and source
+  htmlwidgets::appendContent(
+    tags$div("* Player represented more than one country during career. Most recent country shown.", style = "font-family:Roboto;color:black;font-size:9pt;border-bottom-style:solid;border-top-style:solid;width:910px;padding-bottom:8px;padding-top:8px;border-color:#DADADA;"),
+    tags$div(
+      tags$div("Data: Wikipedia as of November 2022 | Graphic: ", style = "display:inline-block;vertical-align:middle;"),
+      tags$div("twitter", style = "font-family:'Font Awesome 6 Brands';display:inline-block;vertical-align:middle;"),
+      tags$div("tanya_shapiro", style = "display:inline-block;vertical-align:middle;"),
+      tags$div("github", style = "font-family:'Font Awesome 6 Brands';display:inline-block;vertical-align:middle;"),
+      tags$div("tashapiro", style = "display:inline-block;vertical-align:middle;"),
+      style = "font-family:sans-serif;color:#8C8C8C;font-size:10pt;width:910px;padding-top:8px;display:inline-block;vertical-align:middle;"
+    )
+  )
+```
+
+
+```{r include=FALSE}
+library(htmlwidgets)
+html = "HtmlWidget/web-interactive-table-with-images-and-charts.html"
+saveWidget(table_final, html)
+```
+
+Here's what the final result looks like. Try clicking on a column title to change the row order automatically!
+
+<center><iframe src="HtmlWidget/web-interactive-table-with-images-and-charts.html" height="700" width="1000" style="border:none;"></iframe></center>
+
+
+# Conclusion
+
+This post explains how to reproduce an interactive table built with [reactable](https://r-graph-gallery.com/package/reactable.html) by [Tanya Shapiro](https://github.com/tashapiro). The table has very nice features such as clickable columns, gradient colors and inline charts.
+
+If you want to learn more about `reactable`, check out the [dedicated section](https://r-graph-gallery.com/package/reactable.html). Check also the [table section](https://r-graph-gallery.com/table.html)
+
+<br>
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
