@@ -1,19 +1,19 @@
 ---
 title: "topr"
 descriptionMeta: "This post describes how to build a hexbin map, with input data available at geojson format. It provides a ste-by-step explanation and reproducible code."
-descriptionTop: "The description that appears at the top of the page. You can include some `markdown` here!"
+descriptionTop: "A package for viewing and annotating genetic association data"
 sectionText: "Hexbin map section"
-#sectionLink: "hexbin-map.html"
+sectionLink: "hexbin-map.html"
 DataToVizText: "Data to Viz"
-#DataToVizLink: "data-to-viz.com/graph/hexbinmap.html"
+DataToVizLink: "data-to-viz.com/graph/hexbinmap.html"
 url: "blog-post-template"
 output:
   html_document:
       self_contained: false    
       mathjax: default
       lib_dir: libs
-     # template: template_rgg.html
-     # css: style.css
+      template: /Users/tota/github/R-graph-gallery/template_rgg.html
+      css: style.css
       toc: TRUE
       toc_float: TRUE
       toc_depth: 2
@@ -26,99 +26,86 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 ```
 
 
-#<div class="container">
-
+<div class="container">
 
 # About
 ***
-
 *topr* is a collection of plotting functions for visualizing and exploring genetic association results. Association results from multiple phenotypes can be viewed simultaneously, over the entire genome (Manhattan plot) or in the more detailed regional view.
 
 *topr* utilises the <code>ggplot2</code> and <code>ggrepel</code> R graphics libraries for plotting.
 
-
-
-For more details, see the *topr* [github page](https://github.com/totajuliusd/topr) and the *topr*  [publication](https://doi.org/10.1186/s12859-023-05301-4)
+For more details, see the *topr* [github page](https://github.com/totajuliusd/topr) and the *topr*  [publication](https://doi.org/10.1186/s12859-023-05301-4).
 
 # Libraries
 ***
-
 The *topr* package can be installed from CRAN using <code>install.packages("topr")</code>.
 
 After installing the package it can be loaded as follows:
 
 ```{r}
-library(tidyverse)
+library(topr)
 ```
 
 
 # Dataset
 ***
 
-*topr* comes with three inbuilt datasets (<code>CD_UKBB, CD_FINNGEN</code> and <code>UC_UKBB</code>). These datasets were originally retrieved from the UK biobank and FinnGen respectivealy, and are association results (GWAS) on Crohn's disease (CD) and Ulcerative colitis (UC).
+*topr* comes with three inbuilt datasets (<code>CD_UKBB, CD_FINNGEN</code> and <code>UC_UKBB</code>). These datasets were originally retrieved from the UK biobank and FinnGen respectively, and are association results (GWAS) on Crohn's disease (CD) and Ulcerative colitis (UC).
 
-Input datasets must include least three columns (<code>CHROM, POS</code> and <code>P</code>), where naming of the columns is flexible (i.e the chr label can be either chr or chrom and is case insensitive). For more details, see [topr input datasets](https://totajuliusd.github.io/topr/articles/input_datasets.html)
+Input datasets must include least three columns (<code>CHROM, POS</code> and <code>P</code>), where naming of the columns is flexible (i.e the chr label can be either chr or chrom and is case insensitive). For more details, see [topr input datasets](https://totajuliusd.github.io/topr/articles/input_datasets.html).
 
-# Basic plots
+
+# Basic usage
 ***
-
-#<div class = "row">
-
-#<div class = "col-md-6  col-sm-12 align-self-center">
-
 *topr's*  two main plotting functions are <code>manhattan()</code> and <code>regionplot()</code>.
 
-#</div>
 
-Create a Manhattan plot using the <code>CD_UKBB</code> dataset>
+## manhattan
+***
+Create a Manhattan plot using the <code>CD_UKBB</code> dataset
 
-#<div class = "col-md-6  col-sm-12">
 
-```{r thecode, echo=FALSE, out.width = "100%", fig.height=4}
-# The plot on the right. Code will appear below
+```{r fig.height=3.5, fig.width=8.5}
 manhattan(CD_UKBB)
 ```
-#</div>
-#</div>
 
 
-```{r thecode, eval=FALSE}
+Annotate the top variants (with p-values below 5e-9) with their nearest gene:
+
+```{r fig.height=3.5, fig.width=8.5}
+manhattan(CD_UKBB, annotate=5e-9)
 ```
 
+Show multiple datasets on the same plot using two y-axes and specify how many datasets to show on the ‘top’ and on the ‘bottom’ with the <code>ntop</code> argument.
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Layout: normal
-***
-You can also just write text followed by code followed by img
-
-```{r}
-plot(1,1)
+```{r fig.height=5.5, fig.width=8.5}
+manhattan(list(CD_UKBB, CD_FINNGEN), legend_labels = c("UKBB", "FinnGen"), annotate=1e-12, ntop=1)
 ```
 
+### Highlight SNPs of interest
 
+```{r fig.height=4, fig.width=8.5}
+snpsOfInterest <- get_snps_within_region(CD_UKBB, region="chr1:67038906-67359979")
+manhattan(list(CD_UKBB, snpsOfInterest), color=c("darkblue","red"), legend_labels=c("CD UKBB","SNPs of interest"))
+```
 
+See [how-to-color-specific-peaks-on-the-manhattan-plot](https://github.com/totajuliusd/topr?tab=readme-ov-file#how-to-color-specific-peaks-on-the-manhattan-plot)
+for more details.
 
+## regionplot 
 
+Displays association results for smaller genetic regions defined by the gene name:
 
+```{r fig.height=5, fig.width=9}
+regionplot(CD_UKBB, gene="IL23R", scale=0.9, annotate=5e-9)
+```
 
-
-
-
-
-
-
-
+View the correlation pattern between the variants within the region in a locuszoom like plot.
+ 
+Note that the variant correlation (<code>R2</code>) has to be **pre-calculated** and included in the input dataframe.
+```{r fig.height=5, fig.width=9}
+locuszoom(R2_CD_UKBB, scale=0.9)
+```
 
 <!-- Close container -->
 </div>
