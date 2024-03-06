@@ -1,34 +1,46 @@
 ---
 title: "Manhattan plot in R: a review"
-author: "by [Yan Holtz](https://github.com/holtzy/) for [the R graph gallery](www.r-graph-gallery.com)"
+descriptionMeta: "A Manhattan plot is a specific type of scatter plot widely used in genomics to study GWAS results (Genome Wide Association Study). Each point represents a genetic variant. The X axis shows its position on a chromosome, the Y axis tells how much it is associated with a trait. This page reviews how to make a Manhattan plot with R, and displays a couple of variations."
+descriptionTop: "A [Manhattan plot](https://en.wikipedia.org/wiki/Manhattan_plot) is a specific type of [scatter plot](https://www.r-graph-gallery.com/scatterplot/) widely used in genomics to study [GWAS](https://en.wikipedia.org/wiki/Genome-wide_association_study) results (Genome Wide Association Study). Each point represents a genetic variant. The X axis shows its position on a chromosome, the Y axis tells how much it is associated with a trait. This page reviews how to make a Manhattan plot with R, and displays a couple of variations."
+sectionText: "Scatter plot section"
+sectionLink: "scatterplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "www.data-to-viz.com/graph/scatter.html"
+url: "101_Manhattan_plot"
 output:
-  epuRate::epurate:
-    toc: FALSE
-    code_folding: "show"
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
 ---
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-library(rmarkdown)    # You need this library to run this template.
-library(epuRate)      # Install with devtools: install_github("holtzy/epuRate", force=TRUE)
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 ```
-  
-<br><br><br>
 
 
-> A [Manhattan plot](https://en.wikipedia.org/wiki/Manhattan_plot) is a specific type of [scatter plot](https://www.r-graph-gallery.com/scatterplot/) widely used in genomics to study [GWAS](https://en.wikipedia.org/wiki/Genome-wide_association_study) results (Genome Wide Association Study). Each point represents a genetic variant. The X axis shows its position on a chromosome, the Y axis tells how much it is associated with a trait. This page reviews how to make a Manhattan plot with R, and displays a couple of variations.
+<div class="container">
 
 
 
 
 
-#- Quick start with the qqman library {.tabset}
+# Quick start with the qqman library
 ***
 
 The [qqman library](https://github.com/stephenturner/qqman) by [Stephen D. Turner](http://stephenturner.us/#!index.md) is the most widely used way to create a Manhattan plot with R.  A version is on CRAN and can be installed with `install.packages("qqman")`. It provides a GWAS result data frame (`gwasResults`) that we will use as an example dataset in this post.
 
 The manhattan function allows to build the plot in just a few characters. Several customizations are also possible, as listed below. These examples come from the [package vignette](https://cran.r-project.org/web/packages/qqman/vignettes/qqman.html) that I advise to consult.
 
-##Basic
+# Basic
+***
+
 The [manhattan function](https://www.rdocumentation.org/packages/qqman/versions/0.1.2/topics/manhattan) is straightforward: it just needs to have 4 columns identified properly, and does a proper job.
 
 ```{r, warning=FALSE, message=FALSE, fig.width=9}
@@ -39,27 +51,30 @@ library(qqman)
 manhattan(gwasResults, chr="CHR", bp="BP", snp="SNP", p="P" )
 ```
 
-##SNP of interest
+# SNP of interest
+***
 
 A common task is to highlight a group of SNP on the Manhattan plot. For example it is handy to show which SNP are part of the clumping result. This is an easy task with qqman once you have identified the SNPs of interest.
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
-# A list of SNP of interest is provided with the library:
-snpsOfInterest
-```
 
 ```{r, warning=FALSE, message=FALSE, fig.width=9}
 # Let's highlight them, with a bit of customization on the plot
+snpsOfInterest
 manhattan(gwasResults, highlight = snpsOfInterest)
 ```
 
-##annotate
+# Annotate
+***
+
 You probably want to know the name of the SNP of interest: the ones with a high pvalue. You can automatically annotate them using the annotatePval argument:
+
 ```{r, warning=FALSE, message=FALSE, fig.width=9}
 manhattan(gwasResults, annotatePval = 0.01)
 ```
 
 
-##qqplot
+# QQplot
+***
+
 It is a good practice to draw a qqplot from the output of a GWAS. It allows to compare the distribution of the pvalue with an expected distribution by chance. Its realisation is straightforward thanks to the qq function:
 
 ```{r, align="center"}
@@ -70,15 +85,13 @@ qq(gwasResults$P)
 
 
 
-#- Highly customisable with ggplot2 {.tabset}
+# Highly customisable with ggplot2 
 ***
 
 If you want to access a maximum level of customization it is sometimes good to build your plot from scratch. Here is an example using dplyr and [ggplot2](https://www.r-graph-gallery.com/portfolio/ggplot2-package/).
 
+First of all, we need to compute the cumulative position of SNP and then we need to prepare the X axis. Indeed we do not want to display the cumulative position of SNP in bp, but just show the chromosome name instead.
 
-##Basic
-
-First of all, we need to compute the cumulative position of SNP.
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 ```
@@ -100,14 +113,14 @@ don <- gwasResults %>%
   # Add a cumulative position of each SNP
   arrange(CHR, BP) %>%
   mutate( BPcum=BP+tot)
+
+axisdf = don %>%
+  group_by(CHR) %>%
+  summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 ```
 
-Then we need to prepare the X axis. Indeed we do not want to display the cumulative position of SNP in bp, but just show the chromosome name instead.
-```{r}
-axisdf = don %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
-```  
-
 Ready to make the plot using ggplot2:
+
 ```{r, fig.width=9, fig.height=5, warning=FALSE}
 ggplot(don, aes(x=BPcum, y=-log10(P))) +
     
@@ -127,11 +140,14 @@ ggplot(don, aes(x=BPcum, y=-log10(P))) +
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
-```   
+```
 
 
-##Highlight SNPs
+# Highlight SNPs
+***
+
 Let's suppose the you have a group of SNP that you want to highlight on the plot. This can be done following almost the same procedure. We just need to add them a flag in the dataframe, and use the flag for the color:
+
 ```{r, fig.width=9, fig.height=5, warning=FALSE}
 # List of SNPs to highlight are in the snpsOfInterest object
 # We will use ggrepel for the annotation
@@ -192,14 +208,14 @@ ggplot(don, aes(x=BPcum, y=-log10(P))) +
 
 
 
-#- A note about speed
+# A note about speed
 ***
 
 A common problem in genomics is the high number of data points. It is not unusual to make a GWAS with millions of SNPs, which makes the plot very long to build. However, it is important to notice that the vast majority of these SNPs have a high p-value and thus do not interest us for the analysis.
 
 A quick work around is thus to plot only SNP with a p-value below a given threshold (~0.05). The graphic will be as informative, but made in seconds. The filtering is straightforward. For example with dplyr:
 
-```{r, eval=FALSE}
+```{r}
 gwasResults %>% 
   filter(-log10(P)>1)
 ```
@@ -213,6 +229,7 @@ Decreasing the number of data points has another interest: it allows to switch t
 
 # Switch to an interactive version with plotly
 ***
+
 Plotly is an [HTML widget](http://www.htmlwidgets.org): an R library that allows to call javascript under the hood to create [interactive visualizations](https://www.r-graph-gallery.com/interactive-charts/). The good thing with plotly is that it can transform a [ggplot2 graphic](https://www.r-graph-gallery.com/portfolio/ggplot2-package/) in an interactive version using the [ggplotly](https://www.r-graph-gallery.com/get-the-best-from-ggplotly/) function. Let's apply it to our manhattan plot.
 
 - **Note 1**: You probably want to filter your data before doing an interactive version. Having thousands of points will slow down the graphic, and you surely don't care about SNP with a high p-value.
@@ -250,7 +267,13 @@ don <- gwasResults %>%
 axisdf <- don %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 
 # Prepare text description for each SNP:
-don$text <- paste("SNP: ", don$SNP, "\nPosition: ", don$BP, "\nChromosome: ", don$CHR, "\nLOD score:", -log10(don$P) %>% round(2), "\nWhat else do you wanna know", sep="")
+don$text <- paste(
+    "SNP: ", don$SNP,
+    "\nPosition: ", don$BP,
+    "\nChromosome: ", don$CHR,
+    "\nLOD score:", -log10(don$P) %>% round(2),
+    "\nWhat else do you wanna know", sep=""
+)
 
 # Make the plot
 p <- ggplot(don, aes(x=BPcum, y=-log10(P), text=text)) +
@@ -275,52 +298,56 @@ p <- ggplot(don, aes(x=BPcum, y=-log10(P), text=text)) +
       panel.grid.major.x = element_blank(),
       panel.grid.minor.x = element_blank()
     )
-ggplotly(p, tooltip="text")
+p = ggplotly(p, tooltip="text")
+
+# save the widget
+library(htmlwidgets)
+saveWidget(p, file="HtmlWidget/interactiveManhattanPlot.html")
 ```
 
 
+<center><iframe src="HtmlWidget/interactiveManhattanPlot.html" height="700" width="700" style="border:none;"></iframe></center>
 
 
 
-
-# circular version with CMplot
+# Circular version with CMplot
 ***
 
 The [CMplot library](https://github.com/YinLiLin/R-CMplot) by Lilin Yin is a good choice if you want to make a circular version of your manhattanplot. I believe than doing a circular version makes sense: it gives less space to all the non significant SNPs that do not interest us, and gives more space for the significant association. Moreover, the CMplot makes their realization straightforward.
 
 ```{r, warning=FALSE, message=FALSE}
-library("CMplot")      #install.packages("CMplot")
-CMplot(gwasResults, plot.type="c", r=1.6, cir.legend=TRUE,
-        outward=TRUE, cir.legend.col="black", cir.chr.h=.1 ,chr.den.col="orange", file="jpg",
-        memo="", dpi=300, chr.labels=seq(1,22))
+library("CMplot")
+CMplot(gwasResults, plot.type="c", r=1.6,
+        outward=TRUE, cir.chr.h=.1 ,chr.den.col="orange", file="jpg",
+        dpi=300, chr.labels=seq(1,22))
 ```
 
-<p align:"center">
-![](Circular-Manhattan.P.jpg)
-</p>
-
+<center>
+  <img src="img/graph/Cir_Manhtn.P.jpg" width="500" height="500" />
+</center>
 
 
 Note that it also gives the possibility to compare the p-values of several traits. Here is an example using another dataset:
+
 ```{r, warning=FALSE, message=FALSE}
 data(pig60K)
-CMplot(pig60K, plot.type="c", chr.labels=paste("Chr",c(1:18,"X"),sep=""), r=0.4, cir.legend=TRUE,
-        outward=FALSE, cir.legend.col="black", cir.chr.h=1.3 ,chr.den.col="black", file="jpg",
-        memo="", dpi=300)
+CMplot(pig60K, plot.type="c", chr.labels=paste("Chr",c(1:18,"X","Y"),sep=""), r=0.4, 
+      outward=FALSE, cir.chr.h=1.3 ,chr.den.col="black", file="jpg", dpi=300)
 ```
 
-<p align:"center">
-![](Circular-Manhattan.trait1.trait2.trait3.jpg)
-</p>
+<center>
+  <img src="img/graph/Circular-Manhattan.trait1.trait2.trait3.jpg" width="500" height="500" />
+</center>
 
 
 
-***
 
-This work is part of the [R graph gallery](www.r-graph-gallery.com)
+<!-- Close container -->
+</div>
 
-
-
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
 
 
 
