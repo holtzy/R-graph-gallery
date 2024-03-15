@@ -143,8 +143,8 @@ colors</h1></center>
           <p style="max-width: 600px; margin-top: 40px">This post
 explains how to build a <a
 href="https://r-graph-gallery.com/treemap.html">treemap</a> with custom
-annotations and labels. The project is made using mainly the treemap and
-the <a
+annotations and labels. The project is made using mainly the
+<code>treemap</code> package and the <a
 href="https://r-graph-gallery.com/best-dataviz-packages.html">tidyverse</a>
 packages. The post provides detailed explanation on how to reproduce
 this chart with reproducible code.</p>
@@ -190,8 +190,12 @@ annotations and labels.</p>
 <p>It was produced by <a href="https://twitter.com/ysamano28">Yobanny
 Sámano</a> on the occasion of a Tidy Tuesday in 2021! We’ll see how to
 reproduce it using his code.</p>
-<p>Since there are 2 distinct versions of this chart, we’ll see how to
-reproduce both of them.</p>
+<p>Since there are <strong>2 distinct versions</strong> of this chart,
+we’ll see how to reproduce both of them.</p>
+<p>Let’s see what the final output looks like:</p>
+<center>
+<img src="https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/img/graph/web-treemap-with-annotations-labels-and-colors.png" width="70%">
+</center>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -208,18 +212,14 @@ them if needed, then you can load them:</p>
 <a
 href="https://github.com/holtzy/R-graph-gallery/tree/master/DATA">Gallery
 repo</a> or loaded directy in R as shown below:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># UNCOMMENT WHEN MERGING</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#artwork &lt;- readr::read_csv(</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#  &#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artwork.csv&#39;, </span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#  show_col_types = FALSE</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#)</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#artists &lt;- readr::read_csv(</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#  &#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artist_data.csv&#39;,</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#  show_col_types = FALSE</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#)</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>artwork <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;DATA/artwork.csv&#39;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>artists <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;DATA/artist_data.csv&#39;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>artwork <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artwork.csv&#39;</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>artists <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="st">&#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artist_data.csv&#39;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span></code></pre></div>
 <p>Then, let’s merge the datasets and clean the data a little bit:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>artwork_artist <span class="ot">&lt;-</span> artwork <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">left_join</span>(artists,<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;artistId&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>)</span>
@@ -270,7 +270,7 @@ repo</a> or loaded directy in R as shown below:</p>
 <span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="st">                                &lt;span style=&#39;color:#C95C35&#39;&gt;**female**&lt;/span&gt; or </span></span>
 <span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="st">                                &lt;span style=&#39;color:#0A7575&#39;&gt;**male**&lt;/span&gt;&quot;</span>),</span>
 <span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>                      <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>),</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>                      <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.07</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="sc">-</span><span class="fl">0.13</span>, <span class="sc">-</span><span class="fl">0.16</span>))</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>                      <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.07</span>, <span class="sc">-</span><span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.15</span>, <span class="sc">-</span><span class="fl">0.19</span>))</span>
 <span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a></span>
 <span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
 <span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_ggplot) <span class="sc">+</span></span>
