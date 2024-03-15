@@ -1,0 +1,138 @@
+---
+title: "Basic beeswarm plot with ggbeeswarm"
+descriptionMeta: "A beeswarm plot or swarmplot is a type of data visualization that displays individual data points in a way that they don't overlap, resulting in a *swarming* effect that resembles a swarm of bees.<br>In this post, we'll see how to create a basic beeswarm plot in R using the ggbeeswarm package."
+descriptionTop: "A [beeswarm](beeswarm.html) plot or **swarmplot** is a type of data visualization that displays individual data points in a way that they **don't overlap**, resulting in a *swarming* effect that resembles a swarm of bees.<br>In this post, we'll see how to create a basic beeswarm plot in R using the [ggbeeswarm](package/ggbeeswarm.html) package."
+sectionText: "Beeswarm"
+sectionLink: "beeswarm.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "373-basic-beeswarm-with-ggbeeswarm"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to install and load the [ggbeeswarm](package/ggbeeswarm.html) package. 
+
+We can install it from CRAN using `install.packages("ggbeeswarm")`. Then, we can load it:
+
+```{r}
+# install.packages("ggbeeswarm")
+library(ggbeeswarm)
+library(ggplot2)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+Since [beeswarm](beeswarm.html) plots are made to visualize **individual data points**, we need a dataset that contains numerical values. Here, we'll use the `iris` dataset, which is a built-in dataset in R.
+
+We can easily load it:
+
+```{r}
+data(iris)
+```
+
+```{r, include=FALSE}
+iris <- do.call(rbind, replicate(4, iris, simplify = FALSE))
+iris$Sepal.Length <- iris$Sepal.Length + rnorm(nrow(iris), 0, 0.2)
+```
+
+
+# Beeswarm with ggplot2
+***
+
+The package comes with 2 main functions:
+
+- `geom_beeswarm()`: to create a **beeswarm plot** with ggplot2
+- `geom_quasirandom()`: to create a **quasirandom plot**, which is a **mix between** a beeswarm and a jitter plot.
+
+In this post, we'll focus on the `geom_beeswarm()` function.
+
+```{r, echo=TRUE}
+ggplot(iris,aes(y=Sepal.Length,x='')) +
+  geom_beeswarm()
+```
+
+
+
+# Flip the plot
+***
+
+We can super easily flip the plot by changing the `x` and `y` aesthetics:
+
+
+```{r, echo=TRUE}
+ggplot(iris,aes(x=Sepal.Length,y='')) +
+  geom_beeswarm()
+```
+
+
+# Custom theme
+***
+
+We can change the color of the points and the overall theme of the plot using the `theme()` function:
+
+```{r, echo=TRUE}
+ggplot(iris,aes(y=Sepal.Length,x='')) +
+  geom_beeswarm(color='blue') +
+  theme_minimal()
+```
+
+
+# Change the position behavior
+***
+
+By default, the `geom_beeswarm()` function will use the `swarm` method to position the points. We can change this behavior using the `method` argument. Here are the **available options**:
+
+- `swarm`: the default method
+- `compactswarm`: similar to `swarm`, but the points are **more compact**
+- `center`: the points are **centered** on the x-axis
+- `hex`: the points are positioned in **hexagons**
+- `square`: the points are positioned in **squares**
+
+Here's an example with `center`:
+
+```{r, echo=TRUE}
+ggplot(iris,aes(y=Sepal.Length,x='')) +
+  geom_beeswarm(method='center')
+```
+
+
+# Going further
+***
+
+This post explains how to create and customize a [beeswarm](beeswarm.html) plot with [ggbeeswarm](package/ggbeeswarm.html).
+
+You might also be interested in [how to create a grouped beeswarm plot](374-grouped-beeswarm-with-ggbeeswarm.html) with ggplot2.
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
