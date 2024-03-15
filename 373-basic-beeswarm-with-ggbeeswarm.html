@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Basic beeswarm plot with
+ggbeeswarm &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="A beeswarm plot or swarmplot is a
+type of data visualization that displays individual data points in a way
+that they don’t overlap, resulting in a <em>swarming</em> effect that
+resembles a swarm of bees.<br>In this post, we’ll see how to create a
+basic beeswarm plot in R using the ggbeeswarm package." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Basic beeswarm plot with
+ggbeeswarm" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="A beeswarm plot or
+swarmplot is a type of data visualization that displays individual data
+points in a way that they don’t overlap, resulting in a
+<em>swarming</em> effect that resembles a swarm of bees.<br>In this
+post, we’ll see how to create a basic beeswarm plot in R using the
+ggbeeswarm package." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/373-basic-beeswarm-with-ggbeeswarm.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Basic beeswarm plot with ggbeeswarm</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">A <a
+href="beeswarm.html">beeswarm</a> plot or <strong>swarmplot</strong> is
+a type of data visualization that displays individual data points in a
+way that they <strong>don’t overlap</strong>, resulting in a
+<em>swarming</em> effect that resembles a swarm of bees.<br>In this
+post, we’ll see how to create a basic beeswarm plot in R using the <a
+href="package/ggbeeswarm.html">ggbeeswarm</a> package.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="beeswarm.html"
+            >Beeswarm</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<hr />
+<p>For this post, we need to install and load the <a
+href="package/ggbeeswarm.html">ggbeeswarm</a> package.</p>
+<p>We can install it from CRAN using
+<code>install.packages("ggbeeswarm")</code>. Then, we can load it:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages(&quot;ggbeeswarm&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggbeeswarm)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<p><br/></p>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>Since <a href="beeswarm.html">beeswarm</a> plots are made to
+visualize <strong>individual data points</strong>, we need a dataset
+that contains numerical values. Here, we’ll use the <code>iris</code>
+dataset, which is a built-in dataset in R.</p>
+<p>We can easily load it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(iris)</span></code></pre></div>
+</div>
+<div id="beeswarm-with-ggplot2" class="section level1">
+<h1>Beeswarm with ggplot2</h1>
+<hr />
+<p>The package comes with 2 main functions:</p>
+<ul>
+<li><code>geom_beeswarm()</code>: to create a <strong>beeswarm
+plot</strong> with ggplot2</li>
+<li><code>geom_quasirandom()</code>: to create a <strong>quasirandom
+plot</strong>, which is a <strong>mix between</strong> a beeswarm and a
+jitter plot.</li>
+</ul>
+<p>In this post, we’ll focus on the <code>geom_beeswarm()</code>
+function.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(iris,<span class="fu">aes</span>(<span class="at">y=</span>Sepal.Length,<span class="at">x=</span><span class="st">&#39;&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_beeswarm</span>()</span></code></pre></div>
+<p><img src="373-basic-beeswarm-with-ggbeeswarm_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="flip-the-plot" class="section level1">
+<h1>Flip the plot</h1>
+<hr />
+<p>We can super easily flip the plot by changing the <code>x</code> and
+<code>y</code> aesthetics:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(iris,<span class="fu">aes</span>(<span class="at">x=</span>Sepal.Length,<span class="at">y=</span><span class="st">&#39;&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_beeswarm</span>()</span></code></pre></div>
+<p><img src="373-basic-beeswarm-with-ggbeeswarm_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="custom-theme" class="section level1">
+<h1>Custom theme</h1>
+<hr />
+<p>We can change the color of the points and the overall theme of the
+plot using the <code>theme()</code> function:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(iris,<span class="fu">aes</span>(<span class="at">y=</span>Sepal.Length,<span class="at">x=</span><span class="st">&#39;&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">geom_beeswarm</span>(<span class="at">color=</span><span class="st">&#39;blue&#39;</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="373-basic-beeswarm-with-ggbeeswarm_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="change-the-position-behavior" class="section level1">
+<h1>Change the position behavior</h1>
+<hr />
+<p>By default, the <code>geom_beeswarm()</code> function will use the
+<code>swarm</code> method to position the points. We can change this
+behavior using the <code>method</code> argument. Here are the
+<strong>available options</strong>:</p>
+<ul>
+<li><code>swarm</code>: the default method</li>
+<li><code>compactswarm</code>: similar to <code>swarm</code>, but the
+points are <strong>more compact</strong></li>
+<li><code>center</code>: the points are <strong>centered</strong> on the
+x-axis</li>
+<li><code>hex</code>: the points are positioned in
+<strong>hexagons</strong></li>
+<li><code>square</code>: the points are positioned in
+<strong>squares</strong></li>
+</ul>
+<p>Here’s an example with <code>center</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(iris,<span class="fu">aes</span>(<span class="at">y=</span>Sepal.Length,<span class="at">x=</span><span class="st">&#39;&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">geom_beeswarm</span>(<span class="at">method=</span><span class="st">&#39;center&#39;</span>)</span></code></pre></div>
+<p><img src="373-basic-beeswarm-with-ggbeeswarm_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>This post explains how to create and customize a <a
+href="beeswarm.html">beeswarm</a> plot with <a
+href="package/ggbeeswarm.html">ggbeeswarm</a>.</p>
+<p>You might also be interested in <a
+href="374-grouped-beeswarm-with-ggbeeswarm.html">how to create a grouped
+beeswarm plot</a> with ggplot2.</p>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Violin</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Histogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Boxplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Ridgeline</div>
+    </div>
+  </div>
+
+</div>
+</section>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+---
+title: "Grouped beeswarm plot"
+descriptionMeta: "A beeswarm plot or swarmplot is a type of data visualization that displays individual data points in a way that they don't overlap, resulting in a *swarming* effect that resembles a swarm of bees.<br>In this post, we'll see how to create a grouped beeswarm plot in R using the beeswarm package."
+descriptionTop: "A [beeswarm](beeswarm.html) plot or **swarmplot** is a type of data visualization that displays individual data points in a way that they **don't overlap**, resulting in a *swarming* effect that resembles a swarm of bees.<br>In this post, we'll see how to create a grouped [beeswarm](beeswarm.html) plot in R using the [beeswarm](https://github.com/aroneklund/beeswarm) package."
+sectionText: "Beeswarm"
+sectionLink: "beeswarm.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "372-grouped-beeswarm"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to install and load the [beeswarm](https://github.com/aroneklund/beeswarm) package. 
+
+We can install it from CRAN using `install.packages("beeswarm")`. Then, we can load it:
+
+```{r}
+# install.packages("beeswarm")
+library(beeswarm)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+Since [beeswarm](beeswarm.html) plots are made to visualize **individual data points**, we need a dataset that contains numerical values. Here, we'll use the `iris` dataset, which is a built-in dataset in R.
+
+We can easily load it:
+
+```{r}
+data(iris)
+```
+
+```{r, include=FALSE}
+iris <- do.call(rbind, replicate(7, iris, simplify = FALSE))
+iris$Sepal.Length <- iris$Sepal.Length + rnorm(nrow(iris), 0, 0.2)
+```
+
+# Default grouped beeswarm plot
+***
+
+The package comes with a `beeswarm()` function, and thanks to the `~` **operator**, we can easily create a **grouped beeswarm plot**. Here, we'll use the `Species` column to group the data:
+
+The following code basically means:
+
+*plot `Sepal.Length` for each `Species` using the `iris` dataset*.
+
+```{r, echo=TRUE}
+beeswarm(
+  Sepal.Length ~ Species,
+  data=iris
+)
+```
+
+
+
+# Use different colors
+***
+
+Even tough the default option does what we want, having the same color for all the `Species` makes the plot less readable. We can use the `col` argument to **change the color** of the dots:
+
+```{r, echo=TRUE}
+beeswarm(
+  Sepal.Length ~ Species, 
+  data=iris,
+  col=c("orange", "lightblue", "magenta"),
+  pch = 19 # fill the dots
+)
+```
+
+
+
+# Custom position behavior
+***
+
+When you have lots of data points, it can be useful to change the **position behavior** of the dots in order to avoid overlapping between groups. 
+
+Fortunately, the `corral` argument allows you to change this. The available options are:
+
+- `none` (default): no correction
+- `gutter`: fix a **higher and lower limit** for each group
+- `wrap`: similar to `gutter` but **add random noise** to the position of the dots
+- `random`: **randomly position** the dots
+- `omit`: **omit** the dots that would overlap
+
+Here's an example with the `gutter` option:
+
+```{r, echo=TRUE}
+beeswarm(
+  Sepal.Length ~ Species, 
+  data=iris,
+  col=c("orange", "lightblue", "magenta"),
+  pch = 19, # fill the dots
+  corral = "gutter"
+)
+```
+
+
+
+
+
+# Going further
+***
+This post explains how to create a [grouped beeswarm](372-grouped-beeswarm.html) plot with R.
+
+You might also be interested in [how to create a beeswarm plot with ggplot2](373-basic-beeswarm-with-ggbeeswarm.html).
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
+```
