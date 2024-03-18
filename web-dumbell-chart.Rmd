@@ -1,0 +1,273 @@
+---
+title: "Dumbell chart with custom annotations"
+descriptionMeta: "This post explains how to create a dumbell chart with nice features such as annotations, nice color theme and others, using R and ggplot2. It provides a reproducible code and an explanation of it."
+descriptionTop: "This post explains how to create a [dumbell chart](https://r-graph-gallery.com/barplot.html) with nice features such as **annotations**, nice **color** theme and others, using R and [ggplot2](https://r-graph-gallery.com/ggplot2-package.html). It provides a reproducible code and an explanation of it."
+sectionText: "Barplot section"
+sectionLink: "barplot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/barplot.html"
+url: "web-dumbell-chart"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message=FALSE
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+# About
+***
+
+The chart we want to reproduce is a [dumbell barplot](https://r-graph-gallery.com/barplot.html) about the **number of shares and losses** of the teams with the highest number of Bundesliga matches.
+
+It has been created by [Cédric Scherer](https://www.cedricscherer.com/). Thanks to him for accepting sharing his work here!
+
+# Libraries
+
+In order to create this chart, we will use the following libraries:
+
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(ggplot2)
+library(ggtext)
+library(scales)
+library(prismatic)
+```
+
+
+# Data
+
+The data used for this chart can be load using the following code:
+  
+```{r, warning=FALSE, message=FALSE}
+path = "https://raw.githubusercontent.com/JosephBARBIERDARNAL/R-graph-gallery/master/DATA/matches_win_and_losses.csv"
+path = "DATA/matches_win_and_losses.csv"
+df_matches = read.csv(path)
+
+df_matches <- 
+  tibble(
+    team = c("FC Bayern München", "SV Werder Bremen", "Borussia Dortmund", "VfB Stuttgart", 
+             "Borussia M'gladbach", "Hamburger SV", "Eintracht Frankfurt",
+             "FC Schalke 04", "1. FC Köln", "Bayer 04 Leverkusen"),
+    matches = c(2000, 1992, 1924, 1924, 1898, 1866, 1856, 1832, 1754, 1524),
+    won =     c(1206,  818,  881,  782,  763,  746,  683,  700,  674,  669),
+    lost =    c( 363,  676,  563,  673,  636,  625,  693,  669,  628,  447)
+  ) |> 
+  mutate(team = fct_rev(fct_inorder(team))) |> 
+  pivot_longer(
+    cols = -c(team, matches),
+    names_to = "type",
+    values_to = "result"
+  ) |> 
+  mutate(share = result / matches) |> 
+  arrange(team, -share) |> 
+  mutate(is_smaller = if_else(row_number() == 1, 0, 1), .by = team)
+
+## number of not-Bayern teams for emphasis later
+n <- length(unique(df_matches$team)) - 1
+```
+
+
+
+# Set up parameters for the chart
+***
+
+Before starting to actually create the chart, we need to set up some parameters that will be used later on such as colors and annotations.
+
+### Colors
+
+Let's define the **colors** that we will use for the chart. We will use the `clr_darken()` function from the `prismatic` package to create a **darker version** of the base color.
+
+```{r}
+pal_base <- c("#EFAC00", "#28A87D")
+pal_dark <- clr_darken(pal_base, .25)
+
+grey_base <- "grey50"
+grey_dark <- "grey25"
+```
+
+### Theme
+
+We will use the `theme_minimal()` theme from the `ggplot2` package. We will then update it to match the style of the chart.
+
+Here are the main parameters that we will update:
+
+- `base_family` and `base_size` to set the **font family** and **size** for the whole chart
+
+- `axis.title` to **remove the axis** titles
+
+- `axis.text.y` to set the **horizontal alignment** of the y-axis labels
+
+- `panel.grid.minor` and `panel.grid.major` to **remove the grid lines**
+
+- `plot.title` and `plot.caption` to set the title and caption of the chart
+
+- `plot.margin` to set the **margins** of the chart
+
+- `plot.background` to set the **background** color of the chart
+
+- `legend.position` to remove the **legend**
+
+```{r}
+theme_set(theme_minimal(base_family = "Saira Condensed", base_size = 22))
+theme_update(
+  axis.title = element_blank(),
+  axis.text.y = element_text(hjust = 0, color = grey_dark),
+  panel.grid.minor = element_blank(),
+  panel.grid.major = element_blank(),
+  plot.title = element_textbox_simple(
+    size = rel(1.25), face = "plain", lineheight = 1.05, 
+    fill = "transparent", width = unit(8, "inches"), box.color = "transparent", 
+    margin = margin(0, 0, 35, 0), hjust = 0, halign = 0
+  ),
+  plot.caption = element_markdown(
+    size = rel(.5), color = grey_base, hjust = 0, margin = margin(t = 20, b = 0)
+  ),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.margin = margin(25, 25, 15, 25),
+  plot.background = element_rect(fill = "white", color = "white"),
+  legend.position = "none"
+)
+```
+
+### Annotations
+
+And then we define the main annotations of the chart, using the `paste0()` function that basically concatenates strings.
+
+```{r}
+title <- paste0(
+  "Among the ten teams with the most Bundesliga matches, <b>Bayern Munich has the <b style='color:",
+  pal_dark[1], ";'>lowest loss</b> and <b style='color:", pal_dark[2], ";'>highest win</b> rates</b></b>"
+)
+
+caption <- paste0(
+  "<b>Graphic: Cédric Scherer • Source: kicker.de • </b>Teams are ranked according to the number of ",
+  "Bundesliga matches they have played so far"
+)
+
+callout <- paste0(
+  "<b>Frankfurt</b> is the only team listed<br>that <b style='color:", pal_dark[1],
+  ";'>lost more games (37.3%)</b><br>than <b style='color:", pal_dark[2], ";'>they have won (36.8%)</b>"
+)
+```
+
+
+
+# Dumbell chart
+
+Now let's actually create the chart. Here is what the code mainly does:
+
+- **Layers**: the chart is built using several layers such as `geom_point()`, `geom_text()`, `stat_summary()`, `geom_richtext()`, etc.
+
+- **Scales**: the `scale_x_continuous()` and `scale_color_manual()` functions are used to set the x-axis and the colors of the chart
+
+- **Labels**: the `labs()` function is used to set the title and caption of the chart
+
+- **Theme**: the `theme()` function is used to set the theme of the chart
+
+```{r}
+n <- length(unique(df_matches$team)) - 1
+
+p = ggplot(df_matches, aes(x = share, y = team)) +
+    
+    ## dumbbell segments
+    stat_summary(
+      geom = "linerange", fun.min = "min", fun.max = "max",
+      linewidth = c(rep(.8, n), 1.2), color = c(rep(grey_base, n), grey_dark)
+    ) +
+    
+    ## dumbbell points
+    ## white point to overplot line endings
+    geom_point(
+      aes(x = share), size = 6, shape = 21, stroke = 1, color = "white", fill = "white"
+    ) +
+    ## semi-transparent point fill
+    geom_point(
+      aes(x = share, fill = type), size = 6, shape = 21, stroke = 1, color = "white", alpha = .7
+    ) +
+    ## point outline
+    geom_point(
+      aes(x = share), size = 6, shape = 21, stroke = 1, color = "white", fill = NA
+    ) +
+    
+    ## result labels
+    geom_text(
+      aes(label = percent(share, accuracy = 1, prefix = "    ", suffix = "%    "), 
+          x = share, hjust = is_smaller, color = type),
+      fontface = c(rep("plain", n*2), rep("bold", 2)),
+      family = "Familjen Grotesk", size = 4.3
+    ) +
+    
+    ## legend labels
+    annotate(
+      geom = "text", x = c(.18, .60), y = n + 1.8, 
+      label = c("matches lost", "matches won"), family = "Pally", 
+      fontface = "bold", color = pal_base, size = 5, hjust = .5
+    ) +
+    
+    ## call-out Eintracht
+    geom_richtext(
+      aes(x = .46, y = 3.3, label = callout), stat = "unique",
+      family = "Pally", size = 4, lineheight = 1.2,
+      color = grey_base, hjust = 0, vjust = 1.03, fill = NA, label.color = NA
+    ) +
+    annotate(
+      geom = "curve", x = .49, xend = .42, y = 3.3, yend = 4, curvature = .35, 
+      angle = 60, color = grey_base, linewidth = .4, 
+      arrow = arrow(type = "closed", length = unit(.08, "inches"))
+    ) +
+    
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(expand = expansion(add = c(.035, .05)), guide = "none") +
+    scale_y_discrete(expand = expansion(add = c(.35, 1))) +
+    scale_color_manual(values = pal_dark) +
+    scale_fill_manual(values = pal_base) +
+    labs(title = title, caption = caption) +
+    theme(axis.text.y = element_text(face = c(rep("plain", n), "bold")))
+
+p
+ggsave("../share-won-lost-dumbbell-yan.png", width = 8.5, height = 7, dpi = 600)
+```
+
+
+<center>
+  <img src="../share-won-lost-dumbbell-yan.png" width="100%" />
+</center>
+
+# Going further
+
+This post explains how to create a [dumbell chart](https://r-graph-gallery.com/barplot.html) with nice features such as **annotations**, nice **color** theme and others, using R and [ggplot2](https://r-graph-gallery.com/ggplot2-package.html).
+
+If you want to learn more, you can check the [bar chart section](https://r-graph-gallery.com/barplot.html) of the gallery and [another beautiful bar chart](https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html) built with ggplot2.
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```
