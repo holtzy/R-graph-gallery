@@ -26,7 +26,8 @@ editor_options:
 ```{r global options, include = FALSE}
 knitr::opts_chunk$set(
   warning=FALSE, 
-  message=FALSE
+  message=FALSE,
+  fig.align='center'
 )
 ```
 
@@ -41,6 +42,14 @@ knitr::opts_chunk$set(
 The chart we want to reproduce is a [dumbell barplot](https://r-graph-gallery.com/barplot.html) about the **number of shares and losses** of the teams with the highest number of Bundesliga matches.
 
 It has been created by [Cédric Scherer](https://www.cedricscherer.com/). Thanks to him for accepting sharing his work here!
+
+We will slightly **modify the original** chart to make it easier to reproduce.
+
+As a teaser, here's the chart we want to reproduce:
+
+<center>
+  <img src="img/graph/web-dumbell-chart.png" width="100%" />
+</center>
 
 # Libraries
 
@@ -60,13 +69,9 @@ library(prismatic)
 
 # Data
 
-The data used for this chart can be load using the following code:
+The data used for this chart can be created as follows:
   
 ```{r, warning=FALSE, message=FALSE}
-path = "https://raw.githubusercontent.com/JosephBARBIERDARNAL/R-graph-gallery/master/DATA/matches_win_and_losses.csv"
-path = "DATA/matches_win_and_losses.csv"
-df_matches = read.csv(path)
-
 df_matches <- 
   tibble(
     team = c("FC Bayern München", "SV Werder Bremen", "Borussia Dortmund", "VfB Stuttgart", 
@@ -132,7 +137,7 @@ Here are the main parameters that we will update:
 - `legend.position` to remove the **legend**
 
 ```{r}
-theme_set(theme_minimal(base_family = "Saira Condensed", base_size = 22))
+theme_set(theme_minimal(base_family = "sans", base_size = 22))
 theme_update(
   axis.title = element_blank(),
   axis.text.y = element_text(hjust = 0, color = grey_dark),
@@ -144,7 +149,8 @@ theme_update(
     margin = margin(0, 0, 35, 0), hjust = 0, halign = 0
   ),
   plot.caption = element_markdown(
-    size = rel(.5), color = grey_base, hjust = 0, margin = margin(t = 20, b = 0)
+    size = rel(.5), color = grey_base, hjust = 0, margin = margin(t = 20, b = 0),
+    family = 'sans'
   ),
   plot.title.position = "plot",
   plot.caption.position = "plot",
@@ -161,11 +167,11 @@ And then we define the main annotations of the chart, using the `paste0()` funct
 ```{r}
 title <- paste0(
   "Among the ten teams with the most Bundesliga matches, <b>Bayern Munich has the <b style='color:",
-  pal_dark[1], ";'>lowest loss</b> and <b style='color:", pal_dark[2], ";'>highest win</b> rates</b></b>"
+  pal_dark[1], ";'>lowest loss</b> and <b style='color:", pal_dark[2], ";'>highest win</b> rates</b>"
 )
 
 caption <- paste0(
-  "<b>Graphic: Cédric Scherer • Source: kicker.de • </b>Teams are ranked according to the number of ",
+  "<b>Graphic: Cédric Scherer • Source: kicker.de<br><br></b>Teams are ranked according to the number of ",
   "Bundesliga matches they have played so far"
 )
 
@@ -217,26 +223,26 @@ p = ggplot(df_matches, aes(x = share, y = team)) +
     ## result labels
     geom_text(
       aes(label = percent(share, accuracy = 1, prefix = "    ", suffix = "%    "), 
-          x = share, hjust = is_smaller, color = type),
+          x = share -0.02, hjust = is_smaller-0.32, color = type),
       fontface = c(rep("plain", n*2), rep("bold", 2)),
-      family = "Familjen Grotesk", size = 4.3
+      family = "sans", size = 4.2
     ) +
     
     ## legend labels
     annotate(
       geom = "text", x = c(.18, .60), y = n + 1.8, 
-      label = c("matches lost", "matches won"), family = "Pally", 
+      label = c("matches lost", "matches won"), family = "sans", 
       fontface = "bold", color = pal_base, size = 5, hjust = .5
     ) +
     
     ## call-out Eintracht
     geom_richtext(
       aes(x = .46, y = 3.3, label = callout), stat = "unique",
-      family = "Pally", size = 4, lineheight = 1.2,
+      family = "sans", size = 4, lineheight = 1.2,
       color = grey_base, hjust = 0, vjust = 1.03, fill = NA, label.color = NA
     ) +
     annotate(
-      geom = "curve", x = .49, xend = .42, y = 3.3, yend = 4, curvature = .35, 
+      geom = "curve", x = .51, xend = .43, y = 3.3, yend = 4, curvature = .35, 
       angle = 60, color = grey_base, linewidth = .4, 
       arrow = arrow(type = "closed", length = unit(.08, "inches"))
     ) +
@@ -247,15 +253,13 @@ p = ggplot(df_matches, aes(x = share, y = team)) +
     scale_color_manual(values = pal_dark) +
     scale_fill_manual(values = pal_base) +
     labs(title = title, caption = caption) +
-    theme(axis.text.y = element_text(face = c(rep("plain", n), "bold")))
-
-p
-ggsave("../share-won-lost-dumbbell-yan.png", width = 8.5, height = 7, dpi = 600)
+    theme(axis.text.y = element_text(face = c(rep("plain", n), "bold"), size=14))
+ggsave("img/graph/web-dumbell-chart.png", width = 8.5, height = 7, dpi = 600)
 ```
 
 
 <center>
-  <img src="../share-won-lost-dumbbell-yan.png" width="100%" />
+  <img src="img/graph/web-dumbell-chart.png" width="100%" />
 </center>
 
 # Going further

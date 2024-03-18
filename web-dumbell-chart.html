@@ -189,6 +189,12 @@ the highest number of Bundesliga matches.</p>
 <p>It has been created by <a
 href="https://www.cedricscherer.com/">Cédric Scherer</a>. Thanks to him
 for accepting sharing his work here!</p>
+<p>We will slightly <strong>modify the original</strong> chart to make
+it easier to reproduce.</p>
+<p>As a teaser, here’s the chart we want to reproduce:</p>
+<center>
+<img src="img/graph/web-dumbell-chart.png" width="100%" />
+</center>
 </div>
 <div id="libraries" class="section level1">
 <h1>Libraries</h1>
@@ -204,33 +210,28 @@ libraries:</p>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<p>The data used for this chart can be load using the following
-code:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&quot;https://raw.githubusercontent.com/JosephBARBIERDARNAL/R-graph-gallery/master/DATA/matches_win_and_losses.csv&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&quot;DATA/matches_win_and_losses.csv&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>df_matches <span class="ot">=</span> <span class="fu">read.csv</span>(path)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>df_matches <span class="ot">&lt;-</span> </span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">team =</span> <span class="fu">c</span>(<span class="st">&quot;FC Bayern München&quot;</span>, <span class="st">&quot;SV Werder Bremen&quot;</span>, <span class="st">&quot;Borussia Dortmund&quot;</span>, <span class="st">&quot;VfB Stuttgart&quot;</span>, </span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>             <span class="st">&quot;Borussia M&#39;gladbach&quot;</span>, <span class="st">&quot;Hamburger SV&quot;</span>, <span class="st">&quot;Eintracht Frankfurt&quot;</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>             <span class="st">&quot;FC Schalke 04&quot;</span>, <span class="st">&quot;1. FC Köln&quot;</span>, <span class="st">&quot;Bayer 04 Leverkusen&quot;</span>),</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="at">matches =</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">1992</span>, <span class="dv">1924</span>, <span class="dv">1924</span>, <span class="dv">1898</span>, <span class="dv">1866</span>, <span class="dv">1856</span>, <span class="dv">1832</span>, <span class="dv">1754</span>, <span class="dv">1524</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="at">won =</span>     <span class="fu">c</span>(<span class="dv">1206</span>,  <span class="dv">818</span>,  <span class="dv">881</span>,  <span class="dv">782</span>,  <span class="dv">763</span>,  <span class="dv">746</span>,  <span class="dv">683</span>,  <span class="dv">700</span>,  <span class="dv">674</span>,  <span class="dv">669</span>),</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="at">lost =</span>    <span class="fu">c</span>( <span class="dv">363</span>,  <span class="dv">676</span>,  <span class="dv">563</span>,  <span class="dv">673</span>,  <span class="dv">636</span>,  <span class="dv">625</span>,  <span class="dv">693</span>,  <span class="dv">669</span>,  <span class="dv">628</span>,  <span class="dv">447</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">team =</span> <span class="fu">fct_rev</span>(<span class="fu">fct_inorder</span>(team))) <span class="sc">|&gt;</span> </span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(team, matches),</span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;result&quot;</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> result <span class="sc">/</span> matches) <span class="sc">|&gt;</span> </span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="fu">arrange</span>(team, <span class="sc">-</span>share) <span class="sc">|&gt;</span> </span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_smaller =</span> <span class="fu">if_else</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">.by =</span> team)</span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="do">## number of not-Bayern teams for emphasis later</span></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(df_matches<span class="sc">$</span>team)) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div>
+<p>The data used for this chart can be created as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>df_matches <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">team =</span> <span class="fu">c</span>(<span class="st">&quot;FC Bayern München&quot;</span>, <span class="st">&quot;SV Werder Bremen&quot;</span>, <span class="st">&quot;Borussia Dortmund&quot;</span>, <span class="st">&quot;VfB Stuttgart&quot;</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>             <span class="st">&quot;Borussia M&#39;gladbach&quot;</span>, <span class="st">&quot;Hamburger SV&quot;</span>, <span class="st">&quot;Eintracht Frankfurt&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>             <span class="st">&quot;FC Schalke 04&quot;</span>, <span class="st">&quot;1. FC Köln&quot;</span>, <span class="st">&quot;Bayer 04 Leverkusen&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">matches =</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">1992</span>, <span class="dv">1924</span>, <span class="dv">1924</span>, <span class="dv">1898</span>, <span class="dv">1866</span>, <span class="dv">1856</span>, <span class="dv">1832</span>, <span class="dv">1754</span>, <span class="dv">1524</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">won =</span>     <span class="fu">c</span>(<span class="dv">1206</span>,  <span class="dv">818</span>,  <span class="dv">881</span>,  <span class="dv">782</span>,  <span class="dv">763</span>,  <span class="dv">746</span>,  <span class="dv">683</span>,  <span class="dv">700</span>,  <span class="dv">674</span>,  <span class="dv">669</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">lost =</span>    <span class="fu">c</span>( <span class="dv">363</span>,  <span class="dv">676</span>,  <span class="dv">563</span>,  <span class="dv">673</span>,  <span class="dv">636</span>,  <span class="dv">625</span>,  <span class="dv">693</span>,  <span class="dv">669</span>,  <span class="dv">628</span>,  <span class="dv">447</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">team =</span> <span class="fu">fct_rev</span>(<span class="fu">fct_inorder</span>(team))) <span class="sc">|&gt;</span> </span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(team, matches),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;result&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> result <span class="sc">/</span> matches) <span class="sc">|&gt;</span> </span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="fu">arrange</span>(team, <span class="sc">-</span>share) <span class="sc">|&gt;</span> </span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_smaller =</span> <span class="fu">if_else</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">.by =</span> team)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="do">## number of not-Bayern teams for emphasis later</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(df_matches<span class="sc">$</span>team)) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div>
 </div>
 <div id="set-up-parameters-for-the-chart" class="section level1">
 <h1>Set up parameters for the chart</h1>
@@ -275,7 +276,7 @@ the chart</p></li>
 <li><p><code>legend.position</code> to remove the
 <strong>legend</strong></p></li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;Saira Condensed&quot;</span>, <span class="at">base_size =</span> <span class="dv">22</span>))</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">base_size =</span> <span class="dv">22</span>))</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">theme_update</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">color =</span> grey_dark),</span>
@@ -287,14 +288,15 @@ the chart</p></li>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">35</span>, <span class="dv">0</span>), <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">halign =</span> <span class="dv">0</span></span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  ),</span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">plot.caption =</span> <span class="fu">element_markdown</span>(</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="at">size =</span> <span class="fu">rel</span>(.<span class="dv">5</span>), <span class="at">color =</span> grey_base, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">0</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  ),</span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">plot.title.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">plot.caption.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">25</span>, <span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">25</span>),</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>),</span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="at">size =</span> <span class="fu">rel</span>(.<span class="dv">5</span>), <span class="at">color =</span> grey_base, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">0</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&#39;sans&#39;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  ),</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">plot.title.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">plot.caption.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">25</span>, <span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">25</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="annotations" class="section level3">
 <h3>Annotations</h3>
@@ -302,11 +304,11 @@ the chart</p></li>
 <code>paste0()</code> function that basically concatenates strings.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>title <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="st">&quot;Among the ten teams with the most Bundesliga matches, &lt;b&gt;Bayern Munich has the &lt;b style=&#39;color:&quot;</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  pal_dark[<span class="dv">1</span>], <span class="st">&quot;;&#39;&gt;lowest loss&lt;/b&gt; and &lt;b style=&#39;color:&quot;</span>, pal_dark[<span class="dv">2</span>], <span class="st">&quot;;&#39;&gt;highest win&lt;/b&gt; rates&lt;/b&gt;&lt;/b&gt;&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  pal_dark[<span class="dv">1</span>], <span class="st">&quot;;&#39;&gt;lowest loss&lt;/b&gt; and &lt;b style=&#39;color:&quot;</span>, pal_dark[<span class="dv">2</span>], <span class="st">&quot;;&#39;&gt;highest win&lt;/b&gt; rates&lt;/b&gt;&quot;</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>caption <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="st">&quot;&lt;b&gt;Graphic: Cédric Scherer • Source: kicker.de • &lt;/b&gt;Teams are ranked according to the number of &quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="st">&quot;&lt;b&gt;Graphic: Cédric Scherer • Source: kicker.de&lt;br&gt;&lt;br&gt;&lt;/b&gt;Teams are ranked according to the number of &quot;</span>,</span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="st">&quot;Bundesliga matches they have played so far&quot;</span></span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>)</span>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
@@ -359,26 +361,26 @@ to set the theme of the chart</p></li>
 <span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="do">## result labels</span></span>
 <span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>    <span class="fu">geom_text</span>(</span>
 <span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>, <span class="at">prefix =</span> <span class="st">&quot;    &quot;</span>, <span class="at">suffix =</span> <span class="st">&quot;%    &quot;</span>), </span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>          <span class="at">x =</span> share, <span class="at">hjust =</span> is_smaller, <span class="at">color =</span> type),</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>          <span class="at">x =</span> share <span class="sc">-</span><span class="fl">0.02</span>, <span class="at">hjust =</span> is_smaller<span class="fl">-0.32</span>, <span class="at">color =</span> type),</span>
 <span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      <span class="at">fontface =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;plain&quot;</span>, n<span class="sc">*</span><span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">&quot;bold&quot;</span>, <span class="dv">2</span>)),</span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;Familjen Grotesk&quot;</span>, <span class="at">size =</span> <span class="fl">4.3</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">size =</span> <span class="fl">4.2</span></span>
 <span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>    </span>
 <span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    <span class="do">## legend labels</span></span>
 <span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="fu">annotate</span>(</span>
 <span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fu">c</span>(.<span class="dv">18</span>, .<span class="dv">60</span>), <span class="at">y =</span> n <span class="sc">+</span> <span class="fl">1.8</span>, </span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;matches lost&quot;</span>, <span class="st">&quot;matches won&quot;</span>), <span class="at">family =</span> <span class="st">&quot;Pally&quot;</span>, </span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;matches lost&quot;</span>, <span class="st">&quot;matches won&quot;</span>), <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, </span>
 <span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>      <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">color =</span> pal_base, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">hjust =</span> .<span class="dv">5</span></span>
 <span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    </span>
 <span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>    <span class="do">## call-out Eintracht</span></span>
 <span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>    <span class="fu">geom_richtext</span>(</span>
 <span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> .<span class="dv">46</span>, <span class="at">y =</span> <span class="fl">3.3</span>, <span class="at">label =</span> callout), <span class="at">stat =</span> <span class="st">&quot;unique&quot;</span>,</span>
-<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;Pally&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">lineheight =</span> <span class="fl">1.2</span>,</span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">lineheight =</span> <span class="fl">1.2</span>,</span>
 <span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>      <span class="at">color =</span> grey_base, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="fl">1.03</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">label.color =</span> <span class="cn">NA</span></span>
 <span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>    ) <span class="sc">+</span></span>
 <span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>    <span class="fu">annotate</span>(</span>
-<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;curve&quot;</span>, <span class="at">x =</span> .<span class="dv">49</span>, <span class="at">xend =</span> .<span class="dv">42</span>, <span class="at">y =</span> <span class="fl">3.3</span>, <span class="at">yend =</span> <span class="dv">4</span>, <span class="at">curvature =</span> .<span class="dv">35</span>, </span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;curve&quot;</span>, <span class="at">x =</span> .<span class="dv">51</span>, <span class="at">xend =</span> .<span class="dv">43</span>, <span class="at">y =</span> <span class="fl">3.3</span>, <span class="at">yend =</span> <span class="dv">4</span>, <span class="at">curvature =</span> .<span class="dv">35</span>, </span>
 <span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>      <span class="at">angle =</span> <span class="dv">60</span>, <span class="at">color =</span> grey_base, <span class="at">linewidth =</span> .<span class="dv">4</span>, </span>
 <span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>      <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">type =</span> <span class="st">&quot;closed&quot;</span>, <span class="at">length =</span> <span class="fu">unit</span>(.<span class="dv">08</span>, <span class="st">&quot;inches&quot;</span>))</span>
 <span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>    ) <span class="sc">+</span></span>
@@ -389,13 +391,10 @@ to set the theme of the chart</p></li>
 <span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> pal_dark) <span class="sc">+</span></span>
 <span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal_base) <span class="sc">+</span></span>
 <span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title, <span class="at">caption =</span> caption) <span class="sc">+</span></span>
-<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;plain&quot;</span>, n), <span class="st">&quot;bold&quot;</span>)))</span>
-<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a></span>
-<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a>p</span></code></pre></div>
-<p><img src="web-dumbell-chart_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;../share-won-lost-dumbbell-yan.png&quot;</span>, <span class="at">width =</span> <span class="fl">8.5</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">600</span>)</span></code></pre></div>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;plain&quot;</span>, n), <span class="st">&quot;bold&quot;</span>), <span class="at">size=</span><span class="dv">14</span>))</span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/web-dumbell-chart.png&quot;</span>, <span class="at">width =</span> <span class="fl">8.5</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">600</span>)</span></code></pre></div>
 <center>
-<img src="../share-won-lost-dumbbell-yan.png" width="100%" />
+<img src="img/graph/web-dumbell-chart.png" width="100%" />
 </center>
 </div>
 <div id="going-further" class="section level1">
