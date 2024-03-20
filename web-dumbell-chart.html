@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Dumbell chart with custom
+annotations &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create a
+dumbell chart with nice features such as annotations, nice color theme
+and others, using R and ggplot2. It provides a reproducible code and an
+explanation of it." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Dumbell chart with custom
+annotations" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create a dumbell chart with nice features such as annotations, nice
+color theme and others, using R and ggplot2. It provides a reproducible
+code and an explanation of it." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-dumbell-chart.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Dumbell chart with custom annotations</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to create a <a
+href="https://r-graph-gallery.com/barplot.html">dumbell chart</a> with
+nice features such as <strong>annotations</strong>, nice
+<strong>color</strong> theme and others, using R and <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>. It
+provides a reproducible code and an explanation of it.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="barplot.html"
+            >Barplot section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/barplot.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 100px">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>The chart we want to reproduce is a <a
+href="https://r-graph-gallery.com/barplot.html">dumbell barplot</a>
+about the <strong>number of shares and losses</strong> of the teams with
+the highest number of Bundesliga matches.</p>
+<p>It has been created by <a
+href="https://www.cedricscherer.com/">Cédric Scherer</a>. Thanks to him
+for accepting sharing his work here!</p>
+<p>We will slightly <strong>modify the original</strong> chart to make
+it easier to reproduce.</p>
+<p>As a teaser, here’s the chart we want to reproduce:</p>
+<center>
+<img src="img/graph/web-dumbell-chart.png" width="100%" />
+</center>
+</div>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>In order to create this chart, we will use the following
+libraries:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(forcats)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(prismatic)</span></code></pre></div>
+</div>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>The data used for this chart can be created as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>df_matches <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">team =</span> <span class="fu">c</span>(<span class="st">&quot;FC Bayern München&quot;</span>, <span class="st">&quot;SV Werder Bremen&quot;</span>, <span class="st">&quot;Borussia Dortmund&quot;</span>, <span class="st">&quot;VfB Stuttgart&quot;</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>             <span class="st">&quot;Borussia M&#39;gladbach&quot;</span>, <span class="st">&quot;Hamburger SV&quot;</span>, <span class="st">&quot;Eintracht Frankfurt&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>             <span class="st">&quot;FC Schalke 04&quot;</span>, <span class="st">&quot;1. FC Köln&quot;</span>, <span class="st">&quot;Bayer 04 Leverkusen&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">matches =</span> <span class="fu">c</span>(<span class="dv">2000</span>, <span class="dv">1992</span>, <span class="dv">1924</span>, <span class="dv">1924</span>, <span class="dv">1898</span>, <span class="dv">1866</span>, <span class="dv">1856</span>, <span class="dv">1832</span>, <span class="dv">1754</span>, <span class="dv">1524</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">won =</span>     <span class="fu">c</span>(<span class="dv">1206</span>,  <span class="dv">818</span>,  <span class="dv">881</span>,  <span class="dv">782</span>,  <span class="dv">763</span>,  <span class="dv">746</span>,  <span class="dv">683</span>,  <span class="dv">700</span>,  <span class="dv">674</span>,  <span class="dv">669</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">lost =</span>    <span class="fu">c</span>( <span class="dv">363</span>,  <span class="dv">676</span>,  <span class="dv">563</span>,  <span class="dv">673</span>,  <span class="dv">636</span>,  <span class="dv">625</span>,  <span class="dv">693</span>,  <span class="dv">669</span>,  <span class="dv">628</span>,  <span class="dv">447</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">team =</span> <span class="fu">fct_rev</span>(<span class="fu">fct_inorder</span>(team))) <span class="sc">|&gt;</span> </span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span><span class="fu">c</span>(team, matches),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;type&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;result&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> result <span class="sc">/</span> matches) <span class="sc">|&gt;</span> </span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="fu">arrange</span>(team, <span class="sc">-</span>share) <span class="sc">|&gt;</span> </span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_smaller =</span> <span class="fu">if_else</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">.by =</span> team)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="do">## number of not-Bayern teams for emphasis later</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(df_matches<span class="sc">$</span>team)) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div>
+</div>
+<div id="set-up-parameters-for-the-chart" class="section level1">
+<h1>Set up parameters for the chart</h1>
+<hr />
+<p>Before starting to actually create the chart, we need to set up some
+parameters that will be used later on such as colors and
+annotations.</p>
+<div id="colors" class="section level3">
+<h3>Colors</h3>
+<p>Let’s define the <strong>colors</strong> that we will use for the
+chart. We will use the <code>clr_darken()</code> function from the
+<code>prismatic</code> package to create a <strong>darker
+version</strong> of the base color.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>pal_base <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#EFAC00&quot;</span>, <span class="st">&quot;#28A87D&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>pal_dark <span class="ot">&lt;-</span> <span class="fu">clr_darken</span>(pal_base, .<span class="dv">25</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>grey_base <span class="ot">&lt;-</span> <span class="st">&quot;grey50&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>grey_dark <span class="ot">&lt;-</span> <span class="st">&quot;grey25&quot;</span></span></code></pre></div>
+</div>
+<div id="theme" class="section level3">
+<h3>Theme</h3>
+<p>We will use the <code>theme_minimal()</code> theme from the
+<code>ggplot2</code> package. We will then update it to match the style
+of the chart.</p>
+<p>Here are the main parameters that we will update:</p>
+<ul>
+<li><p><code>base_family</code> and <code>base_size</code> to set the
+<strong>font family</strong> and <strong>size</strong> for the whole
+chart</p></li>
+<li><p><code>axis.title</code> to <strong>remove the axis</strong>
+titles</p></li>
+<li><p><code>axis.text.y</code> to set the <strong>horizontal
+alignment</strong> of the y-axis labels</p></li>
+<li><p><code>panel.grid.minor</code> and <code>panel.grid.major</code>
+to <strong>remove the grid lines</strong></p></li>
+<li><p><code>plot.title</code> and <code>plot.caption</code> to set the
+title and caption of the chart</p></li>
+<li><p><code>plot.margin</code> to set the <strong>margins</strong> of
+the chart</p></li>
+<li><p><code>plot.background</code> to set the
+<strong>background</strong> color of the chart</p></li>
+<li><p><code>legend.position</code> to remove the
+<strong>legend</strong></p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">base_size =</span> <span class="dv">22</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">theme_update</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">color =</span> grey_dark),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">plot.title =</span> <span class="fu">element_textbox_simple</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">size =</span> <span class="fu">rel</span>(<span class="fl">1.25</span>), <span class="at">face =</span> <span class="st">&quot;plain&quot;</span>, <span class="at">lineheight =</span> <span class="fl">1.05</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">width =</span> <span class="fu">unit</span>(<span class="dv">8</span>, <span class="st">&quot;inches&quot;</span>), <span class="at">box.color =</span> <span class="st">&quot;transparent&quot;</span>, </span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">35</span>, <span class="dv">0</span>), <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">halign =</span> <span class="dv">0</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  ),</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">plot.caption =</span> <span class="fu">element_markdown</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="at">size =</span> <span class="fu">rel</span>(.<span class="dv">5</span>), <span class="at">color =</span> grey_base, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">0</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&#39;sans&#39;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  ),</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">plot.title.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">plot.caption.position =</span> <span class="st">&quot;plot&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">25</span>, <span class="dv">25</span>, <span class="dv">15</span>, <span class="dv">25</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="annotations" class="section level3">
+<h3>Annotations</h3>
+<p>And then we define the main annotations of the chart, using the
+<code>paste0()</code> function that basically concatenates strings.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>title <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="st">&quot;Among the ten teams with the most Bundesliga matches, &lt;b&gt;Bayern Munich has the &lt;b style=&#39;color:&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  pal_dark[<span class="dv">1</span>], <span class="st">&quot;;&#39;&gt;lowest loss&lt;/b&gt; and &lt;b style=&#39;color:&quot;</span>, pal_dark[<span class="dv">2</span>], <span class="st">&quot;;&#39;&gt;highest win&lt;/b&gt; rates&lt;/b&gt;&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>caption <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="st">&quot;&lt;b&gt;Graphic: Cédric Scherer • Source: kicker.de&lt;br&gt;&lt;br&gt;&lt;/b&gt;Teams are ranked according to the number of &quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="st">&quot;Bundesliga matches they have played so far&quot;</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>callout <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="st">&quot;&lt;b&gt;Frankfurt&lt;/b&gt; is the only team listed&lt;br&gt;that &lt;b style=&#39;color:&quot;</span>, pal_dark[<span class="dv">1</span>],</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="st">&quot;;&#39;&gt;lost more games (37.3%)&lt;/b&gt;&lt;br&gt;than &lt;b style=&#39;color:&quot;</span>, pal_dark[<span class="dv">2</span>], <span class="st">&quot;;&#39;&gt;they have won (36.8%)&lt;/b&gt;&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="dumbell-chart" class="section level1">
+<h1>Dumbell chart</h1>
+<p>Now let’s actually create the chart. Here is what the code mainly
+does:</p>
+<ul>
+<li><p><strong>Layers</strong>: the chart is built using several layers
+such as <code>geom_point()</code>, <code>geom_text()</code>,
+<code>stat_summary()</code>, <code>geom_richtext()</code>, etc.</p></li>
+<li><p><strong>Scales</strong>: the <code>scale_x_continuous()</code>
+and <code>scale_color_manual()</code> functions are used to set the
+x-axis and the colors of the chart</p></li>
+<li><p><strong>Labels</strong>: the <code>labs()</code> function is used
+to set the title and caption of the chart</p></li>
+<li><p><strong>Theme</strong>: the <code>theme()</code> function is used
+to set the theme of the chart</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unique</span>(df_matches<span class="sc">$</span>team)) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>p <span class="ot">=</span> <span class="fu">ggplot</span>(df_matches, <span class="fu">aes</span>(<span class="at">x =</span> share, <span class="at">y =</span> team)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="do">## dumbbell segments</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="fu">stat_summary</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;linerange&quot;</span>, <span class="at">fun.min =</span> <span class="st">&quot;min&quot;</span>, <span class="at">fun.max =</span> <span class="st">&quot;max&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>      <span class="at">linewidth =</span> <span class="fu">c</span>(<span class="fu">rep</span>(.<span class="dv">8</span>, n), <span class="fl">1.2</span>), <span class="at">color =</span> <span class="fu">c</span>(<span class="fu">rep</span>(grey_base, n), grey_dark)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    </span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="do">## dumbbell points</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    <span class="do">## white point to overplot line endings</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    <span class="fu">geom_point</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> share), <span class="at">size =</span> <span class="dv">6</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    <span class="do">## semi-transparent point fill</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="fu">geom_point</span>(</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> share, <span class="at">fill =</span> type), <span class="at">size =</span> <span class="dv">6</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">alpha =</span> .<span class="dv">7</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    <span class="do">## point outline</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>    <span class="fu">geom_point</span>(</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> share), <span class="at">size =</span> <span class="dv">6</span>, <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    </span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="do">## result labels</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>    <span class="fu">geom_text</span>(</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>, <span class="at">prefix =</span> <span class="st">&quot;    &quot;</span>, <span class="at">suffix =</span> <span class="st">&quot;%    &quot;</span>), </span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>          <span class="at">x =</span> share <span class="sc">-</span><span class="fl">0.02</span>, <span class="at">hjust =</span> is_smaller<span class="fl">-0.32</span>, <span class="at">color =</span> type),</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      <span class="at">fontface =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;plain&quot;</span>, n<span class="sc">*</span><span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">&quot;bold&quot;</span>, <span class="dv">2</span>)),</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">size =</span> <span class="fl">4.2</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>    </span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    <span class="do">## legend labels</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="fu">annotate</span>(</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fu">c</span>(.<span class="dv">18</span>, .<span class="dv">60</span>), <span class="at">y =</span> n <span class="sc">+</span> <span class="fl">1.8</span>, </span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;matches lost&quot;</span>, <span class="st">&quot;matches won&quot;</span>), <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, </span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>      <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">color =</span> pal_base, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">hjust =</span> .<span class="dv">5</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    </span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>    <span class="do">## call-out Eintracht</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>    <span class="fu">geom_richtext</span>(</span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>      <span class="fu">aes</span>(<span class="at">x =</span> .<span class="dv">46</span>, <span class="at">y =</span> <span class="fl">3.3</span>, <span class="at">label =</span> callout), <span class="at">stat =</span> <span class="st">&quot;unique&quot;</span>,</span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>      <span class="at">family =</span> <span class="st">&quot;sans&quot;</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">lineheight =</span> <span class="fl">1.2</span>,</span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>      <span class="at">color =</span> grey_base, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="fl">1.03</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">label.color =</span> <span class="cn">NA</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>    <span class="fu">annotate</span>(</span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>      <span class="at">geom =</span> <span class="st">&quot;curve&quot;</span>, <span class="at">x =</span> .<span class="dv">51</span>, <span class="at">xend =</span> .<span class="dv">43</span>, <span class="at">y =</span> <span class="fl">3.3</span>, <span class="at">yend =</span> <span class="dv">4</span>, <span class="at">curvature =</span> .<span class="dv">35</span>, </span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>      <span class="at">angle =</span> <span class="dv">60</span>, <span class="at">color =</span> grey_base, <span class="at">linewidth =</span> .<span class="dv">4</span>, </span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>      <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">type =</span> <span class="st">&quot;closed&quot;</span>, <span class="at">length =</span> <span class="fu">unit</span>(.<span class="dv">08</span>, <span class="st">&quot;inches&quot;</span>))</span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a>    </span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">&quot;off&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add =</span> <span class="fu">c</span>(.<span class="dv">035</span>, .<span class="dv">05</span>)), <span class="at">guide =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>    <span class="fu">scale_y_discrete</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add =</span> <span class="fu">c</span>(.<span class="dv">35</span>, <span class="dv">1</span>))) <span class="sc">+</span></span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> pal_dark) <span class="sc">+</span></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal_base) <span class="sc">+</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title, <span class="at">caption =</span> caption) <span class="sc">+</span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;plain&quot;</span>, n), <span class="st">&quot;bold&quot;</span>), <span class="at">size=</span><span class="dv">14</span>))</span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/web-dumbell-chart.png&quot;</span>, <span class="at">width =</span> <span class="fl">8.5</span>, <span class="at">height =</span> <span class="dv">7</span>, <span class="at">dpi =</span> <span class="dv">600</span>)</span></code></pre></div>
+<center>
+<img src="img/graph/web-dumbell-chart.png" width="100%" />
+</center>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<p>This post explains how to create a <a
+href="https://r-graph-gallery.com/barplot.html">dumbell chart</a> with
+nice features such as <strong>annotations</strong>, nice
+<strong>color</strong> theme and others, using R and <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>.</p>
+<p>If you want to learn more, you can check the <a
+href="https://r-graph-gallery.com/barplot.html">bar chart section</a> of
+the gallery and <a
+href="https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html">another
+beautiful bar chart</a> built with ggplot2.</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
