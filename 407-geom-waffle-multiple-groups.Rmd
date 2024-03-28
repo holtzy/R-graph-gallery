@@ -1,0 +1,101 @@
+---
+title: "Waffle chart with groups and subgroups"
+descriptionMeta: "This post explains how to build a waffle chart when have both groups and subgroups using the geom_waffle() function. It uses the waffle package, provides reproducible code and explain how to customize the chart."
+descriptionTop: "This post explains how to build a [waffle chart](waffle.html) when have both **groups and subgroups** using the `geom_waffle()` function. For an introduction to [waffle chart](waffle.html), check [this post](406-geom-waffle-introduction.html)"
+sectionText: "Waffle section"
+sectionLink: "waffle.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "407-geom-waffle-multiple-groups"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE, fig.align='center')
+```
+
+<div class="container">
+
+
+# Libraries and dataset
+***
+
+First we need to load the `waffle` and `dplyr` libraries.
+
+The input dataset contains **groups and subgroups**, with **values of their size**.
+
+```{r}
+# library
+library(waffle)
+library(dplyr)
+ 
+# Create data
+data <- data.frame(
+  group = c("First group", "First group", "First group", "First group",
+            "First group", "First group", "Second group", "Second group",
+            "Second group", "Second group", "Third group", "Third group"),
+  subgroup = c("A", "B", "C", "D", "E", "F", "A", "B", "C", "D", "A", "B"),
+  value = c(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120)
+)
+```
+
+
+
+# Grouped waffle chart
+***
+
+The `geom_waffle()` function can be used to build a waffle chart with groups and subgroups. The `fill` argument is used to color the chart by group.
+
+```{r}
+ggplot(data = data, aes(fill=subgroup, values=value)) +
+  geom_waffle(color = "white", size = 1.125, n_rows = 6) +
+  facet_wrap(~group, ncol=1) +
+  theme_void()
+```
+
+
+
+# Custom colors
+***
+
+Thanks to the `scale_fill_manual()` function, it is possible to **customize the colors** of the waffle chart:
+
+```{r}
+ggplot(data = data, aes(fill=subgroup, values=value)) +
+  geom_waffle(color = "white", size = 1.125, n_rows = 6) +
+  facet_wrap(~group, ncol=1) +
+  theme_void() +
+  scale_fill_manual(values = c("#69b3a2", "#404080", "#FFA07A", "#FFD700", "#FF6347", "#4682B4"))
+```
+
+
+
+
+# Going further
+***
+
+You might be interested in this [introduction to geom_waffle()](406-geom-waffle-introduction.html) or more generally about [waffle charts](waffle.html).
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
