@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>topr &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post describes how to build a
+hexbin map, with input data available at geojson format. It provides a
+ste-by-step explanation and reproducible code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="topr" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post describes how to
+build a hexbin map, with input data available at geojson format. It
+provides a ste-by-step explanation and reproducible code." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/blog-post-template.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>topr</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">A package for
+viewing and annotating genetic association data</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="hexbin-map.html"
+            >Hexbin map section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/hexbinmap.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p><em>topr</em> is a collection of plotting functions for visualizing
+and exploring genetic association results. Association results from
+multiple phenotypes can be viewed simultaneously, over the entire genome
+(Manhattan plot) or in the more detailed regional view.</p>
+<p><em>topr</em> utilises the <code>ggplot2</code> and
+<code>ggrepel</code> R graphics libraries for plotting.</p>
+<p>For more details, see the <em>topr</em> <a
+href="https://github.com/totajuliusd/topr">github page</a> and the
+<em>topr</em> <a
+href="https://doi.org/10.1186/s12859-023-05301-4">publication</a>.</p>
+</div>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<hr />
+<p>The <em>topr</em> package can be installed from CRAN using
+<code>install.packages(“topr”)</code>.</p>
+<p>After installing the package it can be loaded as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(topr)</span></code></pre></div>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p><em>topr</em> comes with three inbuilt datasets (<code>CD_UKBB,
+CD_FINNGEN</code> and <code>UC_UKBB</code>). These datasets were
+originally retrieved from the UK biobank and FinnGen respectively, and
+are association results (GWAS) on Crohn’s disease (CD) and Ulcerative
+colitis (UC).</p>
+<p>Input datasets must include least three columns (<code>CHROM,
+POS</code> and <code>P</code>), where naming of the columns is flexible
+(i.e the chr label can be either chr or chrom and is case insensitive).
+For more details, see <a
+href="https://totajuliusd.github.io/topr/articles/input_datasets.html">topr
+input datasets</a>.</p>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p><em>topr’s</em> two main plotting functions are
+<code>manhattan()</code> and <code>regionplot()</code>.</p>
+<div id="manhattan" class="section level2">
+<h2>manhattan</h2>
+<hr />
+<p>Create a Manhattan plot using the <code>CD_UKBB</code> dataset</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">manhattan</span>(CD_UKBB)</span></code></pre></div>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-2-1.png" width="816" /></p>
+<p>Annotate the top variants (with p-values below 5e-9) with their
+nearest gene:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">manhattan</span>(CD_UKBB, <span class="at">annotate=</span><span class="fl">5e-9</span>)</span></code></pre></div>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-3-1.png" width="816" /></p>
+<p>Show multiple datasets on the same plot using two y-axes and specify
+how many datasets to show on the ‘top’ and on the ‘bottom’ with the
+<code>ntop</code> argument.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">manhattan</span>(<span class="fu">list</span>(CD_UKBB, CD_FINNGEN), <span class="at">legend_labels =</span> <span class="fu">c</span>(<span class="st">&quot;UKBB&quot;</span>, <span class="st">&quot;FinnGen&quot;</span>), <span class="at">annotate=</span><span class="fl">1e-12</span>, <span class="at">ntop=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-4-1.png" width="816" /></p>
+<div id="highlight-snps-of-interest" class="section level3">
+<h3>Highlight SNPs of interest</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>snpsOfInterest <span class="ot">&lt;-</span> <span class="fu">get_snps_within_region</span>(CD_UKBB, <span class="at">region=</span><span class="st">&quot;chr1:67038906-67359979&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">manhattan</span>(<span class="fu">list</span>(CD_UKBB, snpsOfInterest), <span class="at">color=</span><span class="fu">c</span>(<span class="st">&quot;darkblue&quot;</span>,<span class="st">&quot;red&quot;</span>), <span class="at">legend_labels=</span><span class="fu">c</span>(<span class="st">&quot;CD UKBB&quot;</span>,<span class="st">&quot;SNPs of interest&quot;</span>))</span></code></pre></div>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-5-1.png" width="816" /></p>
+<p>See <a
+href="https://github.com/totajuliusd/topr?tab=readme-ov-file#how-to-color-specific-peaks-on-the-manhattan-plot">how-to-color-specific-peaks-on-the-manhattan-plot</a>
+for more details.</p>
+</div>
+</div>
+<div id="regionplot" class="section level2">
+<h2>regionplot</h2>
+<p>Displays association results for smaller genetic regions defined by
+the gene name:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">regionplot</span>(CD_UKBB, <span class="at">gene=</span><span class="st">&quot;IL23R&quot;</span>, <span class="at">scale=</span><span class="fl">0.9</span>, <span class="at">annotate=</span><span class="fl">5e-9</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;Zoomed to region:  chr1:67038906-67359979&quot;</code></pre>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
+<p>View the correlation pattern between the variants within the region
+in a locuszoom like plot.</p>
+<p>Note that the variant correlation (<code>R2</code>) has to be
+<strong>pre-calculated</strong> and included in the input dataframe.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">locuszoom</span>(R2_CD_UKBB, <span class="at">scale=</span><span class="fl">0.9</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;Zoomed to region:  1:67042284-67359988&quot;</code></pre>
+<p><img src="web-topr-package_files/figure-html/unnamed-chunk-7-1.png" width="864" /></p>
+<!-- Close container -->
+</div>
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
