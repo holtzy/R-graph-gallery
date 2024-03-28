@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container" style="padding-top: 100px">
@@ -34,7 +34,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 <div class = "col-md-6  col-sm-12  align-self-center">
 
-<img src="img/graph/330-bubble-map-with-ggplot2.png" alt="bubble map with R and ggplot2" width="100%"></img>
+<img src="330-bubble-map-with-ggplot2_files/figure-html/thecode6-1.png" alt="bubble map with R and ggplot2" width="100%"></img>
 
 </div>
 
@@ -58,7 +58,7 @@ The first step is to get the boundaries of the zone that interests you. Several 
 
 Briefly, you can find this information somewhere under the [shapefile](168-load-a-shape-file-into-r.html) format or under the [geoJSON](325-background-map-from-geojson-format-in-r.html) format. You can also load google like backgrounds with the [ggmap](324-map-background-with-the-ggmap-library.html) library. 
 
-This post uses the last approach: it loads the `maps` package that provides the boundaries of every world country. 
+This post uses the last approach: it loads the `giscoR` package that provides the boundaries of every world country. 
 
 </div>
 </div>
@@ -69,10 +69,10 @@ This post uses the last approach: it loads the `maps` package that provides the 
 # Libraries
 library(ggplot2)
 library(dplyr)
- 
+
 # Get the world polygon and extract UK
-library(maps)
-UK <- map_data("world") %>% filter(region=="UK")
+library(giscoR)
+UK <- gisco_get_countries(country = "UK", resolution = 1)
 ```
 
 <br>
@@ -81,7 +81,8 @@ The second step is to load a data frame with the info of the bubble you want to 
 
 ```{r}
 # Get a data frame with longitude, latitude, and size of bubbles (a bubble = a city)
-data <- world.cities %>% filter(country.etc=="UK")
+library(maps)
+data <- world.cities %>% filter(country.etc == "UK")
 ```
 
 
@@ -92,7 +93,7 @@ data <- world.cities %>% filter(country.etc=="UK")
 # Basic scatterplot map {#scatter}
 ***
 
-`ggplot2` makes it a breeze to map both information on the same graph. Use `geom_polygon` for the shape of UK first, and add your scatterplot on it with `geom_point()`. 
+`ggplot2` makes it a breeze to map both information on the same graph. Use `geom_sf()` for the shape of UK first, and add your scatter plot on it with `geom_point()`. 
 
 On the right figure, note the use of the `ggrepel` library to avoid overlapping between city names.
 
@@ -100,19 +101,27 @@ On the right figure, note the use of the `ggrepel` library to avoid overlapping 
 ```{r thecode, echo=FALSE, out.width = c("50%","50%"), fig.show="hold", fig.height=6}
 # Left chart
 ggplot() +
-  geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-  geom_point( data=data, aes(x=long, y=lat)) +
-  theme_void() + ylim(50,59) + coord_map() 
- 
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(data = data, aes(x = long, y = lat)) +
+  theme_void() +
+  ylim(50, 59)
+
 # Second graphic with names of the 10 biggest cities
 library(ggrepel)
 ggplot() +
-  geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-  geom_point( data=data, aes(x=long, y=lat, alpha=pop)) +
-  geom_text_repel( data=data %>% arrange(pop) %>% tail(10), aes(x=long, y=lat, label=name), size=5) +
-  geom_point( data=data %>% arrange(pop) %>% tail(10), aes(x=long, y=lat), color="red", size=3) +
-  theme_void() + ylim(50,59) + coord_map() +
-  theme(legend.position="none")
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(data = data, aes(x = long, y = lat, alpha = pop)) +
+  geom_text_repel(
+    data = data %>% arrange(pop) %>% tail(10),
+    aes(x = long, y = lat, label = name), size = 5
+  ) +
+  geom_point(
+    data = data %>% arrange(pop) %>% tail(10), aes(x = long, y = lat),
+    color = "red", size = 3
+  ) +
+  theme_void() +
+  ylim(50, 59) +
+  theme(legend.position = "none")
 ```
 
 
@@ -139,38 +148,40 @@ Now we want to add another information. The number of inhabitant per city will b
 
 
 ```{r thecode5, echo=FALSE, out.width = c("33%","33%","33%"), fig.show="hold", fig.height=7}
-# virids package for the color palette
-library(viridis)
- 
 # Left: use size and color
 ggplot() +
-  geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-  geom_point( data=data, aes(x=long, y=lat, size=pop, color=pop)) +
-  scale_size_continuous(range=c(1,12)) +
-  scale_color_viridis(trans="log") +
-  theme_void() + ylim(50,59) + coord_map() 
- 
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(data = data, aes(x = long, y = lat, size = pop, color = pop)) +
+  scale_size_continuous(range = c(1, 12)) +
+  scale_color_viridis_c(trans = "log") +
+  theme_void() +
+  ylim(50, 59)
+
 # Center: reorder your dataset first! Big cities appear later = on top
 data %>%
- arrange(pop) %>% 
- mutate( name=factor(name, unique(name))) %>% 
- ggplot() +
-    geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-    geom_point( aes(x=long, y=lat, size=pop, color=pop), alpha=0.9) +
-    scale_size_continuous(range=c(1,12)) +
-    scale_color_viridis(trans="log") +
-    theme_void() + ylim(50,59) + coord_map() + theme(legend.position="none")
- 
+  arrange(pop) %>%
+  mutate(name = factor(name, unique(name))) %>%
+  ggplot() +
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(aes(x = long, y = lat, size = pop, color = pop), alpha = 0.9) +
+  scale_size_continuous(range = c(1, 12)) +
+  scale_color_viridis_c(trans = "log") +
+  theme_void() +
+  ylim(50, 59) +
+  theme(legend.position = "none")
+
 # Right: just use arrange(desc(pop)) instead
 data %>%
- arrange(desc(pop)) %>% 
- mutate( name=factor(name, unique(name))) %>% 
- ggplot() +
-    geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-    geom_point( aes(x=long, y=lat, size=pop, color=pop), alpha=0.9) +
-    scale_size_continuous(range=c(1,12)) +
-    scale_color_viridis(trans="log") +
-    theme_void() + ylim(50,59) + coord_map() + theme(legend.position="none")
+  arrange(desc(pop)) %>%
+  mutate(name = factor(name, unique(name))) %>%
+  ggplot() +
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(aes(x = long, y = lat, size = pop, color = pop), alpha = 0.9) +
+  scale_size_continuous(range = c(1, 12)) +
+  scale_color_viridis_c(trans = "log") +
+  theme_void() +
+  ylim(50, 59) +
+  theme(legend.position = "none")
 ```
  
 
@@ -194,7 +205,50 @@ data %>%
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-<img src="img/graph/330-bubble-map-with-ggplot2.png" alt="bubble map with R and ggplot2" width="100%"></img>
+```{r thecode6, echo=FALSE, out.width="100%", fig.height=9, fig.width=5}
+# Create breaks for the color scale
+mybreaks <- c(0.02, 0.04, 0.08, 1, 7)
+
+# Reorder data to show biggest cities on top
+data <- data %>%
+  arrange(pop) %>%
+  mutate(name = factor(name, unique(name))) %>%
+  mutate(pop = pop / 1000000)
+
+# Build the map
+data %>%
+  ggplot() +
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(aes(x = long, y = lat, size = pop, color = pop, alpha = pop),
+    shape = 20, stroke = FALSE
+  ) +
+  scale_size_continuous(
+    name = "Population (in M)", trans = "log",
+    range = c(1, 12), breaks = mybreaks
+  ) +
+  scale_alpha_continuous(
+    name = "Population (in M)", trans = "log",
+    range = c(0.1, .9), breaks = mybreaks
+  ) +
+  scale_color_viridis_c(
+    option = "magma", trans = "log",
+    breaks = mybreaks, name = "Population (in M)"
+  ) +
+  theme_void() +
+  guides(colour = guide_legend()) +
+  ggtitle("The 1000 biggest cities in the UK") +
+  theme(
+    legend.position = c(1, 0.6),
+    text = element_text(color = "#22211d"),
+    plot.margin = margin(r = 2, l = 2, unit = "cm"),
+    plot.background = element_rect(fill = "#f5f5f2", color = NA),
+    panel.background = element_rect(fill = "#f5f5f2", color = NA),
+    plot.title = element_text(size = 14, hjust = 0.5, color = "#4e4d47"),
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 8)
+  )
+```
+
 
 </div>
 
@@ -203,41 +257,12 @@ data %>%
 
 We can custom a little bit this figure for a better looking result (first image of this post).
  
-Note that here the legend shows both the size, the color and the transparency on the same circles. This is possible only if these 3 informations are redondante, with the same name, transformation and breaks.
+Note that here the legend shows both the size, the color and the transparency on the same circles. This is possible only if these 3 informations are redundant, with the same name, transformation and breaks.
 
 </div>
 </div>
 
-
-```{r, eval=FALSE}
-# Create breaks for the color scale
-mybreaks <- c(0.02, 0.04, 0.08, 1, 7)
-
-# Reorder data to show biggest cities on top
-data <- data %>%
-  arrange(pop) %>%
-  mutate( name=factor(name, unique(name))) %>%
-  mutate(pop=pop/1000000) 
-
-# Build the map
-map %>%
-  ggplot() +
-    geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-    geom_point(  aes(x=long, y=lat, size=pop, color=pop, alpha=pop), shape=20, stroke=FALSE) +
-    scale_size_continuous(name="Population (in M)", trans="log", range=c(1,12), breaks=mybreaks) +
-    scale_alpha_continuous(name="Population (in M)", trans="log", range=c(0.1, .9), breaks=mybreaks) +
-    scale_color_viridis(option="magma", trans="log", breaks=mybreaks, name="Population (in M)" ) +
-    theme_void() + ylim(50,59) + coord_map() + 
-    guides( colour = guide_legend()) +
-    ggtitle("The 1000 biggest cities in the UK") +
-    theme(
-      legend.position = c(0.85, 0.8),
-      text = element_text(color = "#22211d"),
-      plot.background = element_rect(fill = "#f5f5f2", color = NA), 
-      panel.background = element_rect(fill = "#f5f5f2", color = NA), 
-      legend.background = element_rect(fill = "#f5f5f2", color = NA),
-      plot.title = element_text(size= 16, hjust=0.1, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    )
+```{r thecode6, eval=FALSE}
 ```
 
 
@@ -260,7 +285,7 @@ map %>%
 
 <div class = "col-md-4  col-sm-12 align-self-center">
 
-Last but not least, plotly allows to quickly get an interactive version. This is really handy since it allows to zoom on the map and hover a city to know its name and population!
+Last but not least, `plotly` allows to quickly get an interactive version. This is really handy since it allows to zoom on the map and hover a city to know its name and population!
 
 </div>
 </div>
@@ -271,37 +296,38 @@ Last but not least, plotly allows to quickly get an interactive version. This is
 ```{r, eval=FALSE}
 # Load the plotly package
 library(plotly)
- 
+
 # Rorder data + Add a new column with tooltip text
 data <- data %>%
   arrange(pop) %>%
-  mutate( name=factor(name, unique(name))) %>%
-  mutate( mytext=paste(
-    "City: ", name, "\n", 
-    "Population: ", pop, sep="")
-  )
- 
+  mutate(name = factor(name, unique(name))) %>%
+  mutate(mytext = paste(
+    "City: ", name, "\n",
+    "Population: ", pop,
+    sep = ""
+  ))
+
 # Make the map (static)
 p <- data %>%
   ggplot() +
-    geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-    geom_point(aes(x=long, y=lat, size=pop, color=pop, text=mytext, alpha=pop) ) +
-    scale_size_continuous(range=c(1,15)) +
-    scale_color_viridis(option="inferno", trans="log" ) +
-    scale_alpha_continuous(trans="log") +
-    theme_void() +
-    ylim(50,59) +
-    coord_map() +
-    theme(legend.position = "none")
- 
-p <- ggplotly(p, tooltip="text")
+  geom_sf(data = UK, fill = "grey", alpha = 0.3) +
+  geom_point(aes(
+    x = long, y = lat, size = pop, color = pop, text = mytext,
+    alpha = pop
+  )) +
+  scale_size_continuous(range = c(1, 9)) +
+  scale_color_viridis_c(option = "inferno", trans = "log") +
+  scale_alpha_continuous(trans = "log") +
+  theme_void() +
+  theme(legend.position = "none")
+
+p <- ggplotly(p, tooltip = "text")
 p
 
 # save the widget in a html file if needed.
 # library(htmlwidgets)
 # saveWidget(p, file=paste0( getwd(), "/HtmlWidget/bubblemapUK.html"))
-
-````
+```
 
 
 

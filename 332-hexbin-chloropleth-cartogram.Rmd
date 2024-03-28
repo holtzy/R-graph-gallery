@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container">
@@ -39,7 +39,7 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 The first step is to build a basic [hexbin map](hexbin-map.html) of the US. Note that the gallery dedicates a [whole section](hexbin-map.html) to this kind of map.
 
-Hexagones boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `geojson_read()` function. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
+Hexagons boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `st_read() / read_sf()` functions. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
 
 </div>
 
@@ -49,21 +49,20 @@ Hexagones boundaries are provided [here](https://team.carto.com/u/andrew/tables/
 ```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
 # library
 library(tidyverse)
-library(geojsonio)
+library(sf)
 library(RColorBrewer)
-library(rgdal)
 
-# Hexagones boundaries at geojson format were found here, and stored on my github https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
+# Hexagons boundaries at geojson format were found here, and stored on my github https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
 
-# Load this file.
-spdf <- geojson_read("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/us_states_hexgrid.geojson.json",  what = "sp")
+# Load this file. (Note: I stored in a folder called DATA)
+my_sf <- read_sf("DATA/us_states_hexgrid.geojson.json")
 
-# Bit of reformating
-spdf@data = spdf@data %>% 
+# Bit of reformatting
+my_sf <- my_sf %>%
   mutate(google_name = gsub(" \\(United States\\)", "", google_name))
 
 # Show it
-plot(spdf)
+plot(st_geometry(my_sf))
 ```
 </div>
 </div>
@@ -93,7 +92,7 @@ plot(spdf)
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The geospatial object has a **data slot**: an attached data frame that provides several information for each region. It is called `spdf@data` here.
+The geospatial object has an attached data frame that provides several information for each region.
 
 We need to add a new column to this data frame. This column will provide the population per state, available at `.csv` format [here](https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv). 
 
@@ -109,17 +108,22 @@ We can thus use the `cartogram` library to distort the size of each state (=hexa
 library(cartogram)
 
 # Load the population per states (source: https://www.census.gov/data/tables/2017/demo/popest/nation-total.html)
-pop <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv", sep=",", header=T)
+pop <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv", sep = ",", header = T)
 pop$pop <- pop$pop / 1000000
- 
+
 # merge both
-spdf@data <- spdf@data %>% left_join(., pop, by=c("google_name"="state"))
+my_sf <- my_sf %>% left_join(., pop, by = c("google_name" = "state"))
 
 # Compute the cartogram, using this population information
-cartogram <- cartogram(spdf, 'pop')
- 
+# First we need to change the projection, we use Mercator (AKA Google Maps, EPSG 3857)
+my_sf_merc <- st_transform(my_sf, 3857)
+cartogram <- cartogram_cont(my_sf_merc, "pop")
+
+# Back to original projection
+cartogram <- st_transform(cartogram, st_crs(my_sf))
+
 # First look!
-plot(cartogram)
+plot(st_geometry(cartogram))
 ```
 </div>
 </div>
@@ -144,48 +148,37 @@ plot(cartogram)
 
 ```{r thecode3, echo=FALSE, fig.align="center", out.width = "80%", fig.height=5}
 # Library
-library(broom) # for the tidy function
-library(rgeos) # for the gcentroid function
-
-# tidy data to be drawn by ggplot2 (broom library of the tidyverse)
-carto_fortified <- tidy(cartogram, region = "google_name")
-carto_fortified <- carto_fortified %>% 
-  left_join(. , cartogram@data, by=c("id"="google_name")) 
- 
-# Calculate the position of state labels
-centers <- cbind.data.frame(data.frame(gCentroid(cartogram, byid=TRUE), id=cartogram@data$iso3166_2))
- 
 # plot
-ggplot() +
-  geom_polygon(data = carto_fortified, aes(fill = pop, x = long, y = lat, group = group) , size=0.05, alpha=0.9, color="black") +
+ggplot(cartogram) +
+  geom_sf(aes(fill = pop), linewidth = 0.05, alpha = 0.9, color = "black") +
   scale_fill_gradientn(
-    colours=brewer.pal(7,"BuPu"), name="population (in M)", 
-    guide=guide_legend( keyheight = unit(3, units = "mm"), 
-                        keywidth=unit(12, units = "mm"), 
-                        title.position = 'top', 
-                        label.position = "bottom") 
+    colours = brewer.pal(7, "BuPu"), name = "population (in M)",
+    labels = scales::label_comma(),
+    guide = guide_legend(
+      keyheight = unit(3, units = "mm"),
+      keywidth = unit(12, units = "mm"),
+      title.position = "top",
+      label.position = "bottom"
+    )
   ) +
-  geom_text(data=centers, aes(x=x, y=y, label=id), color="white", size=3, alpha=0.6) +
+  geom_sf_text(aes(label = iso3166_2), color = "white", size = 3, alpha = 0.6) +
   theme_void() +
-  ggtitle( "Another look on the US population" ) +
-  
+  ggtitle("Another look on the US population") +
   theme(
     legend.position = c(0.5, 0.9),
     legend.direction = "horizontal",
     text = element_text(color = "#22211d"),
-    plot.background = element_rect(fill = "#f5f5f9", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f9", color = NA), 
+    plot.background = element_rect(fill = "#f5f5f9", color = NA),
+    panel.background = element_rect(fill = "#f5f5f9", color = NA),
     legend.background = element_rect(fill = "#f5f5f9", color = NA),
-    plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-  ) +
-  coord_map()
-
+    plot.title = element_text(size = 22, hjust = 0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+  )
 ```
 
 
 To get a satisfying result, let's:
 
-- color hexagones according to their population
+- color hexagons according to their population
 - add legend
 - add background color
 - add title

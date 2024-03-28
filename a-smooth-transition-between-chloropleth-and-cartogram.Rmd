@@ -1,7 +1,7 @@
 ---
 title: "A smooth transition between choropleth and cartogram"
 descriptionMeta: "This post describes how to make a smooth transition GIF between a choropleth map and a cartogram with R. It starts by doing a basic map of Africa and then distorts country size using the cartogram library"
-descriptionTop: "This post describes how to make a smooth transition GIF between a [choropleth map](choropleth-map.html) and a [cartogram](cartogram.html). It starts by doing a basic map of Africa and then distorts country size using the `cartogram` library. `ggplot2` is used to build a good looking [choropleth](choropleth-map.html) map. Animation is made possible thanks to the `tweenR` and `gganimate` packages."
+descriptionTop: "This post describes how to make a smooth transition GIF between a [choropleth map](choropleth-map.html) and a [cartogram](cartogram.html). It starts by doing a basic map of Africa and then distorts country size using the `cartogram` library. `ggplot2` is used to build a good looking [choropleth](choropleth-map.html) map. Animation is made possible thanks to the `gganimate` package."
 sectionText: "Cartogram section"
 sectionLink: "cartogram.html"
 DataToVizText: "Data to Viz"
@@ -22,7 +22,7 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dpi = 300, dev = "ragg_png")
 ```
 
 <div class="container">
@@ -51,19 +51,13 @@ Before we start, make sure you've got the following libraries:
 </div>
 
 ```{r}
-# Please Ignore, specific to a bug in the gallery
-library(pacman)
-pacman::p_unload(pacman::p_loaded(), character.only = TRUE)
-
 # Load libraries
-library(dplyr)        # data wrangling
-library(cartogram)    # for the cartogram
-library(ggplot2)      # to realize the plots
-library(broom)        # from geospatial format to data frame
-library(tweenr)       # to create transition dataframe between 2 states
-library(gganimate)    # To realize the animation
-library(maptools)     # world boundaries coordinates
-library(viridis)      # for a nice color palette
+library(dplyr) # data wrangling
+library(cartogram) # for the cartogram
+library(ggplot2) # to realize the plots
+library(transformr) # needed in order to make gganimate works with sf
+library(gganimate) # To realize the animation
+library(sf) # read shapefiles
 ```
 
 
@@ -85,10 +79,10 @@ library(viridis)      # for a nice color palette
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The [maptools library](https://cran.r-project.org/web/packages/maptools/maptools.pdf) provides all the information we need to draw a map of Africa.
+Let's get a geospatial object from a shape file available [here](http://thematicmapping.org/downloads/world_borders.php). 
+This step is extensively described in [this post](168-load-a-shape-file-into-r.html) in case you're not familiar with it.
 
-All the country boundaries are stored in the `world_simpl` object. Let’s load this object, keep only Africa, and draw a basic representation.
-This requires only 3 lines of code.
+All the country boundaries are stored in the `world_simpl` object. Let's load this object, keep only Africa, and draw a basic representation. This requires only 3 lines of code.
 
 </div>
 
@@ -96,12 +90,15 @@ This requires only 3 lines of code.
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode2, echo=FALSE, out.width = "100%", fig.height=7}
-# Get the shape file of Africa
-data(wrld_simpl)
-afr=wrld_simpl[wrld_simpl$REGION==2,]
- 
-# A basic representation
-plot(afr)
+# Get the shape file of Africa, see how on
+# https://r-graph-gallery.com/168-load-a-shape-file-into-r.html
+
+# I stored the data on a DATA folder and read it from there
+wrld_simpl <- read_sf("DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp")
+afr <- wrld_simpl[wrld_simpl$REGION == 2, ]
+
+# We can visualize the region's boundaries with the plot function
+plot(st_geometry(afr))
 ```
 </div>
 </div>
@@ -128,13 +125,13 @@ plot(afr)
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The `afr` object is a spatial object. Thus it has a **data slot** that gives a few information concerning each region. You can visualise this info typing `afr@data` in our case. 
+The `afr` object is a spatial object. Thus it has a **data** that gives a few information concerning each region. You can visualize this info typing `af` in our case. 
 
 You will see a column called `POP2005`, providing the number of inhabitants per country in 2005.
 
 Using this information we can use the `cartogram` library to build... a [cartogram](cartogram.html)! Basically, it will distort the shape of every country proportionally to its number of inhabitants. 
 
-The output is a new geospatial object that we can map like we’ve done before. As you can see, Nigeria appears way bigger on this map, since it has a population of about 141M inhabitants.
+The output is a new geospatial object that we can map like we've done before. As you can see, Nigeria appears way bigger on this map, since it has a population of about 141M inhabitants.
 
 </div>
 
@@ -142,11 +139,15 @@ The output is a new geospatial object that we can map like we’ve done before. 
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+# need first to "change" the projection to Mercator (AKA Google Maps): EPSG: 3857
+afr <- st_transform(afr, 3857)
+
+
 # construct a cartogram using the population in 2005
-afr_cartogram <- cartogram(afr, "POP2005", itermax=7)
- 
+afr_cartogram <- cartogram_cont(afr, "POP2005", itermax = 7)
+
 # A basic representation
-plot(afr_cartogram)
+plot(st_geometry(afr_cartogram))
 ```
 </div>
 </div>
@@ -170,11 +171,9 @@ plot(afr_cartogram)
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-Let’s improve the appearance of the previous maps using the [ggplot2](ggplot2-package.html) library. 
+Let's improve the appearance of the previous maps using the [ggplot2](ggplot2-package.html) library. 
 
-Note that `ggplot2` uses data frame and not geospatial object. The transformation to a data frame is done using the `tidy()` function of the `broom` package. Since it does not transfer the data slot automatically, we merge it afterward.
-
-The `geom_polygon()` function is used to draw map data. See the [graph #327](327-chloropleth-map-from-geojson-with-ggplot2.html) of the gallery for more explanation on [choropleth](choropleth-map.html) maps with `ggplot2`.
+The `geom_sf()` function is used to draw map data. See the [graph #327](327-chloropleth-map-from-geojson-with-ggplot2.html) of the gallery for more explanation on [choropleth](choropleth-map.html) maps with `ggplot2`.
 
 </div>
 
@@ -182,29 +181,41 @@ The `geom_polygon()` function is used to draw map data. See the [graph #327](327
 <div class = "col-md-6  col-sm-12">
 
 ```{r thecode4, echo=FALSE, out.width = "100%", fig.height=7}
-# Transform these 2 objects in dataframe, plotable with ggplot2
-afr_cartogram_df <- tidy(afr_cartogram) %>% left_join(. , afr_cartogram@data, by=c("id"="ISO3")) 
-afr_df <- tidy(afr) %>% left_join(. , afr@data, by=c("id"="ISO3")) 
- 
-# And using the advices of chart #331 we can custom it to get a better result:
+# Using the advice of chart #331 we can custom it to get a better result:
+
 ggplot() +
-  geom_polygon(data = afr_df, aes(fill = POP2005/1000000, x = long, y = lat, group = group) , size=0, alpha=0.9) +
-  theme_void() +
-  scale_fill_viridis(name="Population (M)", breaks=c(1,50,100, 140), guide = guide_legend( keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), label.position = "bottom", title.position = 'top', nrow=1)) +
-  labs( title = "Africa", subtitle="Population per country in 2005" ) +
-  ylim(-35,35) +
-  theme(
-    text = element_text(color = "#22211d"), 
-    plot.background = element_rect(fill = "#f5f5f4", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f4", color = NA), 
-    legend.background = element_rect(fill = "#f5f5f4", color = NA),
-    plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    plot.subtitle = element_text(size= 13, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    legend.position = c(0.2, 0.26)
+  geom_sf(
+    data = afr, aes(fill = POP2005 / 1000000),
+    linewidth = 0, alpha = 0.9
   ) +
-  coord_map()
- 
-# You can do the same for afr_cartogram_df
+  theme_void() +
+  scale_fill_viridis_c(
+    name = "Population (M)", breaks = c(1, 50, 100, 140),
+    guide = guide_legend(
+      keyheight = unit(3, units = "mm"),
+      keywidth = unit(12, units = "mm"),
+      label.position = "bottom",
+      title.position = "top", nrow = 1
+    )
+  ) +
+  labs(title = "Africa", subtitle = "Population per country in 2005") +
+  theme(
+    text = element_text(color = "#22211d"),
+    plot.background = element_rect(fill = "#f5f5f4", color = NA),
+    panel.background = element_rect(fill = "#f5f5f4", color = NA),
+    legend.background = element_rect(fill = "#f5f5f4", color = NA),
+    plot.title = element_text(
+      size = 22, hjust = 0.5, color = "#4e4d47",
+      margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")
+    ),
+    plot.subtitle = element_text(
+      size = 13, hjust = 0.5, color = "#4e4d47",
+      margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")
+    ),
+    legend.position = c(0.2, 0.26)
+  )
+
+# You can do the same for afr_cartogram
 ```
 </div>
 </div>
@@ -229,40 +240,52 @@ ggplot() +
 
 
 ```{r thecode5, out.width=c("33%","33%","33%"), fig.show="hold", echo=FALSE, fig.height=7 }
-# Give an id to every single point that compose the boundaries
-afr_cartogram_df$id <- seq(1,nrow(afr_cartogram_df))
-afr_df$id <- seq(1,nrow(afr_df))
- 
-# Bind both map info in a data frame. 3 states: map --> cartogram --> map
-data <- rbind(afr_df, afr_cartogram_df, afr_df)
- 
-# Set transformation type + time
-data$ease <- "cubic-in-out"
-data$time <- rep(c(1:3), each=nrow(afr_df))
- 
-# Calculate the transition between these 2 objects?
-dt <- tween_elements(data, time='time', group='id', ease='ease', nframes = 30)
- 
-# check a few frame
-ggplot() + 
-  geom_polygon(data = dt %>% filter(.frame==0) %>% arrange(order), 
-    aes(fill = POP2005, x = long, y = lat, group = group), size=0, alpha=0.9
+# Loop to create states
+afr$id <- seq(1, nrow(afr))
+afr$.frame <- 0
+
+# Store the loop on this object
+dt1 <- afr
+afr_cartogram <- afr
+
+for (i in 1:15) {
+  afr_cartogram <- cartogram_cont(afr_cartogram, "POP2005", itermax = 1)
+  afr_cartogram$.frame <- i
+
+  dt1 <- rbind(dt1, afr_cartogram)
+}
+
+# Arrange in the inverse order now to go back to the initial state
+dt2 <- dt1 %>%
+  arrange(desc(.frame), id) %>%
+  mutate(.frame = -1 * .frame + 31)
+
+dt <- bind_rows(dt1, dt2) %>% arrange(.frame, id)
+
+# check a few frames
+ggplot() +
+  geom_sf(data = dt %>% filter(.frame == 0), aes(fill = POP2005), linewidth = 0)
+
+ggplot() +
+  geom_sf(
+    data = dt %>% filter(.frame == 5), aes(fill = POP2005),
+    linewidth = 0
   )
-ggplot() + 
-  geom_polygon(data = dt %>% filter(.frame==5) %>% arrange(order), 
-    aes(fill = POP2005, x = long, y = lat, group = group) , size=0, alpha=0.9
-  )
-ggplot() + 
-  geom_polygon(data = dt %>% filter(.frame==10) %>% arrange(order), 
-    aes(fill = POP2005, x = long, y = lat, group = group) , size=0, alpha=0.9
+
+ggplot() +
+  geom_sf(
+    data = dt %>% filter(.frame == 15), aes(fill = POP2005),
+    linewidth = 0
   )
 ```
 
 The goal being to make a smooth animation between the 2 maps, we need to create a multitude of intermediate maps using interpolation. 
 
-This is possible thanks to the awesome [tweenr library](https://github.com/thomasp85/tweenr). (See a few examples in the [animation section](animation.html) of the gallery).
 
-At the end we’ve got a big data frame which contains enough information to draw 30 maps. Three of these maps are presented above.
+This is possible by using the `itermax` parameter on the `cartogram_cont()` function. We can compute
+several intermediate cartograms and consider each one of them as a frame.
+
+At the end we've got a big data frame which contains enough information to draw 30 maps. Three of these maps are presented above.
 
 
 ```{r thecode5, eval=FALSE}
@@ -272,40 +295,56 @@ At the end we’ve got a big data frame which contains enough information to dra
 # Make the animation with gganimate
 ***
 
-The last step consists at building the 30 maps and compile them in a .gif file. This is done using the gganimate library. This library uses another aesthetic: frame. A new plot is made for each frame, that allows us to build the gif afterwards.
+The last step consists at building the 30 maps and compile them in a .gif file. This is done using the `gganimate` library. This library uses another functions `transition_states()` and `ease_aes()`. A new plot is made for each frame, that allows us to build the gif afterwards.
 
-><u>Note</u>: This code uses the old version of `gganimate`. It needs to be updated. Please drop me a message if you can help me with that!
 
 ```{r eval=FALSE}
-# Plot
-p <- ggplot() + 
-  geom_polygon(data = dt  %>% arrange(order) , aes(fill = POP2005/1000000, x = long, y = lat, group = group, frame=.frame) , size=0, alpha=0.9) +
+# Remove CRS due to a bug on gganimate
+dt <- st_set_crs(dt, NA)
+
+p <- ggplot(dt) +
+  geom_sf(aes(fill = POP2005 / 1000000, group = id), linewidth = 0, alpha = 0.9) +
   theme_void() +
-  
-  scale_fill_viridis(
-    name="Population (M)", breaks=c(1,50,100, 140), 
-    guide = guide_legend( 
-      keyheight = unit(3, units = "mm"), keywidth=unit(12, units = "mm"), 
-      label.position = "bottom", title.position = 'top', nrow=1)
+  scale_fill_viridis_c(
+    name = "Population (M)",
+    breaks = c(1, 50, 100, 140),
+    guide = guide_legend(
+      keyheight = unit(3, units = "mm"),
+      keywidth = unit(12, units = "mm"),
+      label.position = "bottom",
+      title.position = "top", nrow = 1
+    )
   ) +
-  labs( title = "Africa", subtitle="Population per country in 2005" ) +
-  ylim(-35,35) +
-  
+  labs(title = "Africa", subtitle = "Population per country in 2005") +
   theme(
-    text = element_text(color = "#22211d"), 
-    plot.background = element_rect(fill = "#f5f5f4", color = NA), 
-    panel.background = element_rect(fill = "#f5f5f4", color = NA), 
+    text = element_text(color = "#22211d"),
+    plot.background = element_rect(fill = "#f5f5f4", color = NA),
+    panel.background = element_rect(fill = "#f5f5f4", color = NA),
     legend.background = element_rect(fill = "#f5f5f4", color = NA),
-    plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    plot.subtitle = element_text(size= 13, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+    plot.title = element_text(
+      size = 22, hjust = 0.5, color = "#4e4d47",
+      margin = margin(
+        b = -0.1, t = 0.4, l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.subtitle = element_text(
+      size = 13, hjust = 0.5, color = "#4e4d47",
+      margin = margin(
+        b = -0.1, t = 0.4, l = 2,
+        unit = "cm"
+      )
+    ),
     legend.position = c(0.2, 0.26)
   ) +
-  coord_map()
- 
+  # from gganimate
+  transition_states(.frame) +
+  ease_aes("cubic-in-out")
+
 # Make the animation
-#animation::ani.options(interval = 1/9)
-gganimate(p, "Animated_Africa.gif",  title_frame = F)
-````
+animate(p, duration = 5)
+anim_save("Animated_Cartogram_Africa.gif", p, duration = 5)
+```
 
 Done! You should have the gif in your working directory.
 
