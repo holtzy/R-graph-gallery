@@ -50,9 +50,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to
+    <meta
+      name="description"
+      content="This post explains how to
 customize the tooltip in a plotly chart in R. It provides reproducible
-code and explanation how to improve the default tooltip." />
+code and explanation how to improve the default tooltip."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,10 +65,16 @@ code and explanation how to improve the default tooltip." />
 
     <!-- Control appearance when shared by social media -->
     <meta property="og:title" content="Customize plotly tooltip" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="This post explains how to
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="This post explains how to
 customize the tooltip in a plotly chart in R. It provides reproducible
-code and explanation how to improve the default tooltip." />
+code and explanation how to improve the default tooltip."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/customize-plotly-tooltip.html"
@@ -135,11 +144,12 @@ code and explanation how to improve the default tooltip." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to <strong>customize the tooltip</strong> in a <a
-href="https://r-graph-gallery.com/plotly.html">plotly</a> chart in R. It
-provides reproducible code and explanation how to <strong>improve the
-default tooltip</strong>.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to <strong>customize the tooltip</strong> in
+            a <a href="https://r-graph-gallery.com/plotly.html">plotly</a> chart
+            in R. It provides reproducible code and explanation how to
+            <strong>improve the default tooltip</strong>.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -164,7 +174,6 @@ default tooltip</strong>.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -172,23 +181,33 @@ default tooltip</strong>.</p>
       }
     </style>
 
-    <div class="container" style="padding-top: 80px;">
-<div id="packages" class="section level1">
-<h1>Packages</h1>
-<p>First, we need to load a few packages:</p>
-<ul>
-<li><a href="https://r-graph-gallery.com/plotly.html">plotly</a> for the
-interactive chart</li>
-<li><a
-href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a> for
-creating the initial plot</li>
-<li><a href="https://r-graph-gallery.com/hrbrthemes.html">hrbrthemes</a>
-for the theme</li>
-<li><code>viridis</code> for the color palette</li>
-<li><code>gapminder</code> for the dataset</li>
-<li><code>dplyr</code> for data manipulation</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Visualisation packages</span></span>
+    <div class="container" style="padding-top: 80px">
+      <div id="packages" class="section level1">
+        <h1>Packages</h1>
+        <p>First, we need to load a few packages:</p>
+        <ul>
+          <li>
+            <a href="https://r-graph-gallery.com/plotly.html">plotly</a> for the
+            interactive chart
+          </li>
+          <li>
+            <a href="https://r-graph-gallery.com/ggplot2-package.html"
+              >ggplot2</a
+            >
+            for creating the initial plot
+          </li>
+          <li>
+            <a href="https://r-graph-gallery.com/hrbrthemes.html">hrbrthemes</a>
+            for the theme
+          </li>
+          <li><code>viridis</code> for the color palette</li>
+          <li><code>gapminder</code> for the dataset</li>
+          <li><code>dplyr</code> for data manipulation</li>
+        </ul>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Visualisation packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
@@ -196,29 +215,39 @@ for the theme</li>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># Data packages</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">library</span>(gapminder)</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span></code></pre></div>
-</div>
-<div id="dataset" class="section level1">
-<h1>Dataset</h1>
-<p>The <code>gapminder</code> dataset is used in this example. It
-contains data about life expectancy, population and GDP per capita for
-many countries over time.</p>
-<p>Here, we:</p>
-<ul>
-<li>filter the data to keep only the year 2007</li>
-<li>remove the year column</li>
-<li>reorder the countries to have big bubbles on top</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(year<span class="sc">==</span><span class="st">&quot;2007&quot;</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>year)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">library</span>(dplyr) </span></code></pre>
+        </div>
+      </div>
+      <div id="dataset" class="section level1">
+        <h1>Dataset</h1>
+        <p>
+          The <code>gapminder</code> dataset is used in this example. It
+          contains data about life expectancy, population and GDP per capita for
+          many countries over time.
+        </p>
+        <p>Here, we:</p>
+        <ul>
+          <li>filter the data to keep only the year 2007</li>
+          <li>remove the year column</li>
+          <li>reorder the countries to have big bubbles on top</li>
+        </ul>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> gapminder <span class="sc">%&gt;%</span> <span class="fu">filter</span>(year<span class="sc">==</span><span class="st">&quot;2007&quot;</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>year)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>data <span class="ot">=</span> data <span class="sc">%&gt;%</span>  </span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="co"># Reorder countries to having big bubbles on top</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(pop)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">factor</span>(country, country))</span></code></pre></div>
-</div>
-<div id="default-plot" class="section level1">
-<h1>Default plot</h1>
-<hr />
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>p <span class="ot">=</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">factor</span>(country, country))</span></code></pre>
+        </div>
+      </div>
+      <div id="default-plot" class="section level1">
+        <h1>Default plot</h1>
+        <hr />
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>p <span class="ot">=</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">ggplot</span>( <span class="fu">aes</span>(<span class="at">x=</span>gdpPercap, <span class="at">y=</span>lifeExp, <span class="at">size =</span> pop, <span class="at">color =</span> continent)) <span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.7</span>) <span class="sc">+</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">1.4</span>, <span class="dv">19</span>), <span class="at">name=</span><span class="st">&quot;Population (M)&quot;</span>) <span class="sc">+</span></span>
@@ -231,29 +260,44 @@ many countries over time.</p>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># save the widget</span></span>
 <span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#library(htmlwidgets)</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip.html&quot;)</span></span></code></pre></div>
-<center>
-<iframe src="HtmlWidget/plotlyDefaultTooltip.html" height="700" width="700" style="border:none;">
-</iframe>
-</center>
-</div>
-<div id="customize-tooltip" class="section level1">
-<h1>Customize tooltip</h1>
-<hr />
-<p>As you can see, it’s a bit <strong>unfortunate</strong> that the
-tooltip does not tell us <strong>what is the country</strong>. Let’s
-customize it to add this information.</p>
-<p>For this, we:</p>
-<ul>
-<li>create a <strong>new column</strong> <code>text</code> in the
-dataset that contains the <strong>information we want to
-display</strong> in the tooltip using the <code>mutate()</code>
-function</li>
-<li>add <code>text</code> as an aesthetic in the <code>ggplot()</code>
-function</li>
-</ul>
-<p>And that’s it!</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>data <span class="ot">=</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip.html&quot;)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/plotlyDefaultTooltip.html"
+            height="700"
+            width="700"
+            style="border: none"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div id="customize-tooltip" class="section level1">
+        <h1>Customize tooltip</h1>
+        <hr />
+        <p>
+          As you can see, it’s a bit <strong>unfortunate</strong> that the
+          tooltip does not tell us <strong>what is the country</strong>. Let’s
+          customize it to add this information.
+        </p>
+        <p>For this, we:</p>
+        <ul>
+          <li>
+            create a <strong>new column</strong> <code>text</code> in the
+            dataset that contains the
+            <strong>information we want to display</strong> in the tooltip using
+            the <code>mutate()</code> function
+          </li>
+          <li>
+            add <code>text</code> as an aesthetic in the
+            <code>ggplot()</code> function
+          </li>
+        </ul>
+        <p>And that’s it!</p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>data <span class="ot">=</span> data <span class="sc">%&gt;%</span> </span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">paste</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="st">&quot;Country: &quot;</span>, country,</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Population (M): &quot;</span>, pop,</span>
@@ -274,29 +318,45 @@ function</li>
 <span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co"># save the widget</span></span>
 <span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#library(htmlwidgets)</span></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip2.html&quot;)</span></span></code></pre></div>
-<center>
-<iframe src="HtmlWidget/plotlyDefaultTooltip2.html" height="700" width="700" style="border:none;">
-</iframe>
-</center>
-</div>
-<div id="more-advanced-customization" class="section level1">
-<h1>More advanced customization</h1>
-<hr />
-<p>The previous example is a good start, but we can go further. Here,
-we:</p>
-<ul>
-<li>use <strong>bold</strong> text to make the tooltip more
-readable</li>
-<li>add a <strong>dollar sign</strong> before the GDP per capita</li>
-<li>use the <code>round()</code> function to make the numbers more
-readable</li>
-<li>add a <strong>title</strong> to the tooltip</li>
-<li>change the <strong>background color</strong> of the tooltip to
-white</li>
-<li>change the <strong>font color</strong> of the tooltip to black</li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip2.html&quot;)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/plotlyDefaultTooltip2.html"
+            height="700"
+            width="700"
+            style="border: none"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div id="more-advanced-customization" class="section level1">
+        <h1>More advanced customization</h1>
+        <hr />
+        <p>
+          The previous example is a good start, but we can go further. Here, we:
+        </p>
+        <ul>
+          <li>
+            use <strong>bold</strong> text to make the tooltip more readable
+          </li>
+          <li>add a <strong>dollar sign</strong> before the GDP per capita</li>
+          <li>
+            use the <code>round()</code> function to make the numbers more
+            readable
+          </li>
+          <li>add a <strong>title</strong> to the tooltip</li>
+          <li>
+            change the <strong>background color</strong> of the tooltip to white
+          </li>
+          <li>
+            change the <strong>font color</strong> of the tooltip to black
+          </li>
+        </ul>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">text =</span> <span class="fu">paste</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="st">&quot;&lt;span style=&#39;font-size:16px;&#39;&gt;&lt;b&gt;&quot;</span>, country, <span class="st">&quot;&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&quot;</span>,</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="st">&quot;&lt;br&gt;&lt;b&gt;Population (M):&lt;/b&gt; &quot;</span>, pop,</span>
@@ -321,102 +381,127 @@ white</li>
 <span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a></span>
 <span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co"># save the widget</span></span>
 <span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#library(htmlwidgets)</span></span>
-<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip3.html&quot;)</span></span></code></pre></div>
-<center>
-<iframe src="HtmlWidget/plotlyDefaultTooltip3.html" height="700" width="700" style="border:none;">
-</iframe>
-</center>
-</div>
-<div id="conclusion" class="section level1">
-<h1>Conclusion</h1>
-<hr />
-<p>This post explains how to customize the tooltip in a <a
-href="https://r-graph-gallery.com/plotly.html">plotly</a> chart in
-R.</p>
-<p>You can learn more about <a
-href="r-graph-gallery.com/interactive-charts.html">interactive
-charts</a> on the R graph gallery.</p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-  <div class="container">
-
-    <p class="mySeryTitle">Related chart types</p>
-    <hr>
-    <div class="row">
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="stacked-barplot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#saveWidget(pp, file=&quot;HtmlWidget/plotlyDefaultTooltip3.html&quot;)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/plotlyDefaultTooltip3.html"
+            height="700"
+            width="700"
+            style="border: none"
+          >
+          </iframe>
+        </center>
       </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="treemap.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Tree150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Treemap</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="doughnut-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Doughnut</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="pie-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Pie150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Pie chart</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="dendrogram.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Dendrogram</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="circle-packing.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Circular packing</div>
+      <div id="conclusion" class="section level1">
+        <h1>Conclusion</h1>
+        <hr />
+        <p>
+          This post explains how to customize the tooltip in a
+          <a href="https://r-graph-gallery.com/plotly.html">plotly</a> chart in
+          R.
+        </p>
+        <p>
+          You can learn more about
+          <a href="r-graph-gallery.com/interactive-charts.html"
+            >interactive charts</a
+          >
+          on the R graph gallery.
+        </p>
+        <!-- Close container -->
       </div>
     </div>
-
-  </div>
-</section> 
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="stacked-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/GroupedRed150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Grouped and Stacked barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="treemap.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Tree150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Treemap</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="doughnut-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Doughnut150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Doughnut</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="pie-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Pie150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Pie chart</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="dendrogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Dendrogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Dendrogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circle-packing.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularPacking150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular packing</div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -548,18 +633,18 @@ charts</a> on the R graph gallery.</p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

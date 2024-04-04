@@ -43,18 +43,20 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Lego Choropleth map with
-R &#8211; the R Graph Gallery</title>
+    <title>Lego Choropleth map with R &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to build a
+    <meta
+      name="description"
+      content="This post explains how to build a
 choropleth map with R using a lego style. The project is made using
 ggplot2 and the tidyverse. The post provides explanation and
-reproducible code." />
+reproducible code."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -64,11 +66,17 @@ reproducible code." />
 
     <!-- Control appearance when shared by social media -->
     <meta property="og:title" content="Lego Choropleth map with R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="This post explains how to
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="This post explains how to
 build a choropleth map with R using a lego style. The project is made
 using ggplot2 and the tidyverse. The post provides explanation and
-reproducible code." />
+reproducible code."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/web-choropleth-map-lego-style.html"
@@ -138,14 +146,17 @@ reproducible code." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This blogpost
-explains how to build a lego <a
-href="https://r-graph-gallery.com/choropleth-map.html">choropleth
-map</a> to check the proportion of people doing sport on the french
-territory. The lego style is implemented in <code>R</code> using the
-<code>ggplot2</code> and <code>sf</code> packages. This article includes
-a step-by-step walkthrough of the map construction, together with its
-final reproducible code.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This blogpost explains how to build a lego
+            <a href="https://r-graph-gallery.com/choropleth-map.html"
+              >choropleth map</a
+            >
+            to check the proportion of people doing sport on the french
+            territory. The lego style is implemented in <code>R</code> using the
+            <code>ggplot2</code> and <code>sf</code> packages. This article
+            includes a step-by-step walkthrough of the map construction,
+            together with its final reproducible code.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -170,7 +181,6 @@ final reproducible code.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -179,34 +189,66 @@ final reproducible code.</p>
     </style>
 
     <div class="container" style="padding-top: 100px">
-<div id="load-data" class="section level1">
-<h1>1. Load data</h1>
-<hr />
-<p>To create our Lego map, we will need these packages:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse) </span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
-<p>We will also need a base map with the data, which may be downloaded
-at <a
-href="https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg">this
-link</a> or loaded directy in R as shown below:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>map<span class="ot">&lt;-</span>sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg&#39;</span>)</span></code></pre></div>
-<p>Data for this map come from the <a
-href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs">Observatoire
-des Territoires</a>.</p>
-</div>
-<div id="make-choropleth" class="section level1">
-<h1>2. Make choropleth</h1>
-<hr />
-<p>In this map, the “value” column contains the percentage of members of
-a sports association by department, which can be used to make a
-choropleth:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(map, <span class="fu">aes</span>(<span class="at">fill=</span>value))<span class="sc">+</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>()</span></code></pre></div>
-<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>Before moving further, we will just make a few modifications to this
-map to transform the gradient into value classes and plot the results in
-an appropriate way:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create classes</span></span>
+      <div id="load-data" class="section level1">
+        <h1>1. Load data</h1>
+        <hr />
+        <p>To create our Lego map, we will need these packages:</p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse) </span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre>
+        </div>
+        <p>
+          We will also need a base map with the data, which may be downloaded at
+          <a
+            href="https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg"
+            >this link</a
+          >
+          or loaded directy in R as shown below:
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>map<span class="ot">&lt;-</span>sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg&#39;</span>)</span></code></pre>
+        </div>
+        <p>
+          Data for this map come from the
+          <a
+            href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs"
+            >Observatoire des Territoires</a
+          >.
+        </p>
+      </div>
+      <div id="make-choropleth" class="section level1">
+        <h1>2. Make choropleth</h1>
+        <hr />
+        <p>
+          In this map, the “value” column contains the percentage of members of
+          a sports association by department, which can be used to make a
+          choropleth:
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(map, <span class="fu">aes</span>(<span class="at">fill=</span>value))<span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>()</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-3-1.png"
+            width="672"
+          />
+        </p>
+        <p>
+          Before moving further, we will just make a few modifications to this
+          map to transform the gradient into value classes and plot the results
+          in an appropriate way:
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create classes</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>clean<span class="ot">&lt;-</span>map<span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">clss=</span><span class="fu">case_when</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    value<span class="sc">&lt;</span><span class="dv">18</span><span class="sc">~</span><span class="st">&quot;1&quot;</span>,</span>
@@ -247,18 +289,31 @@ an appropriate way:</p>
 <span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    <span class="at">values=</span>pal,</span>
 <span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
 <span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>  )<span class="sc">+</span></span>
-<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  theme_custom</span></code></pre></div>
-<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-</div>
-<div id="convert-to-lego-style" class="section level1">
-<h1>3. Convert to Lego style</h1>
-<hr />
-<p>This choropleth is already looking better, but we can give it a more
-original style: <strong>the Lego-style</strong>!</p>
-<p>First steps of the data preparation are: - create a grid over the map
-area, which will then be the boundaries of the bricks ; - extract the
-centroid of each cell, which will then be the center of the brick.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Make grid</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  theme_custom</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-4-1.png"
+            width="672"
+          />
+        </p>
+      </div>
+      <div id="convert-to-lego-style" class="section level1">
+        <h1>3. Convert to Lego style</h1>
+        <hr />
+        <p>
+          This choropleth is already looking better, but we can give it a more
+          original style: <strong>the Lego-style</strong>!
+        </p>
+        <p>
+          First steps of the data preparation are: - create a grid over the map
+          area, which will then be the boundaries of the bricks ; - extract the
+          centroid of each cell, which will then be the center of the brick.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Make grid</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>grd<span class="ot">&lt;-</span><span class="fu">st_make_grid</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    clean, <span class="co"># map name </span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">60</span>) <span class="co"># number of cells per longitude/latitude</span></span>
@@ -277,14 +332,27 @@ centroid of each cell, which will then be the center of the brick.</p>
 <span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="fu">geom_sf</span>(grd,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry))<span class="sc">+</span></span>
 <span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="fu">geom_sf</span>(cent,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geometry),<span class="at">pch=</span><span class="dv">21</span>,<span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
-<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>You can see where we are going with this, right?</p>
-<p>But in order to project the data onto the map, we now need <strong>to
-perform an intersection between the centroids and the base map</strong>.
-We will then bring this information back into the grid using the unique
-identifier <em>‘id’</em> we created in the previous step.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Intersect centroids with basemap</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-5-1.png"
+            width="672"
+          />
+        </p>
+        <p>You can see where we are going with this, right?</p>
+        <p>
+          But in order to project the data onto the map, we now need
+          <strong
+            >to perform an intersection between the centroids and the base
+            map</strong
+          >. We will then bring this information back into the grid using the
+          unique identifier <em>‘id’</em> we created in the previous step.
+        </p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Intersect centroids with basemap</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>cent_clean<span class="ot">&lt;-</span>cent<span class="sc">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">st_intersection</span>(clean)</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
@@ -296,10 +364,16 @@ identifier <em>‘id’</em> we created in the previous step.</p>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Join with grid thanks to id column</span></span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>grd_clean<span class="ot">&lt;-</span>grd<span class="sc">%&gt;%</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="co">#filter(id%in%sel)%&gt;%</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">left_join</span>(cent_no_geom)</span></code></pre></div>
-<p>We are now ready to make the map, combining what we saw with the
-choropleth and the grid above!</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">left_join</span>(cent_no_geom)</span></code></pre>
+        </div>
+        <p>
+          We are now ready to make the map, combining what we saw with the
+          choropleth and the grid above!
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="co"># drop_na() is one way to suppress the cells outside the country</span></span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    grd_clean<span class="sc">%&gt;%</span><span class="fu">drop_na</span>(), </span>
@@ -318,23 +392,40 @@ choropleth and the grid above!</p>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">values=</span>pal,</span>
 <span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
 <span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  )<span class="sc">+</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  theme_custom</span></code></pre></div>
-<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>Depending on the resolution of your figure, you may need to modify
-certain parameters, such as the size of the centroids, for optimal
-rendering. But the advantage of this method is that it can be applied to
-<strong>any type of map traditionally represented as a
-choropleth</strong>, to give it a more original touch.</p>
-</div>
-<div id="the-icing-on-the-cake" class="section level1">
-<h1>4. The icing on the cake</h1>
-<hr />
-<p>When I developed this method, I wanted to add a 3D effect to the map,
-so that the bricks would stand out. I finally chose to do this
-<strong>by adding a second centroid, slightly offset to the right, below
-the real centroid</strong>. I use this centroid to create a shaded
-effect below the map, as explained below:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Set offset</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  theme_custom</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-7-1.png"
+            width="672"
+          />
+        </p>
+        <p>
+          Depending on the resolution of your figure, you may need to modify
+          certain parameters, such as the size of the centroids, for optimal
+          rendering. But the advantage of this method is that it can be applied
+          to
+          <strong
+            >any type of map traditionally represented as a choropleth</strong
+          >, to give it a more original touch.
+        </p>
+      </div>
+      <div id="the-icing-on-the-cake" class="section level1">
+        <h1>4. The icing on the cake</h1>
+        <hr />
+        <p>
+          When I developed this method, I wanted to add a 3D effect to the map,
+          so that the bricks would stand out. I finally chose to do this
+          <strong
+            >by adding a second centroid, slightly offset to the right, below
+            the real centroid</strong
+          >. I use this centroid to create a shaded effect below the map, as
+          explained below:
+        </p>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Set offset</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># (value here is not fixed, it depends on your map, system of coordinates, etc...)</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>off <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
@@ -377,95 +468,126 @@ effect below the map, as explained below:</p>
 <span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt; 18 %&quot;</span>,<span class="st">&quot;&lt; 20 %&quot;</span>,<span class="st">&quot;&lt; 22 %&quot;</span>,<span class="st">&quot;&lt; 24 %&quot;</span>,<span class="st">&quot;&lt; 26 %&quot;</span>, <span class="st">&quot;≥ 26 %&quot;</span>)</span>
 <span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>  )<span class="sc">+</span></span>
 <span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>pal)<span class="sc">+</span></span>
-<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  theme_custom</span></code></pre></div>
-<p><img src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<p>Now feel free to adapt this tutorial to your project!</p>
-<p><strong>Author</strong> <a
-href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br>
-<strong>Data</strong> <a
-href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs">Observatoire
-des Territoires</a></p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>  theme_custom</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-map-lego-style_files/figure-html/unnamed-chunk-8-1.png"
+            width="672"
+          />
+        </p>
+        <p>Now feel free to adapt this tutorial to your project!</p>
+        <p>
+          <strong>Author</strong>
+          <a href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br />
+          <strong>Data</strong>
+          <a
+            href="https://www.observatoire-des-territoires.gouv.fr/nombre-de-licencies-sportifs"
+            >Observatoire des Territoires</a
+          >
+        </p>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -597,18 +719,18 @@ des Territoires</a></p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

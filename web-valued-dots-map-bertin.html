@@ -43,16 +43,20 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Jacques Bertin’s valued points map with
-R &#8211; the R Graph Gallery</title>
+    <title>
+      Jacques Bertin’s valued points map with R &#8211; the R Graph Gallery
+    </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="How to make a Bertin’s valued dots
-map using R: full tutorial with code and explanation." />
+    <meta
+      name="description"
+      content="How to make a Bertin’s valued dots
+map using R: full tutorial with code and explanation."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -61,11 +65,20 @@ map using R: full tutorial with code and explanation." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Jacques Bertin’s valued points
-map with R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="How to make a Bertin’s
-valued dots map using R: full tutorial with code and explanation." />
+    <meta
+      property="og:title"
+      content="Jacques Bertin’s valued points
+map with R"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="How to make a Bertin’s
+valued dots map using R: full tutorial with code and explanation."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/web-valued-dots-map-bertin.html"
@@ -109,8 +122,7 @@ valued dots map using R: full tutorial with code and explanation." />
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
-        <center><h1>Jacques Bertin’s valued points map with
-R</h1></center>
+        <center><h1>Jacques Bertin’s valued points map with R</h1></center>
         <hr class="short_hr" />
         <br />
         <ul class="list-inline social-buttons">
@@ -136,12 +148,17 @@ R</h1></center>
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">A _Bertin’s
-valued dots map__ is a specific type of thematic map where dots
-represent quantities and their values are depicted through various sizes
-or colors.<br/>This tutorial explains how to build one using R, the <a
-href="https://www.productive-r-workflow.com/r/module1/tidyverse-is-your-friend">tidyverse</a>
-and a couple of other packages.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            A _Bertin’s valued dots map__ is a specific type of thematic map
+            where dots represent quantities and their values are depicted
+            through various sizes or colors.<br />This tutorial explains how to
+            build one using R, the
+            <a
+              href="https://www.productive-r-workflow.com/r/module1/tidyverse-is-your-friend"
+              >tidyverse</a
+            >
+            and a couple of other packages.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -166,7 +183,6 @@ and a couple of other packages.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -175,93 +191,171 @@ and a couple of other packages.</p>
     </style>
 
     <div class="container" style="padding-top: 100px">
-<p>The goal of this tutorial is to show <strong>how to transform maps
-into valued points in the way of Jacques Bertin</strong>:<br></p>
-<center>
-<img src="https://raw.githubusercontent.com/BjnNowak/Lessons/main/fig/R_2/bertin.png" alt="Bertin's map of population density in France" width="60%" height="auto">
-</center>
-<p><br> This tutorial will show you how to recreate a similar map of
-population density in France with R. Compared with Jacques Bertin’s
-work, we’ll be taking advantage of the new data available by starting
-from a raster (with population densities per pixel), whereas the
-original map was based on population densities per department (see map
-above).</p>
-<div id="load-data" class="section level1">
-<h1>1. Load data</h1>
-<hr />
-<p>To create our population density map in the way of Jacques Bertin, we
-will need the following packages:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+      <p>
+        The goal of this tutorial is to show
+        <strong
+          >how to transform maps into valued points in the way of Jacques
+          Bertin</strong
+        >:<br />
+      </p>
+      <center>
+        <img
+          src="https://raw.githubusercontent.com/BjnNowak/Lessons/main/fig/R_2/bertin.png"
+          alt="Bertin's map of population density in France"
+          width="60%"
+          height="auto"
+        />
+      </center>
+      <p>
+        <br />
+        This tutorial will show you how to recreate a similar map of population
+        density in France with R. Compared with Jacques Bertin’s work, we’ll be
+        taking advantage of the new data available by starting from a raster
+        (with population densities per pixel), whereas the original map was
+        based on population densities per department (see map above).
+      </p>
+      <div id="load-data" class="section level1">
+        <h1>1. Load data</h1>
+        <hr />
+        <p>
+          To create our population density map in the way of Jacques Bertin, we
+          will need the following packages:
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(terra)     <span class="co"># For raster population file</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(tidyterra) <span class="co"># To plot terra rasters with ggplot()</span></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(sf)        <span class="co"># For French department vector </span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggtext)    <span class="co"># To customize plot text</span></span></code></pre></div>
-<p>For this tutorial, I uploaded a basemap of French departments and a
-raster of population density for France. Population density has been
-downloaded from the <a
-href="https://ghsl.jrc.ec.europa.eu/download.php?ds=pop">Global Human
-Settlement Layer</a>. Data may loaded directy in R as shown below:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># France map</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(ggtext)    <span class="co"># To customize plot text</span></span></code></pre>
+        </div>
+        <p>
+          For this tutorial, I uploaded a basemap of French departments and a
+          raster of population density for France. Population density has been
+          downloaded from the
+          <a href="https://ghsl.jrc.ec.europa.eu/download.php?ds=pop"
+            >Global Human Settlement Layer</a
+          >. Data may loaded directy in R as shown below:
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># France map</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>fr <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/bertin_tuto/raw/main/map/france_sport.gpkg&#39;</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Population density in km2</span></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>pop <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="st">&#39;https://github.com/BjnNowak/bertin_tuto/raw/main/map/france_pop_l93_2.tif&#39;</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Rename raster band to &quot;pop&quot;</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">names</span>(pop) <span class="ot">&lt;-</span> <span class="st">&quot;pop&quot;</span></span></code></pre></div>
-<p>France departments is a <strong>vector</strong> layer (sf object)
-that may be plotted with <strong>geom_sf()</strong>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(fr,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geom))</span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>France population density is a <strong>raster</strong> layer
-(SpatRaster object) that may be plotted with
-<strong>geom_spatraster()</strong>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  tidyterra<span class="sc">::</span><span class="fu">geom_spatraster</span>(<span class="at">data=</span>pop)</span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>On the map of population density, you can already see one of the
-problems we’ll have to deal with: a strong heterogeneity of population
-density between the Paris region and the rest of France. But we’ll come
-back to this later…</p>
-</div>
-<div id="data-preparation" class="section level1">
-<h1>2. Data preparation</h1>
-<hr />
-<p>We must first reduce the number of pixels in the raster.</p>
-<p>If you have applied the above code, you may have seen a message
-telling you that the raster has been compressed for the plot (limitation
-of the number of pixels displayed). Indeed, the number of pixels in the
-raster is relatively large:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Take a look at raster dimensions: </span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">nrow</span>(pop) <span class="co"># Number of rows</span></span></code></pre></div>
-<pre><code>## [1] 1066</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ncol</span>(pop) <span class="co"># Number of columns</span></span></code></pre></div>
-<pre><code>## [1] 1148</code></pre>
-<p><strong>A map with valued points will not be legible with such a
-large number of points</strong>. So, before converting pixels into
-points, we will degrade the resolution of the raster. A number of 100
-points per side to be represented seems reasonable. Let’s calculate the
-aggregation factor corresponding to this resolution:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Compute factor to reduce raster to 100 rows:</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>factor <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">nrow</span>(pop)<span class="sc">/</span><span class="dv">100</span>)</span></code></pre></div>
-<p>We can now degrade the resolution of the raster by the corresponding
-factor:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Aggregate to 100 rows</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">names</span>(pop) <span class="ot">&lt;-</span> <span class="st">&quot;pop&quot;</span></span></code></pre>
+        </div>
+        <p>
+          France departments is a <strong>vector</strong> layer (sf object) that
+          may be plotted with <strong>geom_sf()</strong>:
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(fr,<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geom))</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-3-1.png"
+            width="672"
+          />
+        </p>
+        <p>
+          France population density is a <strong>raster</strong> layer
+          (SpatRaster object) that may be plotted with
+          <strong>geom_spatraster()</strong>:
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  tidyterra<span class="sc">::</span><span class="fu">geom_spatraster</span>(<span class="at">data=</span>pop)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-4-1.png"
+            width="672"
+          />
+        </p>
+        <p>
+          On the map of population density, you can already see one of the
+          problems we’ll have to deal with: a strong heterogeneity of population
+          density between the Paris region and the rest of France. But we’ll
+          come back to this later…
+        </p>
+      </div>
+      <div id="data-preparation" class="section level1">
+        <h1>2. Data preparation</h1>
+        <hr />
+        <p>We must first reduce the number of pixels in the raster.</p>
+        <p>
+          If you have applied the above code, you may have seen a message
+          telling you that the raster has been compressed for the plot
+          (limitation of the number of pixels displayed). Indeed, the number of
+          pixels in the raster is relatively large:
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Take a look at raster dimensions: </span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">nrow</span>(pop) <span class="co"># Number of rows</span></span></code></pre>
+        </div>
+        <pre><code>## [1] 1066</code></pre>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ncol</span>(pop) <span class="co"># Number of columns</span></span></code></pre>
+        </div>
+        <pre><code>## [1] 1148</code></pre>
+        <p>
+          <strong
+            >A map with valued points will not be legible with such a large
+            number of points</strong
+          >. So, before converting pixels into points, we will degrade the
+          resolution of the raster. A number of 100 points per side to be
+          represented seems reasonable. Let’s calculate the aggregation factor
+          corresponding to this resolution:
+        </p>
+        <div class="sourceCode" id="cb9">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Compute factor to reduce raster to 100 rows:</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>factor <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">nrow</span>(pop)<span class="sc">/</span><span class="dv">100</span>)</span></code></pre>
+        </div>
+        <p>
+          We can now degrade the resolution of the raster by the corresponding
+          factor:
+        </p>
+        <div class="sourceCode" id="cb10">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Aggregate to 100 rows</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>pop_agg <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">aggregate</span>(</span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  pop, <span class="at">fact =</span> factor,</span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">na_rm=</span>T</span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>)</span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
 <span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># Replace potential NAs by 0</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>pop_agg[<span class="fu">is.na</span>(pop_agg)] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
-<p>Now that the raster is at the right resolution, we’re going to
-extract the centroid of each pixel. This is a two-step process:</p>
-<ul>
-<li><p>convert the raster to tibble;</p></li>
-<li><p>convert the tibble obtained into a point vector.</p></li>
-</ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># 1. Convert raster to tibble</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>pop_agg[<span class="fu">is.na</span>(pop_agg)] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre>
+        </div>
+        <p>
+          Now that the raster is at the right resolution, we’re going to extract
+          the centroid of each pixel. This is a two-step process:
+        </p>
+        <ul>
+          <li><p>convert the raster to tibble;</p></li>
+          <li><p>convert the tibble obtained into a point vector.</p></li>
+        </ul>
+        <div class="sourceCode" id="cb11">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># 1. Convert raster to tibble</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>pop_tib <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(</span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  pop_agg,</span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">xy =</span> <span class="cn">TRUE</span>,               <span class="co"># Get centroid of each cell </span></span>
@@ -273,29 +367,55 @@ extract the centroid of each pixel. This is a two-step process:</p>
 <span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(</span>
 <span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>    <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>), <span class="co"># Columns with longitude/latitude </span></span>
 <span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>    <span class="at">crs=</span> <span class="dv">2154</span>            <span class="co"># Set CRS (here Lambert-93)</span></span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  )</span></code></pre></div>
-<p>Let’s take a look to the resulting vector:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># This is a sf object that may now be plotted with geom_sf() :</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p>Let’s take a look to the resulting vector:</p>
+        <div class="sourceCode" id="cb12">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># This is a sf object that may now be plotted with geom_sf() :</span></span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">ggplot</span>(sf_pop)<span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>() </span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
-<p>As you can see, we’ve also kept the points outside metropolitan
-France. In this case, this comes from replacing all null values with 0.
-But, as we have a spatial object, <strong>this can easily be corrected
-by an intersection</strong>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Keep only points inside metropolitan France</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>() </span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-9-1.png"
+            width="960"
+          />
+        </p>
+        <p>
+          As you can see, we’ve also kept the points outside metropolitan
+          France. In this case, this comes from replacing all null values with
+          0. But, as we have a spatial object,
+          <strong>this can easily be corrected by an intersection</strong>:
+        </p>
+        <div class="sourceCode" id="cb13">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Keep only points inside metropolitan France</span></span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>sf_pop_metro <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(sf_pop, fr)</span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">ggplot</span>(sf_pop_metro)<span class="sc">+</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="fu">geom_sf</span>()</span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
-<p>Almost there! When we first plotted the population density map as a
-raster, I told you that we’d be coming back to the problem of strong
-population disparities between the Paris region and the rest of the
-country. This will simply be done by creating population density classes
-(to ensure that the points in the Paris region are the only ones to
-emerge).</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Keep only points inside metropolitan France</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>  <span class="fu">geom_sf</span>()</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-10-1.png"
+            width="960"
+          />
+        </p>
+        <p>
+          Almost there! When we first plotted the population density map as a
+          raster, I told you that we’d be coming back to the problem of strong
+          population disparities between the Paris region and the rest of the
+          country. This will simply be done by creating population density
+          classes (to ensure that the points in the Paris region are the only
+          ones to emerge).
+        </p>
+        <div class="sourceCode" id="cb14">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Keep only points inside metropolitan France</span></span>
 <span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>sf_pop_metro <span class="ot">&lt;-</span> sf_pop_metro<span class="sc">%&gt;%</span></span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dens=</span><span class="fu">case_when</span>(</span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>    pop<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">~</span><span class="st">&quot;A&quot;</span>,</span>
@@ -303,15 +423,21 @@ emerge).</p>
 <span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>    pop<span class="sc">&lt;</span><span class="dv">140</span><span class="sc">~</span><span class="st">&quot;C&quot;</span>,</span>
 <span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>    pop<span class="sc">&lt;</span><span class="dv">200</span><span class="sc">~</span><span class="st">&quot;D&quot;</span>,</span>
 <span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    <span class="cn">TRUE</span><span class="sc">~</span><span class="st">&quot;E&quot;</span></span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>  ))</span></code></pre></div>
-</div>
-<div id="make-map" class="section level1">
-<h1>3. Make map!</h1>
-<hr />
-<p>We are now ready to plot the map. As you may have already guessed,
-we’re going to vary the size of the points using the density class
-attribute that we just created:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>  ))</span></code></pre>
+        </div>
+      </div>
+      <div id="make-map" class="section level1">
+        <h1>3. Make map!</h1>
+        <hr />
+        <p>
+          We are now ready to plot the map. As you may have already guessed,
+          we’re going to vary the size of the points using the density class
+          attribute that we just created:
+        </p>
+        <div class="sourceCode" id="cb15">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>    <span class="at">data=</span>sf_pop_metro,</span>
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">size=</span>dens,<span class="at">geometry=</span>geometry)</span>
@@ -319,11 +445,22 @@ attribute that we just created:</p>
 <span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="fu">scale_size_manual</span>(</span>
 <span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="at">values=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="dv">1</span>,<span class="fl">1.5</span>,<span class="dv">2</span>,<span class="fl">2.5</span>),</span>
 <span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">&quot;&lt;20 inhabitants&quot;</span>,<span class="st">&quot;20 to 69&quot;</span>,<span class="st">&quot;70 to 139&quot;</span>,<span class="st">&quot;140 to 199&quot;</span>,<span class="st">&quot;≥200 inhabitants&quot;</span>)</span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-12-1.png" width="960" /></p>
-<p>Finally, several modifications can be made to improve the look of the
-map:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-12-1.png"
+            width="960"
+          />
+        </p>
+        <p>
+          Finally, several modifications can be made to improve the look of the
+          map:
+        </p>
+        <div class="sourceCode" id="cb16">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="co"># Add base map with French departments</span></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>    fr,</span>
@@ -358,98 +495,123 @@ map:</p>
 <span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_markdown</span>(<span class="at">hjust=</span><span class="fl">0.5</span>),</span>
 <span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>,<span class="at">color=</span><span class="st">&quot;grey40&quot;</span>),</span>
 <span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_markdown</span>(<span class="at">color=</span><span class="st">&quot;grey20&quot;</span>,<span class="at">hjust=</span><span class="fl">0.5</span>)</span>
-<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
-<p>If you are interested in further applications of this type of map, I
-have made <a href="https://github.com/BjnNowak/bertin">a R package</a>
-to easily transform vector or raster maps into valued points.</p>
-<p><strong>Author</strong> <a
-href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br>
-<strong>Data</strong> <a
-href="https://ghsl.jrc.ec.europa.eu/download.php?ds=pop">Global Human
-Settlement Layer</a></p>
-<p><br></p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-valued-dots-map-bertin_files/figure-html/unnamed-chunk-13-1.png"
+            width="960"
+          />
+        </p>
+        <p>
+          If you are interested in further applications of this type of map, I
+          have made
+          <a href="https://github.com/BjnNowak/bertin">a R package</a> to easily
+          transform vector or raster maps into valued points.
+        </p>
+        <p>
+          <strong>Author</strong>
+          <a href="https://twitter.com/BjnNowak">Benjamin Nowak</a> <br />
+          <strong>Data</strong>
+          <a href="https://ghsl.jrc.ec.europa.eu/download.php?ds=pop"
+            >Global Human Settlement Layer</a
+          >
+        </p>
+        <p><br /></p>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="spider-or-radar-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Spider / Radar</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="wordcloud.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Wordcloud150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Wordcloud</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="parallel-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Parallel1150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Parallel</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="lollipop-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Lollipop</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circular-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularBarplot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular Barplot</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Barplot</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Spider / Radar</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Wordcloud</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Parallel</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -581,18 +743,18 @@ Settlement Layer</a></p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
