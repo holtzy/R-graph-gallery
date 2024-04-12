@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Combine Multiple Plots with
+<strong>patchwork</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to combine
+multiple ggplot2 plots into a single layout using the patchwork package.
+It provides several reproducible examples with explanation and R
+code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Combine Multiple Plots with
+<strong>patchwork</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+combine multiple ggplot2 plots into a single layout using the patchwork
+package. It provides several reproducible examples with explanation and
+R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Combine Multiple Plots with
+<strong>patchwork</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>patchwork</code> package in R is
+an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of <strong>combining multiple
+plots</strong> into a single layout.<br/>This post showcases the
+<strong>key features</strong> of <code>patchwork</code> and provides a
+set of <strong>graph examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/thomasp85/patchwork"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/patchwork.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{patchwork}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>patchwork</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of <strong>combining multiple
+plots</strong> into a single layout.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of <strong>operators</strong> that make it easy to
+specify complex layouts in a human-readable way.</p>
+<p>✍️ <strong>author</strong> → Thomas Lin Pedersen</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://thomasp85.github.io/patchwork/">github</a></p>
+<p>⭐️ <em>more than 1000 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<p><img src="patchwork_files/figure-html/unnamed-chunk-1-1.png" width="85%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>patchwork</code>, you can install it
+directly from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;patchwork&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>patchwork</code> package allows you to combine multiple
+plots using simple <strong>arithmetic operators</strong> like
+<code>+</code>, <code>/</code>, and <code>|</code>.</p>
+<p>Here’s a basic example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(mpg, disp))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars) <span class="sc">+</span> <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(gear, disp, <span class="at">group =</span> gear))</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code></pre></div>
+<p><img src="patchwork_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="combining-plots" class="section level2">
+<h2>→ Combining Plots</h2>
+<p>You can combine multiple plots using the <code>+</code> operator.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> p1</span></code></pre></div>
+<p><img src="patchwork_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="arranging-plots" class="section level2">
+<h2>→ Arranging Plots</h2>
+<p>Use the <code>/</code> operator to stack plots on top of each
+other.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>p1 <span class="sc">/</span> p2</span></code></pre></div>
+<p><img src="patchwork_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="nesting-plots" class="section level2">
+<h2>→ Nesting Plots</h2>
+<p>You can nest plots using parentheses.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>(p1 <span class="sc">+</span> p2) <span class="sc">/</span> p1</span></code></pre></div>
+<p><img src="patchwork_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="adding-titles-and-annotations" class="section level2">
+<h2>→ Adding Titles and Annotations</h2>
+<p><code>patchwork</code> allows you to add titles, subtitles, and
+captions to your combined plots.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">&#39;My Combined Plot&#39;</span>)</span></code></pre></div>
+<p><img src="patchwork_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+</div>
+<div id="gallery-of-patchwork-examples" class="section level1">
+<h1>Gallery of patchwork examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=../web-dumbbell-chart-with-a-gap-column.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dumbbell plot with gap section
+<hr>
+<p class=explanation_portfolio>
+An extended dumbbell plot originally published by the Pew research
+center. Clean design with a gap section on the right hand side.
+</div>
+</div>
+<img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../line-chart-dual-Y-axis-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Dual Y axis
+<hr>
+<p class=explanation_portfolio>
+A few examples showing how to use the sec.axis argument to add a second
+Y axis.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<a class=portfolio-link href=../web-circular-lollipop-plot-with-ggplot2.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Circular lollipop chart
+<hr>
+<p class=explanation_portfolio>
+A circular lollipop chart with customized layout, in circle legend and
+groups.<br><br>A work by <b>Cédric Scherer</b> for the
+<b>TidyTuesday</b> challenge.
+</div>
+</div>
+<img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-5">
+<div class=portfolio-item>
+<a class=portfolio-link href=../web-lineplots-and-area-chart-the-economist.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Line and Area charts by The Economist
+<hr>
+<p class=explanation_portfolio>
+Learn how to mimick the style of The Economist with libraries like
+ggplot2, patchwork, grid, ggtext and more.
+</div>
+</div>
+<img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>

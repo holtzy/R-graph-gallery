@@ -1,0 +1,172 @@
+---
+title: "Display results of a regression model in a table"
+descriptionMeta: "This post use the gtsummary package to show the results of a regression model in a table. We'll go through several examples with reproducible R code."
+descriptionTop: "This post use the [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) package to show the results of a regression model in a table. We'll go through how to show p-values, confidence intervals, compare models and more with [gtsummary](https://r-graph-gallery.com/package/gtsummary.html)."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "366-regression-models-with-gtsummary"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+# install.packages("gtsummary")
+library(gtsummary)
+```
+
+<br/>
+
+
+# Default output for regression results
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) uses the `tbl_regression()` function to automatically generate results of the model in a table. 
+
+In this case, we use the Titanic dataset, with the `Survived` variable as the target.
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+# create dataset
+data("Titanic")
+df = as.data.frame(Titanic)
+
+# create the model
+model = glm(Survived ~ Age + Class + Sex + Freq,
+            family=binomial, data=df)
+
+# generate table 
+model %>%
+  tbl_regression()
+```
+</div>
+</div>
+
+
+
+
+# Add more statistical details
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+If we take the code from above, we can **add other elements** to the table that will make the table much more informative and detailed:
+- `add_glance_source_note()`: Adds a footnote to the table with information from the `glance()` function, like the number of observations, R-squared for regression models, etc
+- `add_global_p()`: Appends a global p-value to the table which assesses the **overall significance** of categorical variables.
+- `add_q()`: Incorporates **q-values** in the table, which are adjusted p-values used in multiple testing to control the false discovery rate.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+# create dataset
+data("Titanic")
+df = as.data.frame(Titanic)
+
+# create the model
+model = glm(Survived ~ Age + Class + Sex + Freq,
+            family=binomial, data=df)
+
+# generate table 
+model %>%
+  tbl_regression(intercept=TRUE, conf.level=0.9) %>%
+  add_glance_source_note() %>%
+  add_global_p() %>%
+  add_q() 
+```
+</div>
+</div>
+
+
+
+# Display results of different models
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+One easy way to show the results of 2 different models into a single table is to:
+- **create a first table** with the first model (logistic regression)
+- **create a second table** with the second model (Cox proportional hazards regression)
+- **merge these tables** with `tbl_merge()`
+- **add a spanner** for each model with the `tab_spanner` argument
+
+In this case we use the `trial` dataset:
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+library(survival)
+library(gtsummary)
+
+data(trial)
+
+model_reglog = glm(response ~ trt + grade, data=trial, family = binomial) %>% tbl_regression()
+model_cox = coxph(Surv(ttdeath, death) ~ trt + grade, data=trial) %>% tbl_regression()
+
+tbl_merge(
+  list(model_reglog, model_cox),
+  tab_spanner = c("**Tumor Response**", "**Time to Death**")
+)
+```
+</div>
+</div>
+
+
+
+
+
+
+
+# Conclusion
+
+This post explained how to display the results of a regression model in a table using the [gtsummary](https://r-graph-gallery.com/package/gtsummary.html) library. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/gtsummary.html) or the [table section](https://r-graph-gallery.com/table.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

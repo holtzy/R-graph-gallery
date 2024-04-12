@@ -1,0 +1,206 @@
+---
+title: "Area chart with gradient"
+descriptionMeta: "This post explains how to create an area chart with a color gradient between the bottom line and the line chart."
+descriptionTop: "This post explains how to create an `area chart` with a **color gradient** between the bottom line and the line chart.<br>We'll go through several examples with reproducible R code using [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) and [ggpattern](https://r-graph-gallery.com/package/ggpattern.html)."
+sectionText: "Area Chart"
+sectionLink: "area-chart.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/area.html"
+url: "357-area-chart-with-gradient"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following libraries:
+
+```{r}
+library(ggplot2)
+library(ggpattern)
+library(hrbrthemes)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+We create a simple dataset with 2 columns, randomly generated thanks to `runif()` and `rnorm()` functions.
+
+
+```{r}
+set.seed(0)
+n = 10
+x = 1:n
+y = x + rnorm(n=n, mean=100, sd=20)
+df = data.frame(xValue = x,
+                yValue = y)
+```
+
+
+
+
+# Most basic area chart
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+To create an area chart with R, all we need to do is add the `geom_area()` function from [ggplot2](https://r-graph-gallery.com/ggplot2-package.html).
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+ggplot(df, aes(x=xValue, y=yValue)) +
+  geom_area(colour='black', fill='lightblue')
+```
+</div>
+</div>
+
+
+
+
+# Add a simple gradient color
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+To add a color gradient in place of the light blue, we need to use the [ggpattern](https://www.r-graph-gallery.com/package/ggpattern.html) library and define which colors will be used for the graph.
+
+The bottom color is `white` and the top color is `red`.
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+ggplot(df, aes(xValue, yValue)) + 
+  geom_area_pattern(data = df,
+                    pattern = "gradient",
+                    pattern_fill = "white",
+                    pattern_fill2 = "red")
+```
+</div>
+</div>
+
+
+
+
+
+# Gradient color with transparency
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+To add **transparency** to the graphic, simply use colors that are naturally transparent. For example, here we change **white to transparent grey**. 
+
+The bottom color is a transpaent `light grey` (#00000010) and the top color is `blue`.
+
+</div>
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+ggplot(df, aes(xValue, yValue)) + 
+  geom_area_pattern(data = df,
+                    pattern = "gradient",
+                    fill = "#00000010",
+                    pattern_fill  = "#00000010",
+                    pattern_fill2 = "blue")
+```
+</div>
+</div>
+
+
+
+
+
+
+# Fully customized area chart wiht gradient
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+If we take what we've seen above and add other features like changing the `theme`, removing axis lines etc., you end up with an even more beautiful graph.
+
+In this case, we:
+- **add a black line** for the upper part of the area chart
+- **change the theme** with the [hrbrthemes](https://r-graph-gallery.com/package/hrbrthemes.html) library
+- **remove axis lines**
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+ggplot(df, aes(xValue, yValue)) + 
+  geom_area_pattern(data = df,
+                    pattern = "gradient", 
+                    fill = "#00000000",
+                    pattern_fill  = "#00000000",
+                    pattern_fill2 = "magenta") + 
+  geom_line(data = df, colour = "black", linewidth = 0.8) +
+  geom_point(shape = 16, size = 4.5, colour = "purple") +
+  geom_point(shape = 16, size = 2.5, colour = "white") +
+  ggtitle("Area chart with a color gradient and line with data points") + 
+  theme_bw() +
+  theme(plot.title = element_text(size = 14),
+        panel.border       = element_blank(),
+        axis.line.x        = element_line(),
+        text               = element_text(size = 12),
+        axis.ticks         = element_blank(),
+        axis.text.y        = element_text(margin = margin(0,15,0,0, unit = "pt"))) +
+  scale_alpha_identity() + labs(x="",y="")
+```
+</div>
+</div>
+
+
+# Conclusion
+
+This post explained how to add a color gradient to an area chart using the [ggpattern](https://r-graph-gallery.com/package/ggpattern.html) library. For more area chart examples, see the [dedicated section](https://r-graph-gallery.com/area-chart.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

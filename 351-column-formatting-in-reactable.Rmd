@@ -1,0 +1,179 @@
+---
+title: "Column formatting with reactable"
+descriptionMeta: "This post explains how to use the reactable package to build interactive tables with custom formatting in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to build an [interactive table](table.html) with the `reactable` package. It provides several reproducible examples on how to **format the columns**"
+sectionText: "Correlogram section"
+sectionLink: "correlogram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/correlogram.html"
+url: "351-column-formatting-in-reactable.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Default table with reactable
+***
+
+Simply pass a table or dataframe as the first argument to the `reactable` function.
+
+```{r thecode, echo=TRUE, out.width = "100%", fig.height=7}
+library("reactable") # load the package
+
+# Create the dataset 
+df = data.frame(
+  date = as.POSIXct(c("2019-01-02 3:22:15", "2019-03-15 09:15:55", "2019-09-22 14:20:00"), tz = "America/New_York"),
+  currency = c(1000, 2000, 3000),
+  temperature = c(10, 20, 30),
+  percentage = c(0.12, 0.23, 0.34)
+)
+
+tab = reactable(df)
+
+library(htmlwidgets)
+saveWidget(tab, file=paste0(getwd(), "/HtmlWidget/column-formatting-reactable-1.html"))
+```
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/column-formatting-reactable-1.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+
+
+# Date formatting
+***
+
+Use the `colFormat` function to **format the date**. You can also use the `format` argument to **customize the date format**. 
+
+There is 3 date format: `datetime`, `date` and `time`. 
+
+
+```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
+datetimes = as.POSIXct(c("2019-01-02 3:22:15", "2019-03-15 09:15:55", "2019-09-22 14:20:00"),
+                        tz = "America/New_York")
+data = data.frame(
+  datetime = datetimes,
+  date = datetimes,
+  time = datetimes,
+  time_24h = datetimes,
+  datetime_pt_BR = datetimes
+)
+
+tab = reactable(data, columns = list(
+                datetime = colDef(format = colFormat(datetime = TRUE)),
+                date = colDef(format = colFormat(date = TRUE)),
+                time = colDef(format = colFormat(time = TRUE)),
+                time_24h = colDef(format = colFormat(time = TRUE, hour12 = FALSE)),
+                datetime_pt_BR = colDef(format = colFormat(datetime = TRUE, locales = "pt-BR"))
+))
+
+# Save the widget
+library(htmlwidgets)
+saveWidget(tab, file=paste0(getwd(), "/HtmlWidget/column-formatting-reactable-2.html"))
+```
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/column-formatting-reactable-2.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+
+# Currency formatting
+***
+
+In the `colFormat` function, use the `currency` argument to **format the currency**. You mainly have to specify the `locales` argument to **customize the currency format**.
+
+```{r thecode3, echo=TRUE, out.width = "100%", fig.height=7}
+data = data.frame(
+  USD = c(12.12, 2141.213, 0.42, 1.55, 34414),
+  EUR = c(10.68, 1884.27, 0.37, 1.36, 30284.32),
+  INR = c(861.07, 152122.48, 29.84, 110, 2444942.63),
+  JPY = c(1280, 226144, 44.36, 164, 3634634.61),
+  MAD = c(115.78, 20453.94, 4.01, 15, 328739.73)
+)
+
+tab = reactable(data, columns = list(
+  USD = colDef(format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+  EUR = colDef(format = colFormat(currency = "EUR", separators = TRUE, locales = "de-DE")),
+  INR = colDef(format = colFormat(currency = "INR", separators = TRUE, locales = "hi-IN")),
+  JPY = colDef(format = colFormat(currency = "JPY", separators = TRUE, locales = "ja-JP")),
+  MAD = colDef(format = colFormat(currency = "MAD", separators = TRUE, locales = "ar-MA"))
+))
+
+# Save the widget
+library(htmlwidgets)
+saveWidget(tab, file=paste0(getwd(), "/HtmlWidget/column-formatting-reactable-3.html"))
+```
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/column-formatting-reactable-3.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+
+# Numeric value formatting
+***
+
+```{r thecode4, echo=TRUE, out.width = "100%", fig.height=7}
+df = data.frame(
+  temperature = c(10, 20, 30),
+  percentage = c(0.12, 0.23, 0.34)
+)
+
+tab = reactable(df, columns = list(
+  temperature = colDef(format = colFormat(suffix = " °C")),
+  percentage = colDef(format = colFormat(percent = TRUE, prefix = "Percent: "))
+))
+
+
+library(htmlwidgets)
+saveWidget(tab, file=paste0(getwd(), "/HtmlWidget/column-formatting-reactable-4.html"))
+```
+
+<div class = "col-md-6  col-sm-12">
+
+<center><iframe src="HtmlWidget/column-formatting-reactable-4.html" height="700" width="700" style="border:none;"></iframe></center>
+
+</div>
+
+# Conclusion
+***
+
+This post explains how to build an interactive [table](table.html) with `reactable` and how to format the columns.
+
+I encourage you to check the [reactable page](package/reactable.html) to learn more about it.
+
+</div>
+
+
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

@@ -1,0 +1,202 @@
+---
+title: "Customize plotly tooltip"
+descriptionMeta: "This post explains how to customize the tooltip in a plotly chart in R. It provides reproducible code and explanation how to improve the default tooltip."
+descriptionTop: "This post explains how to **customize the tooltip** in a [plotly](https://r-graph-gallery.com/plotly.html) chart in R. It provides reproducible code and explanation how to **improve the default tooltip**."
+sectionText: "Plotly section"
+sectionLink: "plotly.html"
+DataToVizText: "Interactive charts"
+DataToVizLink: "r-graph-gallery.com/interactive-charts.html"
+url: "customize-plotly-tooltip"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container" style="padding-top: 80px;">
+
+
+
+
+# Packages
+
+First, we need to load a few packages:
+
+- [plotly](https://r-graph-gallery.com/plotly.html) for the interactive chart
+- [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) for creating the initial plot
+- [hrbrthemes](https://r-graph-gallery.com/hrbrthemes.html) for the theme
+- `viridis` for the color palette
+- `gapminder` for the dataset
+- `dplyr` for data manipulation
+
+```{r}
+# Visualisation packages
+library(ggplot2)
+library(plotly)
+library(viridis)
+library(hrbrthemes)
+
+# Data packages
+library(gapminder)
+library(dplyr) 
+```
+
+
+# Dataset
+
+The `gapminder` dataset is used in this example. It contains data about life expectancy, population and GDP per capita for many countries over time.
+
+Here, we:
+
+- filter the data to keep only the year 2007
+- remove the year column
+- reorder the countries to have big bubbles on top
+
+```{r}
+data <- gapminder %>% filter(year=="2007") %>% dplyr::select(-year)
+data = data %>%  
+  # Reorder countries to having big bubbles on top
+  arrange(desc(pop)) %>%
+  mutate(country = factor(country, country))
+```
+
+
+
+
+# Default plot
+***
+
+```{r}
+p = data %>%
+  ggplot( aes(x=gdpPercap, y=lifeExp, size = pop, color = continent)) +
+    geom_point(alpha=0.7) +
+    scale_size(range = c(1.4, 19), name="Population (M)") +
+    scale_color_viridis(discrete=TRUE, guide=FALSE) +
+    theme_ipsum() +
+    theme(legend.position="none")
+
+# turn ggplot interactive with plotly
+pp = ggplotly(p)
+
+# save the widget
+#library(htmlwidgets)
+#saveWidget(pp, file="HtmlWidget/plotlyDefaultTooltip.html")
+```
+
+<center><iframe src="HtmlWidget/plotlyDefaultTooltip.html" height="700" width="700" style="border:none;"></iframe></center>
+
+
+# Customize tooltip
+***
+
+As you can see, it's a bit **unfortunate** that the tooltip does not tell us **what is the country**. Let's customize it to add this information.
+
+For this, we:
+
+- create a **new column** `text` in the dataset that contains the **information we want to display** in the tooltip using the `mutate()` function
+- add `text` as an aesthetic in the `ggplot()` function
+
+And that's it!
+
+```{r}
+data = data %>% 
+  mutate(text = paste(
+    "Country: ", country,
+    "\nPopulation (M): ", pop,
+    "\nLife Expectancy: ", lifeExp,
+    "\nGdp per capita: ", gdpPercap, sep="")
+  )
+
+p = data %>%
+  ggplot( aes(x=gdpPercap, y=lifeExp, size=pop, color=continent, text=text)) +
+    geom_point(alpha=0.7) +
+    scale_size(range = c(1.4, 19), name="Population (M)") +
+    scale_color_viridis(discrete=TRUE, guide=FALSE) +
+    theme_ipsum() +
+    theme(legend.position="none")
+
+# turn ggplot interactive with plotly
+pp = ggplotly(p, tooltip="text")
+
+# save the widget
+#library(htmlwidgets)
+#saveWidget(pp, file="HtmlWidget/plotlyDefaultTooltip2.html")
+```
+
+<center><iframe src="HtmlWidget/plotlyDefaultTooltip2.html" height="700" width="700" style="border:none;"></iframe></center>
+
+
+
+# More advanced customization
+***
+
+The previous example is a good start, but we can go further. Here, we:
+
+- use **bold** text to make the tooltip more readable
+- add a **dollar sign** before the GDP per capita
+- use the `round()` function to make the numbers more readable
+- add a **title** to the tooltip
+- change the **background color** of the tooltip to white
+- change the **font color** of the tooltip to black
+
+```{r}
+data <- data %>%
+  mutate(text = paste(
+    "<span style='font-size:16px;'><b>", country, "</b></span><br>",
+    "<br><b>Population (M):</b> ", pop,
+    "<br><b>Life Expectancy (years):</b> ", round(lifeExp, 2),
+    "<br><b>Gdp per capita:</b> $", round(gdpPercap, 2),
+    sep=""))
+
+p <- data %>%
+  ggplot(aes(x=gdpPercap, y=lifeExp, size=pop, color=continent, text=text)) +
+    geom_point(alpha=0.7) +
+    scale_size(range = c(1.4, 19), name="Population (M)") +
+    scale_color_viridis(discrete=TRUE, guide=FALSE) +
+    theme_ipsum() +
+    theme(legend.position="none")
+
+pp <- ggplotly(p, tooltip="text")
+pp <- pp %>%
+  layout(
+    hoverlabel = list(bgcolor = "white",
+                      font = list(size = 12, color = "black"))
+  )
+
+# save the widget
+#library(htmlwidgets)
+#saveWidget(pp, file="HtmlWidget/plotlyDefaultTooltip3.html")
+```
+
+<center><iframe src="HtmlWidget/plotlyDefaultTooltip3.html" height="700" width="700" style="border:none;"></iframe></center>
+
+
+# Conclusion
+***
+
+This post explains how to customize the tooltip in a [plotly](https://r-graph-gallery.com/plotly.html) chart in R.
+
+You can learn more about [interactive charts](r-graph-gallery.com/interactive-charts.html) on the R graph gallery.
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

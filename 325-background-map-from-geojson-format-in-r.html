@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -43,17 +43,19 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Open and Plot Geojson files in
-R &#8211; the R Graph Gallery</title>
+    <title>Open and Plot Geojson files in R &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="Geojson files are a common way to
+    <meta
+      name="description"
+      content="Geojson files are a common way to
 store geospatial data. This post explains how to read it with R and the
-sf package, and how to plot it in base R or with ggplot2." />
+geojsonio package, and how to plot it in base R or with ggplot2."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,12 +64,22 @@ sf package, and how to plot it in base R or with ggplot2." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Open and Plot Geojson files in
-R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="Geojson files are a common
+    <meta
+      property="og:title"
+      content="Open and Plot Geojson files in
+R"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="Geojson files are a common
 way to store geospatial data. This post explains how to read it with R
-and the sf package, and how to plot it in base R or with ggplot2." />
+and the geojsonio package, and how to plot it in base R or with
+ggplot2."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/325-background-map-from-geojson-format-in-r.html.html"
@@ -137,10 +149,12 @@ and the sf package, and how to plot it in base R or with ggplot2." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">Geojson files
-are a common way to store geospatial data. This post explains how to
-read it with <code>R</code> and the <code>sf</code> package, and how to
-plot it in base R or with <code>ggplot2</code>.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            Geojson files are a common way to store geospatial data. This post
+            explains how to read it with <code>R</code> and the
+            <code>geojsonio</code> package, and how to plot it in base R or with
+            <code>ggplot2</code>.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -165,7 +179,6 @@ plot it in base R or with <code>ggplot2</code>.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -174,155 +187,230 @@ plot it in base R or with <code>ggplot2</code>.</p>
     </style>
 
     <div class="container" style="padding-top: 100px">
-<p>If you did not find the geospatial data you need in existing R
-packages (see the <a href="map.html">map section</a>), you need to find
-this information elsewhere on the web.</p>
-<p>It will often be stored as a <code>.geoJSON</code> format. This post
-explains how to read it.</p>
-<div id="find-and-download-a-.geojson-file" class="section level1">
-<h1>Find and download a <code>.geoJSON</code> file</h1>
-<hr />
-<p>You need to dig the internet to find the geoJSON file you are
-interested in. For instance, <a
-href="https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson">this
-URL</a> provides a file containing french region boundaries.</p>
-<p>You can load it in R with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download to a temporary file</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>tmp_geojson <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.geojson&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  tmp_geojson</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Let&#39;s read the downloaded geoJson file with the sf library:</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(tmp_geojson)</span></code></pre></div>
-<p><br></p>
-<p>That’s it! You now have a geospatial object called
-<code>my_sf</code>. I strongly advise to read <a
-href="169-170-basic-manipulation-of-shapefiles">this post</a> to learn
-how to manipulate it.</p>
-<p>Just in case, here is how to plot it in base R and with
-<code>ggplot2</code>.</p>
-</div>
-<div id="plot-it-with-base-r" class="section level1">
-<h1>Plot it with <code>base R</code></h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The basic <code>plot()</code> function knows how to plot a geospatial
-object. Thus you just need to pass it <code>my_sf</code> and add a
-couple of options to customize the output.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="325-background-map-from-geojson-format-in-r_files/figure-html/thecode4-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only the region #6 as you would do with a data frame</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>my_sf_region_6 <span class="ot">&lt;-</span> my_sf[<span class="fu">substr</span>(my_sf<span class="sc">$</span>code, <span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">==</span> <span class="st">&quot;06&quot;</span>, ]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(my_sf_region_6<span class="sc">$</span>geometry, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span></code></pre></div>
-</div>
-<div id="plot-it-with-ggplot2" class="section level1">
-<h1>Plot it with <code>ggplot2</code></h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>It is totally possible (and advised IMO) to build the map with <a
-href="ggplot2-package.html">ggplot2</a>, using the
-<code>geom_sf()</code> function as described below.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="325-background-map-from-geojson-format-in-r_files/figure-html/thecode5-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot it</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf_region_6) <span class="sc">+</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+      <p>
+        If you did not find the geospatial data you need in existing R packages
+        (see the <a href="map.html">map section</a>), you need to find this
+        information elsewhere on the web.
+      </p>
+      <p>
+        It will often be stored as a <code>.geomJSON</code> format. This post
+        explains how to read it.
+      </p>
+      <p>
+        <u>Note</u>: if you found a <code>shapefile</code>, read
+        <a href="168-load-a-shape-file-into-r.html">this post</a> instead.
+      </p>
+      <div id="find-and-download-a-.geojson-file" class="section level1">
+        <h1>Find and download a <code>.geoJSON</code> file</h1>
+        <hr />
+        <p>
+          You need to dig the internet to find the geoJSON file you are
+          interested in. For instance,
+          <a
+            href="https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson"
+            >this URL</a
+          >
+          provides a file containing french region boundaries.
+        </p>
+        <p>You can load it in R with:</p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Let&#39;s read the jeoJson file that is stored on the web with the geojsonio library:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># install.packages(&quot;geojsonio&quot;)</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(geojsonio)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>spdf <span class="ot">&lt;-</span> <span class="fu">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="at">what =</span> <span class="st">&quot;sp&quot;</span>)</span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>
+          That’s it! You now have a geospatial object called <code>spdf</code>.
+          I strongly advise to read
+          <a href="169-170-basic-manipulation-of-shapefiles">this post</a> to
+          learn how to manipulate it.
+        </p>
+        <p>
+          Just in case, here is how to plot it in base R and with
+          <code>ggplot2</code>.
+        </p>
+      </div>
+      <div id="plot-it-with-base-r" class="section level1">
+        <h1>Plot it with <code>base R</code></h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The basic <code>plot()</code> function knows how to plot a
+              geospatial object. Thus you just need to pass it
+              <code>spdf</code> and add a couple of options to customize the
+              output.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="325-background-map-from-geojson-format-in-r_files/figure-html/thecode4-1.png"
+                width="100%"
+              />
+            </p>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Select only the region #6</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>spdf<span class="sc">@</span>data<span class="sc">$</span>mystate <span class="ot">=</span> <span class="fu">substr</span>( spdf<span class="sc">@</span>data<span class="sc">$</span>code, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>spdf_region_6 <span class="ot">=</span> spdf[ spdf<span class="sc">@</span>data<span class="sc">$</span>mystate <span class="sc">==</span> <span class="st">&quot;06&quot;</span> , ]</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># plot the selected are with sp</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">plot</span>(spdf_region_6, <span class="at">col=</span><span class="st">&quot;grey&quot;</span>)</span></code></pre>
+        </div>
+      </div>
+      <div id="plot-it-with-ggplot2" class="section level1">
+        <h1>Plot it with <code>ggplot2</code></h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              It is totally possible (and advised imo) to build the map with
+              <a href="ggplot2-package.html">ggplot2</a>. However, ggplot2 takes
+              as input data frames, not geospatial data.
+            </p>
+            <p>
+              The geospatial object thus needs to be transformed using the
+              <code>tidy()</code> function of the <code>broom</code> package.
+            </p>
+            <p>
+              Once the data frame is created, it is plotted using the
+              <code>geom_polygon()</code> function as described below.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="325-background-map-from-geojson-format-in-r_files/figure-html/thecode5-1.png"
+                width="100%"
+              />
+            </p>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># &#39;fortify&#39; the data to get a dataframe format required by ggplot2</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>spdf_fortified <span class="ot">&lt;-</span> <span class="fu">tidy</span>(spdf_region_6)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Plot it</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">geom_polygon</span>(<span class="at">data =</span> spdf_fortified, <span class="fu">aes</span>( <span class="at">x =</span> long, <span class="at">y =</span> lat, <span class="at">group =</span> group), <span class="at">fill=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color=</span><span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">coord_map</span>()</span></code></pre>
+        </div>
+        <!-- Close container -->
+      </div>
     </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -454,18 +542,18 @@ href="ggplot2-package.html">ggplot2</a>, using the
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

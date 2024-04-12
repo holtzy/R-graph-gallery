@@ -1,0 +1,182 @@
+---
+title: "Images and links in a kable table with kableExtra"
+descriptionMeta: "This post explains how to add images and hyperlinks in a kable output with the kableExtra package. We'll go through several examples with reproducible R code."
+descriptionTop: "This post explains how to customize colors in a kable output with the [kableExtra](https://r-graph-gallery.com/package/kableExtra.html) package. We'll go through several examples with reproducible R code the with [kableExtra](https://r-graph-gallery.com/package/kableExtra.html)."
+sectionText: "Table"
+sectionLink: "table.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "363-add-images-and-links-in-kableExtra"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# Packages
+***
+
+For this post, we need to load the following library:
+
+```{r}
+library(kableExtra)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+We create a simple dataset with Nobel Prizes (2020). We use 3 columns: name, field and image.
+
+```{r}
+df = data.frame(name = c("E. Charpentier","R. Penrose", "L. Glück", "M. Houghton"),
+                field = c("Chemistry", "Physics", "Litterature", "Medicine"),
+                image = "" # keep it empty
+                )
+```
+
+
+
+
+# Add images
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The [kableExtra](https://r-graph-gallery.com/package/kableExtra.html) relies on the `kable` package and allows the use of the `%>%` (pipe) symbole. The main function is named `kbl()` and is similar to `kable()`.
+
+In order to add images in column, we need to use the `column_spec()` function with the `image` argument. Also, to change dimensions of images, we use the `spec_image()` function into the `image` arg. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r echo=TRUE}
+# we use images from the internet, but it works exactly the same
+# for images locally stored on your computer!
+path_images = c("https://www.nobelprize.org/images/charpentier-111763-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/penrose-111758-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/gluck-111767-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/houghton-111770-landscape-mini-2x.jpg")
+
+df %>%
+  kbl(booktabs = T, align = "c") %>%
+  kable_styling() %>%
+  kable_paper(full_width = T) %>%
+  column_spec(3, image = spec_image(path_images, 280, 200) # dimensions of the images
+              )
+```
+</div>
+</div>
+
+
+
+
+# Add links
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `row_spec()` and `column_spec()` functions have a `color` and `background` arguments that will **change the colors**, either of the background or the cell content. 
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+urls = c("https://en.wikipedia.org/wiki/Emmanuelle_Charpentier",
+         "https://en.wikipedia.org/wiki/Roger_Penrose",
+         "https://en.wikipedia.org/wiki/Louise_Glück",
+         "https://en.wikipedia.org/wiki/Michael_Houghton")
+
+df %>%
+  kbl(booktabs = T, align = "c") %>%
+  kable_styling() %>%
+  kable_paper(full_width = T) %>%
+  column_spec(1, link = urls)
+```
+</div>
+</div>
+
+
+
+# Combine images and links
+***
+
+<div class = "row">
+
+<div class = "col-md-12  col-sm-12 align-self-center">
+
+The `color` and `background` argument can also takes a vector of colors:
+
+</div>
+
+
+<div class = "col-md-12  col-sm-12">
+
+
+```{r, echo=TRUE}
+path_images = c("https://www.nobelprize.org/images/charpentier-111763-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/penrose-111758-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/gluck-111767-landscape-mini-2x.jpg",
+                "https://www.nobelprize.org/images/houghton-111770-landscape-mini-2x.jpg")
+
+urls = c("https://en.wikipedia.org/wiki/Emmanuelle_Charpentier",
+         "https://en.wikipedia.org/wiki/Roger_Penrose",
+         "https://en.wikipedia.org/wiki/Louise_Glück",
+         "https://en.wikipedia.org/wiki/Michael_Houghton")
+
+df %>%
+  kbl(booktabs = T, align = "c") %>%
+  kable_styling() %>%
+  kable_material(c("striped", "hover", "condensed", "responsive")) %>%
+  column_spec(1, link = urls, bold=TRUE) %>%
+  column_spec(1, link = urls, bold=TRUE) %>%
+  column_spec(3, image = spec_image(path_images, 280, 200))
+```
+</div>
+</div>
+
+
+
+
+
+
+
+# Conclusion
+
+This post explained how to add images and links in a table using the [kableExtra](https://r-graph-gallery.com/package/kableExtra.html) library. For more of this package, see the [dedicated section](https://r-graph-gallery.com/package/kableExtra.html) or the [table section](https://r-graph-gallery.com/table.html). 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedEvolution.html")
+```

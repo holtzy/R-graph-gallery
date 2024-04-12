@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -50,9 +50,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to build a
+    <meta
+      name="description"
+      content="This post explains how to build a
 choropleth map with R. It shows how to load geospatial data, bind it to
-a numeric value and draw the map. Reproducible code is provided." />
+a numeric value and draw the map. Reproducible code is provided."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,11 +65,14 @@ a numeric value and draw the map. Reproducible code is provided." />
 
     <!-- Control appearance when shared by social media -->
     <meta property="og:title" content="Choropleth map with R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="This post explains how to
-build a choropleth map with R. It shows how to load geospatial data,
-bind it to a numeric value and draw the map. Reproducible code is
-provided." />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="This post explains how to build a choropleth map with R. It shows how to load geospatial data, bind it to a numeric value and draw the map. Reproducible code is provided."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/choropleth-map-in-r.html"
@@ -136,10 +142,12 @@ provided." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to build a <a href="choropleth-map.html">choropleth map</a>
-with R. It shows how to load geospatial data, bind it to a numeric value
-and draw the map.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to build a
+            <a href="choropleth-map.html">choropleth map</a> with R. It shows
+            how to load geospatial data, bind it to a numeric value and draw the
+            map.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -164,7 +172,6 @@ and draw the map.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -173,36 +180,52 @@ and draw the map.</p>
     </style>
 
     <div class="container" style="padding-top: 100px">
-<p>Two inputs are needed to build a choropleth map:</p>
-<ul>
-<li>A geospatial object providing region boundaries</li>
-<li>A numeric variable that will be used to control region color</li>
-</ul>
-<div id="find-and-download-a-shape-file" class="section level1">
-<h1>Find and download a shape file</h1>
-<hr />
-<p><u>Note</u>: this step is described in detail <a
-href="168-load-a-shape-file-into-r.html">here</a>. Read it if you are
-not familiar with geospatial data management in R.</p>
-<p>The region boundaries required to make maps are usually stored in
-geospatial objects. Those objects can come from <a
-href="168-load-a-shape-file-into-r.html">shapefiles</a>, <a
-href="325-background-map-from-geojson-format-in-r.html">geojson
-files</a> or provided in a <a href="278-the-maps-library.html">R
-package</a>. See the <a href="map.html">map</a> section for
-possibilities.</p>
-<p>Let’s get a geospatial object from a shape file available <a
-href="http://thematicmapping.org/downloads/world_borders.php">here</a>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
+      <p>Two inputs are needed to build a choropleth map:</p>
+      <ul>
+        <li>A geospatial object providing region boundaries</li>
+        <li>A numeric variable that will be used to control region color</li>
+      </ul>
+      <div id="find-and-download-a-shape-file" class="section level1">
+        <h1>Find and download a shape file</h1>
+        <hr />
+        <p>
+          <u>Note</u>: this step is described in detail
+          <a href="168-load-a-shape-file-into-r.html">here</a>. Read it if you
+          are not familiar with geospatial data management in R.
+        </p>
+        <p>
+          The region boundaries required to make maps are usually stored in
+          geospatial objects. Those objects can come from
+          <a href="168-load-a-shape-file-into-r.html">shapefiles</a>,
+          <a href="325-background-map-from-geojson-format-in-r.html"
+            >geojson files</a
+          >
+          or provided in a <a href="278-the-maps-library.html">R package</a>.
+          See the <a href="map.html">map</a> section for possibilities.
+        </p>
+        <p>
+          Let’s get a geospatial object from a shape file available
+          <a href="http://thematicmapping.org/downloads/world_borders.php"
+            >here</a
+          >.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>, <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre></div>
-<p><br></p>
-<p>And let’s load it in R</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre>
+        </div>
+        <p><br /></p>
+        <p>And let’s load it in R</p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
@@ -211,49 +234,79 @@ href="http://thematicmapping.org/downloads/world_borders.php">here</a>.</p>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Select Africa only</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>africa <span class="ot">&lt;-</span> my_sf[my_sf<span class="sc">$</span>REGION <span class="sc">==</span> <span class="dv">2</span>, ]</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre></div>
-</div>
-<div id="plot-the-map" class="section level1">
-<h1>Plot the map</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The hardest part is to build the color palette that will be used on
-the map. The <code>RColorBrewer</code> package makes it a breeze to get
-a nice set of colors thanks to its <code>brewer.pal()</code>
-function.</p>
-<p>Once the palette is created, <code>POP2005</code> is cut in several
-bins using the <code>cut()</code> function, and the appropriate color is
-attributed to each bin.</p>
-<p>Finally, build the map with <code>plot()</code> and give the color
-vector to the <code>col</code> argument to get the choropleth.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="choropleth-map-in-r_files/figure-html/thecode9-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">40</span>))</span></code></pre></div>
-</div>
-<div id="visualize-the-numeric-variable" class="section level1">
-<h1>Visualize the numeric variable</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>In a choropleth map, each region has a color that represents the
-value of a numeric variable.</p>
-<p>In this example, this variable is already available in the
-<code>africa</code> object. You can have a look to it typing
-<code>africa</code> in the terminal.</p>
-<p>It is thus possible to visualize the distribution of
-<code>POP2005</code> with a classic histogram made in <a
-href="ggplot2-package.html">ggplot2</a></p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="choropleth-map-in-r_files/figure-html/thecode-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre>
+        </div>
+      </div>
+      <div id="plot-the-map" class="section level1">
+        <h1>Plot the map</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The hardest part is to build the color palette that will be used
+              on the map. The <code>RColorBrewer</code> package makes it a
+              breeze to get a nice set of colors thanks to its
+              <code>brewer.pal()</code> function.
+            </p>
+            <p>
+              Once the palette is created, <code>POP2005</code> is cut in
+              several bins using the <code>cut()</code> function, and the
+              appropriate color is attributed to each bin.
+            </p>
+            <p>
+              Finally, build the map with <code>plot()</code> and give the color
+              vector to the <code>col</code> argument to get the choropleth.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode9-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">40</span>))</span></code></pre>
+        </div>
+      </div>
+      <div id="visualize-the-numeric-variable" class="section level1">
+        <h1>Visualize the numeric variable</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              In a choropleth map, each region has a color that represents the
+              value of a numeric variable.
+            </p>
+            <p>
+              In this example, this variable is already available in the
+              <code>africa</code> object. You can have a look to it typing
+              <code>africa</code> in the terminal.
+            </p>
+            <p>
+              It is thus possible to visualize the distribution of
+              <code>POP2005</code> with a classic histogram made in
+              <a href="ggplot2-package.html">ggplot2</a>
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -263,28 +316,43 @@ href="ggplot2-package.html">ggplot2</a></p>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribution of the population per country?</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>africa <span class="sc">%&gt;%</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> POP2005)) <span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span></code></pre></div>
-</div>
-<div id="build-the-choropleth" class="section level1">
-<h1>Build the choropleth</h1>
-<hr />
-<div class="row">
-<div class="col-md-6 col-sm-12 align-self-center">
-<p>The hardest part is to build the color palette that will be used on
-the map. The <code>RColorBrewer</code> package makes it a breeze to get
-a nice set of colors thanks to its <code>brewer.pal()</code>
-function.</p>
-<p>Once the palette is created, <code>POP2005</code> is cut in several
-bins using the <code>cut()</code> function, and the appropriate color is
-attributed to each bin.</p>
-<p>Finally, build the map with <code>plot()</code> and give the color
-vector to the <code>col</code> argument to get the choropleth.</p>
-</div>
-<div class="col-md-6 col-sm-12">
-<p><img src="choropleth-map-in-r_files/figure-html/thecode2-1.png" width="100%" /></p>
-</div>
-</div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette of 30 colors</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span></code></pre>
+        </div>
+      </div>
+      <div id="build-the-choropleth" class="section level1">
+        <h1>Build the choropleth</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The hardest part is to build the color palette that will be used
+              on the map. The <code>RColorBrewer</code> package makes it a
+              breeze to get a nice set of colors thanks to its
+              <code>brewer.pal()</code> function.
+            </p>
+            <p>
+              Once the palette is created, <code>POP2005</code> is cut in
+              several bins using the <code>cut()</code> function, and the
+              appropriate color is attributed to each bin.
+            </p>
+            <p>
+              Finally, build the map with <code>plot()</code> and give the color
+              vector to the <code>col</code> argument to get the choropleth.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode2-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette of 30 colors</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>my_colors <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Reds&quot;</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>my_colors <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(my_colors)(<span class="dv">30</span>)</span>
@@ -297,88 +365,110 @@ vector to the <code>col</code> argument to get the choropleth.</p>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa),</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">40</span>), <span class="at">col =</span> my_colors,</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">&quot;#A6CAE0&quot;</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre>
+        </div>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -510,18 +600,18 @@ vector to the <code>col</code> argument to get the choropleth.</p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Filled areas with geometric and image-based patterns</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to add
+patterns to ggplot2 visualizations with R and the ggpattern package. It
+provides several reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Filled areas with geometric and
+image-based patterns" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+add patterns to ggplot2 visualizations with R and the ggpattern package.
+It provides several reproducible examples with explanation and R
+code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Filled areas with geometric and image-based
+patterns</h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>ggpattern</code> package in R is
+an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to add <strong>pattern aesthetics</strong> to your
+ggplot2 visualizations.<br/>This post showcases the <strong>key
+features</strong> of <code>ggpattern</code> and provides a set of
+<strong>graph examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/coolbutuseless/ggpattern"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/ggpattern.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{ggpattern}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>ggpattern</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to add <strong>pattern aesthetics</strong> to your
+ggplot2 visualizations.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It allows you to add patterns like <strong>stripes</strong>,
+<strong>crosses</strong>, <strong>custom images</strong> and more to
+your ggplot2 plots, making your visualizations more informative and
+engaging.</p>
+<p>✍️ <strong>author</strong> → Mike FC</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://coolbutuseless.github.io/package-ggpattern/">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<p><img src="ggpattern_files/figure-html/unnamed-chunk-1-1.png" width="85%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<p>This package can be especially useful if you need to publish some
+<strong>black and white</strong> content.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># libs</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggpattern)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Create data</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">name=</span><span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;E&quot;</span>) ,  </span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">12</span>, <span class="dv">5</span>, <span class="dv">18</span>, <span class="dv">45</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  )</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># Barplot</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>name, <span class="at">y=</span>value)) <span class="sc">+</span> </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">geom_col_pattern</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">pattern_fill =</span> name), </span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&#39;stripe&#39;</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="at">fill    =</span> <span class="st">&#39;white&#39;</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    <span class="at">colour  =</span> <span class="st">&#39;black&#39;</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>Getting started with <code>ggpattern</code> is straightforward.</p>
+<p>First, ensure you have <code>ggplot2</code> installed. Then, you can
+install <code>ggpattern</code> directly from CRAN using the
+<code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ggpattern&quot;</span>, <span class="at">repos =</span> <span class="st">&quot;https://cinc.rud.is&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>ggpattern</code> package comes with a variety of
+<strong>pattern aesthetics</strong> that can be easily integrated into
+your <code>ggplot2</code> visualizations.</p>
+<p>Let’s take an example with the <code>geom_col_pattern()</code>
+aesthetics. It does pretty much the same task as the
+<code>geom_col()</code> aesthetics of <code>ggplot2</code> that is used
+for <a
+href="https://r-graph-gallery.com/218-basic-barplots-with-ggplot2.html">bar
+charts</a>.</p>
+<p>But it adds options to use some <strong>patterns</strong> into
+rectangles.</p>
+<p>The aesthetics comes with a number of options described in the next
+section. For each, you have to decide:</p>
+<ul>
+<li><p>if you want it to depend on a value of the dataset, put it inside
+the <code>aes()</code> call. Below, the color of the pattern is mapped
+to the <code>name</code> columnn since <code>pattern_fill</code> is
+<strong>in</strong> the <code>aes()</code> function.</p></li>
+<li><p>if you want it to be the same for all shapes, put it outside the
+<code>aes()</code> call. For instance, all bars will be using
+<code>crosshatch</code> below.</p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Barplot</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>name, <span class="at">y=</span>value)) <span class="sc">+</span> </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">geom_col_pattern</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">pattern_fill =</span> name), </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&#39;crosshatch&#39;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">fill    =</span> <span class="st">&#39;white&#39;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">colour  =</span> <span class="st">&#39;black&#39;</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="ggpattern_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="customization" class="section level1">
+<h1>Customization</h1>
+<hr />
+<p>It is possible to customize pretty much everything on the pattern you
+are building.</p>
+<ul>
+<li><p><code>colour</code> and <code>fill</code> control the shape
+outline and the shape content colors.</p></li>
+<li><p><code>pattern</code> controls the pattern type. It can be:
+‘stripe’ (default), ‘crosshatch’, ‘point’, ‘circle’ or ‘none’</p></li>
+<li><p><code>pattern_alpha</code> controls the pattern
+transparency</p></li>
+<li><p><code>pattern_angle</code> controls the angle 🤷‍♀️</p></li>
+<li><p><code>pattern_colour</code> and <code>pattern_fill</code> control
+the outline and fill colors</p></li>
+</ul>
+<p>Type <code>help(geom_col_pattern)</code> to get some more details on
+all the available options!</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Bar chart using ggpattern with comments</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>name, <span class="at">y=</span>value, <span class="at">fill=</span> name)) <span class="sc">+</span> <span class="co"># Usual ggplot2 call, &quot;name&quot; for the x axis, &quot;value&quot; for the y axis</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">geom_col_pattern</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">pattern =</span> <span class="st">&quot;circle&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">pattern_alpha =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">pattern_fill =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">pattern_colour  =</span> <span class="st">&#39;#69b3a2&#39;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">pattern_size =</span> <span class="fl">1.3</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="ggpattern_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="mapping-pattern-to-data" class="section level1">
+<h1>Mapping pattern to data</h1>
+<hr />
+<p>You can map the pattern features to the data in use.</p>
+<p>For instance, the following example use a very different look for
+each group of the dataset. To do so, the arguments described above are
+placed inside the <code>aes()</code> call:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Bar chart using ggpattern with comments</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>name, <span class="at">y=</span>value)) <span class="sc">+</span> <span class="co"># Usual ggplot2 call, &quot;name&quot; for the x axis, &quot;value&quot; for the y axis</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">geom_col_pattern</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>      <span class="at">pattern_fill =</span> name,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>      <span class="at">fill=</span> name,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>      <span class="at">pattern =</span> name,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    ),  </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="at">colour  =</span> <span class="st">&#39;black&#39;</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="ggpattern_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="other-aesthetics" class="section level1">
+<h1>Other aesthetics</h1>
+<hr />
+<p>Several other aesthetics are available, allowing to fill any kind of
+chart types with pattern. Names are always matching the original
+<code>ggplot2</code> names.</p>
+<p>To put it in a nutshell:</p>
+<ul>
+<li><code>geom_boxplot_pattern</code> can be used for <a
+href="https://r-graph-gallery.com/boxplot.html">boxplot</a></li>
+<li><code>geom_density_pattern</code> for <a
+href="https://r-graph-gallery.com/density-plot.html">density
+charts</a></li>
+<li><code>geom_map_pattern</code> for maps</li>
+<li><code>geom_violin_pattern</code> for violin charts</li>
+</ul>
+<p>And many more are on the list. Here is an overview of other examples
+in the gallery using the <code>ggpattern</code> library:</p>
+</div>
+<div id="gallery-of-gtsummary-examples" class="section level1">
+<h1>Gallery of gtsummary examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+
+<div class='portfolio-item col-sm-6 col-md-6'>
+<a class=portfolio-link href=../368-black-and-white-barchart.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Textured black and white barplot
+<p class=explanation_portfolio>
+How to add textures into the bars of a barplot
+</div>
+</div>
+<img alt=''class='img-fluid imgOfPortfolio'src=../img/graph/368-black-and-white-barchart-1.png></a>
+</div>
+<div class='portfolio-item col-sm-6 col-md-6'>
+<a class=portfolio-link href=../357-area-chart-with-gradient.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Area chart with opaque gradient color
+<p class=explanation_portfolio>
+Color gradient in the area of an aread chart
+</div>
+</div>
+<img alt=''class='img-fluid imgOfPortfolio'src=../img/graph/357-area-chart-with-gradient-1.png></a>
+</div>
+<div class='portfolio-item col-sm-6 col-md-6'>
+<a class=portfolio-link href=../357-area-chart-with-gradient.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Area chart with gradient color
+<p class=explanation_portfolio>
+Color gradient in the area of an aread chart with less opacity
+</div>
+</div>
+<img alt=''class='img-fluid imgOfPortfolio'src=../img/graph/357-area-chart-with-gradient-2.png></a>
+</div>
+<div class='portfolio-item col-sm-6 col-md-6'>
+<a class=portfolio-link href=../357-area-chart-with-gradient.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Area chart with gradient color and data points
+<p class=explanation_portfolio>
+Color gradient in the area of an aread chart with less opacity and data
+points
+</div>
+</div>
+<img alt=''class='img-fluid imgOfPortfolio'src=../img/graph/357-area-chart-with-gradient-3.png></a>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2 class="section-heading text-uppercase" style="color: black">
+              Contact
+            </h2>
+            <p>
+              This document is a work by
+              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
+              highly encouraged. You can fill an issue on
+              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
+                >Github</a
+              >, drop me a message on
+              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
+              an email pasting <a href="">yan.holtz.data</a> with
+              <a href="">gmail.com</a>.
+            </p>
+            <div style="text-align: center">
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://github.com/holtzy"
+                >Github</a
+              >
+              <a
+                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
+                href="https://twitter.com/R_Graph_Gallery"
+                >Twitter</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>

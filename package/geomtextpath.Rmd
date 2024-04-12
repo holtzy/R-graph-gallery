@@ -1,0 +1,175 @@
+---
+title: "Beautiful Plots with Texts with **geomtextpath**"
+logo: "geomtextpath"
+descriptionMeta: "This post explains how to create plots with texts or to combine chart and text in your ggplot2 plots using the geomtextpath package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to create plots with texts or to **combine chart and text** in your ggplot2 plots using the geomtextpath package.<br/>This post showcases the **key features** of `geomtextpath` and provides a set of **graph examples** using the package."
+documentationLink: "github.com/AllanCameron/geomtextpath"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `geomtextpath` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **adding text in charts**, especially when you need the text to **follow a curved path**.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a set of functions inspired by [ggplot2](https://r-graph-gallery.com/ggplot2-package.html), with the advantage of making it **much easier** to add text following a (curved) path. 
+
+✍️ **author** &rarr; Allan Cameron
+
+📘 **documentation** &rarr; [github](https://allancameron.github.io/geomtextpath/articles/geomtextpath.html)
+
+⭐️ *more than 500 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(geomtextpath)
+library(hrbrthemes)
+
+data(iris)
+ggplot(iris, aes(x = Sepal.Length, colour = Species, label = Species)) +
+  geom_textdensity(size = 6, fontface = 2, hjust = 0.2, vjust = 0.3) +
+  theme(legend.position = "none") + theme_bw()
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `geomtextpath`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("geomtextpath")
+```
+
+# Basic usage 
+***
+
+The `geomtextpath` package needs the x and y coordinates, the label, and you're good to go!
+
+*To keep in mind*: in function names, you can change the `text` to `label` (and vice versa) to choose whether the text should be **framed or not**. 
+
+Here's a basic example:
+
+```{r}
+library(ggplot2)
+library(geomtextpath)
+
+t = seq(5, -1, length.out = 1000) * pi
+spiral = data.frame(x    = sin(t) * 1:1000, 
+                    y    = cos(t) * 1:1000,
+                    text = paste("From elegant bar charts to mesmerizing scatterplots,",
+                                 "crafting stunning visualizations in R is powerful,",
+                                 "you can bring your data to life, revealing insights.")
+                     )
+
+ggplot(spiral, aes(x, y, label = text)) +
+  geom_textpath(size = 5, vjust = 1, text_only = TRUE)
+```
+
+# Key features
+***
+
+## &rarr; Text in a box
+You can have the text in a box thanks to the `geom_labelpath()` function.
+
+Example:
+
+```{r}
+ggplot(spiral, aes(x, y, label = text)) + 
+  geom_labelpath(size = 5, fill = "#F6F6FF", hjust = 0.55)
+```
+
+## &rarr; Text on density chart
+The `geom_textdensity()` can be used to plot group name directly on the curve of a density chart. You can **adjust the position** of the text with the `vjust` and `hjust` arguments (numerical value or "xmid"/"ymax"/"auto").
+
+Example with the iris dataset:
+
+```{r}
+library(hrbrthemes)
+data(iris)
+
+ggplot(iris, aes(x = Sepal.Length, colour = Species, label = Species)) +
+  geom_textdensity(size = 6, fontface = 2, vjust = -0.4, hjust = "ymid") +
+  theme(legend.position = "none") + theme_bw()
+```
+
+## &rarr; Labelled trend lines
+You can add trend lines with the group label on top with the `geom_labelsmooth()` function
+
+Example:
+
+```{r}
+data(iris)
+
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) +
+  geom_point() +
+  geom_labelsmooth(aes(label = Species), fill = "black",
+                method = "loess", formula = y ~ x,
+                size = 4, linewidth = 1, boxlinewidth = 0.3) +
+  theme_bw() + guides(color = 'none') # remove legend
+```
+
+## &rarr; Reference lines
+You can add reference lines with your own label thanks to the `geom_texthline()`, `geom_textvline()` and `geom_textabline()` functions. 
+
+Example:
+
+```{r}
+data(mtcars)
+
+ggplot(mtcars, aes(mpg, disp)) + 
+  geom_point() + 
+  geom_texthline(yintercept = 200, label = "displacement threshold", 
+                 hjust = 0.8, color = "red") +
+  geom_textvline(xintercept = 20, label = "consumption threshold", hjust = 0.8,
+                 linetype = 2, vjust = 1.3, color = "blue") +
+  geom_textabline(slope = 15, intercept = -100, label = "partition line", 
+                  color = "green3", hjust = 0.6, vjust = -0.2)
+```
+
+
+
+## &rarr; 2D density contours
+2D density contours become now very easy to create with the `geom_labeldensity2d()` and `geom_textdensity2d()`
+
+Example:
+
+```{r}
+df = data.frame(x = rnorm(n=100, mean=10),
+                y = rnorm(n=100, mean=10))
+
+ggplot(df, aes(x, y)) + 
+  geom_labeldensity2d() + theme_bw()
+```
+
+
+
+
+
+
+# Gallery of geomtextpath examples
+***
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-dumbbell-chart-with-a-gap-column.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dumbbell plot with gap section<hr><p class=explanation_portfolio>An extended dumbbell plot originally published by the Pew research center. Clean design with a gap section on the right hand side.</div></div><img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../line-chart-dual-Y-axis-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dual Y axis<hr><p class=explanation_portfolio>A few examples showing how to use the sec.axis argument to add a second Y axis.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><a class=portfolio-link href=../web-circular-lollipop-plot-with-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Circular lollipop chart<hr><p class=explanation_portfolio>A circular lollipop chart with customized layout, in circle legend and groups.<br><br>A work by <b>Cédric Scherer</b> for the <b>TidyTuesday</b> challenge.</div></div><img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><div class=portfolio-item><a class=portfolio-link href=../web-lineplots-and-area-chart-the-economist.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Line and Area charts by The Economist<hr><p class=explanation_portfolio>Learn how to mimick the style of The Economist with libraries like ggplot2, geomtextpath, grid, ggtext and more.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>
