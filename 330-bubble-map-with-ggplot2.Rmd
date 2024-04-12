@@ -69,6 +69,8 @@ This post uses the last approach: it loads the `maps` package that provides the 
 # Libraries
 library(ggplot2)
 library(dplyr)
+library(ggrepel)
+library(viridis)
  
 # Get the world polygon and extract UK
 library(maps)
@@ -97,7 +99,7 @@ data <- world.cities %>% filter(country.etc=="UK")
 On the right figure, note the use of the `ggrepel` library to avoid overlapping between city names.
 
 
-```{r thecode, echo=FALSE, out.width = c("50%","50%"), fig.show="hold", fig.height=6}
+```{r thecode, out.width = c("50%","50%"), fig.show="hold", fig.height=6}
 # Left chart
 ggplot() +
   geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
@@ -105,7 +107,6 @@ ggplot() +
   theme_void() + ylim(50,59) + coord_map() 
  
 # Second graphic with names of the 10 biggest cities
-library(ggrepel)
 ggplot() +
   geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
   geom_point( data=data, aes(x=long, y=lat, alpha=pop)) +
@@ -115,9 +116,6 @@ ggplot() +
   theme(legend.position="none")
 ```
 
-
-```{r thecode, eval=FALSE}
-```
 
 
 
@@ -138,10 +136,7 @@ ggplot() +
 Now we want to add another information. The number of inhabitant per city will be mapped to the colour and the size of the bubbles. Note that the order of city matters! It is advised to show the most important information on top (center). This can been done sorting your dataset before making the plot.
 
 
-```{r thecode5, echo=FALSE, out.width = c("33%","33%","33%"), fig.show="hold", fig.height=7}
-# virids package for the color palette
-library(viridis)
- 
+```{r thecode5, out.width = c("33%","33%","33%"), fig.show="hold", fig.height=7}
 # Left: use size and color
 ggplot() +
   geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
@@ -174,9 +169,6 @@ data %>%
 ```
  
 
-
-```{r thecode5, eval=FALSE}
-```
 
 
 
@@ -220,7 +212,7 @@ data <- data %>%
   mutate(pop=pop/1000000) 
 
 # Build the map
-map %>%
+data %>%
   ggplot() +
     geom_polygon(data = UK, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
     geom_point(  aes(x=long, y=lat, size=pop, color=pop, alpha=pop), shape=20, stroke=FALSE) +
@@ -231,7 +223,7 @@ map %>%
     guides( colour = guide_legend()) +
     ggtitle("The 1000 biggest cities in the UK") +
     theme(
-      legend.position = c(0.85, 0.8),
+      legend.position.inside = c(0.85, 0.8),
       text = element_text(color = "#22211d"),
       plot.background = element_rect(fill = "#f5f5f2", color = NA), 
       panel.background = element_rect(fill = "#f5f5f2", color = NA), 
