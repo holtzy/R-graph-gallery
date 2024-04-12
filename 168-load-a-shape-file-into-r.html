@@ -52,7 +52,9 @@
     />
     <meta
       name="description"
-      content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2."
+      content="Shapefiles are a common way to
+store geospatial data. This post explains how to read it with R and the
+sf package, and how to plot it in base R or with ggplot2."
     />
     <meta
       name="keywords"
@@ -143,7 +145,7 @@
           <p style="max-width: 600px; margin-top: 40px">
             Shapefiles are a common way to store geospatial data. This post
             explains how to read it with <code>R</code> and the
-            <code>rgdal</code> package, and how to plot it in base
+            <code>sf</code> package, and how to plot it in base
             <code>R</code> or with <code>ggplot2</code>.
           </p>
         </center>
@@ -180,7 +182,7 @@
     <div class="container" style="padding-top: 80px">
       <p>
         If you did not find the geospatial data you need in existing R packages
-        (see the <a href="maps.html">map section</a>), you need to find this
+        (see the <a href="map.html">map section</a>), you need to find this
         information elsewhere on the web.
       </p>
       <p>
@@ -188,142 +190,122 @@
         is composed by several files that you need to keep together in the same
         folder.
       </p>
-      <p>
-        <u>Note</u>: if you found a <code>.geoJSON</code> file, read
-        <a href="325-background-map-from-geojson-format-in-r.html">this post</a>
-        instead.
-      </p>
-      <h1 id="find-and-download-a-shapefile.">
-        Find and download a shapefile.
-      </h1>
-      <hr />
-      <p>
-        You need to dig the internet to find the shape file you are interested
-        in. For instance,
-        <a href="http://thematicmapping.org/downloads/world_borders.php"
-          >this URL</a
-        >
-        will redirect you to a zipped shape file containing the worl boundaries.
-      </p>
-      <p>You can download it and unzip it with R:</p>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span> , <span class="dt">destfile=</span><span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># You now have it in your current working directory, have a look!</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre>
-      </div>
-      <h1 id="read-it-with-rgdal">Read it with <code>rgdal</code></h1>
-      <hr />
-      <p>
-        The <code>rgdal</code> package offers the
-        <code>readOGR()</code> function that allows to read shapefile using the
-        following syntax.
-      </p>
-      <p>
-        As a result you get a geospatial object (<code>my_spdf</code> here) that
-        contains all the information we need for further mapping. Please try th
-        following command to understand how this object works:
-      </p>
-      <ul>
-        <li>
-          <code>summary(my_spdf)</code>: tells you the max and min coordinates,
-          the kind of projection in use
-        </li>
-        <li><code>length(my_spdf)</code>: how many regions you have</li>
-        <li>
-          <code>head(my_spdf@data)</code>: the firs few rows of the data slot
-          associated with the regions
-        </li>
-      </ul>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(rgdal)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">my_spdf &lt;-<span class="st"> </span><span class="kw">readOGR</span>( </a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dsn=</span> <span class="kw">paste0</span>(<span class="kw">getwd</span>(),<span class="st">&quot;/DATA/world_shape_file/&quot;</span>) , </a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">layer=</span><span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3&quot;</span>,</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">verbose=</span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre>
-      </div>
-      <h1 id="plot-it-with-base-r">Plot it with <code>base R</code></h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The basic <code>plot()</code> function knows how to plot a
-            geospatial object. Thus you just need to pass it
-            <code>my_spdf</code> and add a couple of options to customize the
-            output.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png"
-              width="100%"
-            />
-          </p>
+      <div id="find-and-download-a-shapefile." class="section level1">
+        <h1>Find and download a shapefile.</h1>
+        <hr />
+        <p>
+          You need to dig the internet to find the shape file you are interested
+          in. For instance,
+          <a href="http://thematicmapping.org/downloads/world_borders.php"
+            >this URL</a
+          >
+          will redirect you to a zipped shape file containing the world
+          boundaries.
+        </p>
+        <p>You can download it and unzip it with R:</p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>, <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;DATA/world_shape_file.zip&quot;</span>, <span class="at">junkpaths =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Basic plot of this shape file:</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">plot</span>(my_spdf, <span class="dt">col=</span><span class="st">&quot;#f2f2f2&quot;</span>, <span class="dt">bg=</span><span class="st">&quot;skyblue&quot;</span>, <span class="dt">lwd=</span><span class="fl">0.25</span>, <span class="dt">border=</span><span class="dv">0</span> )</a></code></pre>
-      </div>
-      <h1 id="plot-it-with-ggplot2">Plot it with <code>ggplot2</code></h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            It is totally possible (and advised imo) to build the map with
-            <a href="ggplot2-package.html">ggplot2</a>. However, ggplot2 takes
-            as input data frames, not geospatial data.
-          </p>
-          <p>
-            <code>my_spdf</code> thus needs to be transformed using the
-            <code>tidy()</code> function of the <code>broom</code> package. The
-            <code>region</code> argument of this function expect one of the
-            column name if the <span class="citation">@data</span> slot. It will
-            be the region name in the new dataframe.
-          </p>
-          <p>
-            Once the data frame is created, it is plotted using the
-            <code>geom_polygon()</code> function as described below.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png"
-              width="100%"
-            />
-          </p>
+      <div id="read-it-with-sf" class="section level1">
+        <h1>Read it with <code>sf</code></h1>
+        <hr />
+        <p>
+          The <code>sf</code> package offers the <code>st_read()</code> and the
+          <code>read_sf()</code> functions that allows to read shapefile using
+          the following syntax.
+        </p>
+        <p>
+          As a result you get a geospatial object (<code>my_sf</code> here) that
+          contains all the information we need for further mapping. Please try
+          th following command to understand how this object works:
+        </p>
+        <ul>
+          <li>
+            <code>print(my_sf)</code>: tells you the max and min coordinates,
+            the kind of projection in use and the the first few rows of the data
+            associated with the regions.
+          </li>
+          <li><code>nrow(my_sf)</code>: how many regions you have</li>
+        </ul>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># &#39;fortify&#39; the data to get a dataframe format required by ggplot2</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(broom)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">spdf_fortified &lt;-<span class="st"> </span><span class="kw">tidy</span>(my_spdf, <span class="dt">region =</span> <span class="st">&quot;NAME&quot;</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Plot it</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>( <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill=</span><span class="st">&quot;#69b3a2&quot;</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>() </a></code></pre>
+      <div id="plot-it-with-base-r" class="section level1">
+        <h1>Plot it with <code>base R</code></h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The basic <code>plot()</code> function knows how to plot a
+              geospatial object. Thus you just need to pass it
+              <code>my_sf</code> and add a couple of options to customize the
+              output.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic plot of this shape file:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(my_sf), <span class="at">col =</span> <span class="st">&quot;#f2f2f2&quot;</span>, <span class="at">bg =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="at">lwd =</span> <span class="fl">0.25</span>, <span class="at">border =</span> <span class="dv">0</span>)</span></code></pre>
+        </div>
       </div>
-      <!-- Close container -->
+      <div id="plot-it-with-ggplot2" class="section level1">
+        <h1>Plot it with <code>ggplot2</code></h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              It is totally possible (and advised IMO) to build the map with
+              <a href="ggplot2-package.html">ggplot2</a>, using the
+              <code>geom_sf()</code> function as described below.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot it</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
+        </div>
+        <!-- Close container -->
+      </div>
     </div>
     <!-- ============================ RELATED SECTION ============================ -->
     <section
@@ -424,7 +406,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"

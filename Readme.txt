@@ -42,3 +42,29 @@ CHANGELOG VERSION 0.2 - 1 April 2008
 CHANGELOG VERSION 0.1 - 13 March 2008
 
 - Polygons representing each country were merged into one feature
+- Åland Islands was extracted from Finland
+- Hong Kong was extracted from China
+- Holy See (Vatican City) was added
+- Gaza Strip and West Bank was merged into "Occupied Palestinean Territory"
+- Saint-Barthelemy was extracted from Netherlands Antilles
+- Saint-Martin (Frensh part) was extracted from Guadeloupe
+- Svalbard and Jan Mayen was merged into "Svalbard and Jan Mayen Islands"
+- Timor-Leste was extracted from Indonesia
+- Juan De Nova Island was merged with "French Southern & Antarctic Land"
+- Baker Island, Howland Island, Jarvis Island, Johnston Atoll, Midway Islands
+  and Wake Island was merged into "United States Minor Outlying Islands"
+- Glorioso Islands, Parcel Islands, Spartly Islands was removed 
+  (almost uninhabited and missing ISO-3611-1 code)
+
+- Added ISO-3166-1 codes (alpha-2, alpha-3, numeric-3). Source:
+  https://www.cia.gov/library/publications/the-world-factbook/appendix/appendix-d.html
+  http://unstats.un.org/unsd/methods/m49/m49alpha.htm
+  http://www.fysh.org/~katie/development/geography.txt
+- AREA column has been replaced with data from UNdata:
+  Land area, 1000 hectares, 2002, FAO Statistics
+- POPULATION column (POP2005) has been replaced with data from UNdata:
+  Population, 2005, Medium variant, World Population Prospects: The 2006 Revision
+- Added region and sub-region codes from UN Statistics Division. Source:
+  http://unstats.un.org/unsd/methods/m49/m49regin.htm
+- Added LAT, LONG values for each country
+

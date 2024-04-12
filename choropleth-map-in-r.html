@@ -52,7 +52,9 @@
     />
     <meta
       name="description"
-      content="This post explains how to build a choropleth map with R. It shows how to load geospatial data, bind it to a numeric value and draw the map. Reproducible code is provided."
+      content="This post explains how to build a
+choropleth map with R. It shows how to load geospatial data, bind it to
+a numeric value and draw the map. Reproducible code is provided."
     />
     <meta
       name="keywords"
@@ -181,186 +183,192 @@
       <p>Two inputs are needed to build a choropleth map:</p>
       <ul>
         <li>A geospatial object providing region boundaries</li>
-        <li>A numeric variable that will be used to cotrol region color</li>
+        <li>A numeric variable that will be used to control region color</li>
       </ul>
-      <h1 id="find-and-download-a-shape-file">
-        Find and download a shape file
-      </h1>
-      <hr />
-      <p>
-        <u>Note</u>: this step is described in detail
-        <a href="168-load-a-shape-file-into-r.html">here</a>. Read it if you are
-        not familiar with geospatial data management in R.
-      </p>
-      <p>
-        The region boundaries required to make maps are usually stored in
-        geospatial objects. Those objects can come from
-        <a href="168-load-a-shape-file-into-r.html">shapefiles</a>,
-        <a href="325-background-map-from-geojson-format-in-r.html"
-          >geojson files</a
-        >
-        or provided in a <a href="278-the-maps-library.html">R package</a>. See
-        the <a href="maps.html">map</a> section for possibilities.
-      </p>
-      <p>
-        Let’s get a geospatial object from a shape file available
-        <a href="http://thematicmapping.org/downloads/world_borders.php">here</a
-        >.
-      </p>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span> , <span class="dt">destfile=</span><span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># You now have it in your current working directory, have a look!</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre>
-      </div>
-      <p><br /></p>
-      <p>And let’s load it in R</p>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(rgdal)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">my_spdf &lt;-<span class="st"> </span><span class="kw">readOGR</span>( </a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dsn=</span> <span class="kw">paste0</span>(<span class="kw">getwd</span>(),<span class="st">&quot;/DATA/world_shape_file/&quot;</span>) , </a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">layer=</span><span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3&quot;</span>,</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">verbose=</span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># Select Africa only</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">africa &lt;-<span class="st"> </span>my_spdf[my_spdf<span class="op">@</span>data<span class="op">$</span>REGION<span class="op">==</span><span class="dv">2</span> , ]</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre>
-      </div>
-      <h1 id="plot-the-map">Plot the map</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The hardest part is to build the color palette that will be used on
-            the map. The <code>RColorBrewer</code> package makes it a breeze to
-            get a nice set of colors thanks to its
-            <code>brewer.pal()</code> function.
-          </p>
-          <p>
-            Once the palette is created, <code>POP2005</code> is cut in several
-            bins using the <code>cut()</code> function, and the approriate color
-            is attributed to each bin.
-          </p>
-          <p>
-            Finally, build the map with <code>plot()</code> and give the color
-            vector to the <code>col</code> argument to get the choropleth.
-          </p>
+      <div id="find-and-download-a-shape-file" class="section level1">
+        <h1>Find and download a shape file</h1>
+        <hr />
+        <p>
+          <u>Note</u>: this step is described in detail
+          <a href="168-load-a-shape-file-into-r.html">here</a>. Read it if you
+          are not familiar with geospatial data management in R.
+        </p>
+        <p>
+          The region boundaries required to make maps are usually stored in
+          geospatial objects. Those objects can come from
+          <a href="168-load-a-shape-file-into-r.html">shapefiles</a>,
+          <a href="325-background-map-from-geojson-format-in-r.html"
+            >geojson files</a
+          >
+          or provided in a <a href="278-the-maps-library.html">R package</a>.
+          See the <a href="map.html">map</a> section for possibilities.
+        </p>
+        <p>
+          Let’s get a geospatial object from a shape file available
+          <a href="http://thematicmapping.org/downloads/world_borders.php"
+            >here</a
+          >.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>, <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="choropleth-map-in-r_files/figure-html/thecode9-1.png"
-              width="100%"
-            />
-          </p>
+        <p><br /></p>
+        <p>And let’s load it in R</p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Select Africa only</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>africa <span class="ot">&lt;-</span> my_sf[my_sf<span class="sc">$</span>REGION <span class="sc">==</span> <span class="dv">2</span>, ]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Plot</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">plot</span>(africa , <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">20</span>,<span class="dv">60</span>) , <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">40</span>,<span class="dv">40</span>))</a></code></pre>
-      </div>
-      <h1 id="visualize-the-numeric-variable">
-        Visualize the numeric variable
-      </h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            In a choropleth map, each region has a color that represents the
-            value of a numeric variable.
-          </p>
-          <p>
-            In this example, this variable is already available in the
-            <code>data</code> slot of the geospatial object. You can have a look
-            to it typing <code>africa@data</code> in the terminal.
-          </p>
-          <p>
-            This object is a data frame. It is thus possible to visualize the
-            distribution of <code>POP2005</code> with a classic histogram made
-            in <a href="ggplot2-package.html">ggplot2</a>
-          </p>
+      <div id="plot-the-map" class="section level1">
+        <h1>Plot the map</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The hardest part is to build the color palette that will be used
+              on the map. The <code>RColorBrewer</code> package makes it a
+              breeze to get a nice set of colors thanks to its
+              <code>brewer.pal()</code> function.
+            </p>
+            <p>
+              Once the palette is created, <code>POP2005</code> is cut in
+              several bins using the <code>cut()</code> function, and the
+              appropriate color is attributed to each bin.
+            </p>
+            <p>
+              Finally, build the map with <code>plot()</code> and give the color
+              vector to the <code>col</code> argument to get the choropleth.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode9-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="choropleth-map-in-r_files/figure-html/thecode-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># library</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Make sure the variable you are studying is numeric</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">africa<span class="op">@</span>data<span class="op">$</span>POP2005 &lt;-<span class="st"> </span><span class="kw">as.numeric</span>( africa<span class="op">@</span>data<span class="op">$</span>POP2005 )</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># Distribution of the population per country?</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">africa<span class="op">@</span>data <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">as.numeric</span>(POP2005))) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;#69b3a2&#39;</span>, <span class="dt">color=</span><span class="st">&#39;white&#39;</span>)</a></code></pre>
-      </div>
-      <h1 id="build-the-choropleth">Build the choropleth</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The hardest part is to build the color palette that will be used on
-            the map. The <code>RColorBrewer</code> package makes it a breeze to
-            get a nice set of colors thanks to its
-            <code>brewer.pal()</code> function.
-          </p>
-          <p>
-            Once the palette is created, <code>POP2005</code> is cut in several
-            bins using the <code>cut()</code> function, and the approriate color
-            is attributed to each bin.
-          </p>
-          <p>
-            Finally, build the map with <code>plot()</code> and give the color
-            vector to the <code>col</code> argument to get the choropleth.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="choropleth-map-in-r_files/figure-html/thecode2-1.png"
-              width="100%"
-            />
-          </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">40</span>))</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb5">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Palette of 30 colors</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(RColorBrewer)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">my_colors &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Reds&quot;</span>) </a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">my_colors &lt;-<span class="st"> </span><span class="kw">colorRampPalette</span>(my_colors)(<span class="dv">30</span>)</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"> </a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># Attribute the appropriate color to each country</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">class_of_country &lt;-<span class="st"> </span><span class="kw">cut</span>(africa<span class="op">@</span>data<span class="op">$</span>POP2005, <span class="dv">30</span>)</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">my_colors &lt;-<span class="st"> </span>my_colors[<span class="kw">as.numeric</span>(class_of_country)]</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"> </a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="co"># Make the plot</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="kw">plot</span>(africa , <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">20</span>,<span class="dv">60</span>) , <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">40</span>,<span class="dv">40</span>), <span class="dt">col=</span>my_colors ,  <span class="dt">bg =</span> <span class="st">&quot;#A6CAE0&quot;</span>)</a></code></pre>
+      <div id="visualize-the-numeric-variable" class="section level1">
+        <h1>Visualize the numeric variable</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              In a choropleth map, each region has a color that represents the
+              value of a numeric variable.
+            </p>
+            <p>
+              In this example, this variable is already available in the
+              <code>africa</code> object. You can have a look to it typing
+              <code>africa</code> in the terminal.
+            </p>
+            <p>
+              It is thus possible to visualize the distribution of
+              <code>POP2005</code> with a classic histogram made in
+              <a href="ggplot2-package.html">ggplot2</a>
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure the variable you are studying is numeric</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>africa<span class="sc">$</span>POP2005 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(africa<span class="sc">$</span>POP2005)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribution of the population per country?</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>africa <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> POP2005)) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span></code></pre>
+        </div>
       </div>
-      <!-- Close container -->
+      <div id="build-the-choropleth" class="section level1">
+        <h1>Build the choropleth</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The hardest part is to build the color palette that will be used
+              on the map. The <code>RColorBrewer</code> package makes it a
+              breeze to get a nice set of colors thanks to its
+              <code>brewer.pal()</code> function.
+            </p>
+            <p>
+              Once the palette is created, <code>POP2005</code> is cut in
+              several bins using the <code>cut()</code> function, and the
+              appropriate color is attributed to each bin.
+            </p>
+            <p>
+              Finally, build the map with <code>plot()</code> and give the color
+              vector to the <code>col</code> argument to get the choropleth.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="choropleth-map-in-r_files/figure-html/thecode2-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette of 30 colors</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>my_colors <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">&quot;Reds&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>my_colors <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(my_colors)(<span class="dv">30</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Attribute the appropriate color to each country</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>class_of_country <span class="ot">&lt;-</span> <span class="fu">cut</span>(africa<span class="sc">$</span>POP2005, <span class="dv">30</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>my_colors <span class="ot">&lt;-</span> my_colors[<span class="fu">as.numeric</span>(class_of_country)]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the plot</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">40</span>), <span class="at">col =</span> my_colors,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">&quot;#A6CAE0&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre>
+        </div>
+        <!-- Close container -->
+      </div>
     </div>
     <!-- ============================ RELATED SECTION ============================ -->
     <section
@@ -461,7 +469,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
