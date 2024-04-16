@@ -50,13 +50,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta
-      name="description"
-      content="This post describes how to apply
+    <meta name="description" content="This post describes how to apply
 the cartogram method to a hexbin map. Each region is represented as a
 hexagon which size is distorted according to a numeric variable.
-Reproducible R code provided."
-    />
+Reproducible R code provided." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -70,10 +67,10 @@ Reproducible R code provided."
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta
-      property="og:description"
-      content="This post describes how to apply the cartogram method to a hexbin map. Each region is represented as a hexagon which size is distorted according to a numeric variable. Reproducible R code provided."
-    />
+    <meta property="og:description" content="This post describes how to
+apply the cartogram method to a hexbin map. Each region is represented
+as a hexagon which size is distorted according to a numeric variable.
+Reproducible R code provided." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/332-hexbin-chloropleth-cartogram.html"
@@ -143,13 +140,11 @@ Reproducible R code provided."
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">
-            This post describes how to apply the
-            <a href="cartogram.html">cartogram</a> method to a
-            <a href="hexbin-map">hexbin map</a>. Each region is represented as a
-            hexagon which size is distorted according to a numeric variable. It
-            uses the <code>cartogram</code> package.
-          </p>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to use the <code>[cartogram](cartogram.html)</code> method
+on a <code>[hexbin map](hexbin-map.html)</code>. Each region is depicted
+as a hexagon, with its <strong>size altered based on a numeric
+variable</strong>, utilizing the <code>cartogram</code> package.</p>
         </center>
         <div style="text-align: center">
           <a
@@ -174,6 +169,7 @@ Reproducible R code provided."
       });
     </script>
 
+    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -182,272 +178,215 @@ Reproducible R code provided."
     </style>
 
     <div class="container">
-      <div id="basic-hexbin-map" class="section level1">
-        <h1>Basic hexbin map</h1>
-        <hr />
-        <div class="row">
-          <div class="col-md-6 col-sm-12 align-self-center">
-            <p>
-              The first step is to build a basic
-              <a href="hexbin-map.html">hexbin map</a> of the US. Note that the
-              gallery dedicates a <a href="hexbin-map.html">whole section</a> to
-              this kind of map.
-            </p>
-            <p>
-              Hexagons boundaries are provided
-              <a
-                href="https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map"
-                >here</a
-              >. You have to download it at the <code>geojson</code> format and
-              load it in R thanks to the
-              <code>st_read() / read_sf()</code> functions. You get a geospatial
-              object that you can plot using the <code>plot()</code> function.
-              This is widely explained in the
-              <a href="map.html">background map</a> section of the gallery.
-            </p>
+<div id="basic-hexbin-map" class="section level1">
+<h1>Basic hexbin map</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The first step is to build a basic <a href="hexbin-map.html">hexbin
+map</a> of the US. Note that the gallery dedicates a <a
+href="hexbin-map.html">whole section</a> to this kind of map.</p>
+<p>Hexagons boundaries are provided <a
+href="https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map">here</a>.
+You have to download it at the <code>geojson</code> format and load it
+in R thanks to the <code>st_read() / read_sf()</code> functions.</p>
+<p>Then you get a geospatial object that you can plot using the
+<code>plot()</code> function. This is widely explained in the <a
+href="map.html">background map</a> section of the gallery.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># library</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># Hexagons boundaries at geojson format were found here, and stored on my github https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># Load this file. (Note: I stored in a folder called DATA)</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;DATA/us_states_hexgrid.geojson.json&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># Bit of reformatting</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> my_sf <span class="sc">%&gt;%</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">google_name =</span> <span class="fu">gsub</span>(<span class="st">&quot; </span><span class="sc">\\</span><span class="st">(United States</span><span class="sc">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>, google_name))</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># Show it</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(my_sf))</span></code></pre></div>
+</div>
+<div id="carto" class="section level1">
+<h1>Distort hexagone size with <code>cartogram</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>The geospatial object has an attached data frame that provides
+several information for each region.</p>
+<p>We need to add a new column to this data frame. This column will
+provide the <strong>population per state</strong>, available at
+<code>.csv</code> format <a
+href="https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv">here</a>.</p>
+<p>We can thus use the <code>cartogram</code> library to <strong>distort
+the size of each state</strong> (=hexagon), proportionally to this
+column. The new geospatial object we get can be drawn with the same
+<code>plot</code> function.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Library</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(cartogram)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Load the population per states (source: https://www.census.gov/data/tables/2017/demo/popest/nation-total.html)</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">header =</span> T)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>pop<span class="sc">$</span>pop <span class="ot">&lt;-</span> pop<span class="sc">$</span>pop <span class="sc">/</span> <span class="dv">1000000</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># merge both</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> my_sf <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(., pop, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;google_name&quot;</span> <span class="ot">=</span> <span class="st">&quot;state&quot;</span>))</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># Compute the cartogram, using this population information</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co"># First we need to change the projection, we use Mercator (AKA Google Maps, EPSG 3857)</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>my_sf_merc <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(my_sf, <span class="dv">3857</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>cartogram <span class="ot">&lt;-</span> <span class="fu">cartogram_cont</span>(my_sf_merc, <span class="st">&quot;pop&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co"># Back to original projection</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>cartogram <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(cartogram, <span class="fu">st_crs</span>(my_sf))</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co"># First look!</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(cartogram))</span></code></pre></div>
+</div>
+<div id="choro" class="section level1">
+<h1>Cartogram and choropleth</h1>
+<hr />
+<p>To get a satisfying result, let’s:</p>
+<ul>
+<li><strong>color hexagons</strong> according to their population</li>
+<li>add <strong>legend</strong></li>
+<li>add <strong>background</strong> color</li>
+<li>add <strong>title</strong></li>
+<li>add state name. Label position is computed thanks to the
+<code>gCentroid()</code> function. The centroid can be understand as the
+<strong>center of a polygon</strong>, and by so a good <strong>proxy to
+place the label</strong>.</li>
+</ul>
+<p><img src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode3-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Library</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">ggplot</span>(cartogram) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> pop), <span class="at">linewidth =</span> <span class="fl">0.05</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">colours =</span> <span class="fu">brewer.pal</span>(<span class="dv">7</span>, <span class="st">&quot;BuPu&quot;</span>), <span class="at">name =</span> <span class="st">&quot;population (in M)&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_comma</span>(),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>      <span class="at">keyheight =</span> <span class="fu">unit</span>(<span class="dv">3</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>      <span class="at">keywidth =</span> <span class="fu">unit</span>(<span class="dv">12</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>      <span class="at">label.position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    )</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso3166_2), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Another look on the US population&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>),</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>    <span class="at">legend.direction =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#22211d&quot;</span>),</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">22</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">t =</span> <span class="fl">0.4</span>, <span class="at">l =</span> <span class="dv">2</span>, <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span>)),</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<p>This post explains how to use the <code>cartogram</code> method on a
+hexbin map.</p>
+<p>You might be interested in interested in <a
+href="329-hexbin-map-for-distribution.html">2d density hexbin map</a>,
+and more generally in the <a href="hexbin-map.html">hexbin map
+section</a> of the gallery.</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
           </div>
-          <div class="col-md-6 col-sm-12">
-            <p>
-              <img
-                src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode-1.png"
-                width="100%"
-              />
-            </p>
-          </div>
         </div>
-        <div class="sourceCode" id="cb1">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># library</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Hexagons boundaries at geojson format were found here, and stored on my github https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Load this file. (Note: I stored in a folder called DATA)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;DATA/us_states_hexgrid.geojson.json&quot;</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Bit of reformatting</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> my_sf <span class="sc">%&gt;%</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">google_name =</span> <span class="fu">gsub</span>(<span class="st">&quot; </span><span class="sc">\\</span><span class="st">(United States</span><span class="sc">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>, google_name))</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Show it</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(my_sf))</span></code></pre>
-        </div>
-      </div>
-      <div id="carto" class="section level1">
-        <h1>Distort hexagone size with <code>cartogram</code></h1>
-        <hr />
-        <div class="row">
-          <div class="col-md-6 col-sm-12 align-self-center">
-            <p>
-              The geospatial object has an attached data frame that provides
-              several information for each region.
-            </p>
-            <p>
-              We need to add a new column to this data frame. This column will
-              provide the population per state, available at
-              <code>.csv</code> format
-              <a
-                href="https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv"
-                >here</a
-              >.
-            </p>
-            <p>
-              We can thus use the <code>cartogram</code> library to distort the
-              size of each state (=hexagon), proportionally to this column. The
-              new geospatial object we get can be drawn with the same
-              <code>plot</code> function.
-            </p>
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <p>
-              <img
-                src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode2-1.png"
-                width="100%"
-              />
-            </p>
-          </div>
-        </div>
-        <div class="sourceCode" id="cb2">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Library</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cartogram)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the population per states (source: https://www.census.gov/data/tables/2017/demo/popest/nation-total.html)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/pop_US.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">header =</span> T)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>pop<span class="sc">$</span>pop <span class="ot">&lt;-</span> pop<span class="sc">$</span>pop <span class="sc">/</span> <span class="dv">1000000</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># merge both</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> my_sf <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(., pop, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;google_name&quot;</span> <span class="ot">=</span> <span class="st">&quot;state&quot;</span>))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the cartogram, using this population information</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># First we need to change the projection, we use Mercator (AKA Google Maps, EPSG 3857)</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>my_sf_merc <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(my_sf, <span class="dv">3857</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>cartogram <span class="ot">&lt;-</span> <span class="fu">cartogram_cont</span>(my_sf_merc, <span class="st">&quot;pop&quot;</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Back to original projection</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>cartogram <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(cartogram, <span class="fu">st_crs</span>(my_sf))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># First look!</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(cartogram))</span></code></pre>
-        </div>
-      </div>
-      <div id="choro" class="section level1">
-        <h1>Cartogram and choropleth</h1>
-        <hr />
-        <p>
-          <img
-            src="332-hexbin-chloropleth-cartogram_files/figure-html/thecode3-1.png"
-            width="80%"
-            style="display: block; margin: auto"
-          />
-        </p>
-        <p>To get a satisfying result, let’s:</p>
-        <ul>
-          <li>color hexagons according to their population</li>
-          <li>add legend</li>
-          <li>add background color</li>
-          <li>add title</li>
-          <li>
-            add state name. Label position is computed thanks to the
-            <code>gCentroid()</code> function.
-          </li>
-        </ul>
-        <div class="sourceCode" id="cb3">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Library</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cartogram) <span class="sc">+</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> pop), <span class="at">linewidth =</span> <span class="fl">0.05</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">colours =</span> <span class="fu">brewer.pal</span>(<span class="dv">7</span>, <span class="st">&quot;BuPu&quot;</span>), <span class="at">name =</span> <span class="st">&quot;population (in M)&quot;</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">label_comma</span>(),</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">keyheight =</span> <span class="fu">unit</span>(<span class="dv">3</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">keywidth =</span> <span class="fu">unit</span>(<span class="dv">12</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">label.position =</span> <span class="st">&quot;bottom&quot;</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> iso3166_2), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Another look on the US population&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.9</span>),</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.direction =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#22211d&quot;</span>),</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f9&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">22</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">t =</span> <span class="fl">0.4</span>, <span class="at">l =</span> <span class="dv">2</span>, <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span>)),</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre>
-        </div>
-        <!-- Close container -->
-      </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
     </div>
-    <!-- ============================ RELATED SECTION ============================ -->
-    <section
-      class="bg-light"
-      id="portfolio_landing"
-      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
-    >
-      <div class="container">
-        <p class="mySeryTitle">Related chart types</p>
-        <hr />
-        <div class="row">
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Map150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="choropleth-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Choropleth150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Choropleth</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="hexbin-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/MapHexbin150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Hexbin map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="cartogram.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Cartogram150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Cartogram</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="connection-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/ConnectedMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Connection</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="bubble-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/BubbleMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Bubble map</div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-      </div>
-    </section>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -579,18 +518,18 @@ Reproducible R code provided."
     </footer>
 
     <script>
+
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $("tr.header")
-          .parent("thead")
-          .parent("table")
-          .addClass("table table-condensed");
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
-    </script>
 
+          </script>
+
+    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

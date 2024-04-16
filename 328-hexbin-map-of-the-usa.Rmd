@@ -1,7 +1,7 @@
 ---
 title: "Hexbin map in R: an example with US states"
-descriptionMeta: "This post describes how to build a hexbin map, with input data available at geojson format. It provides a ste-by-step explanation and reproducible code."
-descriptionTop: "This post describes how to build a [hexbin map](hexbin-map.html). It is based on a `geojson` file providing the boundaries of us states as hexagons."
+descriptionMeta: "This post describes how to build a hexbin map, with input data available at geojson format. It provides a step-by-step explanation and reproducible code."
+descriptionTop: "This post describes how to build a [hexbin map](hexbin-map.html). It is based on a `geojson` file providing the **boundaries of US states** as hexagons."
 sectionText: "Hexbin map section"
 sectionLink: "hexbin-map.html"
 DataToVizText: "Data to Viz"
@@ -33,20 +33,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 
 # Basic hexbin map
 ***
 
-<div class = "row">
 
-<div class = "col-md-6  col-sm-12 align-self-center">
 
 The first step is to build a basic [hexbin map](hexbin-map.html) of the US. Note that the gallery dedicates a [whole section](hexbin-map.html) to this kind of map.
 
 Hexagon boundaries are provided [here](https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map). You have to download it at the `geojson` format and load it in R thanks to the `st_read() / read_sf()` function. You get a geospatial object that you can plot using the `plot()` function. This is widely explained in the [background map](map.html) section of the gallery.
 
-</div>
 
 
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode, echo=FALSE, out.width = "100%", fig.height=4}
+```{r thecode, out.width = "100%", fig.height=4}
 # library
 library(tidyverse)
 library(sf)
@@ -64,13 +59,6 @@ my_sf <- my_sf %>%
 # Show it
 plot(st_geometry(my_sf))
 ```
-</div>
-</div>
-
-
-
-```{r thecode, eval=FALSE}
-```
 
 
 
@@ -85,33 +73,27 @@ plot(st_geometry(my_sf))
 
 
 
-# `ggplot2` and state name
+
+
+
+# ggplot2 and state name
 ***
 
-<div class = "row">
 
-<div class = "col-md-6  col-sm-12 align-self-center">
 
 It is totally doable to plot this geospatial object using `ggplot2` and its `geom_sf()` and `geom_sf_text()` functions.
 
-</div>
 
 
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode2, echo=FALSE, out.width = "100%", fig.height=4}
+```{r thecode2, out.width = "100%", fig.height=4}
 ggplot(my_sf) +
   geom_sf(fill = "skyblue", color = "white") +
   geom_sf_text(aes(label = iso3166_2)) +
   theme_void()
 ```
-</div>
-</div>
 
 
 
-```{r thecode2, eval=FALSE}
-```
 
 
 
@@ -125,21 +107,16 @@ ggplot(my_sf) +
 # Basic choropleth
 ***
 
-<div class = "row">
 
-<div class = "col-md-6  col-sm-12 align-self-center">
 
-Now you probably want to adjust the color of each hexagon, according to the value of a specific variable (we call it a [choropleth map](chloropleth-map.html)). 
+Now you probably want to **adjust the color of each hexagone**, according to the value of a specific variable (we call it a [choropleth map](chloropleth-map.html)). 
 
-In this post I suggest to represent the number of wedding per thousand people. The data have been found [here](https://www.cdc.gov/nchs/nvss/marriage-divorce.html), and stored on a clean format [here](https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv). 
+The data is about the number of wedding per thousand people, and you can **load it directly** using the following code.
 
 Let's start by loading this information and represent its distribution:
-</div>
 
 
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
+```{r thecode3, out.width = "100%", fig.height=7}
 # Load marriage data
 data <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/State_mariage_rate.csv",
   header = T, sep = ",", na.strings = "---"
@@ -151,13 +128,6 @@ data %>%
   geom_histogram(bins = 20, fill = "#69b3a2", color = "white") +
   scale_x_continuous(breaks = seq(1, 30))
 ```
-</div>
-</div>
-
-
-
-```{r thecode3, eval=FALSE}
-```
 
 
 
@@ -166,21 +136,17 @@ data %>%
 
 
 
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
-
-Most of the state have between 5 and 10 weddings per 1000 inhabitants, but there are 2 outliers with high values (16 and 32).
-
-Let's represent this information on a map. We have a column with the state id in both the geospatial and the numerical datasets. So we can merge both information and plot it.
-
-Note the use of the `trans = "log"` option in the color scale to decrease the effect of the 2 outliers.
-</div>
 
 
-<div class = "col-md-6  col-sm-12">
 
-```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
+Most of the state have between 5 and 10 weddings per 1000 inhabitants, but there are **2 outliers** with high values (16 and 32).
+
+Let's represent this information on a map. We have a column with the state id in both the geospatial and the numerical datasets. So we can **merge both information and plot it**.
+
+Note the use of the `trans = "log"` option in the color scale to **decrease the effect** of the 2 outliers.
+
+
+```{r thecode4, out.width = "100%", fig.height=4}
 # Merge geospatial and numerical information
 my_sf_wed <- my_sf %>%
   left_join(data, by = c("google_name" = "state"))
@@ -191,14 +157,6 @@ ggplot(my_sf_wed) +
   scale_fill_gradient(trans = "log") +
   theme_void()
 ```
-</div>
-</div>
-
-
-
-```{r thecode4, eval=FALSE}
-```
-
 
 
 
@@ -220,13 +178,13 @@ ggplot(my_sf_wed) +
 
 Here is a final version after applying a few customization:
 
-- Use handmade binning for the colorscale with `scale_fill_manual`
+- Use **handmade binning** for the colorscale with `scale_fill_manual`
 - Use `viridis` for the color palette
-- Add custom legend and title
-- Change background color
+- Add custom **legend and title**
+- Change **background color**
 
 
-```{r thecode5, echo=FALSE, out.width = "80%", fig.height=4, fig.align="center"}
+```{r thecode5, out.width = "80%", fig.height=4, fig.align="center"}
 # Prepare binning
 my_sf_wed$bin <- cut(my_sf_wed$y_2015,
   breaks = c(seq(5, 10), Inf),
@@ -268,11 +226,15 @@ ggplot(my_sf_wed) +
 
 
 
-```{r thecode5, eval=FALSE}
-```
 
 
+# Going further
+***
 
+
+This post explains how to build a hexbin map of the US.
+
+You might be interested in how to [combine hexbin map and cartogram](332-hexbin-chloropleth-cartogram.html), and more generally by the [hexbin map section](hexbin-map.html) of the gallery.
 
 
 

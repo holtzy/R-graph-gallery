@@ -1,7 +1,7 @@
 ---
 title: "Geospatial data manipulation in R"
-descriptionMeta: "Map data are stored in a very specific geospatial format in R. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
-descriptionTop: "[Map data](map.html) are stored in a very specific geospatial format in `R`. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
+descriptionMeta: "Map data in R are stored in a specialized geospatial format. This post explores key manipulations you might need, including selecting zones, simplifying borders, and more."
+descriptionTop: "[**Map data**](map.html) in `R` is stored in a specialized **geospatial format**: shapefiles. This post explores key manipulations you might need, including **selecting zones**, **simplifying borders**, and more.<br>For an introduction to shapefiles, check [this post](168-load-a-shape-file-into-r.html)."
 sectionText: "Background map section"
 sectionLink: "map.html"
 DataToVizText: "About Maps"
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 
 # Get a geospatial object
 ***
 
-The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [map](map.html) section for possibilities.
+The region boundaries required to make maps are usually stored in **geospatial objects**. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [map](map.html) section for possibilities.
 
 Let's get a geospatial object from a shape file available [here](http://thematicmapping.org/downloads/world_borders.php). This step is extensively described in [this post](168-load-a-shape-file-into-r.html) in case you're not familiar with it.
 
@@ -75,18 +75,10 @@ my_sf <- read_sf(
 # Select a region {#select}
 ***
 
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
 
 You can filter the geospatial object to plot only a subset of the regions. The following code keeps only Africa and plot it.
 
-</div>
-
-
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode4, echo=FALSE, out.width = "100%", fig.height=4}
+```{r thecode4, out.width = "100%", fig.height=4}
 # Keep only data concerning Africa
 africa <- my_sf[my_sf$REGION == 2, ]
 
@@ -96,12 +88,6 @@ plot(st_geometry(africa),
   xlim = c(-20, 60), ylim = c(-40, 35),
   col = "steelblue", lwd = 0.5
 )
-```
-
-</div>
-</div>
-
-```{r thecode4, eval=FALSE}
 ```
 
 
@@ -115,20 +101,14 @@ plot(st_geometry(africa),
 # Simplify the geospatial object {#simplify}
 ***
 
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
 
 It's a common task to *simplify* the geospatial object. Basically, it decreases the border precision which results in a lighter object that will be plotted faster.
 
 The `rmapshaper` package offers the `ms_simplify()` function to makes the simplification. Play with the `keep` argument to control simplification rate.
 
-</div>
 
 
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode6, echo=FALSE, out.width = "100%", fig.height=4}
+```{r thecode6, out.width = "100%", fig.height=4}
 # Simplification with rmapshaper
 library("rmapshaper")
 africaSimple <- ms_simplify(africa, keep = 0.01, keep_shapes = TRUE)
@@ -140,13 +120,6 @@ plot(st_geometry(africaSimple),
   col = "#59b2a3", lwd = 0.5
 )
 ```
-
-</div>
-</div>
-
-```{r thecode6, eval=FALSE}
-```
-
 
 
 
@@ -165,17 +138,10 @@ plot(st_geometry(africaSimple),
 # Compute region centroid  {#centroid}
 ***
 
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12 align-self-center">
-
 Another common task is to compute the centroid of each region to add labels. This is doable using the `st_centroid()` function of the `sf` package.
 
-</div>
 
-<div class = "col-md-6  col-sm-12">
-
-```{r thecode7, echo=FALSE, out.width = "100%", fig.height=4}
+```{r thecode7, out.width = "100%", fig.height=4}
 # The st_centroid function computes the centroid of each region:
 # st_centroid(africa, of_largest_polygon = TRUE)
 
@@ -192,12 +158,14 @@ plot(st_geometry(africa), xlim = c(-20, 60), ylim = c(-40, 35), lwd = 0.5)
 text(centers$X, centers$Y, centers$FIPS, cex = .9, col = "#69b3a2")
 ```
 
-</div>
-</div>
 
-```{r thecode7, eval=FALSE}
-```
 
+# Going further
+***
+
+This post explains how to manipulate geospatial objects in R.
+
+You might be interested in creating a [choropleth map](choropleth-map.html) or a [bubble map](bubble-map.html) with this object.
 
 
 

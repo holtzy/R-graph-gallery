@@ -1,7 +1,7 @@
 ---
 title: "Bubble map with ggplot2"
-descriptionMeta: "This post explains how to build a bubble map with ggplot2. It takes a list of GPS coordinates and plot them on top of a map, with size and color mapped to data."
-descriptionTop: "This post explains how to build a [bubble map](bubble-map.html) with [ggplot2](ggplot2-package.html). It takes a list of GPS coordinates and plot them on top of a map, with size and color mapped to data."
+descriptionMeta: "This article demonstrates how to construct a bubble map using ggplot2. It guides you through the process of plotting GPS coordinates on a map, with the bubbles' size and color representing different data variables."
+descriptionTop: "This article demonstrates **how to construct a [bubble map](bubble-map.html)** using [ggplot2](ggplot2-package.html). It guides you through the process of plotting **GPS coordinates on a map**, with the bubbles' size and color representing different data variables."
 sectionText: "Bubble map section"
 sectionLink: "bubble-map.html"
 DataToVizText: "About Maps"
@@ -30,16 +30,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 
 
 
 
-<div class = "row">
-
-<div class = "col-md-6  col-sm-12  align-self-center">
-
-<img src="330-bubble-map-with-ggplot2_files/figure-html/thecode6-1.png" alt="bubble map with R and ggplot2" width="100%"></img>
-
-</div>
-
-
-<div class = "col-md-6  col-sm-12  align-self-center">
+# About
+***
 
 This post explains how to make a [bubble map](bubble-map.html) with [ggplot2](ggplot2-package.html). 
 
@@ -54,14 +46,13 @@ This post provides a step-by-step approach to build the map beside, showing the 
 # Load data
 ***
 
-The first step is to get the boundaries of the zone that interests you. Several option are available in R, as extensively described in the [background map](map.html) section of the gallery.
+The first step is to **get the boundaries** of the zone that interests you. Several option are available in R, as extensively described in the [background map](map.html) section of the gallery.
 
 Briefly, you can find this information somewhere under the [shapefile](168-load-a-shape-file-into-r.html) format or under the [geoJSON](325-background-map-from-geojson-format-in-r.html) format. You can also load google like backgrounds with the [ggmap](324-map-background-with-the-ggmap-library.html) library. 
 
 This post uses the last approach: it loads the `giscoR` package that provides the boundaries of every world country. 
 
-</div>
-</div>
+
 
 
 
@@ -90,7 +81,7 @@ data <- world.cities %>% filter(country.etc == "UK")
 
 
 
-# Basic scatterplot map {#scatter}
+# Basic scatterplot map
 ***
 
 `ggplot2` makes it a breeze to map both information on the same graph. Use `geom_sf()` for the shape of UK first, and add your scatter plot on it with `geom_point()`. 
@@ -98,7 +89,7 @@ data <- world.cities %>% filter(country.etc == "UK")
 On the right figure, note the use of the `ggrepel` library to avoid overlapping between city names.
 
 
-```{r thecode, echo=FALSE, out.width = c("50%","50%"), fig.show="hold", fig.height=6}
+```{r thecode, out.width = c("50%","50%"), fig.show="hold", fig.height=6}
 # Left chart
 ggplot() +
   geom_sf(data = UK, fill = "grey", alpha = 0.3) +
@@ -125,8 +116,6 @@ ggplot() +
 ```
 
 
-```{r thecode, eval=FALSE}
-```
 
 
 
@@ -138,16 +127,15 @@ ggplot() +
 
 
 
-
-
-
-# Basic bubble map  {#bubble}
+# Basic bubble map
 ***
 
-Now we want to add another information. The number of inhabitant per city will be mapped to the colour and the size of the bubbles. Note that the order of city matters! It is advised to show the most important information on top (center). This can been done sorting your dataset before making the plot.
+Now we want to add another information. The **number of inhabitant per city will be mapped** to the colour and the size of the bubbles.
+
+Note that the order of city matters! It is advised to show the **most important information on top** (center). This can been done sorting your dataset before making the plot.
 
 
-```{r thecode5, echo=FALSE, out.width = c("33%","33%","33%"), fig.show="hold", fig.height=7}
+```{r thecode5, out.width = c("33%","33%","33%"), fig.show="hold", fig.height=7}
 # Left: use size and color
 ggplot() +
   geom_sf(data = UK, fill = "grey", alpha = 0.3) +
@@ -186,26 +174,20 @@ data %>%
  
 
 
-```{r thecode5, eval=FALSE}
-```
-
-
-
-
 
 
 
  
-# Customized bubble map  {#custom}
+# Customized bubble map
 ***
 
 
+We can custom a little bit this figure for a better looking result.
 
-<div class = "row">
+Note that here the legend shows **both the size, the color and the transparency** on the same circles. This is possible only if these **3 informations are redundant**, with the same name, transformation and breaks.
 
-<div class = "col-md-6  col-sm-12 align-self-center">
 
-```{r thecode6, echo=FALSE, out.width="100%", fig.height=9, fig.width=5}
+```{r thecode6, out.width="100%", fig.height=9, fig.width=5}
 # Create breaks for the color scale
 mybreaks <- c(0.02, 0.04, 0.08, 1, 7)
 
@@ -250,47 +232,16 @@ data %>%
 ```
 
 
-</div>
-
-
-<div class = "col-md-6  col-sm-12  align-self-center">
-
-We can custom a little bit this figure for a better looking result (first image of this post).
- 
-Note that here the legend shows both the size, the color and the transparency on the same circles. This is possible only if these 3 informations are redundant, with the same name, transformation and breaks.
-
-</div>
-</div>
-
-```{r thecode6, eval=FALSE}
-```
 
 
 
 
-
-# Interactive bubble map with plotly  {#interactive}
+# Interactive bubble map with plotly 
 ***
 
+Last but not least, `plotly` allows to quickly get an **interactive version**. This is really handy since it allows to zoom on the map and hover a city to know its name and population!
 
-
-<div class = "row">
-
-<div class = "col-md-8  col-sm-12 align-self-center">
-
-<center><iframe src="HtmlWidget/bubblemapUK.html" width="100%" height="600px" style="border:none"></iframe></center>
-
-</div>
-
-
-<div class = "col-md-4  col-sm-12 align-self-center">
-
-Last but not least, `plotly` allows to quickly get an interactive version. This is really handy since it allows to zoom on the map and hover a city to know its name and population!
-
-</div>
-</div>
-
-
+This mainly relies on the `ggplotly()` function that converts a ggplot2 object into a **plotly**, interactive object.
 
 
 ```{r, eval=FALSE}
@@ -329,9 +280,18 @@ p
 # saveWidget(p, file=paste0( getwd(), "/HtmlWidget/bubblemapUK.html"))
 ```
 
+<center>
+  <iframe src="HtmlWidget/bubblemapUK.html" style="height: 1000px; width: 100%; border: none;"></iframe>
+</center>
 
 
 
+# Going further 
+***
+
+This post explains how to make a bubble map with [ggplot2](ggplot2-package.html).
+
+You might be interested in this post that [combines bubble map with a cartogram](web-dorling-cartogram-with-R.html), and more generally in the [bubble map section](bubble-map.html) of the gallery.
 
 
 

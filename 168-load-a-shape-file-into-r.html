@@ -43,19 +43,18 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Open and Plot Shapefiles in R &#8211; the R Graph Gallery</title>
+    <title>Open and Plot Shapefiles in
+R &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta
-      name="description"
-      content="Shapefiles are a common way to
-store geospatial data. This post explains how to read it with R and the
-sf package, and how to plot it in base R or with ggplot2."
-    />
+    <meta name="description" content="Shapefiles, a popular format for
+storing geospatial information, are easily handled in R using the sf
+package. This guide will demonstrate how to read shapefiles into R and
+visualize them using either base R or the ggplot2 package." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -69,10 +68,10 @@ sf package, and how to plot it in base R or with ggplot2."
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta
-      property="og:description"
-      content="Shapefiles are a common way to store geospatial data. This post explains how to read it with R and the rgdal package, and how to plot it in base R or with ggplot2."
-    />
+    <meta property="og:description" content="Shapefiles, a popular
+format for storing geospatial information, are easily handled in R using
+the sf package. This guide will demonstrate how to read shapefiles into
+R and visualize them using either base R or the ggplot2 package." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/168-load-a-shape-file-into-r.html"
@@ -142,12 +141,13 @@ sf package, and how to plot it in base R or with ggplot2."
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">
-            Shapefiles are a common way to store geospatial data. This post
-            explains how to read it with <code>R</code> and the
-            <code>sf</code> package, and how to plot it in base
-            <code>R</code> or with <code>ggplot2</code>.
-          </p>
+          <p style="max-width: 600px; margin-top: 40px"><strong>Shapefiles</strong>,
+a popular format for storing <strong>geospatial information</strong>,
+are easily handled in <strong>R</strong> using the <code>sf</code>
+package. This guide will demonstrate <strong>how to read
+shapefiles</strong> into R and visualize them using either <strong>base
+R</strong> or the <a href="ggplot2-package.html">ggplot2</a>
+package.</p>
         </center>
         <div style="text-align: center">
           <a
@@ -172,6 +172,7 @@ sf package, and how to plot it in base R or with ggplot2."
       });
     </script>
 
+    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -180,232 +181,167 @@ sf package, and how to plot it in base R or with ggplot2."
     </style>
 
     <div class="container" style="padding-top: 80px">
-      <p>
-        If you did not find the geospatial data you need in existing R packages
-        (see the <a href="map.html">map section</a>), you need to find this
-        information elsewhere on the web.
-      </p>
-      <p>
-        Usually, you will find it as a <em>shape file</em> format. This format
-        is composed by several files that you need to keep together in the same
-        folder.
-      </p>
-      <div id="find-and-download-a-shapefile." class="section level1">
-        <h1>Find and download a shapefile.</h1>
-        <hr />
-        <p>
-          You need to dig the internet to find the shape file you are interested
-          in. For instance,
-          <a href="http://thematicmapping.org/downloads/world_borders.php"
-            >this URL</a
-          >
-          will redirect you to a zipped shape file containing the world
-          boundaries.
-        </p>
-        <p>You can download it and unzip it with R:</p>
-        <div class="sourceCode" id="cb1">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>, <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;DATA/world_shape_file.zip&quot;</span>, <span class="at">junkpaths =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre>
-        </div>
-      </div>
-      <div id="read-it-with-sf" class="section level1">
-        <h1>Read it with <code>sf</code></h1>
-        <hr />
-        <p>
-          The <code>sf</code> package offers the <code>st_read()</code> and the
-          <code>read_sf()</code> functions that allows to read shapefile using
-          the following syntax.
-        </p>
-        <p>
-          As a result you get a geospatial object (<code>my_sf</code> here) that
-          contains all the information we need for further mapping. Please try
-          th following command to understand how this object works:
-        </p>
-        <ul>
-          <li>
-            <code>print(my_sf)</code>: tells you the max and min coordinates,
-            the kind of projection in use and the the first few rows of the data
-            associated with the regions.
-          </li>
-          <li><code>nrow(my_sf)</code>: how many regions you have</li>
-        </ul>
-        <div class="sourceCode" id="cb2">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre>
-        </div>
-      </div>
-      <div id="plot-it-with-base-r" class="section level1">
-        <h1>Plot it with <code>base R</code></h1>
-        <hr />
-        <div class="row">
-          <div class="col-md-6 col-sm-12 align-self-center">
-            <p>
-              The basic <code>plot()</code> function knows how to plot a
-              geospatial object. Thus you just need to pass it
-              <code>my_sf</code> and add a couple of options to customize the
-              output.
-            </p>
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <p>
-              <img
-                src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png"
-                width="100%"
-              />
-            </p>
-          </div>
-        </div>
-        <div class="sourceCode" id="cb3">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic plot of this shape file:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(my_sf), <span class="at">col =</span> <span class="st">&quot;#f2f2f2&quot;</span>, <span class="at">bg =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="at">lwd =</span> <span class="fl">0.25</span>, <span class="at">border =</span> <span class="dv">0</span>)</span></code></pre>
-        </div>
-      </div>
-      <div id="plot-it-with-ggplot2" class="section level1">
-        <h1>Plot it with <code>ggplot2</code></h1>
-        <hr />
-        <div class="row">
-          <div class="col-md-6 col-sm-12 align-self-center">
-            <p>
-              It is totally possible (and advised IMO) to build the map with
-              <a href="ggplot2-package.html">ggplot2</a>, using the
-              <code>geom_sf()</code> function as described below.
-            </p>
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <p>
-              <img
-                src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png"
-                width="100%"
-              />
-            </p>
+<div id="about-shapefiles" class="section level1">
+<h1>About shapefiles</h1>
+<hr />
+<p>If you did not find the geospatial data you need in existing R
+packages (see the <a href="map.html">map section</a>), you need to find
+this information elsewhere on the web.</p>
+<p>Usually, you will find it as a <em>shape file</em> format. This
+format is composed by <strong>several files</strong> that you need to
+<strong>keep together</strong> in the same folder.</p>
+</div>
+<div id="find-and-download-a-shapefile." class="section level1">
+<h1>Find and download a shapefile.</h1>
+<hr />
+<p>You need to dig the internet to find the shape file you are
+interested in. For instance, <a
+href="http://thematicmapping.org/downloads/world_borders.php">this
+URL</a> will redirect you to a zipped shape file containing the world
+boundaries.</p>
+<p>You can download it and unzip it with R:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>, <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;DATA/world_shape_file.zip&quot;</span>, <span class="at">junkpaths =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre></div>
+</div>
+<div id="read-it-with-sf" class="section level1">
+<h1>Read it with <code>sf</code></h1>
+<hr />
+<p>The <code>sf</code> package offers the <code>st_read()</code> and the
+<code>read_sf()</code> functions that allows to <strong>read
+shapefile</strong> using the following syntax.</p>
+<p>As a result you get a geospatial object (<code>my_sf</code> here)
+that contains all the information we need for further mapping. Please
+try the following command to understand how this object works:</p>
+<ul>
+<li><code>print(my_sf)</code>: tells you the max and min coordinates,
+the kind of projection in use and the the <strong>first few
+rows</strong> of the data associated with the regions.</li>
+<li><code>nrow(my_sf)</code>: how many regions you have</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre></div>
+</div>
+<div id="plot-it-with-base-r" class="section level1">
+<h1>Plot it with <code>base R</code></h1>
+<hr />
+<p>The basic <code>plot()</code> function knows how to plot a geospatial
+object. Thus you just need to pass it <code>my_sf</code> and add a
+couple of <strong>options to customize</strong> the output.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Basic plot of this shape file:</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(my_sf), <span class="at">col =</span> <span class="st">&quot;#f2f2f2&quot;</span>, <span class="at">bg =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="at">lwd =</span> <span class="fl">0.25</span>, <span class="at">border =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p><img src="168-load-a-shape-file-into-r_files/figure-html/thecode4-1.png" width="100%" /></p>
+</div>
+<div id="plot-it-with-ggplot2" class="section level1">
+<h1>Plot it with <code>ggplot2</code></h1>
+<hr />
+<p>It is totally possible (and advised) to build the map with <a
+href="ggplot2-package.html">ggplot2</a>, using the
+<code>geom_sf()</code> function as described below.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Plot it</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div>
+<p><img src="168-load-a-shape-file-into-r_files/figure-html/thecode5-1.png" width="100%" /></p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>This post explains how to read and plot a shapefile in R.</p>
+<p>You might be interested in how to <a
+href="169-170-basic-manipulation-of-shapefiles.html">customize the
+map</a> (select regions, change colors, etc.) and more generally in the
+<a href="map.html">map section</a>.</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <div class="sourceCode" id="cb4">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot it</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf) <span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
-        </div>
-        <!-- Close container -->
-      </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
     </div>
-    <!-- ============================ RELATED SECTION ============================ -->
-    <section
-      class="bg-light"
-      id="portfolio_landing"
-      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
-    >
-      <div class="container">
-        <p class="mySeryTitle">Related chart types</p>
-        <hr />
-        <div class="row">
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Map150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="choropleth-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Choropleth150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Choropleth</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="hexbin-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/MapHexbin150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Hexbin map</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="cartogram.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Cartogram150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Cartogram</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="connection-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/ConnectedMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Connection</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="bubble-map.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/BubbleMap150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Bubble map</div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-      </div>
-    </section>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -537,18 +473,18 @@ sf package, and how to plot it in base R or with ggplot2."
     </footer>
 
     <script>
+
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $("tr.header")
-          .parent("thead")
-          .parent("table")
-          .addClass("table table-condensed");
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
-    </script>
 
+          </script>
+
+    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
