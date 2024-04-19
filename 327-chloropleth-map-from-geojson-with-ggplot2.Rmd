@@ -30,8 +30,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 
 
 
 
-# About choropleth map
-***
+
 
 Two inputs are needed to build a [choropleth map](choropleth-map.html):
 
@@ -71,6 +70,11 @@ my_sf <- my_sf[substr(my_sf$code, 1, 2) %in% c(
 ```
 
 
+```{r thecode, eval=FALSE}
+```
+
+
+
 
 
 
@@ -82,19 +86,32 @@ my_sf <- my_sf[substr(my_sf$code, 1, 2) %in% c(
 # Basic background map
 ***
 
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
 
 We now have a geospatial object called `my_sf`. This object could be plotted as is using the `plot()` function as explained [here](choropleth-map-in-r.html).
 
 On [ggplot2](ggplot2-package.html) we can use `geom_sf()` to plot the shape.
 
+</div>
 
 
-```{r thecode10, out.width = "100%", fig.height=4}
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode10, echo=FALSE, out.width = "100%", fig.height=4}
 library(ggplot2)
 ggplot(my_sf) +
   geom_sf(fill = "white", color = "black", linewidth = 0.3) +
   theme_void()
 ```
+
+</div>
+</div>
+
+```{r thecode10, eval=FALSE}
+```
+
 
 
 
@@ -110,16 +127,22 @@ ggplot(my_sf) +
 # Read the numeric variable
 ***
 
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
 
 The number of restaurant per city district has been found on the internet and a clean version is stored on the gallery website. It is thus easy to read it with `read.table()`. Before doing a [choropleth map](choropleth-map.html), it is a good practice to check the distribution of your variable.
 
 Here, we have a *long tail* distribution: a few cities have a lot of restaurant. Thus we will probably need to apply a **log scale to our color palette**. It will avoid that all the variation is absorbed by these high values.
 
+</div>
 
-```{r thecode2, out.width = "100%", fig.height=4}
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode2, echo=FALSE, out.width = "100%", fig.height=4}
 # read data
-data <- read.table(
-  "https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv",
+data <- read.table("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv",
   header = T, sep = ";"
 )
 
@@ -132,6 +155,15 @@ data %>%
   geom_histogram(bins = 10, fill = "skyblue", color = "black") +
   scale_x_log10()
 ```
+
+</div>
+</div>
+
+```{r thecode2, eval=FALSE}
+```
+
+
+
 
 
 
@@ -148,7 +180,7 @@ data %>%
 This is a key step in [choropleth map](choropleth-map.html): your 2 inputs must have a id in common to make the link between them!
 
 
-```{r thecode5, out.width = "100%", fig.height=4}
+```{r thecode5, echo=TRUE, out.width = "100%", fig.height=4}
 # Make the merge
 my_sf_merged <- my_sf %>%
   left_join(data, by = c("code" = "depcom")) %>%
@@ -169,13 +201,27 @@ my_sf_merged <- my_sf %>%
 # Read the numeric variable
 ***
 
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
 We can make a first basic choropleth map. We just need to add `fill = our_value` in the aesthetic of our polygons.
 
+</div>
 
-```{r thecode3, out.width = "100%", fig.height=4}
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode3, echo=FALSE, out.width = "100%", fig.height=4}
 ggplot(my_sf_merged) +
   geom_sf(aes(fill = nb_equip)) +
   theme_void()
+```
+
+</div>
+</div>
+
+```{r thecode3, eval=FALSE}
 ```
 
 
@@ -195,8 +241,7 @@ We need to change the **color palette**, improve the **legend**, use a log **sca
 
 Here is the code to do that, and the final result!
 
-
-```{r thecode9, out.width = "100%", fig.height=4}
+```{r thecode9, echo=TRUE, out.width = "100%", fig.height=4}
 p <- ggplot(my_sf_merged) +
   geom_sf(aes(fill = nb_equip), linewidth = 0, alpha = 0.9) +
   theme_void() +
@@ -261,6 +306,7 @@ p
 This post explains how to build a [choropleth map](choropleth-map.html) with R and [ggplot2](ggplot2-package.html).
 
 You might be interested in how to create an [interactive choropleth map](183-choropleth-map-with-leaflet.html), and more generally in the [choropleth section](choropleth-map.html) of the gallery.
+
 
 
 

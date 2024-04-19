@@ -177,8 +177,6 @@ hover, and the map is zoomable.</p>
     </style>
 
     <div class="container" style="padding-top: 50px">
-<div id="about-the-leaflet-package" class="section level1">
-<h1>About the leaflet package</h1>
 <p><code>leaflet</code> is a R package allowing to build
 <strong>interactive maps</strong>. If you’re not familiar to it, have a
 look to this <a href="179-show-a-map-with-leaflet-r.html">leaflet
@@ -192,7 +190,6 @@ to zoom in and out!):</p>
 </iframe>
 </center>
 <p><br></p>
-</div>
 <div id="find-download-and-load-geospatial-data" class="section level1">
 <h1>Find, Download and Load geospatial data</h1>
 <hr />
@@ -252,6 +249,10 @@ country.</li>
 <p>The resulting map is quite disappointing: China and India having very
 numerous population, all the variation between other countries gets hard
 to observe on the map.</p>
+<center>
+<iframe src="./HtmlWidget/choroplethLeaflet1.html" height="400" width="100%" style="border:none;">
+</iframe>
+</center>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Library</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
@@ -273,18 +274,14 @@ to observe on the map.</p>
 <span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co"># save the widget in a html file if needed.</span></span>
 <span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
 <span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co"># saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet1.html&quot;))</span></span></code></pre></div>
-<center>
-<iframe src="./HtmlWidget/choroplethLeaflet1.html" height="400" width="100%" style="border:none;">
-</iframe>
-</center>
 </div>
 <div id="visualize-the-numeric-variable" class="section level1">
 <h1>Visualize the numeric variable</h1>
 <hr />
 <div class="row">
 <div class="col-md-6 col-sm-12 align-self-center">
-<p>In a choropleth map, <strong>each region has a color that represents
-the value</strong> of a numeric variable (population here).</p>
+<p>In a choropleth map, each region has a color that represents the
+value of a numeric variable (population here).</p>
 <p>It is a good practice to check the <strong>distribution</strong> of
 this variable to understand what kind of color scale should be used.
 Using a <a href="histogram.html">histogram</a> is often a good option
@@ -294,6 +291,14 @@ for that:</p>
 <p><img src="183-choropleth-map-with-leaflet_files/figure-html/thecode-1.png" width="100%" /></p>
 </div>
 </div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># load ggplot2</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Distribution of the population per country?</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">ggplot</span>(world_sf, <span class="fu">aes</span>(<span class="at">x =</span> POP2005)) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#69b3a2&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Population (M)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
 </div>
 <div id="change-color-scale" class="section level1">
 <h1>Change color scale</h1>
@@ -307,59 +312,58 @@ of color. Leaflet offers 3 options:</p>
 </ul>
 <p>Results can be very different and the best option usually depends on
 the distribution of your input data.</p>
-<p>Quantile</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Color by quantile</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">smoothFactor =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorQuantile</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  )</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>m</span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># # save the widget in a html file if needed.</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet2.html&quot;))</span></span></code></pre></div>
+Quantile
 <center>
 <iframe src="./HtmlWidget/choroplethLeaflet2.html" height="200" width="100%" style="border:none;">
 </iframe>
 </center>
-<p><br></p>
-<p>Numeric</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Numeric palette</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>, <span class="at">smoothFactor =</span> <span class="fl">0.5</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorNumeric</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  )</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>m</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet3.html&quot;))</span></span></code></pre></div>
+Numeric
 <center>
 <iframe src="./HtmlWidget/choroplethLeaflet3.html" height="200" width="100%" style="border:none;">
 </iframe>
 </center>
-<p><br></p>
-<p>Bins</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Bin</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>, <span class="at">smoothFactor =</span> <span class="fl">0.5</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorBin</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  )</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>m</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet4.html&quot;))</span></span></code></pre></div>
+Bins
 <center>
 <iframe src="./HtmlWidget/choroplethLeaflet4.html" height="200" width="100%" style="border:none;">
 </iframe>
 </center>
-<p>We easily see here that for this use case, the quantile option
-creates the best map.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Color by quantile</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">smoothFactor =</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorQuantile</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  )</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>m</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co"># # save the widget in a html file if needed.</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet2.html&quot;))</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co"># Numeric palette</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>, <span class="at">smoothFactor =</span> <span class="fl">0.5</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorNumeric</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  )</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>m</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet3.html&quot;))</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co"># Bin</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">FALSE</span>, <span class="at">fillOpacity =</span> <span class="fl">0.5</span>, <span class="at">smoothFactor =</span> <span class="fl">0.5</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>    <span class="at">color =</span> <span class="sc">~</span> <span class="fu">colorBin</span>(<span class="st">&quot;YlOrRd&quot;</span>, POP2005)(POP2005)</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>  )</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>m</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet4.html&quot;))</span></span></code></pre></div>
 </div>
 <div id="customizied-leaflet-choropleth-map" class="section level1">
 <h1>Customizied leaflet choropleth map</h1>
@@ -381,49 +385,49 @@ add additional information to your map.</li>
 <iframe src="./HtmlWidget/choroplethLeaflet5.html" height="400" width="100%" style="border:none;">
 </iframe>
 </center>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Create a color palette with handmade bins.</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>mybins <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="cn">Inf</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>mypalette <span class="ot">&lt;-</span> <span class="fu">colorBin</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">&quot;YlOrBr&quot;</span>, <span class="at">domain =</span> world_sf<span class="sc">$</span>POP2005,</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">na.color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">bins =</span> mybins</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>)</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># Prepare the text for tooltips:</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>mytext <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="st">&quot;Country: &quot;</span>, world_sf<span class="sc">$</span>NAME, <span class="st">&quot;&lt;br/&gt;&quot;</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="st">&quot;Area: &quot;</span>, world_sf<span class="sc">$</span>AREA, <span class="st">&quot;&lt;br/&gt;&quot;</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="st">&quot;Population: &quot;</span>, <span class="fu">round</span>(world_sf<span class="sc">$</span>POP2005, <span class="dv">2</span>),</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="fu">lapply</span>(htmltools<span class="sc">::</span>HTML)</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co"># Final Map</span></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">mypalette</span>(POP2005),</span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">fillOpacity =</span> <span class="fl">0.9</span>,</span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="at">weight =</span> <span class="fl">0.3</span>,</span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">label =</span> mytext,</span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    <span class="at">labelOptions =</span> <span class="fu">labelOptions</span>(</span>
-<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>      <span class="at">style =</span> <span class="fu">list</span>(<span class="st">&quot;font-weight&quot;</span> <span class="ot">=</span> <span class="st">&quot;normal&quot;</span>, <span class="at">padding =</span> <span class="st">&quot;3px 8px&quot;</span>),</span>
-<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>      <span class="at">textsize =</span> <span class="st">&quot;13px&quot;</span>,</span>
-<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>      <span class="at">direction =</span> <span class="st">&quot;auto&quot;</span></span>
-<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    )</span>
-<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>  <span class="fu">addLegend</span>(</span>
-<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>    <span class="at">pal =</span> mypalette, <span class="at">values =</span> <span class="sc">~</span>POP2005, <span class="at">opacity =</span> <span class="fl">0.9</span>,</span>
-<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Population (M)&quot;</span>, <span class="at">position =</span> <span class="st">&quot;bottomleft&quot;</span></span>
-<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>  )</span>
-<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a></span>
-<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>m</span>
-<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a></span>
-<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a><span class="co"># save the widget in a html file if needed.</span></span>
-<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet5.html&quot;))</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Create a color palette with handmade bins.</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>mybins <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="cn">Inf</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>mypalette <span class="ot">&lt;-</span> <span class="fu">colorBin</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">&quot;YlOrBr&quot;</span>, <span class="at">domain =</span> world_sf<span class="sc">$</span>POP2005,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">na.color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">bins =</span> mybins</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># Prepare the text for tooltips:</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>mytext <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="st">&quot;Country: &quot;</span>, world_sf<span class="sc">$</span>NAME, <span class="st">&quot;&lt;br/&gt;&quot;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="st">&quot;Area: &quot;</span>, world_sf<span class="sc">$</span>AREA, <span class="st">&quot;&lt;br/&gt;&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="st">&quot;Population: &quot;</span>, <span class="fu">round</span>(world_sf<span class="sc">$</span>POP2005, <span class="dv">2</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="fu">lapply</span>(htmltools<span class="sc">::</span>HTML)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co"># Final Map</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">leaflet</span>(world_sf) <span class="sc">%&gt;%</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lat =</span> <span class="dv">10</span>, <span class="at">lng =</span> <span class="dv">0</span>, <span class="at">zoom =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">addPolygons</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="at">fillColor =</span> <span class="sc">~</span> <span class="fu">mypalette</span>(POP2005),</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="at">stroke =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="at">fillOpacity =</span> <span class="fl">0.9</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>    <span class="at">weight =</span> <span class="fl">0.3</span>,</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="at">label =</span> mytext,</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">labelOptions =</span> <span class="fu">labelOptions</span>(</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">style =</span> <span class="fu">list</span>(<span class="st">&quot;font-weight&quot;</span> <span class="ot">=</span> <span class="st">&quot;normal&quot;</span>, <span class="at">padding =</span> <span class="st">&quot;3px 8px&quot;</span>),</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>      <span class="at">textsize =</span> <span class="st">&quot;13px&quot;</span>,</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>      <span class="at">direction =</span> <span class="st">&quot;auto&quot;</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    )</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>  <span class="fu">addLegend</span>(</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>    <span class="at">pal =</span> mypalette, <span class="at">values =</span> <span class="sc">~</span>POP2005, <span class="at">opacity =</span> <span class="fl">0.9</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Population (M)&quot;</span>, <span class="at">position =</span> <span class="st">&quot;bottomleft&quot;</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>  )</span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>m</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co"># save the widget in a html file if needed.</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co"># htmlwidgets::saveWidget(m, file=paste0( getwd(), &quot;/HtmlWidget/choroplethLeaflet5.html&quot;))</span></span></code></pre></div>
 </div>
 <div id="going-further" class="section level1">
 <h1>Going further</h1>
