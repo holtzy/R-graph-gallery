@@ -1,0 +1,200 @@
+---
+title: "Change and customize circles and rectangles on a leaflet map"
+descriptionMeta: "How to change and customize circles and rectangles on a leaflet map. Three examples are provided: basic circle, custom circle and circle with size that change when you zoom. Step by step explanation with reproducible code."
+descriptionTop: "Learn how to change and customize circles and rectangles on a `leaflet` map. Three examples are provided: **basic** circle, **custom** circle and circle with **size that change** when you zoom."
+sectionText: "Background map section"
+sectionLink: "map.html"
+DataToVizText: "About Maps"
+DataToVizLink: "data-to-viz.com/graph/map.html"
+url: "182-add-circles-rectangles-on-leaflet-map"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+   warning=FALSE,
+   message=FALSE,
+   fig.align='center'
+)
+```
+
+<div class="container" >
+
+
+
+
+# List of tiles
+***
+
+Let's start with basic circle (default propose by `leaflet`). Please note that since we use here the `addCircleMarkers()` function, the **size of the circle** are set in pixels. It means that markers will keep always the **same size**, even when you zoom in or out! 
+
+See below in order to find how to change the size of the circle, **dynamically or not**.
+
+```{r}
+#library
+library(leaflet)
+ 
+# Create 20 markers (Random points)
+data = data.frame(
+   long=sample(seq(-150,150),20),
+   lat=sample(seq(-50,50),20),
+   val=round(rnorm(20),2),
+   name=paste("point",letters[1:20],sep="_")
+) 
+ 
+# Show a circle at each position
+m = leaflet(data = data) %>%
+   addTiles() %>%
+   addCircleMarkers(~long, ~lat , popup = ~as.character(name))
+m
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(m, file="HtmlWidget/leaflet-182-add-circles.html", selfcontained = F)
+```
+
+<center>
+   <iframe src="HtmlWidget/leaflet-182-add-circles.html" width="100%" height="400"></iframe>
+</center>
+
+
+# Custom circles
+***
+
+It is possible to custom the circles. Really helpful since it permits to change it **following the value of a variable** from the dataset. Here, the size of the circle is defined by the `val`
+
+```{r}
+ 
+# Create 20 markers (Random points)
+data = data.frame(
+   long=sample(seq(-150,150),20),
+   lat=sample(seq(-50,50),20),
+   val=round(rnorm(20),2),
+   name=paste("point",letters[1:20],sep="_")
+) 
+ 
+# Show a CUSTOM circle at each position. Size defined in Pixel. Size does not change when you zoom
+m=leaflet(data = data) %>%
+   addTiles() %>%
+   addCircleMarkers(
+      ~long, ~lat, 
+      radius=~val*14 , 
+      color=~ifelse(data$val>0 , "red", "orange"),
+      stroke = TRUE, 
+      fillOpacity = 0.2,
+      popup = ~as.character(name)
+   ) 
+m
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(m, file="HtmlWidget/leaflet-182-add-circles-2.html", selfcontained = F)
+```
+
+<center>
+   <iframe src="HtmlWidget/leaflet-182-add-circles-2.html" width="100%" height="400"></iframe>
+</center>
+
+
+# Custom circles with size that change when you zoom
+***
+
+You can also add circles with the `addCircle()` function. This time, the radius of the circle is **defined in meters**. It means that its **size will change** when you zoom on the map!
+
+```{r}
+#library
+library(leaflet)
+ 
+# Create 20 markers (Random points)
+data = data.frame(
+   long=sample(seq(-150,150),20),
+   lat=sample(seq(-50,50),20),
+   val=round(rnorm(20),2),
+   name=paste("point",letters[1:20],sep="_")
+) 
+ 
+# Show a CUSTOM circle at each position. Size in meters --> change when you zoom.
+m = leaflet(data = data) %>%
+   addTiles() %>%
+   addCircles(
+      ~long, ~lat, 
+      radius=~val*1000000 , 
+      color=~ifelse(data$val>0 , "red", "orange"),
+      stroke = TRUE, 
+      fillOpacity = 0.2,
+      popup = ~as.character(name)
+   ) %>% 
+  setView(lng = 166.45, lat = 21, zoom = 2)
+m
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(m, file="HtmlWidget/leaflet-182-add-circles-3.html", selfcontained = F)
+```
+
+<center>
+   <iframe src="HtmlWidget/leaflet-182-add-circles-3.html" width="100%" height="400"></iframe>
+</center>
+
+# Add rectangles
+***
+
+Lastly, how to **add a rectangle** with the `addRectangles()` function. You have to give the **2 coordinates of 2 opposites** corners of the rectangle.
+
+```{r}
+#library
+library(leaflet)
+ 
+# Create 20 markers (Random points)
+data = data.frame(
+   long=sample(seq(-150,150),20),
+   lat=sample(seq(-50,50),20),
+   val=round(rnorm(20),2),
+   name=paste("point",letters[1:20],sep="_")
+) 
+ 
+# Show a rectangle
+m = leaflet() %>% addTiles() %>%  
+  addRectangles(
+    lng1=-118.456554, lat1=34.078039,
+    lng2=-118.436383, lat2=34.062717,
+    fillColor = "transparent"
+  )
+m
+
+# save the widget
+# library(htmlwidgets)
+# saveWidget(m, file="HtmlWidget/leaflet-182-add-rectangles.html", selfcontained = F)
+```
+
+<center>
+   <iframe src="HtmlWidget/leaflet-182-add-rectangles.html" width="100%" height="400"></iframe>
+</center>
+
+
+# Going further
+***
+
+You might be interested in how to [change the tile style](180-change-background-in-leaflet-map.html) and the [map section](map.html) of the leaflet map.
+
+</div> 
+
+
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
