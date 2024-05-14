@@ -53,7 +53,8 @@
     />
     <meta name="description" content="The sf package in R specializes in
 geospatial visualization, offering streamlined access to geographic
-features like points, lines, and polygons." />
+features like points, lines, and polygons, and more generally to create
+maps." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
@@ -67,7 +68,8 @@ features with <strong>sf</strong>" />
     <meta property="og:image" content="img/overview_RGG.png" />
     <meta property="og:description" content="The sf package in R
 specializes in geospatial visualization, offering streamlined access to
-geographic features like points, lines, and polygons." />
+geographic features like points, lines, and polygons, and more generally
+to create maps." />
     <meta property="og:type" content="website" />
 
     <!-- Bootstrap core CSS -->
@@ -116,7 +118,7 @@ geographic features like points, lines, and polygons." />
             <p class="mt-4">The <code>sf</code> package in R specializes
 in <strong>geospatial visualization</strong>, offering streamlined
 access to <strong>geographic features</strong> like points, lines, and
-polygons.</p>
+polygons, and more generally to create maps.</p>
             <a
               class="btn btn-secondary btn-sm"
               href="https://r-spatial.github.io/sf/index.html"
@@ -168,13 +170,17 @@ polygons.</p>
 <h1>Quick start</h1>
 <hr />
 <p>In just a few lines of code, you can create stunning visualizations
-with the <code>sf</code> package in R. You only need to <a
-href="../168-load-a-shape-file-into-r.html">load a
-<strong>shapefile</strong></a> and you’re ready to go!</p>
+with the <code>sf</code> package in R. What’s more, <code>sf</code> lets
+you create maps from almost <strong>any data format</strong>, such as <a
+href="../168-load-a-shape-file-into-r.html">shapefiles</a> or <a
+href="../325-background-map-from-geojson-format-in-r.html">geojson</a>.
+You can learn more about geographical data in the <a
+href="../map.html">map section</a>.</p>
 <div class="row">
 <div class="col-md-5 col-sm-12 align-self-center">
 <p>This package offers a large variety of functions to manipulate and
-visualize geographic data. The main steps usually are:</p>
+visualize <a href="../map.html">geographic data</a>. The main steps
+usually are:</p>
 <ul>
 <li><p>create a <strong>geospatial object</strong> with
 <code>st_read()</code> or <code>read_sf()</code></p></li>
@@ -218,18 +224,35 @@ dataset, which contains the boundaries of North Carolina.</p>
 <div id="choropleth-maps" class="section level2">
 <h2>→ Choropleth Maps</h2>
 <p>The <code>sf</code> package allows you to create <a
-href="../choropleth-map.html">choropleth maps</a> with ease. Simply use
-the <code>plot()</code> function to visualize your data.</p>
+href="../choropleth-map.html">choropleth maps</a> with ease.</p>
+<p>Simply use the <code>geom_sf()</code> function with <a
+href="../ggplot2-package.html">ggplot2</a> to create a <a
+href="../choropleth-map.html">choropleth map</a> of your geographic
+data.</p>
+<p>You can <strong>customize</strong> the map by specifying the
+<code>fill</code> aesthetic and the <strong>color palette</strong> using
+the <code>scale_fill_viridis_c()</code> function</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">plot</span>(nc[<span class="st">&quot;AREA&quot;</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Read the shapefile</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>nc <span class="ot">=</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;shape/nc.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;sf&quot;</span>), <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Create the plot using ggplot2</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> nc, <span class="fu">aes</span>(<span class="at">fill =</span> AREA)) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Choropleth Map of North Carolina&#39;</span>) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <p><img src="sf_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 </div>
 <div id="graticules" class="section level2">
 <h2>→ Graticules</h2>
 <p>Graticules are lines of latitude and longitude that help you orient
-yourself on a map. You can add graticules to your map using the
-<code>plot()</code> function.</p>
+yourself on a <a href="../map.html">map</a>. You can add graticules to
+your map using the <code>plot()</code> function.</p>
 <p>Example:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(maps)</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
@@ -264,21 +287,27 @@ polygon’s “center” and may not always provide meaningful or accurate
 insights.</em></p>
 <p>Example:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>nc <span class="ot">=</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;shape/nc.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;sf&quot;</span>), <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>ncg <span class="ot">=</span> <span class="fu">st_geometry</span>(nc)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>cntrd <span class="ot">=</span> <span class="fu">st_centroid</span>(ncg)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">plot</span>(ncg, <span class="at">border =</span> <span class="st">&#39;grey&#39;</span>, <span class="at">main =</span> <span class="st">&#39;Centroids of North Carolina&#39;</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="fu">plot</span>(cntrd, <span class="at">col =</span> <span class="st">&#39;red&#39;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">cex =</span> <span class="fl">0.6</span>, <span class="at">pch =</span> <span class="dv">8</span>)</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Read the shapefile</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>nc <span class="ot">=</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;shape/nc.shp&quot;</span>, <span class="at">package=</span><span class="st">&quot;sf&quot;</span>), <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>ncg <span class="ot">=</span> <span class="fu">st_geometry</span>(nc)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>cntrd <span class="ot">=</span> <span class="fu">st_centroid</span>(ncg)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># Create the plot using ggplot2</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ncg, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">color =</span> <span class="st">&#39;grey&#39;</span>) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cntrd, <span class="at">color =</span> <span class="st">&#39;red&#39;</span>, <span class="at">shape =</span> <span class="dv">8</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Centroids of North Carolina&#39;</span>) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <p><img src="sf_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 </div>
 <div id="whats-more" class="section level2">
 <h2>→ What’s more?</h2>
 <p>While <code>sf</code> is not a data visualization package per se, it
-provides extensive functionalities for handling and visualizing
-geographic data. This includes:</p>
+provides extensive functionalities for handling and <a
+href="../map.html">visualizing geographic data</a>. This includes:</p>
 <ul>
 <li><strong>Creating a geospatial object</strong> using
 <code>st_read()</code> or <code>read_sf()</code> from virtually any file
