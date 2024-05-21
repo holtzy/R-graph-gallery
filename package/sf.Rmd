@@ -1,8 +1,8 @@
 ---
 title: "Plot and manipulate geographic features with **sf**"
 logo: "sf"
-descriptionMeta: "The sf package in R specializes in geospatial visualization, offering streamlined access to geographic features like points, lines, and polygons."
-descriptionTop: "The `sf` package in R specializes in **geospatial visualization**, offering streamlined access to **geographic features** like points, lines, and polygons."
+descriptionMeta: "The sf package in R specializes in geospatial visualization, offering streamlined access to geographic features like points, lines, and polygons, and more generally to create maps."
+descriptionTop: "The `sf` package in R specializes in **geospatial visualization**, offering streamlined access to **geographic features** like points, lines, and polygons, and more generally to create maps."
 documentationLink: "r-spatial.github.io/sf/index.html"
 output:
   html_document:
@@ -29,13 +29,13 @@ knitr::opts_chunk$set(
 # Quick start
 ***
 
-In just a few lines of code, you can create stunning visualizations with the `sf` package in R. You only need to [load a **shapefile**](../168-load-a-shape-file-into-r.html) and you're ready to go!
+In just a few lines of code, you can create stunning visualizations with the `sf` package in R. What's more, `sf` lets you create maps from almost **any data format**, such as [shapefiles](../168-load-a-shape-file-into-r.html) or [geojson](../325-background-map-from-geojson-format-in-r.html). You can learn more about geographical data in the [map section](../map.html).
 
 <div class = "row">
 
 <div class = "col-md-5  col-sm-12 align-self-center">
 
-This package offers a large variety of functions to manipulate and visualize geographic data. The main steps usually are:
+This package offers a large variety of functions to manipulate and visualize [geographic data](../map.html). The main steps usually are:
 
 - create a **geospatial object** with `st_read()` or `read_sf()`
 
@@ -85,19 +85,34 @@ plot(st_geometry(nc), col = "lightblue", border = "black", lwd = 1.2, main = "No
 
 ## &rarr; Choropleth Maps
 
-The `sf` package allows you to create [choropleth maps](../choropleth-map.html) with ease. Simply use the `plot()` function to visualize your data.
+The `sf` package allows you to create [choropleth maps](../choropleth-map.html) with ease.
+
+Simply use the `geom_sf()` function with [ggplot2](../ggplot2-package.html) to create a [choropleth map](../choropleth-map.html) of your geographic data.
+
+You can **customize** the map by specifying the `fill` aesthetic and the **color palette** using the `scale_fill_viridis_c()` function
 
 Example:
 
 ```{r}
-plot(nc["AREA"])
+library(sf)
+library(ggplot2)
+
+# Read the shapefile
+nc = st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+
+# Create the plot using ggplot2
+ggplot() +
+  geom_sf(data = nc, aes(fill = AREA)) +
+  scale_fill_viridis_c() +
+  ggtitle('Choropleth Map of North Carolina') +
+  theme_minimal()
 ```
 
 <br>
 
 ## &rarr; Graticules
 
-Graticules are lines of latitude and longitude that help you orient yourself on a map. You can add graticules to your map using the `plot()` function.
+Graticules are lines of latitude and longitude that help you orient yourself on a [map](../map.html). You can add graticules to your map using the `plot()` function.
 
 Example:
 
@@ -137,20 +152,26 @@ Example:
 
 ```{r}
 library(sf)
+library(ggplot2)
 
+# Read the shapefile
 nc = st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
 ncg = st_geometry(nc)
 cntrd = st_centroid(ncg)
 
-plot(ncg, border = 'grey', main = 'Centroids of North Carolina')
-plot(cntrd, col = 'red', add = TRUE, cex = 0.6, pch = 8)
+# Create the plot using ggplot2
+ggplot() +
+  geom_sf(data = ncg, fill = NA, color = 'grey') +
+  geom_sf(data = cntrd, color = 'red', shape = 8, size = 2) +
+  ggtitle('Centroids of North Carolina') +
+  theme_minimal()
 ```
 
 <br>
 
 ## &rarr; What's more?
 
-While `sf` is not a data visualization package per se, it provides extensive functionalities for handling and visualizing geographic data. This includes:
+While `sf` is not a data visualization package per se, it provides extensive functionalities for handling and [visualizing geographic data](../map.html). This includes:
 
 - **Creating a geospatial object** using `st_read()` or `read_sf()` from virtually any file format.
 - **Filtering**, **transforming**, and **manipulating** the geospatial object to suit your specific requirements.
