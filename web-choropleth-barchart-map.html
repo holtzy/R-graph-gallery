@@ -43,17 +43,21 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Choropleth Map with Bar Chart in
-R &#8211; the R Graph Gallery</title>
+    <title>
+      Choropleth Map with Bar Chart in R &#8211; the R Graph Gallery
+    </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post describes how to build a
+    <meta
+      name="description"
+      content="This post describes how to build a
 choropleth map together with a bar chart in R using ggplot2 and
-patchwork." />
+patchwork."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,15 +66,21 @@ patchwork." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Choropleth Map with Bar Chart in
-R" />
+    <meta
+      property="og:title"
+      content="Choropleth Map with Bar Chart in
+R"
+    />
     <meta
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post describes how to
+    <meta
+      property="og:description"
+      content="This post describes how to
 build a choropleth map together with a bar chart in R using ggplot2 and
-patchwork." />
+patchwork."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/web-choropleth-map-bar-chart.html"
@@ -140,9 +150,11 @@ patchwork." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-describes how to build a choropleth map together with a bar chart in R
-using <code>ggplot2</code> and <code>patchwork</code>.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post describes how to build a choropleth map together with a
+            bar chart in R using <code>ggplot2</code> and
+            <code>patchwork</code>.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -167,7 +179,6 @@ using <code>ggplot2</code> and <code>patchwork</code>.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -176,86 +187,137 @@ using <code>ggplot2</code> and <code>patchwork</code>.</p>
     </style>
 
     <div class="container">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This page showcases the work of Vinicius Oike Reginatto. You can find
-the original code on his Github and the original blog post on his
-personal website.</p>
-<p>Thanks to him for accepting sharing his work here! 🙏🙏</p>
-<p>As a teaser, here is the map we’ll learn how to build. This
-visualization shows the Human Development Index (HDI) at the subregional
-level in Sao Paulo, Brazil’s largest city. The values follow the
-standard United Nations’s HDI: values are in the 0 to 1 range. The
-visualization combines a choropleth map with a bar chart using the
-<code>patchwork</code> package.</p>
-<p>IMAGE</p>
-</div>
-<div id="data-and-libraries" class="section level1">
-<h1>1. Data and Libraries</h1>
-<hr />
-<p>To follow this tutorial you will need the following packages.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This page showcases the work of Vinicius Oike Reginatto. You can find
+          the original code on his Github and the original blog post on his
+          personal website.
+        </p>
+        <p>Thanks to him for accepting sharing his work here! 🙏🙏</p>
+        <p>
+          As a teaser, here is the map we’ll learn how to build. This
+          visualization shows the Human Development Index (HDI) at the
+          subregional level in Sao Paulo, Brazil’s largest city. The values
+          follow the standard United Nations’s HDI: values are in the 0 to 1
+          range. The visualization combines a choropleth map with a bar chart
+          using the <code>patchwork</code> package.
+        </p>
+        <p>IMAGE</p>
+      </div>
+      <div id="data-and-libraries" class="section level1">
+        <h1>1. Data and Libraries</h1>
+        <hr />
+        <p>To follow this tutorial you will need the following packages.</p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
-<p>The original plot uses the Raleway font but we’ll ignore this for the
-purposes of this tutorial.</p>
-<p>The HDI estimates are from the <a
-href="http://www.atlasbrasil.org.br">Atlas of Human Development in
-Brazil</a> and to make this tutorial easier to follow I cleaned the data
-and made it available on my GitHub. To import the data:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre>
+        </div>
+        <p>
+          The original plot uses the Raleway font but we’ll ignore this for the
+          purposes of this tutorial.
+        </p>
+        <p>
+          The HDI estimates are from the
+          <a href="http://www.atlasbrasil.org.br"
+            >Atlas of Human Development in Brazil</a
+          >
+          and to make this tutorial easier to follow I cleaned the data and made
+          it available on my GitHub. To import the data:
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;https://github.com/viniciusoike/restateinsight/raw/main/static/data/atlas_sp_hdi.rds&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  )</span></code></pre></div>
-</div>
-<div id="basic-map" class="section level1">
-<h1>2. Basic Map</h1>
-<hr />
-<p>At its core, this visualization is a choropleth map that shows the
-spatial distribution of the Human Development Index (HDI) in São Paulo.
-The code below uses <code>geom_sf</code> to make the map. The additional
-argument <code>lwd</code> makes the lines of each border thinner and
-<code>color</code> changes the color of the line.</p>
-<p>Each polygon represents a “Human Development Unit” and can be
-interpreted like a small neighborhood.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> HDI), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/base-choropleth-1.png" width="90%" /></p>
-<div id="using-bins" class="section level2">
-<h2>Using bins</h2>
-<hr />
-<p>We use bins to group the continuous variable HDI. This makes it
-easier to visualize the data and to find spatial clusters. There are
-many ways to do this but here we use the
-<code>scale_fill_fermenter</code> function directly. This is a quick and
-easy approach to binning a continuous variable. This function also makes
-a - in my opinion - nicer looking color legend.</p>
-<p>The color palettes from <code>RColorBrewer</code> work very well for
-maps and we use the <code>YlGnBu</code> palette. We specifiy the breaks
-of the intervals mannually using the <code>breaks</code> argument.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+      </div>
+      <div id="basic-map" class="section level1">
+        <h1>2. Basic Map</h1>
+        <hr />
+        <p>
+          At its core, this visualization is a choropleth map that shows the
+          spatial distribution of the Human Development Index (HDI) in São
+          Paulo. The code below uses <code>geom_sf</code> to make the map. The
+          additional argument <code>lwd</code> makes the lines of each border
+          thinner and <code>color</code> changes the color of the line.
+        </p>
+        <p>
+          Each polygon represents a “Human Development Unit” and can be
+          interpreted like a small neighborhood.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> HDI), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-barchart-map_files/figure-html/base-choropleth-1.png"
+            width="90%"
+          />
+        </p>
+        <div id="using-bins" class="section level2">
+          <h2>Using bins</h2>
+          <hr />
+          <p>
+            We use bins to group the continuous variable HDI. This makes it
+            easier to visualize the data and to find spatial clusters. There are
+            many ways to do this but here we use the
+            <code>scale_fill_fermenter</code> function directly. This is a quick
+            and easy approach to binning a continuous variable. This function
+            also makes a - in my opinion - nicer looking color legend.
+          </p>
+          <p>
+            The color palettes from <code>RColorBrewer</code> work very well for
+            maps and we use the <code>YlGnBu</code> palette. We specifiy the
+            breaks of the intervals mannually using the
+            <code>breaks</code> argument.
+          </p>
+          <div class="sourceCode" id="cb4">
+            <pre
+              class="sourceCode r"
+            ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> HDI), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;&quot;</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>),</span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;YlGnBu&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/binned-choropleth-1.png" width="90%" /></p>
-</div>
-<div id="final-map" class="section level2">
-<h2>Final Map</h2>
-<hr />
-<p>The finished version of the map includes simple labels and uses
-<code>theme_map()</code> from the <code>ggthemes</code> package. The
-arguments inside the <code>theme</code> function mostly change the size
-and the alignment of the text labels. For your final plot you’ll most
-likely want to change the <code>legend.key.size</code> and
-<code>plot.title</code> size arguments.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>pmap <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  )</span></code></pre>
+          </div>
+          <p>
+            <img
+              src="web-choropleth-barchart-map_files/figure-html/binned-choropleth-1.png"
+              width="90%"
+            />
+          </p>
+        </div>
+        <div id="final-map" class="section level2">
+          <h2>Final Map</h2>
+          <hr />
+          <p>
+            The finished version of the map includes simple labels and uses
+            <code>theme_map()</code> from the <code>ggthemes</code> package. The
+            arguments inside the <code>theme</code> function mostly change the
+            size and the alignment of the text labels. For your final plot
+            you’ll most likely want to change the
+            <code>legend.key.size</code> and <code>plot.title</code> size
+            arguments.
+          </p>
+          <div class="sourceCode" id="cb5">
+            <pre
+              class="sourceCode r"
+            ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>pmap <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> HDI), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;&quot;</span>,</span>
@@ -282,29 +344,44 @@ likely want to change the <code>legend.key.size</code> and
 <span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
 <span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>  )</span>
 <span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a></span>
-<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>pmap</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/final-choropleth-1.svg" width="100%" height="900px" /></p>
-</div>
-</div>
-<div id="the-bar-chart" class="section level1">
-<h1>3. The Bar Chart</h1>
-<hr />
-<p>To make the bar chart we need to transform the data. We want to
-calculate the share of the total population that lives within each HDI
-group. To make the same groups as those created by
-<code>scale_fill_fermenter</code> we use <code>findInterval</code> using
-the same breaks and right-closed intervals. To find this we group by
-<code>group_hdi</code>, sum the <code>pop</code> (population) of these
-regions, and compute the percent share within each group.</p>
-<p>This bar chart serves two goals. First, it shows the distribution of
-the population across all HDI groups. Second, it compensates for <em>map
-area bias</em>, a common pitfall of choropleths. Map area bias refers to
-the natural tendency to attribute greater weight/importance to larger
-areas. Looking at the map, we see very large areas in the southernmost
-part of the city that have low values of HDI. These areas however are
-not densely populated and account for a relatively small share of the
-city’s population.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Calculate population share in each HDI group</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>pmap</span></code></pre>
+          </div>
+          <p>
+            <img
+              src="web-choropleth-barchart-map_files/figure-html/final-choropleth-1.svg"
+              width="100%"
+              height="900px"
+            />
+          </p>
+        </div>
+      </div>
+      <div id="the-bar-chart" class="section level1">
+        <h1>3. The Bar Chart</h1>
+        <hr />
+        <p>
+          To make the bar chart we need to transform the data. We want to
+          calculate the share of the total population that lives within each HDI
+          group. To make the same groups as those created by
+          <code>scale_fill_fermenter</code> we use
+          <code>findInterval</code> using the same breaks and right-closed
+          intervals. To find this we group by <code>group_hdi</code>, sum the
+          <code>pop</code> (population) of these regions, and compute the
+          percent share within each group.
+        </p>
+        <p>
+          This bar chart serves two goals. First, it shows the distribution of
+          the population across all HDI groups. Second, it compensates for
+          <em>map area bias</em>, a common pitfall of choropleths. Map area bias
+          refers to the natural tendency to attribute greater weight/importance
+          to larger areas. Looking at the map, we see very large areas in the
+          southernmost part of the city that have low values of HDI. These areas
+          however are not densely populated and account for a relatively small
+          share of the city’s population.
+        </p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Calculate population share in each HDI group</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>pop_hdi <span class="ot">&lt;-</span> atlas <span class="sc">|&gt;</span> </span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -318,21 +395,34 @@ city’s population.</p>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
 <span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
 <span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="fu">ggplot</span>(pop_hdi, <span class="fu">aes</span>(group_hdi, share, <span class="at">fill =</span> group_hdi)) <span class="sc">+</span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/base-bar-chart-1.png" width="672" /></p>
-<div id="using-text-labels" class="section level2">
-<h2>Using text labels</h2>
-<hr />
-<p>Instead of using axis labels we plot the value of each group directly
-on top of each bar. To improve readability we make the color of the text
-labels variable (black or white) and also nudge the label of the first
-and last group horizontally.</p>
-<p>Getting the right amount of horizontal nudge requires some trial and
-error and also depends on the size of your final visualization. In your
-own chart, you’ll most likely change the
-<code>share + 3</code>/<code>share - 3</code> and the <code>size</code>
-argument in <code>geom_text</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Create a variable to store the position of the text label</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-barchart-map_files/figure-html/base-bar-chart-1.png"
+            width="672"
+          />
+        </p>
+        <div id="using-text-labels" class="section level2">
+          <h2>Using text labels</h2>
+          <hr />
+          <p>
+            Instead of using axis labels we plot the value of each group
+            directly on top of each bar. To improve readability we make the
+            color of the text labels variable (black or white) and also nudge
+            the label of the first and last group horizontally.
+          </p>
+          <p>
+            Getting the right amount of horizontal nudge requires some trial and
+            error and also depends on the size of your final visualization. In
+            your own chart, you’ll most likely change the
+            <code>share + 3</code>/<code>share - 3</code> and the
+            <code>size</code> argument in <code>geom_text</code>.
+          </p>
+          <div class="sourceCode" id="cb7">
+            <pre
+              class="sourceCode r"
+            ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Create a variable to store the position of the text label</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>pop_hdi <span class="ot">&lt;-</span> pop_hdi <span class="sc">|&gt;</span> </span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">y_text =</span> <span class="fu">if_else</span>(group_hdi <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>), share <span class="sc">+</span> <span class="dv">3</span>, share <span class="sc">-</span> <span class="dv">3</span>),</span>
@@ -353,14 +443,23 @@ argument in <code>geom_text</code>.</p>
 <span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  <span class="co"># Swap between black and white text</span></span>
 <span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;black&quot;</span>, <span class="dv">5</span>), <span class="fu">rep</span>(<span class="st">&quot;white&quot;</span>, <span class="dv">2</span>), <span class="st">&quot;black&quot;</span>)) <span class="sc">+</span></span>
 <span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  <span class="co"># Hide color legend</span></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">&quot;none&quot;</span>, <span class="at">color =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/bar-chart-labels-1.png" width="672" /></p>
-</div>
-<div id="final-bar-chart" class="section level2">
-<h2>Final Bar Chart</h2>
-<hr />
-<p>We use a custom label for the final version of this plot.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Labels for the color legend</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">&quot;none&quot;</span>, <span class="at">color =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre>
+          </div>
+          <p>
+            <img
+              src="web-choropleth-barchart-map_files/figure-html/bar-chart-labels-1.png"
+              width="672"
+            />
+          </p>
+        </div>
+        <div id="final-bar-chart" class="section level2">
+          <h2>Final Bar Chart</h2>
+          <hr />
+          <p>We use a custom label for the final version of this plot.</p>
+          <div class="sourceCode" id="cb8">
+            <pre
+              class="sourceCode r"
+            ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Labels for the color legend</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>x_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="st">&quot;0.650 or less&quot;</span>, <span class="st">&quot;0.650 to 0.699&quot;</span>, <span class="st">&quot;0.700 to 0.749&quot;</span>, <span class="st">&quot;0.750 to 0.799&quot;</span>,</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="st">&quot;0.800 to 0.849&quot;</span>, <span class="st">&quot;0.850 to 0.899&quot;</span>, <span class="st">&quot;0.900 to 0.949&quot;</span>, <span class="st">&quot;0.950 or more&quot;</span></span>
@@ -391,116 +490,165 @@ argument in <code>geom_text</code>.</p>
 <span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>()</span>
 <span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>  )</span>
 <span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>pcol</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/bar-chart-final-1.png" width="672" /></p>
-</div>
-</div>
-<div id="the-final-plot" class="section level1">
-<h1>4. The final plot</h1>
-<hr />
-<p>To join both plots we use the <code>inset_element</code> function
-from the <code>patchwork</code> package. Use the arguments inside this
-function to customize the display size of the bar chart.</p>
-<p>In this final visualization we can see that nearly 40% of the city’s
-population lives in regions with an HDI range of 0.700-0.799. These
-areas are primarily located in the peripheral parts of the city,
-including the southern, eastern, and northern sections. In contrast, the
-central part of the city, which has the highest HDI areas, accounts for
-less than 15% of the total population.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>p_hdi_atlas <span class="ot">&lt;-</span> </span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>pcol</span></code></pre>
+          </div>
+          <p>
+            <img
+              src="web-choropleth-barchart-map_files/figure-html/bar-chart-final-1.png"
+              width="672"
+            />
+          </p>
+        </div>
+      </div>
+      <div id="the-final-plot" class="section level1">
+        <h1>4. The final plot</h1>
+        <hr />
+        <p>
+          To join both plots we use the <code>inset_element</code> function from
+          the <code>patchwork</code> package. Use the arguments inside this
+          function to customize the display size of the bar chart.
+        </p>
+        <p>
+          In this final visualization we can see that nearly 40% of the city’s
+          population lives in regions with an HDI range of 0.700-0.799. These
+          areas are primarily located in the peripheral parts of the city,
+          including the southern, eastern, and northern sections. In contrast,
+          the central part of the city, which has the highest HDI areas,
+          accounts for less than 15% of the total population.
+        </p>
+        <div class="sourceCode" id="cb9">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>p_hdi_atlas <span class="ot">&lt;-</span> </span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  pmap <span class="sc">+</span> <span class="fu">inset_element</span>(pcol, <span class="at">left =</span> <span class="fl">0.50</span>, <span class="at">bottom =</span> <span class="fl">0.05</span>, <span class="at">right =</span> <span class="dv">1</span>, <span class="at">top =</span> <span class="fl">0.5</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>p_hdi_atlas</span></code></pre></div>
-<p><img src="web-choropleth-barchart-map_files/figure-html/final-viz-1.svg" width="100%" height="900px" /></p>
-<p>As stated previously, the combination of a bar chart (or histogram)
-with a choropleth makes for a powerful and insightful combination. Happy
-mapping!</p>
-<p><strong>Author</strong>: <a
-href="https://restateinsight.com/aboutme">Vinicius Oike Reginatto</a>
-<br> <strong>Data</strong>: <a
-href="http://www.atlasbrasil.org.br">Atlas of Human Development in
-Brazil</a></p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>p_hdi_atlas</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-choropleth-barchart-map_files/figure-html/final-viz-1.svg"
+            width="100%"
+            height="900px"
+          />
+        </p>
+        <p>
+          As stated previously, the combination of a bar chart (or histogram)
+          with a choropleth makes for a powerful and insightful combination.
+          Happy mapping!
+        </p>
+        <p>
+          <strong>Author</strong>:
+          <a href="https://restateinsight.com/aboutme"
+            >Vinicius Oike Reginatto</a
+          >
+          <br />
+          <strong>Data</strong>:
+          <a href="http://www.atlasbrasil.org.br"
+            >Atlas of Human Development in Brazil</a
+          >
+        </p>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -512,31 +660,18 @@ Brazil</a></p>
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>
@@ -632,18 +767,18 @@ Brazil</a></p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
