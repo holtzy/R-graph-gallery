@@ -1,7 +1,7 @@
 ---
 title: "Choropleth Map with Bar Chart in R"
 descriptionMeta: "This post describes how to build a choropleth map together with a bar chart in R using ggplot2 and patchwork."
-descriptionTop: "This post describes how to build a choropleth map together with a bar chart in R using `ggplot2` and `patchwork`."
+descriptionTop: "This post explains how to create a choropleth map alongside a bar chart in R using [ggplot2](ggplot2-package.html) and [patchwork](package/patchwork.html).<br><br>This post will guide you **step by step** through the process of constructing this chart. It will also explain **how to use bins** to categorize the **continuous variable** HDI and how to **calculate** the proportion of the total population within each HDI group."
 sectionText: "Choropleth section"
 sectionLink: "choropleth-map.html"
 DataToVizText: "About Maps"
@@ -32,15 +32,18 @@ knitr::opts_chunk$set(
 
 # About
 ***
-This page showcases the work of Vinicius Oike Reginatto. You can find the original code on his Github and the original blog post on his personal website.
 
-Thanks to him for accepting sharing his work here! 🙏🙏 
+This visualization shows the **Human Development Index** (HDI) at the subregional level in Sao Paulo, Brazil's largest city. The values follow the standard United Nations's HDI: values are in the **0 to 1 range**. The visualization combines a [choropleth map](choropleth-map.html) with a bar chart using the [patchwork](package/patchwork.html) package.
 
-As a teaser, here is the map we'll learn how to build. This visualization shows the Human Development Index (HDI) at the subregional level in Sao Paulo, Brazil's largest city. The values follow the standard United Nations's HDI: values are in the 0 to 1 range. The visualization combines a choropleth map with a bar chart using the `patchwork` package.
+This is the the work of [Vinicius Oike Reginatto](https://restateinsight.com/). Thanks to him for accepting sharing his work here! 🙏
 
-IMAGE
+As a teaser, here is the map we'll learn how to build:
 
-# 1. Data and Libraries
+<center>
+![](img/graph/web-choropleth-barchart-map.png){width=95%}
+</center>
+
+# Data and Libraries
 ***
 To follow this tutorial you will need the following packages.
 
@@ -53,8 +56,6 @@ library(readr)
 library(sf)
 ```
 
-The original plot uses the Raleway font but we'll ignore this for the purposes of this tutorial.
-
 The HDI estimates are from the [Atlas of Human Development in Brazil](http://www.atlasbrasil.org.br) and to make this tutorial easier to follow I cleaned the data and made it available on my GitHub. To import the data:
 
 ```{r import-data}
@@ -63,12 +64,12 @@ atlas <- readr::read_rds(
   )
 ```
 
-# 2. Basic Map
+# Basic Map
 ***
 
-At its core, this visualization is a choropleth map that shows the spatial distribution of the Human Development Index (HDI) in São Paulo.  The code below uses `geom_sf` to make the map. The additional argument `lwd` makes the lines of each border thinner and `color` changes the color of the line.
+At its core, this visualization is a [choropleth map](choropleth-map.html) that shows the spatial distribution of the Human Development Index (HDI) in São Paulo. The code below uses `geom_sf` to make the map. The additional argument `lwd` makes the lines of each border thinner and `color` changes the color of the line.
 
-Each polygon represents a "Human Development Unit" and can be interpreted like a small neighborhood.
+Each **polygon** represents a "Human Development Unit" and can be interpreted like a small neighborhood.
 
 ```{r base-choropleth}
 #| out-width: "90%"
@@ -76,12 +77,12 @@ ggplot(atlas) +
   geom_sf(aes(fill = HDI), lwd = 0.05, color = "white")
 ```
 
-## Using bins
+# Using bins
 ***
 
-We use bins to group the continuous variable HDI. This makes it easier to visualize the data and to find spatial clusters. There are many ways to do this but here we use the `scale_fill_fermenter` function directly. This is a quick and easy approach to binning a continuous variable. This function also makes a - in my opinion - nicer looking color legend.
+We use bins to group the **continuous variable** HDI. This makes it easier to visualize the data and to find **spatial clusters**. There are many ways to do this but here we use the `scale_fill_fermenter` function directly. This is a quick and easy approach to binning a continuous variable. This function also makes a - in my opinion - nicer looking color legend.
 
-The color palettes from `RColorBrewer` work very well for maps and we use the `YlGnBu` palette. We specifiy the breaks of the intervals mannually using the `breaks` argument.
+The color palettes from `RColorBrewer` work very well for maps and we use the `YlGnBu` palette. We specifiy the **breaks of the intervals** mannually using the `breaks` argument.
 
 ```{r binned-choropleth}
 #| out-width: "90%"
@@ -95,10 +96,12 @@ ggplot(atlas) +
   )
 ```
 
-## Final Map
+
+
+# Final Map
 ***
 
-The finished version of the map includes simple labels and uses `theme_map()` from the `ggthemes` package. The arguments inside the `theme` function mostly change the size and the alignment of the text labels. For your final plot you'll most likely want to change the `legend.key.size` and `plot.title` size arguments.
+The finished version of the map includes simple labels and uses `theme_map()` from the `ggthemes` package. The arguments inside the `theme` function mostly change the **size and the alignment** of the text labels. For your final plot you'll most likely want to change the `legend.key.size` and `plot.title` size arguments.
 
 ```{r final-choropleth}
 #| out-width: "100%"
@@ -136,12 +139,20 @@ pmap <- ggplot(atlas) +
 pmap
 ```
 
-# 3. The Bar Chart
+
+
+# The Bar Chart
 ***
 
-To make the bar chart we need to transform the data. We want to calculate the share of the total population that lives within each HDI group. To make the same groups as those created by `scale_fill_fermenter` we use `findInterval` using the same breaks and right-closed intervals. To find this we group by `group_hdi`, sum the `pop` (population) of these regions, and compute the percent share within each group.
+To make the [bar chart](barplot.html) we need to transform the data. We want to calculate the share of the total population that lives within each HDI group.
 
-This bar chart serves two goals. First, it shows the distribution of the population across all HDI groups. Second, it compensates for *map area bias*, a common pitfall of choropleths. Map area bias refers to the natural tendency to attribute greater weight/importance to larger areas. Looking at the map, we see very large areas in the southernmost part of the city that have low values of HDI. These areas however are not densely populated and account for a relatively small share of the city's population.
+To make the same groups as those created by `scale_fill_fermenter` we use `findInterval` using the **same breaks** and **right-closed intervals**. To find this we group by `group_hdi`, sum the `pop` (population) of these regions, and compute the percent share within each group.
+
+This bar chart serves two goals:
+- first, it shows the distribution of the population across all HDI groups
+- second, it compensates for *map area bias*, a common pitfall of choropleths. Map area bias refers to the natural tendency to attribute greater weight/importance to larger areas.
+
+Looking at the [map](map.html), we see very large areas in the southernmost part of the city that have low values of HDI. These areas however **are not densely populated** and account for a relatively small share of the city's population.
 
 ```{r base-bar-chart}
 # Calculate population share in each HDI group
@@ -161,12 +172,14 @@ ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
   geom_col()
 ```
 
-## Using text labels
+
+
+# Using text labels
 ***
 
-Instead of using axis labels we plot the value of each group directly on top of each bar. To improve readability we make the color of the text labels variable (black or white) and also nudge the label of the first and last group horizontally.
+Instead of using axis labels we plot the value of each group directly **on top of each bar**. To improve readability we make the color of the text labels variable (black or white) and also nudge the label of the first and last group horizontally.
 
-Getting the right amount of horizontal nudge requires some trial and error and also depends on the size of your final visualization. In your own chart, you'll most likely change the `share + 3`/`share - 3` and the `size` argument in `geom_text`.
+Getting the right amount of horizontal nudge requires some **trial and error** and also depends on the size of your final visualization. In your own chart, you'll most likely change the `share + 3`/`share - 3` and the `size` argument in `geom_text`.
 
 ```{r bar-chart-labels}
 # Create a variable to store the position of the text label
@@ -193,10 +206,13 @@ ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
   guides(fill = "none", color = "none")
 ```
 
-## Final Bar Chart
+
+
+
+# Final Bar Chart
 ***
 
-We use a custom label for the final version of this plot.
+We use a **custom label** for the final version of this plot.
 
 ```{r bar-chart-final}
 # Labels for the color legend
@@ -233,10 +249,10 @@ pcol <- ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
 pcol
 ```
 
-# 4. The final plot
+# The final plot
 ***
 
-To join both plots we use the `inset_element` function from the `patchwork` package. Use the arguments inside this function to customize the display size of the bar chart.
+To join both plots we use the `inset_element` function from the [patchwork](package/patchwork.html) package. Use the arguments inside this function to customize the display size of the bar chart.
 
 In this final visualization we can see that nearly 40\% of the city's population lives in regions with an HDI range of 0.700-0.799. These areas are primarily located in the peripheral parts of the city, including the southern, eastern, and northern sections. In contrast, the central part of the city, which has the highest HDI areas, accounts for less than 15\% of the total population.
 
@@ -255,8 +271,20 @@ p_hdi_atlas
 As stated previously, the combination of a bar chart (or histogram) with a choropleth makes for a powerful and insightful combination. Happy mapping!
 
 **Author**: [Vinicius Oike Reginatto](https://restateinsight.com/aboutme)
-<br>
+
 **Data**: [Atlas of Human Development in Brazil](http://www.atlasbrasil.org.br)
+
+
+
+# Going Further
+***
+
+You might be interested in:
+
+- creating a [map in the style of Jacques Bertin](web-valued-dots-map-bertin.html)
+- how to combine a [cartogram with a bubble map](web-dorling-cartogram-with-R.html)
+- this other [choropleth map](327-chloropleth-map-from-geojson-with-ggplot2.html) about French restaurants
+
 
 <!-- Close container -->
 </div>
