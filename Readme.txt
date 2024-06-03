@@ -1,70 +1,51 @@
-TM_WORLD_BORDERS-0.1.ZIP 
+PROCESSED SRTM DATA VERSION 4.1
 
-Provided by Bjorn Sandvik, thematicmapping.org
+The data  distributed here  are in  ARC GRID,  ARC ASCII  and Geotiff format, in
+decimal degrees and datum WGS84.  They are derived from the USGS/NASA SRTM data.
+CIAT  have  processed  this  data  to  provide  seamless  continuous  topography
+surfaces.  Areas with  regions of no  data in the  original SRTM data  have been
+filled using interpolation methods described by Reuter et al. (2007).
 
-Use this dataset with care, as several of the borders are disputed.
+Version 4.1 has the following enhancements over V4.0:
+- Improved ocean mask used, which includes some small islands  previously  being 
+  lost in the cut data.
+- Single no-data line of pixels along meridians fixed.
+- All GeoTiffs with 6000 x 6000 pixels.
+- For ASCII format files the projection definition is included in .prj files.
+- For GeoTiff format files the projection definition is in the .tfw  (ESRI TIFF 
+  World) and a .hdr file that reports PROJ.4 equivelent projection definitions.
 
-The original shapefile (world_borders.zip, 3.2 MB) was downloaded from the Mapping Hacks website:
-http://www.mappinghacks.com/data/
+DISTRIBUTION
 
-The dataset was derived by Schuyler Erle from public domain sources.
-Sean Gilles did some clean up and made some enhancements.
+Users are  prohibited from  any commercial,  non-free resale,  or redistribution
+without explicit written permission from CIAT. Users should acknowledge CIAT  as
+the source used  in the creation  of any reports,  publications, new data  sets,
+derived products, or services resulting from the use of this data set. CIAT also
+request  reprints of  any publications  and notification  of any  redistributing
+efforts.   For commercial  access to  the data,  send requests  to Andy   Jarvis
+(a.jarvis@cgiar.org).
 
+NO WARRANTY OR LIABILITY
 
-COLUMN		TYPE			DESCRIPTION
+CIAT provides  these data  without any  warranty of  any kind whatsoever, either
+express or implied,  including warranties of  merchantability and fitness  for a
+particular purpose. CIAT shall not  be liable for incidental, consequential,  or
+special damages arising out of the use of any data.
 
-Shape		Polygon			Country/area border as polygon(s)
-FIPS		String(2)		FIPS 10-4 Country Code
-ISO2		String(2)		ISO 3166-1 Alpha-2 Country Code
-ISO3		String(3)		ISO 3166-1 Alpha-3 Country Code
-UN		Short Integer(3)	ISO 3166-1 Numeric-3 Country Code 
-NAME		String(50)		Name of country/area
-AREA		Long Integer(7)		Land area, FAO Statistics (2002) 
-POP2005		Double(10,0)	 	Population, World Polulation Prospects (2005)
-REGION		Short Integer(3) 	Macro geographical (continental region), UN Statistics
-SUBREGION	Short Integer(3)	Geogrpahical sub-region, UN Statistics
-LON		FLOAT (7,3)		Longitude
-LAT		FLOAT (6,3)		Latitude
+ACKNOWLEDGMENT AND CITATION
 
+We kindly ask  any users to  cite this data  in any published  material produced
+using this data,  and if possible  link web pages  to the CIAT-CSI  SRTM website
+(http://srtm.csi.cgiar.org).
 
-CHANGELOG VERSION 0.3 - 30 July 2008
+Citations should be made as follows:
 
-- Corrected spelling mistake (United Arab Emirates)
-- Corrected population number for Japan
-- Adjusted long/lat values for India, Italy and United Kingdom
+Jarvis A., H.I. Reuter, A.  Nelson, E. Guevara, 2008, Hole-filled  seamless SRTM
+data V4, International  Centre for Tropical  Agriculture (CIAT), available  from
+http://srtm.csi.cgiar.org.
 
+REFERENCES
 
-CHANGELOG VERSION 0.2 - 1 April 2008
-
-- Made new ZIP archieves. No change in dataset.
-
-
-CHANGELOG VERSION 0.1 - 13 March 2008
-
-- Polygons representing each country were merged into one feature
-- Åland Islands was extracted from Finland
-- Hong Kong was extracted from China
-- Holy See (Vatican City) was added
-- Gaza Strip and West Bank was merged into "Occupied Palestinean Territory"
-- Saint-Barthelemy was extracted from Netherlands Antilles
-- Saint-Martin (Frensh part) was extracted from Guadeloupe
-- Svalbard and Jan Mayen was merged into "Svalbard and Jan Mayen Islands"
-- Timor-Leste was extracted from Indonesia
-- Juan De Nova Island was merged with "French Southern & Antarctic Land"
-- Baker Island, Howland Island, Jarvis Island, Johnston Atoll, Midway Islands
-  and Wake Island was merged into "United States Minor Outlying Islands"
-- Glorioso Islands, Parcel Islands, Spartly Islands was removed 
-  (almost uninhabited and missing ISO-3611-1 code)
-
-- Added ISO-3166-1 codes (alpha-2, alpha-3, numeric-3). Source:
-  https://www.cia.gov/library/publications/the-world-factbook/appendix/appendix-d.html
-  http://unstats.un.org/unsd/methods/m49/m49alpha.htm
-  http://www.fysh.org/~katie/development/geography.txt
-- AREA column has been replaced with data from UNdata:
-  Land area, 1000 hectares, 2002, FAO Statistics
-- POPULATION column (POP2005) has been replaced with data from UNdata:
-  Population, 2005, Medium variant, World Population Prospects: The 2006 Revision
-- Added region and sub-region codes from UN Statistics Division. Source:
-  http://unstats.un.org/unsd/methods/m49/m49regin.htm
-- Added LAT, LONG values for each country
-
+Reuter  H.I,  A.  Nelson,  A.  Jarvis,  2007,  An  evaluation  of  void  filling
+interpolation  methods  for  SRTM  data,  International  Journal  of  Geographic
+Information Science, 21:9, 983-1008.
