@@ -1,0 +1,223 @@
+---
+title: "Use any color palette with **paletteer**"
+logo: "paletteer"
+descriptionMeta: "This post explains how to use the paletteer package to work with any color palette in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `paletteer` package in R brings together all the **color palettes** from a large number of R packages dedicated to colours. This post explains how to use these colours depending on the type of **palette** and **graph**."
+documentationLink: "github.com/EmilHvitfeldt/paletteer"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center"
+)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `paletteer` package in R brings together all the **color palettes** from a large number of R packages dedicated to colours. It provides a **simple** and **consistent** interface to access these palettes, making it easy to work with any color palette in R.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers more than **2000 color palettes** from various R packages, making it easy to create beautiful and informative visualizations.
+
+✍️ **author** &rarr; Emil Hvitfeldt
+
+📘 **documentation** &rarr; [github](https://github.com/EmilHvitfeldt/paletteer)
+
+⭐️ *more than 800 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+# load necessary libraries
+library(paletteer)
+library(tidyverse)
+
+# load the data
+data <- read.csv("https://raw.githubusercontent.com/holtzy/The-Python-Graph-Gallery/master/static/data/simple-barplot.csv")
+data$name <- factor(data$name, levels = rev(data$name))
+data <- mutate(data, name = fct_reorder(name, value))
+
+# create the bar plot
+ggplot(data, aes(x = value, y = name, fill = name)) +
+  geom_col() +
+  scale_fill_paletteer_d("PrettyCols::PurpleTangerines") +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
+  )
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `paletteer`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("paletteer")
+```
+
+# Basic usage 
+***
+
+If you want to easily **get started** with `paletteer`, you can use the `paletteer_d()` function to access the palettes.
+
+`paletteer` has a straightforward syntax for accessing palettes: `package_name::palette_name`.
+
+Here's a basic example with the `FridaKahlo` palette from the `lisa` package:
+
+```{r}
+# load the library
+library(paletteer)
+
+# get the palette
+my_colors <- paletteer::paletteer_d("lisa::FridaKahlo")
+
+# use colors in a plot
+barplot(1:length(my_colors), col = my_colors)
+```
+
+# Key features
+***
+
+Palettes have different types, and `paletteer` demands a specific function to access each type.
+
+For example, if you want to build a [choropleth map](../choropleth-map.html), you need a **continuous** palette. In this case, you can use the `paletteer_s` and `scale_fill_paletteer_c` functions.
+
+For a [bar plot](../barplot.html), you need a **discrete** palette. In this case, you can use the `paletteer_d` and `scale_fill_paletteer_d` functions.
+
+
+<br>
+
+## &rarr; Diverging continuous palettes
+
+A diverging continuous palette is a palette that has a **center** and two **extremes**. It is useful for visualizing data with a **center** value.
+
+For example, a palette that goes from <span style="color: blue; font-weight: bold;">blue</span> to <span style="color: white; background-color: black; font-weight: bold; padding: 2px;">white</span> to <span style="color: red; font-weight: bold;">red</span> is a diverging continuous palette.
+
+Example with the `pals::coolwarm` palette:
+
+```{r}
+# load required libraries
+library(ggplot2)
+library(paletteer)
+library(reshape2)
+
+# create a sample matrix to simulate data
+set.seed(123)
+data_matrix <- matrix(runif(625, min = 0, max = 1), nrow = 25, ncol = 25)
+rownames(data_matrix) <- rev(LETTERS[1:25])
+colnames(data_matrix) <- LETTERS[1:25]
+data <- melt(data_matrix)
+
+# create the heatmap
+ggplot(data, aes(x = Var2, y = Var1, fill = value)) +
+  geom_tile() +
+  scale_fill_paletteer_c("pals::coolwarm") +
+  labs(x = NULL, y = NULL) +
+  theme_minimal()
+```
+
+<br>
+
+## &rarr; Sequential continuous palettes
+
+A sequential continuous palette is a palette that goes from one **extreme** to another. It is useful for visualizing data that goes from **low** to **high**.
+
+For example, a palette that goes from <span style="color: purple; font-weight: bold;">purple</span> to <span style="color: #f8f4dc; background-color: black; font-weight: bold; padding: 2px;">light yellow</span> is a sequential continuous palette.
+
+Example with `grDevices::Purple-Yellow` palette:
+
+```{r}
+# load the library
+library(paletteer)
+library(ggplot2)
+
+# create some data
+data <- data.frame(x = 1:10, y = 1:10, z = 1:10)
+
+# create a plot
+ggplot(data, aes(x, y, fill = z)) +
+  geom_tile() +
+  scale_fill_paletteer_c("grDevices::Purple-Yellow") +
+  theme_minimal()
+```
+
+<br>
+
+## &rarr; Qualitative discrete palettes
+
+Discrete palettes are palettes that have a **fixed number** of colors. They are useful for visualizing data that is **categorical**.
+
+For example, a palette that goes from <span style="color: #D50032FF; font-weight: bold;">red</span> to <span style="color: #F6BE00FF; background-color: black; font-weight: bold; padding: 2px;">orange</span> to <span style="color: #00573FFF; font-weight: bold;">green</span> to <span style="color: #010101FF; font-weight: bold;">black</span> is a discrete palette.
+
+Example with the `nbapalettes::supersonics_holiday` palette:
+
+```{r}
+# load the library
+library(paletteer)
+library(ggplot2)
+
+# create some data
+data <- data.frame(
+  x = rnorm(20),
+  y = rnorm(20),
+  z = rep(LETTERS[1:4], 5)
+)
+
+# create a plot
+ggplot(data, aes(x, y, fill = z)) +
+  geom_point(size = 10, shape = 21) +
+  scale_fill_paletteer_d("nbapalettes::supersonics_holiday") +
+  theme_minimal()
+```
+
+<br>
+
+## &rarr; Get colors from a palette
+
+Since discrete palettes contains a fixed number of colors, you can also use `paletteer` to retrieve a list of colors and not just using them in a plot.
+
+Example:
+
+```{r}
+# load the library
+library(paletteer)
+
+# get the palette
+my_colors <- paletteer::paletteer_d("lisa::FridaKahlo")
+print(my_colors)
+```
+
+<br>
+
+
+# Gallery of paletteer examples
+***
+
+The gallery contains several examples of how to use the `paletteer` package to create beautiful visualizations with different types of **palettes**! Browse them to get inspired:
+
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-dumbbell-chart-with-a-gap-column.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dumbbell plot with gap section<hr><p class=explanation_portfolio>An extended dumbbell plot originally published by the Pew research center. Clean design with a gap section on the right hand side.</div></div><img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../line-chart-dual-Y-axis-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dual Y axis<hr><p class=explanation_portfolio>A few examples showing how to use the sec.axis argument to add a second Y axis.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><a class=portfolio-link href=../web-circular-lollipop-plot-with-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Circular lollipop chart<hr><p class=explanation_portfolio>A circular lollipop chart with customized layout, in circle legend and groups.<br><br>A work by <b>Cédric Scherer</b> for the <b>TidyTuesday</b> challenge.</div></div><img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><div class=portfolio-item><a class=portfolio-link href=../web-lineplots-and-area-chart-the-economist.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Line and Area charts by The Economist<hr><p class=explanation_portfolio>Learn how to mimick the style of The Economist with libraries like ggplot2, paletteer, grid, ggtext and more.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>
