@@ -1,0 +1,226 @@
+---
+title: "Grouped line chart with small multiple"
+descriptionMeta: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
+descriptionTop: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
+sectionText: "Line chart section"
+sectionLink: "lollipop-plot.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/lollipop.html"
+url: "web-grouped-line-chart-small-multiple"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+
+
+
+# Introduction
+***
+
+
+This plot has been initially published by Abdul Madjid, as a contribution to the [TidyTuesday challenge](https://github.com/AbdoulMa/TidyTuesday/tree/main/2021_w19). 
+
+
+
+# Packages
+***
+
+The code works pretty much the same way, but it is important to note that the X axis can represent a categorical variable as well. In this case, the lollipop chart is a good replacement of the [barplot](barplot.html).
+
+The [ggtext](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) package allows to customize fonts on the chart. It notably allows to use specific fonts, like `Lato` in this example. You can read more about its usage [here](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html).
+
+```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
+extrafont::loadfonts()
+library(tidyverse)
+library(ggridges)
+library(viridis)
+library(extrafont)
+library(cowplot)
+library(showtext)
+
+# Loading fonts
+font_add_google("DM Serif Display", "abril")
+font_add_google("Tajawal", "tawa")
+showtext_auto()
+
+# Set theme
+theme_set(theme_light())
+```
+
+
+# Dataset
+***
+
+Description of the dataset
+
+```{r}
+# Loading data
+babynames <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-03-22/babynames.csv")
+
+# 50 most popular female names over all time
+top_female <- babynames |>
+  filter(sex == "F") |>
+  group_by(name) |>
+  summarise(total = sum(n)) |>
+  slice_max(total, n = 50) |>
+  mutate(
+    rank = 1:50,
+    name = forcats::fct_reorder(name, -total)
+  ) |>
+  pull(name)
+
+# 50 most popular male names over all time
+top_male <- babynames |>
+  filter(sex == "M") |>
+  group_by(name) |>
+  summarise(total = sum(n)) |>
+  slice_max(total, n = 50) |>
+  mutate(
+    rank = 1:50,
+    name = forcats::fct_reorder(name, -total)
+  ) |>
+  pull(name)
+
+# filter female names data
+female_names <- babynames |>
+  filter(
+    sex == "F",
+    name %in% top_female
+  ) |>
+  mutate(name = factor(name, levels = levels(top_female))) |>
+  group_by(year, name) |>
+  summarise(n = sum(n))
+
+# filter top males
+male_names <- babynames |>
+  filter(
+    sex == "M",
+    name %in% top_male
+  ) |>
+  mutate(name = factor(name, levels = levels(top_male))) |>
+  group_by(year, name) |>
+  summarise(n = sum(n))
+```
+
+# Ridgeline with female names
+***
+
+```{r}
+plot1 <- ggplot(female_names, aes(year,
+  y = fct_reorder(name, n), height = n / 50000,
+  group = name, scale = 2
+)) +
+  geom_ridgeline(
+    alpha = 0.5, scale = 4.5, linewidth = 0,
+    fill = "#05595B", color = "white"
+  ) +
+  xlim(1900, NA) +
+  labs(title = "Female", y = "", x = "") +
+  theme(
+    plot.title = element_text(hjust = 0, family = "Bahnschrift", size = 10),
+    axis.ticks.y = element_blank(),
+    axis.text = element_text(family = "Bahnschrift", size = 7),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(size = 0.5),
+    panel.border = element_blank()
+  ) +
+  geom_segment(aes(x = 1967, xend = 1967, y = 56.7, yend = 52), color = "#404040") +
+  geom_segment(aes(x = 1967, xend = 1964, y = 56.7, yend = 56.7), color = "#404040") +
+  annotate(
+    geom = "text", x = 1970, y = 55.6, label = "73,982 babies called\n'Mary' in 1921", hjust = "left",
+    size = 2.2, color = "#404040", family = "Bahnschrift"
+  )
+
+plot1
+```
+
+# Ridgeline with male names
+***
+
+```{r}
+plot2 <- ggplot(male_names, aes(year,
+  y = fct_reorder(name, n), height = n / 50000,
+  group = name, scale = 2
+)) +
+  geom_ridgeline(
+    alpha = 0.5, scale = 4.5, linewidth = 0,
+    fill = "#603601", color = "white"
+  ) +
+  xlim(1900, NA) +
+  labs(title = "Male", y = "", x = "") +
+  theme(
+    plot.title = element_text(hjust = 0, family = "Bahnschrift", size = 10),
+    axis.ticks.y = element_blank(),
+    axis.text = element_text(family = "Bahnschrift", size = 7),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(size = 0.5),
+    panel.border = element_blank(),
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  geom_segment(aes(x = 1975, xend = 1975, y = 58, yend = 53.1), color = "#404040") +
+  geom_segment(aes(x = 1975, xend = 1972, y = 58, yend = 58), color = "#404040") +
+  annotate(
+    geom = "text", x = 1977, y = 56.7, label = "94,756 babies called\n'James' in 1947", hjust = "left",
+    size = 2.2, color = "#404040", family = "Bahnschrift"
+  )
+
+plot2
+```
+
+# Combine plots
+***
+
+```{r}
+title_theme <- ggdraw() +
+  draw_label("50 most common given names\n in the US since 1900",
+    fontfamily = "Gadugi",
+    fontface = "bold",
+    size = 16,
+    hjust = 0.5
+  )
+
+# caption
+caption <- ggdraw() +
+  draw_label("Source: {babynames} from Hadley Wickham | Graphic: Laura Navarro Soler",
+    fontfamily = "Bahnschrift",
+    size = 9,
+    hjust = 0.5,
+    color = "#6B6B6B"
+  )
+
+gridofplots <- plot_grid(plot1, plot2, nrow = 1)
+plot_grid(title_theme,
+  gridofplots,
+  caption,
+  ncol = 1, rel_heights = c(0.2, 1.5, 0.1)
+)
+```
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```

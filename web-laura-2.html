@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Area chart with small
+multiples &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This guide demonstrates how to
+create an area chart with facetting, which means the chart is divided by
+category. It explains how to customize the grid using ggplot." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Area chart with small
+multiples" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This guide demonstrates how
+to create an area chart with facetting, which means the chart is divided
+by category. It explains how to customize the grid using ggplot." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-grouped-line-chart-small-multiple.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Area chart with small multiples</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This guide
+demonstrates how to create an <a href="area-chart.html">area chart</a>
+with <strong>facetting</strong>, which means the chart is divided by
+category. It explains how to customize the grid using <a
+href="ggplot2-package">ggplot2</a>. We will reference a chart by <a
+href="https://laura-navarro-s.github.io/">Laura Navarro</a> that depicts
+<strong>the proportion of people with covid-19 over time in
+Catalonia</strong>.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="area-chart.html"
+            >Area chart section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/area.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<hr />
+<p>In order to create this chart, we need to load the <strong>following
+packages</strong>, as well as some <strong>fonts</strong>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(reshape2)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(showtext)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># For creating a custom grid, visit this site: https://digital.ebp.ch/2021/03/02/tilemaps-in-r/</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(geofacet)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Loading fonts</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;DM Serif Display&quot;</span>, <span class="st">&quot;abril&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Tajawal&quot;</span>, <span class="st">&quot;tawa&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>The data consists of a <strong>custom grid</strong> representing the
+regions of Catalonia, stored in a data frame called
+<code>comarques</code>. Each region is identified by a <strong>unique
+code and name</strong>, and has corresponding row and column
+coordinates.</p>
+<p>Additionally, a CSV file containing data for December is loaded into
+a data frame called <code>datos</code>. The <code>setmana</code> column
+in the <code>datos</code> data frame is converted to a factor with
+levels representing the weeks of the month.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Creating the custom grid ()</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>comarques <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">code =</span> <span class="fu">c</span>(<span class="st">&quot;AN&quot;</span>, <span class="st">&quot;CE&quot;</span>, <span class="st">&quot;AR&quot;</span>, <span class="st">&quot;PS&quot;</span>, <span class="st">&quot;RI&quot;</span>, <span class="st">&quot;AE&quot;</span>, <span class="st">&quot;PE&quot;</span>, <span class="st">&quot;GA&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;AU&quot;</span>, <span class="st">&quot;PJ&quot;</span>, <span class="st">&quot;SO&quot;</span>, <span class="st">&quot;GI&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;OS&quot;</span>, <span class="st">&quot;NO&quot;</span>, <span class="st">&quot;BA&quot;</span>, <span class="st">&quot;SE&quot;</span>, <span class="st">&quot;MO&quot;</span>, <span class="st">&quot;SE&quot;</span>, <span class="st">&quot;VO&quot;</span>, <span class="st">&quot;AN&quot;</span>, <span class="st">&quot;SA&quot;</span>, <span class="st">&quot;PU&quot;</span>, <span class="st">&quot;UR&quot;</span>, <span class="st">&quot;VR&quot;</span>, <span class="st">&quot;MA&quot;</span>, <span class="st">&quot;AC&quot;</span>, <span class="st">&quot;CB&quot;</span>, <span class="st">&quot;GG&quot;</span>, <span class="st">&quot;PR&quot;</span>, <span class="st">&quot;AP&quot;</span>, <span class="st">&quot;BA&quot;</span>, <span class="st">&quot;GA&quot;</span>, <span class="st">&quot;RE&quot;</span>, <span class="st">&quot;BP&quot;</span>, <span class="st">&quot;TA&quot;</span>, <span class="st">&quot;BL&quot;</span>, <span class="st">&quot;BE&quot;</span>, <span class="st">&quot;BC&quot;</span>, <span class="st">&quot;TA&quot;</span>, <span class="st">&quot;MO&quot;</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">&quot;Aran&quot;</span>, <span class="st">&quot;Cerdanya&quot;</span>, <span class="st">&quot;Alta Ribagorça&quot;</span>, <span class="st">&quot;Pallars Sobirà&quot;</span>, <span class="st">&quot;Ripollès&quot;</span>, <span class="st">&quot;Alt Empordà&quot;</span>, <span class="st">&quot;Pla de l&#39;Estany&quot;</span>, <span class="st">&quot;Garrotxa&quot;</span>, <span class="st">&quot;Berguedà&quot;</span>, <span class="st">&quot;Alt Urgell&quot;</span>, <span class="st">&quot;Pallars Jussà&quot;</span>, <span class="st">&quot;Solsonès&quot;</span>, <span class="st">&quot;Gironès&quot;</span>, <span class="st">&quot;Baix Empordà&quot;</span>, <span class="st">&quot;Osona&quot;</span>, <span class="st">&quot;Noguera&quot;</span>, <span class="st">&quot;Bages&quot;</span>, <span class="st">&quot;Segarra&quot;</span>, <span class="st">&quot;Moianès&quot;</span>, <span class="st">&quot;Selva&quot;</span>, <span class="st">&quot;Vallès Occidental&quot;</span>, <span class="st">&quot;Anoia&quot;</span>, <span class="st">&quot;Segrià&quot;</span>, <span class="st">&quot;Pla d&#39;Urgell&quot;</span>, <span class="st">&quot;Urgell&quot;</span>, <span class="st">&quot;Vallès Oriental&quot;</span>, <span class="st">&quot;Maresme&quot;</span>, <span class="st">&quot;Alt Camp&quot;</span>, <span class="st">&quot;Conca de Barberà&quot;</span>, <span class="st">&quot;Garrigues&quot;</span>, <span class="st">&quot;Priorat&quot;</span>, <span class="st">&quot;Alt Penedès&quot;</span>, <span class="st">&quot;Barcelonès&quot;</span>, <span class="st">&quot;Garraf&quot;</span>, <span class="st">&quot;Ribera d&#39;Ebre&quot;</span>, <span class="st">&quot;Baix Penedès&quot;</span>, <span class="st">&quot;Terra Alta&quot;</span>, <span class="st">&quot;Baix Llobregat&quot;</span>, <span class="st">&quot;Baix Ebre&quot;</span>, <span class="st">&quot;Baix Camp&quot;</span>, <span class="st">&quot;Tarragonès&quot;</span>, <span class="st">&quot;Montsià&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">row =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">9</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/lau-cloud/geo_data/main/grid_catalonia/setmanes_desembre.csv&quot;</span>, <span class="at">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>datos<span class="sc">$</span>setmana <span class="ot">&lt;-</span> <span class="fu">factor</span>(datos<span class="sc">$</span>setmana, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;16-22&quot;</span>, <span class="st">&quot;23-29&quot;</span>, <span class="st">&quot;30-06&quot;</span>, <span class="st">&quot;07-13&quot;</span>, <span class="st">&quot;14-20&quot;</span>))</span></code></pre></div>
+</div>
+<div id="simple-density-plot" class="section level1">
+<h1>Simple density plot</h1>
+<hr />
+<p>The code creates a geographical <strong>faceted area plot</strong>,
+where each facet represents a <strong>unique value</strong> in the name
+variable. The x-axis represents <code>setmana</code>, the y-axis
+represents <code>positius_x</code>, and the fill color of the area under
+the line is determined by tendencia. The fill colors are manually set to
+<code>"#FF5A31"</code>, <code>"#FACB66"</code>, and
+<code>"grey"</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(datos, <span class="fu">aes</span>(<span class="at">x =</span> setmana, <span class="at">y =</span> positius_x, <span class="at">group =</span> name, <span class="at">fill =</span> tendencia)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_area</span>() <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF5A31&quot;</span>, <span class="st">&quot;#FACB66&quot;</span>, <span class="st">&quot;grey&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">facet_geo</span>(<span class="sc">~</span>name, <span class="at">grid =</span> comarques, <span class="at">label =</span> <span class="st">&quot;name&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/area-small-multiple-1.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/area-small-multiple-1.png' width="80%">
+</center>
+</div>
+<div id="improve-theme-and-remove-unused-labels" class="section level1">
+<h1>Improve theme and remove unused labels</h1>
+<hr />
+<p>The next step is to <strong>customize the theme</strong> of the plot
+using the <code>theme()</code> function, especially to turn this chart
+into a <strong>dark theme</strong> one.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(datos, <span class="fu">aes</span>(<span class="at">x =</span> setmana, <span class="at">y =</span> positius_x, <span class="at">group =</span> name, <span class="at">fill =</span> tendencia)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">geom_area</span>() <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF5A31&quot;</span>, <span class="st">&quot;#FACB66&quot;</span>, <span class="st">&quot;grey&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">facet_geo</span>(<span class="sc">~</span>name, <span class="at">grid =</span> comarques, <span class="at">label =</span> <span class="st">&quot;name&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">26</span>, <span class="at">family =</span> <span class="st">&quot;abril&quot;</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">18</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">strip.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>),</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">60</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">14</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>, <span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">&quot;char&quot;</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/area-small-multiple-2.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/area-small-multiple-2.png' width="80%">
+</center>
+</div>
+<div id="final-plot" class="section level1">
+<h1>Final plot</h1>
+<hr />
+<p>The final step is to add <strong>title</strong>,
+<strong>subtitle</strong> and <strong>caption</strong> to our chart, and
+we do it thanks to the <code>labs()</code> function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(datos, <span class="fu">aes</span>(<span class="at">x =</span> setmana, <span class="at">y =</span> positius_x, <span class="at">group =</span> name, <span class="at">fill =</span> tendencia)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_area</span>() <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF5A31&quot;</span>, <span class="st">&quot;#FACB66&quot;</span>, <span class="st">&quot;grey&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">facet_geo</span>(<span class="sc">~</span>name, <span class="at">grid =</span> comarques, <span class="at">label =</span> <span class="st">&quot;name&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;setmana&quot;</span>, <span class="at">y =</span> <span class="st">&quot;positius x 100.000 habitants&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Positius de COVID-19 x cada 100.000 habitants&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Evolució de les últimes 5 setmanes (del 16 de novembre al 20 de desembre)&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Laura Navarro Soler | Font: Portal de Dades Obertes de la Generalitat de Catalunya.</span><span class="sc">\n</span><span class="st"> S&#39;han comptabilitzat positius per prova PCR, test ràpid i ELISA </span><span class="sc">\n</span><span class="st"> La llegenda de colors es refereix a l&#39;augmente o disminució de la setmana passada (14-20 desembre) respecte l&#39;anterior (7-13 desembre)&quot;</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">26</span>, <span class="at">family =</span> <span class="st">&quot;abril&quot;</span>),</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">18</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">strip.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>    <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>),</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">60</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#818181&quot;</span>, <span class="at">size =</span> <span class="dv">14</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>),</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">0.5</span>, <span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="at">legend.spacing.y =</span> <span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">&quot;char&quot;</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/area-small-multiple-3.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/area-small-multiple-3.png' width="80%">
+</center>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>this beautiful <a
+href="web-ridgeline-plot-with-inside-plot-and-annotations.html">ridgeline
+plot</a> about rental prices</li>
+<li>how to create a <a
+href="web-line-chart-small-multiple-all-group-greyed-out.html">small
+multiple line chart</a></li>
+<li>how to mix <a href="web-time-series-and-facetting.html">time series
+and facetting</a></li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="line-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Line150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Line plot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="area-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Area150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-area-graph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/StackedArea150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Stacked area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="streamgraph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Stream150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Streamchart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="time-series.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Time150.gif" alt="">
+        </a>
+        <div class="captionPortfolio">Time Series</div>
+      </div>
+    </div>
+
+  </div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

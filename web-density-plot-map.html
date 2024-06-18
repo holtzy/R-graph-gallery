@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Density plot map &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post provides a guide to
+creating a density plot map, a top of bubble map where all dots have
+uniform size. It illustrates population distribution within a specific
+area." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Density plot map" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This post provides a guide
+to creating a density plot map, a top of bubble map where all dots have
+uniform size. It illustrates population distribution within a specific
+area." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-density-plot-map.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Density plot map</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+provides a <strong>guide to creating a density plot map</strong>, a type
+of <a href="bubble-map.html">bubble map</a> where all dots have
+<strong>uniform size</strong>. It illustrates <strong>population
+distribution</strong> within a specific area. We will reference a chart
+by <a href="https://laura-navarro-s.github.io/">Laura Navarro</a> that
+depicts <strong>population distribution in Barcelona</strong>.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="bubble-map.html"
+            >Bubble map section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/bubblemap.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<hr />
+<p>In order to create this chart, we need to load the <strong>following
+packages</strong>, as well as some <strong>fonts</strong>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(classInt)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(cartogram)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(showtext)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># Loading fonts</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;DM Serif Display&quot;</span>, <span class="st">&quot;abril&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Tajawal&quot;</span>, <span class="st">&quot;tawa&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>The data consists of two <strong>geojson files</strong>: one
+containing the neighborhoods of Barcelona and the other containing the
+city’s boundary. Additionally, a CSV file containing population data for
+each neighborhood is loaded.</p>
+<p>The neighborhood and population data are merged into a single data
+frame, and the total population is divided by 100 to represent each dot
+as 100 people. A custom function called <code>get_dot_density()</code>
+is applied to generate random sample points within each neighborhood
+based on its population, resulting in a data frame of longitude and
+latitude coordinates for each dot.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Loading geojson of Barcelona&#39;s neighborhoods</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>barris <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/lau-cloud/30DayChartChallenge2024/main/10_physical/0301040100_Barris_UNITATS_ADM.json&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">as_tibble =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Reading layer `0301040100_Barris_UNITATS_ADM&#39; from data source 
+##   `https://raw.githubusercontent.com/lau-cloud/30DayChartChallenge2024/main/10_physical/0301040100_Barris_UNITATS_ADM.json&#39; 
+##   using driver `GeoJSON&#39;
+## Simple feature collection with 73 features and 48 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 2.052333 ymin: 41.31704 xmax: 2.228045 ymax: 41.4683
+## Geodetic CRS:  WGS 84</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Loading geojson of Barcelona&#39;s boundary</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>perfil <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/lau-cloud/30DayChartChallenge2024/main/10_physical/0301040100_TermeMunicipal_UNITATS_ADM.json&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">as_tibble =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## Reading layer `0301040100_TermeMunicipal_UNITATS_ADM&#39; from data source 
+##   `https://raw.githubusercontent.com/lau-cloud/30DayChartChallenge2024/main/10_physical/0301040100_TermeMunicipal_UNITATS_ADM.json&#39; 
+##   using driver `GeoJSON&#39;
+## Simple feature collection with 1 feature and 46 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 2.052333 ymin: 41.31704 xmax: 2.228045 ymax: 41.4683
+## Geodetic CRS:  WGS 84</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pop_barris <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/lau-cloud/30DayChartChallenge2024/main/10_physical/10_physical.csv&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">names</span>(barris)[<span class="dv">29</span>] <span class="ot">&lt;-</span> <span class="st">&quot;barri&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>df <span class="ot">&lt;-</span> barris <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_barris, <span class="at">by =</span> <span class="st">&quot;barri&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># Dividing number by 100 (each dot is 100 people)</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>df_100 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total_100 =</span> total <span class="sc">/</span> <span class="dv">100</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Applying Milos function</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>get_dot_density <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  num_dots <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">as.data.frame</span>(df_100), total_100))</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  deu_dots <span class="ot">&lt;-</span> <span class="fu">map_df</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="fu">names</span>(num_dots),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="sc">~</span> sf<span class="sc">::</span><span class="fu">st_sample</span>(df_100, <span class="at">size =</span> num_dots[, .x], <span class="at">type =</span> <span class="st">&quot;random&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>      sf<span class="sc">::</span><span class="fu">st_cast</span>(<span class="st">&quot;POINT&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>      sf<span class="sc">::</span><span class="fu">st_coordinates</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>      <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>      <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">&quot;long&quot;</span>, <span class="st">&quot;lat&quot;</span>))</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  )</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="fu">return</span>(deu_dots)</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>}</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>deu_dots <span class="ot">&lt;-</span> <span class="fu">get_dot_density</span>()</span></code></pre></div>
+</div>
+<div id="simple-density-plot" class="section level1">
+<h1>Simple density plot</h1>
+<hr />
+<p>We start by creating a simple density plot without much
+customization. It mainly relies on the <code>geom_sf()</code> function
+from the <a href="package/sf.html">sf package</a></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(deu_dots) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">data =</span> deu_dots, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;#A0153E&quot;</span>, <span class="at">size =</span> .<span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">3</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">data =</span> barris, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> .<span class="dv">6</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> perfil, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/density-plot-1.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/density-plot-1.png' width="80%">
+</center>
+</div>
+<div id="improve-theme-and-remove-unused-labels" class="section level1">
+<h1>Improve theme and remove unused labels</h1>
+<hr />
+<p>Now we have our core of the chart, we can improve it:</p>
+<ul>
+<li>use the <code>theme_minimal()</code></li>
+<li>remove most <strong>labels</strong></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">ggplot</span>(deu_dots) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="at">data =</span> deu_dots, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;#A0153E&quot;</span>, <span class="at">size =</span> .<span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">3</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="at">data =</span> barris, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> .<span class="dv">6</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> perfil, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">family =</span> <span class="st">&quot;abril&quot;</span>, <span class="at">size =</span> <span class="dv">22</span>,</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>      <span class="at">lineheight =</span> <span class="fl">1.1</span>,</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">0</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>    ),</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>    ),</span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.7</span>, <span class="at">size =</span> <span class="dv">12</span>)</span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/density-plot-2.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/density-plot-2.png' width="80%">
+</center>
+</div>
+<div id="final-plot" class="section level1">
+<h1>Final plot</h1>
+<hr />
+<p>Then we add the title, subtitle and an arrow to highlight
+<strong>Badal</strong> with the <code>annotate()</code> function:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">ggplot</span>(deu_dots) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="at">data =</span> deu_dots, <span class="fu">aes</span>(<span class="at">x =</span> long, <span class="at">y =</span> lat),</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;#A0153E&quot;</span>, <span class="at">size =</span> .<span class="dv">7</span>, <span class="at">alpha =</span> .<span class="dv">3</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    <span class="at">data =</span> barris, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> .<span class="dv">6</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> perfil, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>    <span class="at">fill =</span> <span class="cn">NULL</span>, <span class="at">colour =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;¿En qué barrios de Barcelona hay</span><span class="sc">\n</span><span class="st"> más densidad de población?&quot;</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Personas por km2. Cada punto representa a 100 personas&quot;</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Fuente: OMD. / Laura Navarro&quot;</span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">family =</span> <span class="st">&quot;abril&quot;</span>, <span class="at">size =</span> <span class="dv">22</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a>      <span class="at">lineheight =</span> <span class="fl">1.1</span>,</span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">0</span>)</span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a>    ),</span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">&quot;darkgrey&quot;</span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a>    ),</span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.7</span>, <span class="at">size =</span> <span class="dv">12</span>)</span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>,</span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">2.083</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="fl">41.3728</span>),</span>
+<span id="cb11-41"><a href="#cb11-41" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;Badal&quot;</span>), <span class="at">color =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb11-42"><a href="#cb11-42" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">5</span>, <span class="at">family =</span> <span class="st">&quot;tawa&quot;</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span></span>
+<span id="cb11-43"><a href="#cb11-43" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-44"><a href="#cb11-44" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb11-45"><a href="#cb11-45" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;curve&quot;</span>, <span class="at">x =</span> <span class="fl">2.085</span>, <span class="at">y =</span> <span class="fl">41.37</span>, <span class="at">xend =</span> <span class="fl">2.123</span>, <span class="at">yend =</span> <span class="fl">41.373</span>,</span>
+<span id="cb11-46"><a href="#cb11-46" tabindex="-1"></a>    <span class="at">curvature =</span> .<span class="dv">3</span>, <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="dv">2</span>, <span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb11-47"><a href="#cb11-47" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/density-plot-3.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/density-plot-3.png' width="80%">
+</center>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>this beautiful <a href="web-choropleth-barchart-map.html">choropleth
+map</a> about Brazil</li>
+<li>how to create a <a href="web-dorling-cartogram-with-R.html">dorling
+cartogram</a>, a variation of the bubble map</li>
+<li>how to create a <a href="web-valued-dots-map-bertin.html">density
+map in the style of Jacques Bertin</a></li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
