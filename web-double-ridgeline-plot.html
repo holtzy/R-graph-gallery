@@ -43,17 +43,18 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Grouped line chart with small
-multiple &#8211; the R Graph Gallery</title>
+    <title>Double ridgeline plot &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to build a
-grouped line chart with small multiples. Each item is the same grouped
-line chart, with one specific group higlighted each time" />
+    <meta name="description" content="This guide illustrates the process
+of creating a double ridgeline plot, or joy plot, using ggplot2 to
+showcase the evolution of various groups over time. It provides a
+detailed, step-by-step explanation to help you reproduce the chart with
+ease." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,18 +63,19 @@ line chart, with one specific group higlighted each time" />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Grouped line chart with small
-multiple" />
+    <meta property="og:title" content="Double ridgeline plot" />
     <meta
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post explains how to
-build a grouped line chart with small multiples. Each item is the same
-grouped line chart, with one specific group higlighted each time" />
+    <meta property="og:description" content="This guide illustrates the
+process of creating a double ridgeline plot, or joy plot, using ggplot2
+to showcase the evolution of various groups over time. It provides a
+detailed, step-by-step explanation to help you reproduce the chart with
+ease." />
     <meta
       property="og:url"
-      content="https://www.r-graph-gallery.com/web-grouped-line-chart-small-multiple.html"
+      content="https://www.r-graph-gallery.com/web-double-ridgeline-plot.html"
     />
     <meta property="og:type" content="website" />
 
@@ -114,7 +116,7 @@ grouped line chart, with one specific group higlighted each time" />
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
-        <center><h1>Grouped line chart with small multiple</h1></center>
+        <center><h1>Double ridgeline plot</h1></center>
         <hr class="short_hr" />
         <br />
         <ul class="list-inline social-buttons">
@@ -140,20 +142,25 @@ grouped line chart, with one specific group higlighted each time" />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to build a grouped line chart with small multiples. Each
-item is the same grouped line chart, with one specific group higlighted
-each time</p>
+          <p style="max-width: 600px; margin-top: 40px">This guide
+illustrates the process of creating a double <a
+href="ridgeline-plot.html">ridgeline plot</a> using <a
+href="ggplot2-package.html">ggplot2</a> to showcase the evolution of
+various groups over time. It provides a detailed, step-by-step
+explanation to help you reproduce the chart with ease. We will reference
+a chart by <a href="https://laura-navarro-s.github.io/">Laura
+Navarro</a> that depicts the evolution <strong>of baby names popularity
+from the 1900’s</strong>.</p>
         </center>
         <div style="text-align: center">
           <a
             class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
-            href="lollipop-plot.html"
-            >Line chart section</a
+            href="ridgeline-plot.html"
+            >Ridgeline plot section</a
           >
           <a
             class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
-            href="https://www.data-to-viz.com/graph/lollipop.html"
+            href="https://www.data-to-viz.com/graph/ridgeline.html"
             >Data to Viz</a
           >
         </div>
@@ -177,27 +184,11 @@ each time</p>
     </style>
 
     <div class="container">
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<hr />
-<p>This plot has been initially published by Abdul Madjid, as a
-contribution to the <a
-href="https://github.com/AbdoulMa/TidyTuesday/tree/main/2021_w19">TidyTuesday
-challenge</a>.</p>
-</div>
 <div id="packages" class="section level1">
 <h1>Packages</h1>
 <hr />
-<p>The code works pretty much the same way, but it is important to note
-that the X axis can represent a categorical variable as well. In this
-case, the lollipop chart is a good replacement of the <a
-href="barplot.html">barplot</a>.</p>
-<p>The <a
-href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">ggtext</a>
-package allows to customize fonts on the chart. It notably allows to use
-specific fonts, like <code>Lato</code> in this example. You can read
-more about its usage <a
-href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">here</a>.</p>
+<p>In order to create this chart, we need to load the <strong>following
+packages</strong>, as well as some <strong>fonts</strong>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>extrafont<span class="sc">::</span><span class="fu">loadfonts</span>()</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
@@ -217,7 +208,21 @@ href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">here</
 <div id="dataset" class="section level1">
 <h1>Dataset</h1>
 <hr />
-<p>Description of the dataset</p>
+<p>The data consists of a CSV file containing baby names, which is
+loaded into a data frame called <code>babynames</code>. The data is then
+filtered to find the 50 most popular female and male names of all time,
+and the results are stored in the <code>top_female</code> and
+<code>top_male</code> vectors, respectively.</p>
+<p>The <code>babynames</code> data frame is then filtered again to
+include only the <strong>top 50 female and male</strong> names for each
+year, and the results are stored in the <code>female_names</code> and
+<code>male_names</code> data frames. The <code>name</code> column in
+both data frames is converted to a factor with levels based on the order
+of popularity.</p>
+<p>The <code>female_names</code> and <code>male_names</code> data frames
+are <strong>grouped by year and name</strong>, and the total number of
+occurrences for each name is summarized in the <code>n</code>
+column.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Loading data</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>babynames <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-03-22/babynames.csv&quot;</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
@@ -268,6 +273,11 @@ href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">here</
 <div id="ridgeline-with-female-names" class="section level1">
 <h1>Ridgeline with female names</h1>
 <hr />
+<p>We start by creating a single ridgeline plot using <strong>only
+female names</strong>.</p>
+<p>The <a href="ridgeline-plot.html">ridgeline plot</a> is made via the
+<code>geom_ridgeline()</code> function from the <a
+href="ridgeline-plot.html">ggridges package</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(female_names, <span class="fu">aes</span>(year,</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">fct_reorder</span>(name, n), <span class="at">height =</span> n <span class="sc">/</span> <span class="dv">50000</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">group =</span> name, <span class="at">scale =</span> <span class="dv">2</span></span>
@@ -295,69 +305,98 @@ href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">here</
 <span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>  )</span>
 <span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a></span>
 <span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>plot1</span></code></pre></div>
-<p><img src="web-laura-3_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/ridgeline-1.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/ridgeline-1.png' width="80%">
+</center>
 </div>
 <div id="ridgeline-with-male-names" class="section level1">
 <h1>Ridgeline with male names</h1>
 <hr />
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(male_names, <span class="fu">aes</span>(year,</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">fct_reorder</span>(name, n), <span class="at">height =</span> n <span class="sc">/</span> <span class="dv">50000</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">group =</span> name, <span class="at">scale =</span> <span class="dv">2</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)) <span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">geom_ridgeline</span>(</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="fl">4.5</span>, <span class="at">linewidth =</span> <span class="dv">0</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;#603601&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">1900</span>, <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Male&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span>, <span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">size =</span> <span class="fl">0.5</span>),</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>),</span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1975</span>, <span class="at">xend =</span> <span class="dv">1975</span>, <span class="at">y =</span> <span class="dv">58</span>, <span class="at">yend =</span> <span class="fl">53.1</span>), <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>) <span class="sc">+</span></span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1975</span>, <span class="at">xend =</span> <span class="dv">1972</span>, <span class="at">y =</span> <span class="dv">58</span>, <span class="at">yend =</span> <span class="dv">58</span>), <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>) <span class="sc">+</span></span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">1977</span>, <span class="at">y =</span> <span class="fl">56.7</span>, <span class="at">label =</span> <span class="st">&quot;94,756 babies called</span><span class="sc">\n</span><span class="st">&#39;James&#39; in 1947&quot;</span>, <span class="at">hjust =</span> <span class="st">&quot;left&quot;</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span></span>
-<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  )</span>
-<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>plot2</span></code></pre></div>
-<p><img src="web-laura-3_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Now we create the same chart but using the <strong>male names
+only</strong>. The code is pretty much the same as above:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(male_names, <span class="fu">aes</span>(year,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">fct_reorder</span>(name, n), <span class="at">height =</span> n <span class="sc">/</span> <span class="dv">50000</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">group =</span> name, <span class="at">scale =</span> <span class="dv">2</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">geom_ridgeline</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="fl">4.5</span>, <span class="at">linewidth =</span> <span class="dv">0</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;#603601&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">1900</span>, <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Male&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>, <span class="at">x =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span>, <span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_line</span>(<span class="at">size =</span> <span class="fl">0.5</span>),</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>),</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1975</span>, <span class="at">xend =</span> <span class="dv">1975</span>, <span class="at">y =</span> <span class="dv">58</span>, <span class="at">yend =</span> <span class="fl">53.1</span>), <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1975</span>, <span class="at">xend =</span> <span class="dv">1972</span>, <span class="at">y =</span> <span class="dv">58</span>, <span class="at">yend =</span> <span class="dv">58</span>), <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">1977</span>, <span class="at">y =</span> <span class="fl">56.7</span>, <span class="at">label =</span> <span class="st">&quot;94,756 babies called</span><span class="sc">\n</span><span class="st">&#39;James&#39; in 1947&quot;</span>, <span class="at">hjust =</span> <span class="st">&quot;left&quot;</span>,</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.2</span>, <span class="at">color =</span> <span class="st">&quot;#404040&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Bahnschrift&quot;</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>  )</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>plot2</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/ridgeline-2.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/ridgeline-2.png' width="80%">
+</center>
 </div>
 <div id="combine-plots" class="section level1">
 <h1>Combine plots</h1>
 <hr />
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>title_theme <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>() <span class="sc">+</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">&quot;50 most common given names</span><span class="sc">\n</span><span class="st"> in the US since 1900&quot;</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">fontfamily =</span> <span class="st">&quot;Gadugi&quot;</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">16</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="fl">0.5</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  )</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># caption</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>caption <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>() <span class="sc">+</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">&quot;Source: {babynames} from Hadley Wickham | Graphic: Laura Navarro Soler&quot;</span>,</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">fontfamily =</span> <span class="st">&quot;Bahnschrift&quot;</span>,</span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">9</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;#6B6B6B&quot;</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  )</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>gridofplots <span class="ot">&lt;-</span> <span class="fu">plot_grid</span>(plot1, plot2, <span class="at">nrow =</span> <span class="dv">1</span>)</span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="fu">plot_grid</span>(title_theme,</span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  gridofplots,</span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  caption,</span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">rel_heights =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">1.5</span>, <span class="fl">0.1</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>)</span></code></pre></div>
-<p><img src="web-laura-3_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Now that we have the charts that we needed, we can
+<strong>concatenate</strong> them into a single one thanks to the
+<code>plot_grid()</code> function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>title_theme <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>() <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">&quot;50 most common given names</span><span class="sc">\n</span><span class="st"> in the US since 1900&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">fontfamily =</span> <span class="st">&quot;Gadugi&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">16</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="fl">0.5</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  )</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># caption</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>caption <span class="ot">&lt;-</span> <span class="fu">ggdraw</span>() <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="fu">draw_label</span>(<span class="st">&quot;Source: {babynames} from Hadley Wickham | Graphic: Laura Navarro Soler&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">fontfamily =</span> <span class="st">&quot;Bahnschrift&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">9</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;#6B6B6B&quot;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  )</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>gridofplots <span class="ot">&lt;-</span> <span class="fu">plot_grid</span>(plot1, plot2, <span class="at">nrow =</span> <span class="dv">1</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">plot_grid</span>(title_theme,</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  gridofplots,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  caption,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">rel_heights =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">1.5</span>, <span class="fl">0.1</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;img/graph/ridgeline-3.png&quot;</span>)</span></code></pre></div>
+<center>
+<img src='img/graph/ridgeline-3.png' width="80%">
+</center>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>this beautiful <a
+href="web-ridgeline-plot-with-inside-plot-and-annotations.html">ridgeline
+plot</a> about rental prices</li>
+<li>how to create a <a
+href="web-line-chart-small-multiple-all-group-greyed-out.html">small
+multiple line chart</a></li>
+<li>how to mix <a href="web-time-series-and-facetting.html">time series
+and facetting</a></li>
+</ul>
 <!-- Close container -->
 </div>
 </div>
@@ -369,71 +408,60 @@ href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html">here</
   <p class="mySeryTitle">Related chart types</p>
   <hr>
   <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="barplot.html">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
       </a>
-      <div class="captionPortfolio">Barplot</div>
+      <div class="captionPortfolio">Violin</div>
     </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
       </a>
-      <div class="captionPortfolio">Spider / Radar</div>
+      <div class="captionPortfolio">Density</div>
     </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="wordcloud.html">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
       </a>
-      <div class="captionPortfolio">Wordcloud</div>
+      <div class="captionPortfolio">Histogram</div>
     </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="parallel-plot.html">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
       </a>
-      <div class="captionPortfolio">Parallel</div>
+      <div class="captionPortfolio">Boxplot</div>
     </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link"  href="lollipop-plot.html">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
         <div class="portfolio-hover">
           <div class="portfolio-hover-content">
             <i class="fa fa-plus fa-3x"></i>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
       </a>
-      <div class="captionPortfolio">Lollipop</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item ">
-      <a class="portfolio-link" href="circular-barplot.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Circular Barplot</div>
+      <div class="captionPortfolio">Ridgeline</div>
     </div>
   </div>
 

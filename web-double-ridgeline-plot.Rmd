@@ -1,12 +1,12 @@
 ---
-title: "Grouped line chart with small multiple"
-descriptionMeta: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
-descriptionTop: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
-sectionText: "Line chart section"
-sectionLink: "lollipop-plot.html"
+title: "Double ridgeline plot"
+descriptionMeta: "This guide illustrates the process of creating a double ridgeline plot, or joy plot, using ggplot2 to showcase the evolution of various groups over time. It provides a detailed, step-by-step explanation to help you reproduce the chart with ease."
+descriptionTop: "This guide illustrates the process of creating a double [ridgeline plot](ridgeline-plot.html) using [ggplot2](ggplot2-package.html) to showcase the evolution of various groups over time. It provides a detailed, step-by-step explanation to help you reproduce the chart with ease. We will reference a chart by [Laura Navarro](https://laura-navarro-s.github.io/) that depicts the evolution **of baby names popularity from the 1900's**."
+sectionText: "Ridgeline plot section"
+sectionLink: "ridgeline-plot.html"
 DataToVizText: "Data to Viz"
-DataToVizLink: "data-to-viz.com/graph/lollipop.html"
-url: "web-grouped-line-chart-small-multiple"
+DataToVizLink: "data-to-viz.com/graph/ridgeline.html"
+url: "web-double-ridgeline-plot"
 output:
   html_document:
       self_contained: false    
@@ -28,22 +28,10 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 <div class="container">
 
 
-
-
-# Introduction
-***
-
-
-This plot has been initially published by Abdul Madjid, as a contribution to the [TidyTuesday challenge](https://github.com/AbdoulMa/TidyTuesday/tree/main/2021_w19). 
-
-
-
 # Packages
 ***
 
-The code works pretty much the same way, but it is important to note that the X axis can represent a categorical variable as well. In this case, the lollipop chart is a good replacement of the [barplot](barplot.html).
-
-The [ggtext](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) package allows to customize fonts on the chart. It notably allows to use specific fonts, like `Lato` in this example. You can read more about its usage [here](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html).
+In order to create this chart, we need to load the **following packages**, as well as some **fonts**:
 
 ```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
 extrafont::loadfonts()
@@ -67,7 +55,11 @@ theme_set(theme_light())
 # Dataset
 ***
 
-Description of the dataset
+The data consists of a CSV file containing baby names, which is loaded into a data frame called `babynames`. The data is then filtered to find the 50 most popular female and male names of all time, and the results are stored in the `top_female` and `top_male` vectors, respectively.
+
+The `babynames` data frame is then filtered again to include only the **top 50 female and male** names for each year, and the results are stored in the `female_names` and `male_names` data frames. The `name` column in both data frames is converted to a factor with levels based on the order of popularity.
+
+The `female_names` and `male_names` data frames are **grouped by year and name**, and the total number of occurrences for each name is summarized in the `n` column.
 
 ```{r}
 # Loading data
@@ -121,7 +113,11 @@ male_names <- babynames |>
 # Ridgeline with female names
 ***
 
-```{r}
+We start by creating a single ridgeline plot using **only female names**.
+
+The [ridgeline plot](ridgeline-plot.html) is made via the `geom_ridgeline()` function from the [ggridges package](ridgeline-plot.html).
+
+```{r, fig.show='hide'}
 plot1 <- ggplot(female_names, aes(year,
   y = fct_reorder(name, n), height = n / 50000,
   group = name, scale = 2
@@ -149,12 +145,19 @@ plot1 <- ggplot(female_names, aes(year,
   )
 
 plot1
+ggsave("img/graph/ridgeline-1.png")
 ```
+
+<center>
+  <img src='img/graph/ridgeline-1.png' width="80%">
+</center>
 
 # Ridgeline with male names
 ***
 
-```{r}
+Now we create the same chart but using the **male names only**. The code is pretty much the same as above:
+
+```{r, fig.show='hide'}
 plot2 <- ggplot(male_names, aes(year,
   y = fct_reorder(name, n), height = n / 50000,
   group = name, scale = 2
@@ -184,12 +187,19 @@ plot2 <- ggplot(male_names, aes(year,
   )
 
 plot2
+ggsave("img/graph/ridgeline-2.png")
 ```
+
+<center>
+  <img src='img/graph/ridgeline-2.png' width="80%">
+</center>
 
 # Combine plots
 ***
 
-```{r}
+Now that we have the charts that we needed, we can **concatenate** them into a single one thanks to the `plot_grid()` function:
+
+```{r, fig.show='hide'}
 title_theme <- ggdraw() +
   draw_label("50 most common given names\n in the US since 1900",
     fontfamily = "Gadugi",
@@ -213,7 +223,22 @@ plot_grid(title_theme,
   caption,
   ncol = 1, rel_heights = c(0.2, 1.5, 0.1)
 )
+
+ggsave("img/graph/ridgeline-3.png")
 ```
+
+<center>
+  <img src='img/graph/ridgeline-3.png' width="80%">
+</center>
+
+# Going further
+***
+
+You might be interested in:
+
+- this beautiful [ridgeline plot](web-ridgeline-plot-with-inside-plot-and-annotations.html) about rental prices
+- how to create a [small multiple line chart](web-line-chart-small-multiple-all-group-greyed-out.html)
+- how to mix [time series and facetting](web-time-series-and-facetting.html)
 
 <!-- Close container -->
 </div>
@@ -222,5 +247,5 @@ plot_grid(title_theme,
 
 
 ```{r, echo=FALSE}
-htmltools::includeHTML("htmlChunkRelatedRanking.html")
+htmltools::includeHTML("htmlChunkRelatedDistribution.html")
 ```

@@ -1,12 +1,12 @@
 ---
-title: "Grouped line chart with small multiple"
-descriptionMeta: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
-descriptionTop: "This post explains how to build a grouped line chart with small multiples. Each item is the same grouped line chart, with one specific group higlighted each time"
-sectionText: "Line chart section"
-sectionLink: "lollipop-plot.html"
+title: "Triple map into a single chart"
+descriptionMeta: "This guide demonstrates how to combine three maps into a single plot using ggplot2. It provides a detailed, step-by-step explanation with reproducible code to create the chart."
+descriptionTop: "This guide demonstrates how to **combine three maps** into a single plot using [ggplot2](ggplot2-package.html). It provides a detailed, step-by-step explanation with reproducible code to create the chart. It provides a detailed, step-by-step explanation to help you reproduce the chart with ease. We will reference a chart by [Laura Navarro](https://laura-navarro-s.github.io/) that depicts **parking area in Barcelona**."
+sectionText: "Map section"
+sectionLink: "map.html"
 DataToVizText: "Data to Viz"
-DataToVizLink: "data-to-viz.com/graph/lollipop.html"
-url: "web-grouped-line-chart-small-multiple"
+DataToVizLink: "data-to-viz.com/graph/map.html"
+url: "web-triple-map-into-a-single-chart"
 output:
   html_document:
       self_contained: false    
@@ -22,28 +22,17 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
 ```
 
 <div class="container">
 
 
 
-
-# Introduction
-***
-
-
-This plot has been initially published by Abdul Madjid, as a contribution to the [TidyTuesday challenge](https://github.com/AbdoulMa/TidyTuesday/tree/main/2021_w19). 
-
-
-
 # Packages
 ***
 
-The code works pretty much the same way, but it is important to note that the X axis can represent a categorical variable as well. In this case, the lollipop chart is a good replacement of the [barplot](barplot.html).
-
-The [ggtext](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) package allows to customize fonts on the chart. It notably allows to use specific fonts, like `Lato` in this example. You can read more about its usage [here](https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html).
+In order to create this chart, we need to load the **following packages**, as well as some **fonts**:
 
 ```{r thecode2, echo=TRUE, out.width = "100%", fig.height=7}
 # Libraries that we need
@@ -67,7 +56,9 @@ showtext_auto()
 # Dataset
 ***
 
-Description of the dataset
+The data consists of a CSV file containing information about parking areas in Barcelona, which is loaded into a data frame called `data`. The data is then filtered to include **only rows** with `TIPUS_TRAM` equal to "AZL", "VR", or "VM", and the results are stored in the `tram_AZL`, `tram_VR`, and `tram_DUM` data frames, respectively.
+
+Additionally, a **geojson file** containing the boundaries of Barcelona's districts is loaded into a data frame called `districts`.
 
 ```{r}
 data <- read.csv("https://raw.githubusercontent.com/lau-cloud/30DayMapChallenge/main/parking_areas/TRAMS.csv", sep = ",", header = T)
@@ -91,10 +82,12 @@ tram_DUM <- data |>
   filter(TIPUS_TRAM == "DUM")
 ```
 
-# Ridgeline with female names
+# Only one map: blue zone
 ***
 
-```{r}
+We start by creating a single map using the blue zone only. It mainly relies on the `geom_sf()` function from the [sf package](package/sf.html) and the `geom_hex()` function.
+
+```{r, fig.show='hide'}
 mapa_AZL <- ggplot() +
   geom_hex(
     data = tram_AZL, aes(x = LONGITUD_I, y = LATITUD_I),
@@ -126,12 +119,19 @@ mapa_AZL <- ggplot() +
   )
 
 mapa_AZL
+ggsave("img/graph/single-density-map-1.png")
 ```
 
-# Ridgeline with male names
+<center>
+  <img src='img/graph/single-density-map-1.png' width="80%">
+</center>
+
+# Only one map: green zone
 ***
 
-```{r}
+Now we create the same chart but using the **green zone only**. The code is pretty much the same as above:
+
+```{r, fig.show='hide'}
 mapa_VR <- ggplot() +
   geom_hex(
     data = tram_VR, aes(x = LONGITUD_I, y = LATITUD_I),
@@ -162,15 +162,21 @@ mapa_VR <- ggplot() +
     plot.caption = element_text(hjust = 0.5, size = 7, color = "black")
   )
 
-
 mapa_VR
+ggsave("img/graph/single-density-map-2.png")
 ```
 
+<center>
+  <img src='img/graph/single-density-map-2.png' width="80%">
+</center>
 
-# thrid
+
+# Only one map: red zone
 ***
 
-```{r}
+Now we create the same chart but using the **red zone only**. The code is pretty much the same as above:
+
+```{r, fig.show='hide'}
 mapa_DUM <- ggplot() +
   geom_hex(
     data = tram_DUM, aes(x = LONGITUD_I, y = LATITUD_I),
@@ -201,12 +207,19 @@ mapa_DUM <- ggplot() +
   )
 
 mapa_DUM
+ggsave("img/graph/single-density-map-3.png")
 ```
+
+<center>
+  <img src='img/graph/single-density-map-3.png' width="80%">
+</center>
 
 # Combine plots
 ***
 
-```{r}
+Now that we have the charts that we needed, we can **concatenate** them into a single one thanks to the `plot_grid()` function:
+
+```{r, fig.show='hide'}
 # Title
 ggdraw() +
   draw_text("Parking Areas in Barcelona",
@@ -240,7 +253,23 @@ plot_grid(
   ncol = 1,
   rel_heights = c(1, 5, 1)
 )
+ggsave("img/graph/multiple-density-map.png")
 ```
+
+<center>
+  <img src='img/graph/multiple-density-map.png' width="80%">
+</center>
+
+
+# Going further
+***
+
+You might be interested in:
+
+- this beautiful [ridgeline plot](web-ridgeline-plot-with-inside-plot-and-annotations.html) about rental prices
+- how to create a [small multiple line chart](web-line-chart-small-multiple-all-group-greyed-out.html)
+- how to mix [time series and facetting](web-time-series-and-facetting.html)
+
 
 <!-- Close container -->
 </div>
