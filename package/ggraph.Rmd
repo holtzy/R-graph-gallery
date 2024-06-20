@@ -1,0 +1,164 @@
+---
+title: "Visualizing Networks with **ggraph**"
+logo: "ggraph"
+descriptionMeta: "This post explains how to create complex network graphs using the ggraph package in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `ggraph` package in R builds upon the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, enabling advanced **graph and network visualizations**.<br/>This post explores the **key features** of `ggraph` through a series of **graph visualization examples**."
+documentationLink: "ggraph.data-imaginist.com/index.html"
+output:
+  html_document:
+      self_contained: false
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `ggraph` package in R extends the capabilities of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package for creating sophisticated **graph visualizations**.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a rich set of **layouts** and **aesthetic options** that make it easy to represent complex network structures visually.
+
+✍️ **author** &rarr; Thomas Lin Pedersen
+
+📘 **documentation** &rarr; [github](https://ggraph.data-imaginist.com/index.html)
+
+⭐️ *more than 1000 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(ggraph)
+library(tidygraph)
+graph = as_tbl_graph(highschool)
+ggraph(graph) +
+  geom_edge_link() +
+  geom_node_point() +
+  theme_graph(background = 'white')
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `ggraph`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("ggraph")
+```
+
+# Basic usage 
+***
+
+Network graphs requires a special data format based on 2 core components: **nodes** and **edges**.
+
+- **Nodes**: Represent the entities in the network, such as people, organizations, or websites, that we will represent with points. You can think of it as the **vertices** of a graph.
+- **Edges**: Represent the relationships between the nodes, such as friendships, collaborations, or links, that we will represent with lines. Each node can be connected to one or more other nodes.
+
+The `ggraph` package offers a `as_tbl_graph()` function to convert a data frame into a graph object. Once you have a graph object, you can use the `ggraph()` function to create **any type** of graph visualization.
+
+And that's where the magic happens! The `ggraph` package builds upon the `ggplot2` package, enabling you to create **sophisticated graph visualizations**, such as:
+
+- [Chord Diagram](../chord-diagram.html)
+- [Network](../network.html)
+- [Arc Diagram](https://www.data-to-viz.com/graph/arc.html)
+- [Hierarchical Edge Bundling](../hierarchical-edge-bundling.html)
+
+Here's a basic example with the `highschool` dataset and a simple **network** graph:
+
+```{r}
+library(ggraph)
+graph = as_tbl_graph(highschool)
+
+ggraph(graph) +
+  geom_edge_link() +
+  geom_node_point() +
+  theme_graph(background = 'white')
+```
+
+# Key features
+***
+
+## &rarr; Map node color
+You can map **node color** to your graph elements to encode additional data.
+
+Example:
+
+```{r}
+library(ggraph)
+graph <- as_tbl_graph(highschool) |> 
+    mutate(Popularity = centrality_degree(mode = 'in'))
+
+ggraph(graph, layout = 'fr') +
+  geom_edge_link() +
+  geom_node_point(aes(color = Popularity, size=10)) +
+  theme_graph(background = 'white')
+```
+
+## &rarr; Map edge color
+You can also map **edge color** to your graph elements to highlight relationships between nodes.
+
+Example:
+
+```{r}
+library(ggraph)
+graph <- as_tbl_graph(highschool)
+
+ggraph(graph) +
+  geom_edge_link(aes(color = factor(year))) +
+  geom_node_point() +
+  theme_graph(background = 'white')
+```
+
+## &rarr; Circular layout
+The `ggraph` package supports a **circular layout** that can be used to represent network data in a circular form.
+
+Example:
+
+```{r}
+library(ggraph)
+
+ggraph(graph, layout = 'linear', circular = TRUE) + 
+  geom_edge_arc(aes(colour = factor(year))) + 
+  coord_fixed() +
+  theme_graph(background = 'white')
+```
+
+## &rarr; Treemap layout
+The `ggraph` package also supports a **treemap layout** that can be used to represent hierarchical data in a tree structure.
+
+Example:
+
+```{r}
+library(ggraph)
+graph <- tbl_graph(flare$vertices, flare$edges)
+
+ggraph(graph, 'treemap', weight = size) + 
+  geom_node_tile(aes(fill = depth), size = 0.2) +
+  theme_graph(background = 'white')
+```
+
+
+# Gallery of ggraph examples
+***
+
+The gallery is filled with examples that demonstrate the **capabilities** of the `ggraph` package. Each example includes a **detailed explanation** and the corresponding R code.
+
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-4"><div class=portfolio-item><a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Hierarchical edge bundling<hr><p class=explanation_portfolio>Most simple way to create a hierarchical edge bundling</div></div><img alt="" class="img-fluid imgOfPortfolio"src=../img/graph/309-intro-to-hierarchical-edge-bundling.png></a></div></div><div class="portfolio-item col-sm-6 col-md-4"><div class=portfolio-item><a class=portfolio-link href=../334-basic-dendrogram-with-ggraph.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dendogram<hr><p class=explanation_portfolio>Learn how to create a basic dendrogram with ggraph</div></div><img alt="" class="img-fluid imgOfPortfolio"src=../img/graph/334-basic-dendrogram-with-ggraph.png></a></div></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../311-add-labels-to-hierarchical-edge-bundling.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Hierarchical edge bundling</p><hr><p class=explanation_portfolio>A visually appealing way to represent interconnected data.</p></div></div><img alt="Force-directed graph" class="img-fluid imgOfPortfolio"src=../img/graph/311-add-labels-to-hierarchical-edge-bundling.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../314-custom-circle-packing-with-several-levels.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Circle packing<hr><p class=explanation_portfolio>Explore how to create a custom circle packing with several levels.</div></div><img alt="" class="img-fluid imgOfPortfolio"src=../img/graph/314-custom-circle-packing-with-several-levels1.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../315-hide-first-level-in-circle-packing.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Text in circle packing<hr><p class=explanation_portfolio>Learn how to hide the first level of a circle packing anddisplaytext in the circles.</div></div><img alt="Circular graph layout with R and ggplot2" class="img-fluid imgOfPortfolio"src=../img/graph/315-hide-first-level-in-circle-packing2.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><div class=portfolio-item><a class=portfolio-link href=../335-custom-ggraph-dendrogram.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Custom dendrogram<hr><p class=explanation_portfolio>Discover how to create and customize a dendrogram with ggraph</div></div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/335-custom-ggraph-dendrogram.png></a></div></div><div class="portfolio-item col-sm-6 col-md-4"><div class=portfolio-item><a class=portfolio-link href=../339-circular-dendrogram-with-ggraph.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Custom hierarchical edge bundling<hr><p class=explanation_portfolio>Explore how to customize color, shape and size</div></div><img alt="" class="img-fluid imgOfPortfolio"src=../img/graph/339-circular-dendrogram-with-ggraph.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>

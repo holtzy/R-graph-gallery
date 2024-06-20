@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -52,7 +52,10 @@
     />
     <meta
       name="description"
-      content="Map data are stored in a very specific geospatial format in R. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
+      content="Map data in R are stored in a
+specialized geospatial format. This post explores key manipulations you
+might need, including selecting zones, simplifying borders, and
+more."
     />
     <meta
       name="keywords"
@@ -62,11 +65,21 @@
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Geospatial data manipulation in R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:title"
+      content="Geospatial data manipulation in
+R"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
     <meta
       property="og:description"
-      content="Map data are stored in a very specific geospatial format in R. This post describes the most common manipulations you may have to apply: selecting zone, simplifying the borders, and more."
+      content="Map data in R are stored in
+a specialized geospatial format. This post explores key manipulations
+you might need, including selecting zones, simplifying borders, and
+more."
     />
     <meta
       property="og:url"
@@ -108,6 +121,13 @@
       });
     </script>
 
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
@@ -138,10 +158,14 @@
         </ul>
         <center>
           <p style="max-width: 600px; margin-top: 40px">
-            <a href="maps.html">Map data</a> are stored in a very specific
-            geospatial format in <code>R</code>. This post describes the most
-            common manipulations you may have to apply: selecting zone,
-            simplifying the borders, and more.
+            <a href="map.html"><strong>Map data</strong></a> in
+            <code>R</code> is stored in a specialized
+            <strong>geospatial format</strong>: shapefiles. This post explores
+            key manipulations you might need, including
+            <strong>selecting zones</strong>,
+            <strong>simplifying borders</strong>, and more.<br />For an
+            introduction to shapefiles, check
+            <a href="168-load-a-shape-file-into-r.html">this post</a>.
           </p>
         </center>
         <div style="text-align: center">
@@ -175,154 +199,179 @@
     </style>
 
     <div class="container">
-      <h1 id="get-a-geospatial-object">Get a geospatial object</h1>
-      <hr />
-      <p>
-        The region boundaries required to make maps are usually stored in
-        geospatial objects. Those objects can come from
-        <a href="168-load-a-shape-file-into-r.html">shapefiles</a>,
-        <a href="325-background-map-from-geojson-format-in-r.html"
-          >geojson files</a
-        >
-        or provided in a <a href="278-the-maps-library.html">R package</a>. See
-        the <a href="maps.html">map</a> section for possibilities.
-      </p>
-      <p>
-        Let’s get a geospatial object from a shape file available
-        <a href="http://thematicmapping.org/downloads/world_borders.php">here</a
-        >. This step is extensively described in
-        <a href="168-load-a-shape-file-into-r.html">this post</a> in case you’re
-        not familiar with it.
-      </p>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span> , <span class="dt">destfile=</span><span class="st">&quot;DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># You now have it in your current working directory, have a look!</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></a></code></pre>
-      </div>
-      <p><br /></p>
-      <p>And let’s load it in R</p>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Read this shape file with the rgdal library. </span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(rgdal)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">my_spdf &lt;-<span class="st"> </span><span class="kw">readOGR</span>( </a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dsn=</span> <span class="kw">paste0</span>(<span class="kw">getwd</span>(),<span class="st">&quot;/DATA/world_shape_file/&quot;</span>) , </a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">layer=</span><span class="st">&quot;TM_WORLD_BORDERS_SIMPL-0.3&quot;</span>,</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">verbose=</span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># -- &gt; Now you have a Spdf object (spatial polygon data frame). You can start doing maps!</span></a></code></pre>
-      </div>
-      <h1 id="select">Select a region</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            You can filter the geospatial object to plot only a subset of the
-            regions. The following code keeps only Africa and plot it.
-          </p>
+      <div id="get-a-geospatial-object" class="section level1">
+        <h1>Get a geospatial object</h1>
+        <hr />
+        <p>
+          The region boundaries required to make maps are usually stored in
+          <strong>geospatial objects</strong>. Those objects can come from
+          <a href="168-load-a-shape-file-into-r.html">shapefiles</a>,
+          <a href="325-background-map-from-geojson-format-in-r.html"
+            >geojson files</a
+          >
+          or provided in a <a href="278-the-maps-library.html">R package</a>.
+          See the <a href="map.html">map</a> section for possibilities.
+        </p>
+        <p>
+          Let’s get a geospatial object from a shape file available
+          <a href="http://thematicmapping.org/downloads/world_borders.php"
+            >here</a
+          >. This step is extensively described in
+          <a href="168-load-a-shape-file-into-r.html">this post</a> in case
+          you’re not familiar with it.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">destfile =</span> <span class="st">&quot;DATA/world_shape_file.zip&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># You now have it in your current working directory, have a look!</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">system</span>(<span class="st">&quot;unzip DATA/world_shape_file.zip&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#  -- &gt; You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)</span></span></code></pre>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode4-1.png"
-              width="100%"
-            />
-          </p>
+        <p><br /></p>
+        <p>And let’s load it in R</p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Read this shape file with the sf library.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">file.path</span>(<span class="fu">getwd</span>(), <span class="st">&quot;/DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># -- &gt; Now you have a sf object (simple feature data frame). You can start doing maps!</span></span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Keep only data concerning Africa</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">africa &lt;-<span class="st"> </span>my_spdf[my_spdf<span class="op">@</span>data<span class="op">$</span>REGION<span class="op">==</span><span class="dv">2</span> , ]</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># Plot africa</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">plot</span>(africa , <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">20</span>,<span class="dv">60</span>) , <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">40</span>,<span class="dv">35</span>), <span class="dt">col=</span><span class="st">&quot;steelblue&quot;</span>, <span class="dt">lwd=</span><span class="fl">0.5</span> )</a></code></pre>
-      </div>
-      <h1 id="simplify">Simplify the geospatial object</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            It’s a common task to <em>simplify</em> the geospatial object.
-            Basically, it decreases the border precision which results in a
-            lighter object that will be plotted faster.
-          </p>
-          <p>
-            The <code>rgeos</code> package offers the
-            <code>gSimplify()</code> function to makes the simplification. Play
-            with the <code>tol</code> argument to control simplification rate.
-          </p>
+      <div id="select" class="section level1">
+        <h1>Select a region</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              You can filter the geospatial object to plot only a subset of the
+              regions. The following code keeps only Africa and plot it.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode4-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode6-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Simplification with rgeos</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(<span class="st">&quot;rgeos&quot;</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">africaSimple &lt;-<span class="st"> </span><span class="kw">gSimplify</span>(africa, <span class="dt">tol =</span> <span class="dv">4</span>, <span class="dt">topologyPreserve =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Plot it</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">plot</span>(africaSimple , <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">20</span>,<span class="dv">60</span>) , <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">40</span>,<span class="dv">35</span>), <span class="dt">col=</span><span class="st">&quot;#59b2a3&quot;</span>, <span class="dt">lwd=</span><span class="fl">0.5</span> )</a></code></pre>
-      </div>
-      <h1 id="centroid">Compute region centroid</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            Another common task is to compute the centroid of each region to add
-            labels. This is doable using the <code>gCentroid()</code> function
-            of the <code>rgeos</code> package.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode7-1.png"
-              width="100%"
-            />
-          </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Keep only data concerning Africa</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>africa <span class="ot">&lt;-</span> my_sf[my_sf<span class="sc">$</span>REGION <span class="sc">==</span> <span class="dv">2</span>, ]</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Plot africa</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">35</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">lwd =</span> <span class="fl">0.5</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>)</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb5">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Load the rgeos library</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(rgeos)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># The gCentroid function computes the centroid of each region:</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co"># gCentroid(africa, byid=TRUE)</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co"># select big countries only</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">africaBig &lt;-<span class="st"> </span>africa[<span class="kw">which</span>(africa<span class="op">@</span>data<span class="op">$</span>AREA<span class="op">&gt;</span><span class="dv">75000</span>), ]</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="co"># Small manipulation to put it in a dataframe:</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">centers &lt;-<span class="st"> </span><span class="kw">cbind.data.frame</span>(<span class="kw">data.frame</span>(<span class="kw">gCentroid</span>(africaBig, <span class="dt">byid=</span><span class="ot">TRUE</span>), <span class="dt">id=</span>africaBig<span class="op">@</span>data<span class="op">$</span>FIPS))</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co"># Show it on the map?</span></a>
-<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="kw">plot</span>(africa , <span class="dt">xlim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">20</span>,<span class="dv">60</span>) , <span class="dt">ylim=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">40</span>,<span class="dv">35</span>), <span class="dt">lwd=</span><span class="fl">0.5</span> )</a>
-<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="kw">text</span>(centers<span class="op">$</span>x, centers<span class="op">$</span>y, centers<span class="op">$</span>id, <span class="dt">cex=</span>.<span class="dv">9</span>, <span class="dt">col=</span><span class="st">&quot;#69b3a2&quot;</span>)</a></code></pre>
+      <div id="simplify" class="section level1">
+        <h1>Simplify the geospatial object</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              It’s a common task to <em>simplify</em> the geospatial object.
+              Basically, it decreases the border precision which results in a
+              lighter object that will be plotted faster.
+            </p>
+            <p>
+              The <code>rmapshaper</code> package offers the
+              <code>ms_simplify()</code> function to makes the simplification.
+              Play with the <code>keep</code> argument to control simplification
+              rate.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode6-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Simplification with rmapshaper</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;rmapshaper&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>africaSimple <span class="ot">&lt;-</span> <span class="fu">ms_simplify</span>(africa, <span class="at">keep =</span> <span class="fl">0.01</span>, <span class="at">keep_shapes =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Plot it</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africaSimple),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">35</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;#59b2a3&quot;</span>, <span class="at">lwd =</span> <span class="fl">0.5</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span></code></pre>
+        </div>
       </div>
-      <!-- Close container -->
+      <div id="centroid" class="section level1">
+        <h1>Compute region centroid</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              Another common task is to compute the centroid of each region to
+              add labels. This is doable using the
+              <code>st_centroid()</code> function of the
+              <code>sf</code> package.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="169-170-basic-manipulation-of-shapefiles_files/figure-html/thecode7-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># The st_centroid function computes the centroid of each region:</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># st_centroid(africa, of_largest_polygon = TRUE)</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># select big countries only</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>africaBig <span class="ot">&lt;-</span> africa[<span class="fu">which</span>(africa<span class="sc">$</span>AREA <span class="sc">&gt;</span> <span class="dv">75000</span>), ]</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>centroids <span class="ot">&lt;-</span> <span class="fu">st_centroid</span>(africaBig, <span class="at">of_largest_polygon =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co"># Small manipulation to add coordinates as columns</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>centers <span class="ot">&lt;-</span> <span class="fu">cbind</span>(centroids, <span class="fu">st_coordinates</span>(centroids))</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co"># Show it on the map</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(africa), <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>, <span class="dv">60</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>, <span class="dv">35</span>), <span class="at">lwd =</span> <span class="fl">0.5</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="fu">text</span>(centers<span class="sc">$</span>X, centers<span class="sc">$</span>Y, centers<span class="sc">$</span>FIPS, <span class="at">cex =</span> .<span class="dv">9</span>, <span class="at">col =</span> <span class="st">&quot;#69b3a2&quot;</span>)</span></code></pre>
+        </div>
+      </div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>This post explains how to manipulate geospatial objects in R.</p>
+        <p>
+          You might be interested in creating a
+          <a href="choropleth-map.html">choropleth map</a> or a
+          <a href="bubble-map.html">bubble map</a> with this object.
+        </p>
+        <!-- Close container -->
+      </div>
     </div>
     <!-- ============================ RELATED SECTION ============================ -->
     <section
@@ -423,7 +472,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -435,31 +483,18 @@
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>

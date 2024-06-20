@@ -1,0 +1,191 @@
+---
+title: "Plot and manipulate geographic features with **sf**"
+logo: "sf"
+descriptionMeta: "The sf package in R specializes in geospatial visualization, offering streamlined access to geographic features like points, lines, and polygons, and more generally to create maps."
+descriptionTop: "The `sf` package in R specializes in **geospatial visualization**, offering streamlined access to **geographic features** like points, lines, and polygons, and more generally to create maps."
+documentationLink: "r-spatial.github.io/sf/index.html"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE,
+  message=FALSE,
+  fig.align='center'
+)
+```
+
+<div class="container">
+
+# Quick start
+***
+
+In just a few lines of code, you can create stunning visualizations with the `sf` package in R. What's more, `sf` lets you create maps from almost **any data format**, such as [shapefiles](../168-load-a-shape-file-into-r.html) or [geojson](../325-background-map-from-geojson-format-in-r.html). You can learn more about geographical data in the [map section](../map.html).
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+This package offers a large variety of functions to manipulate and visualize [geographic data](../map.html). The main steps usually are:
+
+- create a **geospatial object** with `st_read()` or `read_sf()`
+
+- **filter**, **transform**, and **manipulate** the object for your needs
+
+- **plot the object** with `plot()` or with [ggplot2](../ggplot2-package.html)
+
+✍️ **author** &rarr; Edzer Pebesma
+
+📘 **documentation** &rarr; [github](https://r-spatial.github.io/sf/index.html)
+
+⭐️ *more than 1000 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(sf)
+nc <- st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+plot(nc[1])
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `sf`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("sf")
+```
+
+# Basic usage 
+***
+
+The `sf` package is shipped with the `nc` dataset, which contains the boundaries of North Carolina.
+
+Here's a basic example of how to plot the first feature of the `nc` dataset:
+
+```{r}
+library(sf)
+nc <- st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+plot(st_geometry(nc), col = "lightblue", border = "black", lwd = 1.2, main = "North Carolina")
+```
+
+# Key features
+***
+
+## &rarr; Choropleth Maps
+
+The `sf` package allows you to create [choropleth maps](../choropleth-map.html) with ease.
+
+Simply use the `geom_sf()` function with [ggplot2](../ggplot2-package.html) to create a [choropleth map](../choropleth-map.html) of your geographic data.
+
+You can **customize** the map by specifying the `fill` aesthetic and the **color palette** using the `scale_fill_viridis_c()` function
+
+Example:
+
+```{r}
+library(sf)
+library(ggplot2)
+
+# Read the shapefile
+nc = st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+
+# Create the plot using ggplot2
+ggplot() +
+  geom_sf(data = nc, aes(fill = AREA)) +
+  scale_fill_viridis_c() +
+  ggtitle('Choropleth Map of North Carolina') +
+  theme_minimal()
+```
+
+<br>
+
+## &rarr; Graticules
+
+Graticules are lines of latitude and longitude that help you orient yourself on a [map](../map.html). You can add graticules to your map using the `plot()` function.
+
+Example:
+
+```{r fig.width=8}
+library(maps)
+library(sf)
+library(ggplot2)
+library(patchwork)
+
+# create a map of the USA
+usa = st_as_sf(map('usa', plot = FALSE, fill = TRUE))
+laea = st_crs("+proj=laea +lat_0=30 +lon_0=-95") # Lambert equal area projection
+usa2 <- st_transform(usa, laea)
+
+# create ggplot objects with graticules
+p1 = ggplot(data = usa) + 
+  geom_sf() + 
+  theme_minimal()
+
+p2 = ggplot(data = usa2) + 
+  geom_sf() + 
+  theme_minimal()
+
+# combine plots with patchwork
+p1 + p2
+```
+
+<br>
+
+## &rarr; Compute and plot centroids
+
+You can compute and plot the **centroids** of your geographic features using the `st_centroid()` function.
+
+*Caution: Centroids serve merely as an approximation of a polygon's "center" and may not always provide meaningful or accurate insights.*
+
+Example:
+
+```{r}
+library(sf)
+library(ggplot2)
+
+# Read the shapefile
+nc = st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE)
+ncg = st_geometry(nc)
+cntrd = st_centroid(ncg)
+
+# Create the plot using ggplot2
+ggplot() +
+  geom_sf(data = ncg, fill = NA, color = 'grey') +
+  geom_sf(data = cntrd, color = 'red', shape = 8, size = 2) +
+  ggtitle('Centroids of North Carolina') +
+  theme_minimal()
+```
+
+<br>
+
+## &rarr; What's more?
+
+While `sf` is not a data visualization package per se, it provides extensive functionalities for handling and [visualizing geographic data](../map.html). This includes:
+
+- **Creating a geospatial object** using `st_read()` or `read_sf()` from virtually any file format.
+- **Filtering**, **transforming**, and **manipulating** the geospatial object to suit your specific requirements.
+- Enhancing your visualizations by integrating with other packages, such as [ggplot2](../ggplot2-package.html).
+
+Explore the capabilities of `sf` below!
+
+
+# Gallery of sf examples
+***
+
+The gallery is **filled** with examples of how to use the `sf` package to create stunning visualizations. Dive in and discover the possibilities!
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div class=row id=portfolio-items> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../168-load-a-shape-file-into-r.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Basic world map <hr> <p class=explanation_portfolio>Most simple world map with R </div> </div><img alt="venn diagram" class="img-fluid imgOfPortfolio" src=../img/graph/168-load-a-shape-file-into-r.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../331-basic-cartogram.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Cartogram of Africa <hr> <p class=explanation_portfolio>How to build a cartogram of a specific region </div> </div><img alt="heatmap" class="img-fluid imgOfPortfolio" src=../img/graph/331-basic-cartogram4.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../331-basic-cartogram.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Cartogram of Africa <hr> <p class=explanation_portfolio>How to build a cartogram of a specific region </div> </div><img alt="heatmap" class="img-fluid imgOfPortfolio" src=../img/graph/331-basic-cartogram3.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../169-170-basic-manipulation-of-shapefiles.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Label in each sub region <hr> <p class=explanation_portfolio>Discover how to add a label in selected sub regions </div> </div><img alt="pie plot" class="img-fluid imgOfPortfolio" src=../img/graph/169-170-basic-manipulation-of-shapefiles3.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"> <a class=portfolio-link href=../328-hexbin-map-of-the-usa.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hexbin map   <hr> <p class=explanation_portfolio>Learn how to build a hexbin map of the USA </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/328-hexbin-map-of-the-usa2.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"> <a class=portfolio-link href=../328-hexbin-map-of-the-usa.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hexbin + Choropleth <hr> <p class=explanation_portfolio>How to build a hexbin map with a choropleth map </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/328-hexbin-map-of-the-usa3.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"> <a class=portfolio-link href=../328-hexbin-map-of-the-usa.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hexbin map <hr> <p class=explanation_portfolio>Advanced example of a hexbin map </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/328-hexbin-map-of-the-usa4.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"> <a class=portfolio-link href=../332-hexbin-chloropleth-cartogram.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hexbin + Chloropleth + Cartogram <hr> <p class=explanation_portfolio>How to build a hexbin map with a choropleth map AND a cartogram </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/332-hexbin-chloropleth-cartogram4.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"> <a class=portfolio-link href=../web-choropleth-map-lego-style.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Choropleth map <hr> <p class=explanation_portfolio>Discover how to build a choropleth map with a lego style </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/web-choropleth-map-lego-style.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"> <a class=portfolio-link href=../web-dorling-cartogram-with-R.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Bubble map   <hr> <p class=explanation_portfolio>Discover to build a bubble map with R </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/web-dorling-cartogram-with-R.png> </a></div> <div class="portfolio-item col-sm-6 col-md-8"> <a class=portfolio-link href=../web-valued-dots-map-bertin.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Dot map   <hr> <p class=explanation_portfolio>France map in the style of Jacques Bertin </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-valued-dots-map-bertin.png> </a></div> </div> </div> </div> </section>
+
+<!-- Close container -->
+</div>

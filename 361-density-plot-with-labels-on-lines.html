@@ -43,17 +43,19 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Density plot with labels on
-lines &#8211; the R Graph Gallery</title>
+    <title>Density plot with labels on lines &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to add a
+    <meta
+      name="description"
+      content="This post explains how to add a
 text or labels on the line of a density chart. It uses the ggplot2 and
-geomtextpath packages." />
+geomtextpath packages."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,12 +64,21 @@ geomtextpath packages." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Density plot with labels on
-lines" />
-    <meta property="og:image" content="img/overview_RGG.png" />
-    <meta property="og:description" content="This post explains how to
+    <meta
+      property="og:title"
+      content="Density plot with labels on
+lines"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="This post explains how to
 add a text or labels on the line of a density chart. It uses the ggplot2
-and geomtextpath packages." />
+and geomtextpath packages."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/361-density-plot-with-labels-on-lines.html.html"
@@ -108,6 +119,13 @@ and geomtextpath packages." />
       });
     </script>
 
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
@@ -137,13 +155,18 @@ and geomtextpath packages." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to add a text or labels on the line of a density chart. It
-uses the <a
-href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a> and
-<a
-href="https://www.r-graph-gallery.com/package/geomtextpath.html">geomtextpath</a>
-packages for creating the chart and making it nice.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to add a text or labels on the line of a
+            density chart. It uses the
+            <a href="https://r-graph-gallery.com/ggplot2-package.html"
+              >ggplot2</a
+            >
+            and
+            <a href="https://www.r-graph-gallery.com/package/geomtextpath.html"
+              >geomtextpath</a
+            >
+            packages for creating the chart and making it nice.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -168,7 +191,6 @@ packages for creating the chart and making it nice.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -177,204 +199,257 @@ packages for creating the chart and making it nice.</p>
     </style>
 
     <div class="container">
-<div id="package" class="section level1">
-<h1>Package</h1>
-<hr />
-<p>For this post, we need the <a
-href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a> and
-<a
-href="https://www.r-graph-gallery.com/package/geomtextpath.html">geomtextpath</a>
-packages.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install the packages if not already done</span></span>
+      <div id="package" class="section level1">
+        <h1>Package</h1>
+        <hr />
+        <p>
+          For this post, we need the
+          <a href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+          and
+          <a href="https://www.r-graph-gallery.com/package/geomtextpath.html"
+            >geomtextpath</a
+          >
+          packages.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install the packages if not already done</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># install.packages(&quot;ggplot2&quot;)</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># install.packages(&quot;geomtextpath&quot;)</span></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Load the package</span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(geomtextpath)</span></code></pre></div>
-</div>
-<div id="default-density-chart-in-ggplot2" class="section level1">
-<h1>Default density chart in ggplot2</h1>
-<hr />
-<div class="row">
-<div class="col-md-12 col-sm-12 align-self-center">
-<p>Here’s what the default density chart output looks like with
-<code>ggplot2</code>:</p>
-</div>
-<div class="col-md-12 col-sm-12">
-<p><img src="361-density-plot-with-labels-on-lines_files/figure-html/thecode2-1.png" width="100%" /></p>
-</div>
-</div>
-</div>
-<div id="add-labels" class="section level1">
-<h1>Add labels</h1>
-<hr />
-<div class="row">
-<div class="col-md-12 col-sm-12 align-self-center">
-<p>With the <code>geom_textdensity()</code> function (inspired from the
-<code>geom_density()</code> func from <a
-href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>), we
-can add the label of species directly on each density line.</p>
-</div>
-<div class="col-md-12 col-sm-12">
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(geomtextpath)</span></code></pre>
+        </div>
+      </div>
+      <div id="default-density-chart-in-ggplot2" class="section level1">
+        <h1>Default density chart in ggplot2</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-12 col-sm-12 align-self-center">
+            <p>
+              Here’s what the default density chart output looks like with
+              <code>ggplot2</code>:
+            </p>
+          </div>
+          <div class="col-md-12 col-sm-12">
+            <p>
+              <img
+                src="361-density-plot-with-labels-on-lines_files/figure-html/thecode2-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+      <div id="add-labels" class="section level1">
+        <h1>Add labels</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-12 col-sm-12 align-self-center">
+            <p>
+              With the <code>geom_textdensity()</code> function (inspired from
+              the <code>geom_density()</code> func from
+              <a href="https://r-graph-gallery.com/ggplot2-package.html"
+                >ggplot2</a
+              >), we can add the label of species directly on each density line.
+            </p>
+          </div>
+          <div class="col-md-12 col-sm-12">
+            <div class="sourceCode" id="cb2">
+              <pre
+                class="sourceCode r"
+              ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x =</span> Sepal.Length, <span class="at">colour =</span> Species, <span class="at">label =</span> Species)) <span class="sc">+</span></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">geom_textdensity</span>() <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">&#39;none&#39;</span>)</span></code></pre></div>
-<p><img src="361-density-plot-with-labels-on-lines_files/figure-html/thecode3-1.png" width="100%" /></p>
-</div>
-</div>
-</div>
-<div id="change-texts-properties" class="section level1">
-<h1>Change texts properties</h1>
-<hr />
-<div class="row">
-<div class="col-md-12 col-sm-12 align-self-center">
-<p>The <code>geom_textdensity()</code> can take multiple arguments in
-order to change the properties of the labels:</p>
-<ul>
-<li><p><code>size</code>: size of the text</p></li>
-<li><p><code>fontface</code>: style of the font</p></li>
-<li><p><code>vjust</code>: vertical adjustment</p></li>
-<li><p><code>hjust</code>: horizontal adjustment</p></li>
-</ul>
-<p>The 2 last arguments can either be float (generally <strong>between
--1 and 1</strong>) or string such as <code>xmid</code> (or
-<code>ymid</code>), <code>xmax</code> (or <code>ymax</code>) and
-<code>auto</code> (default).</p>
-</div>
-<div class="col-md-12 col-sm-12">
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">&#39;none&#39;</span>)</span></code></pre>
+            </div>
+            <p>
+              <img
+                src="361-density-plot-with-labels-on-lines_files/figure-html/thecode3-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+      <div id="change-texts-properties" class="section level1">
+        <h1>Change texts properties</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-12 col-sm-12 align-self-center">
+            <p>
+              The <code>geom_textdensity()</code> can take multiple arguments in
+              order to change the properties of the labels:
+            </p>
+            <ul>
+              <li>
+                <p><code>size</code>: size of the text</p>
+              </li>
+              <li>
+                <p><code>fontface</code>: style of the font</p>
+              </li>
+              <li>
+                <p><code>vjust</code>: vertical adjustment</p>
+              </li>
+              <li>
+                <p><code>hjust</code>: horizontal adjustment</p>
+              </li>
+            </ul>
+            <p>
+              The 2 last arguments can either be float (generally
+              <strong>between -1 and 1</strong>) or string such as
+              <code>xmid</code> (or <code>ymid</code>), <code>xmax</code> (or
+              <code>ymax</code>) and <code>auto</code> (default).
+            </p>
+          </div>
+          <div class="col-md-12 col-sm-12">
+            <div class="sourceCode" id="cb3">
+              <pre
+                class="sourceCode r"
+              ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>mtcars<span class="sc">$</span>labels <span class="ot">=</span> <span class="fu">ifelse</span>(mtcars<span class="sc">$</span>vs<span class="sc">==</span><span class="dv">0</span>, <span class="st">&quot;Type 0&quot;</span>, <span class="st">&quot;Type 1&quot;</span>)</span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> qsec, <span class="at">colour =</span> <span class="fu">as.factor</span>(labels), <span class="at">label =</span> <span class="fu">as.factor</span>(labels))) <span class="sc">+</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">geom_textdensity</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">fontface =</span> <span class="dv">4</span>, <span class="co"># size of 6, bold italic</span></span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                   <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">hjust =</span> <span class="st">&quot;ymid&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">&#39;none&#39;</span>)</span></code></pre></div>
-<p><img src="361-density-plot-with-labels-on-lines_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-</div>
-</div>
-</div>
-<div id="conclusion" class="section level1">
-<h1>Conclusion</h1>
-<hr />
-<p>In this post, we look at how to use the <a
-href="https://www.r-graph-gallery.com/package/geomtextpath.html">geomtexpath</a>
-package to <strong>create density plot with text</strong>. To find out
-more about how to customize a density plot, see the <a
-href="https://r-graph-gallery.com/density-plot.html">dedicated
-section</a>.</p>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section
-  class="bg-light"
-  id="portfolio_landing"
-  style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
->
-  <div class="container">
-    <p class="mySeryTitle">Related chart types</p>
-    <hr />
-    <div class="row">
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link" href="scatterplot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">&#39;none&#39;</span>)</span></code></pre>
             </div>
+            <p>
+              <img
+                src="361-density-plot-with-labels-on-lines_files/figure-html/unnamed-chunk-2-1.png"
+                width="672"
+              />
+            </p>
           </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/ScatterPlot150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Scatter</div>
+        </div>
       </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link" href="heatmap.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/Heatmap150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Heatmap</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link" href="correlogram.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/Correlogram150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Correlogram</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link" href="bubble-chart.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/BubblePlot150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Bubble</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link" href="connected-scatterplot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/ScatterConnected150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Connected scatter</div>
-      </div>
-      <div
-        class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata"
-      >
-        <a class="portfolio-link" href="2d-density-chart.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img
-            class="img-fluid"
-            src="https://www.r-graph-gallery.com/img/section/2dDensity150.png"
-            alt=""
-          />
-        </a>
-        <div class="captionPortfolio">Density 2d</div>
+      <div id="conclusion" class="section level1">
+        <h1>Conclusion</h1>
+        <hr />
+        <p>
+          In this post, we look at how to use the
+          <a href="https://www.r-graph-gallery.com/package/geomtextpath.html"
+            >geomtexpath</a
+          >
+          package to <strong>create density plot with text</strong>. To find out
+          more about how to customize a density plot, see the
+          <a href="https://r-graph-gallery.com/density-plot.html"
+            >dedicated section</a
+          >.
+        </p>
+        <!-- Close container -->
       </div>
     </div>
-  </div>
-</section> 
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="scatterplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/ScatterPlot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Scatter</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="heatmap.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/Heatmap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Heatmap</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="correlogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/Correlogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Correlogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/BubblePlot150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connected-scatterplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/ScatterConnected150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connected scatter</div>
+          </div>
+          <div
+            class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata"
+          >
+            <a class="portfolio-link" href="2d-density-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/2dDensity150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Density 2d</div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -386,31 +461,18 @@ section</a>.</p>
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>
@@ -506,18 +568,18 @@ section</a>.</p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

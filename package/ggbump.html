@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Create bumbplot with <strong>ggbump</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to use the
+ggbump package, allowing to create bump charts with R. It provides
+several reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Create bumbplot with
+<strong>ggbump</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+use the ggbump package, allowing to create bump charts with R. It
+provides several reproducible examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Create bumbplot with <strong>ggbump</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>ggbump</code> package in R is an
+extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of building bump
+plots.<br/>This post showcases the <strong>key features</strong> of
+<code>ggbump</code> and provides a set of <strong>graph
+examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/davidsjoberg/ggbump"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/ggbump.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{ggbump}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>ggbump</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to create <strong>bump plots</strong>, which is a
+variant of the <a href="../parallel-plot.html">parallel coordinates
+plot</a></p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a <code>geom_bump()</code> function that creates bump plots
+with <a href="../ggplot2-package.html">ggplot2</a>. The package is
+particularly useful for visualizing <strong>ranked data</strong> and
+<strong>ranking changes</strong> over time.</p>
+<p>✍️ <strong>author</strong> → David Sjoberg</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://github.com/davidsjoberg/ggbump/">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<p><img src="ggbump_files/figure-html/unnamed-chunk-1-1.png" width="85%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>ggbump</code>, you can install it directly
+from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ggbump&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>We start by creating a simple dataset with three columns:
+<code>year</code>, <code>revenue</code>, and <code>company</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>year <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">2019</span><span class="sc">:</span><span class="dv">2021</span>, <span class="dv">3</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>revenue <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="dv">150</span>, <span class="dv">250</span>, <span class="dv">100</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="dv">200</span>, <span class="dv">300</span>, <span class="dv">400</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>company <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="st">&quot;Company A&quot;</span>, <span class="st">&quot;Company A&quot;</span>, <span class="st">&quot;Company A&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="st">&quot;Company B&quot;</span>, <span class="st">&quot;Company B&quot;</span>, <span class="st">&quot;Company B&quot;</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="st">&quot;Company C&quot;</span>, <span class="st">&quot;Company C&quot;</span>, <span class="st">&quot;Company C&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">year =</span> year,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">revenue =</span> revenue,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">company =</span> company</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>)</span></code></pre></div>
+<p>Next, we create a <code>ggplot</code> object using the
+<code>df</code> dataset and the <code>geom_bump</code> function from
+<code>ggbump</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> revenue, <span class="at">color =</span> company)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">geom_bump</span>()</span></code></pre></div>
+<p><img src="ggbump_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="individual-points" class="section level2">
+<h2>→ Individual points</h2>
+<p>You can easily combine <code>geom_bump()</code> with
+<code>geom_point()</code> to display individual points on the plot.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> revenue, <span class="at">color =</span> company)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_bump</span>(<span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">5</span>)</span></code></pre></div>
+<p><img src="ggbump_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="custom-style" class="section level2">
+<h2>→ Custom style</h2>
+<p><code>ggbump</code> allows you to <strong>customize the
+appearance</strong> of your bump plot using various arguments and
+ggplot2 themes.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> revenue, <span class="at">color =</span> company)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">geom_bump</span>(<span class="at">size=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Accent&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="ggbump_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="gallery-of-ggbump-examples" class="section level1">
+<h1>Gallery of ggbump examples</h1>
+<hr />
+<p>The examples from the gallery will help you understand the
+capabilities of the <code>ggbump</code> package and <strong>how to use
+it</strong> in concrete cases.</p>
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=../408-basic-bump-plot.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Most basic bump plot
+<hr>
+<p class=explanation_portfolio>
+How to build a simple bump plot with ggplot2.
+</div>
+</div>
+<img alt="Dumbell chart with gap column on the right" class="img-fluid imgOfPortfolio" src=../img/graph/408-basic-bump-plot-1.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=../409-customize-bump-plot.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Customize bump plot
+<hr>
+<p class=explanation_portfolio>
+Learn how to change colors and add individual points to a bump plot.
+</div>
+</div>
+<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/409-customize-bump-plot-1.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=../409-customize-bump-plot.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Labels and annotations
+<hr>
+<p class=explanation_portfolio>
+Discover how to add labels and annotations to a bump plot.
+</div>
+</div>
+<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/409-customize-bump-plot-2.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-6">
+<a class=portfolio-link href=../web-bump-plot-with-highlights.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Highlight specific lines
+<hr>
+<p class=explanation_portfolio>
+Learn how to highlight specific lines in a bump plot.
+</div>
+</div>
+<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/web-bump-plot-with-highlights.png>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>

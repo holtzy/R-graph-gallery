@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>
+      Change and customize circles and rectangles on a leaflet map &#8211; the R
+      Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="How to change and customize
+circles and rectangles on a leaflet map. Three examples are provided:
+basic circle, custom circle and circle with size that change when you
+zoom. Step by step explanation with reproducible code."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Change and customize circles and
+rectangles on a leaflet map"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="How to change and customize
+circles and rectangles on a leaflet map. Three examples are provided:
+basic circle, custom circle and circle with size that change when you
+zoom. Step by step explanation with reproducible code."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/182-add-circles-rectangles-on-leaflet-map.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center>
+          <h1>Change and customize circles and rectangles on a leaflet map</h1>
+        </center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            Learn how to change and customize circles and rectangles on a
+            <code>leaflet</code> map. Three examples are provided:
+            <strong>basic</strong> circle, <strong>custom</strong> circle and
+            circle with <strong>size that change</strong> when you zoom.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="map.html"
+            >Background map section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/map.html"
+            >About Maps</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+      <div id="list-of-tiles" class="section level1">
+        <h1>List of tiles</h1>
+        <hr />
+        <p>
+          Let’s start with basic circle (default propose by
+          <code>leaflet</code>). Please note that since we use here the
+          <code>addCircleMarkers()</code> function, the
+          <strong>size of the circle</strong> are set in pixels. It means that
+          markers will keep always the <strong>same size</strong>, even when you
+          zoom in or out!
+        </p>
+        <p>
+          See below in order to find how to change the size of the circle,
+          <strong>dynamically or not</strong>.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#library</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a> </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Create 20 markers (Random points)</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>   <span class="at">long=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>,<span class="dv">150</span>),<span class="dv">20</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>   <span class="at">lat=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">50</span>,<span class="dv">50</span>),<span class="dv">20</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>   <span class="at">val=</span><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>   <span class="at">name=</span><span class="fu">paste</span>(<span class="st">&quot;point&quot;</span>,letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>) </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a> </span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Show a circle at each position</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">leaflet</span>(<span class="at">data =</span> data) <span class="sc">%&gt;%</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>   <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>   <span class="fu">addCircleMarkers</span>(<span class="sc">~</span>long, <span class="sc">~</span>lat , <span class="at">popup =</span> <span class="sc">~</span><span class="fu">as.character</span>(name))</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>m</span></code></pre>
+        </div>
+        <div
+          class="leaflet html-widget html-fill-item"
+          id="htmlwidget-7e391aa6168e476d5713"
+          style="width: 672px; height: 480px"
+        ></div>
+        <script
+          type="application/json"
+          data-for="htmlwidget-7e391aa6168e476d5713"
+        >
+          {
+            "x": {
+              "options": {
+                "crs": {
+                  "crsClass": "L.CRS.EPSG3857",
+                  "code": null,
+                  "proj4def": null,
+                  "projectedBounds": null,
+                  "options": {}
+                }
+              },
+              "calls": [
+                {
+                  "method": "addTiles",
+                  "args": [
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    null,
+                    null,
+                    {
+                      "minZoom": 0,
+                      "maxZoom": 18,
+                      "tileSize": 256,
+                      "subdomains": "abc",
+                      "errorTileUrl": "",
+                      "tms": false,
+                      "noWrap": false,
+                      "zoomOffset": 0,
+                      "zoomReverse": false,
+                      "opacity": 1,
+                      "zIndex": 1,
+                      "detectRetina": false,
+                      "attribution": "&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"
+                    }
+                  ]
+                },
+                {
+                  "method": "addCircleMarkers",
+                  "args": [
+                    [
+                      -24, 25, 20, -19, 26, -26, 45, 49, 6, -49, -7, -28, -4,
+                      29, -38, 50, -34, 17, 13, 44
+                    ],
+                    [
+                      -113, 104, -133, -77, 81, 138, 61, -148, 33, -102, 125, 2,
+                      60, 144, -108, -60, -115, -94, 71, 31
+                    ],
+                    10,
+                    null,
+                    null,
+                    {
+                      "interactive": true,
+                      "className": "",
+                      "stroke": true,
+                      "color": "#03F",
+                      "weight": 5,
+                      "opacity": 0.5,
+                      "fill": true,
+                      "fillColor": "#03F",
+                      "fillOpacity": 0.2
+                    },
+                    null,
+                    null,
+                    [
+                      "point_a",
+                      "point_b",
+                      "point_c",
+                      "point_d",
+                      "point_e",
+                      "point_f",
+                      "point_g",
+                      "point_h",
+                      "point_i",
+                      "point_j",
+                      "point_k",
+                      "point_l",
+                      "point_m",
+                      "point_n",
+                      "point_o",
+                      "point_p",
+                      "point_q",
+                      "point_r",
+                      "point_s",
+                      "point_t"
+                    ],
+                    null,
+                    null,
+                    {
+                      "interactive": false,
+                      "permanent": false,
+                      "direction": "auto",
+                      "opacity": 1,
+                      "offset": [0, 0],
+                      "textsize": "10px",
+                      "textOnly": false,
+                      "className": "",
+                      "sticky": true
+                    },
+                    null
+                  ]
+                }
+              ],
+              "limits": { "lat": [-49, 50], "lng": [-148, 144] }
+            },
+            "evals": [],
+            "jsHooks": []
+          }
+        </script>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># saveWidget(m, file=&quot;HtmlWidget/leaflet-182-add-circles.html&quot;, selfcontained = F)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/leaflet-182-add-circles.html"
+            width="100%"
+            height="400"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div id="custom-circles" class="section level1">
+        <h1>Custom circles</h1>
+        <hr />
+        <p>
+          It is possible to custom the circles. Really helpful since it permits
+          to change it <strong>following the value of a variable</strong> from
+          the dataset. Here, the size of the circle is defined by the
+          <code>val</code>
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Create 20 markers (Random points)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>   <span class="at">long=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>,<span class="dv">150</span>),<span class="dv">20</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>   <span class="at">lat=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">50</span>,<span class="dv">50</span>),<span class="dv">20</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>   <span class="at">val=</span><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>   <span class="at">name=</span><span class="fu">paste</span>(<span class="st">&quot;point&quot;</span>,letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>) </span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a> </span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Show a CUSTOM circle at each position. Size defined in Pixel. Size does not change when you zoom</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>m<span class="ot">=</span><span class="fu">leaflet</span>(<span class="at">data =</span> data) <span class="sc">%&gt;%</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>   <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>   <span class="fu">addCircleMarkers</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>      <span class="sc">~</span>long, <span class="sc">~</span>lat, </span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>      <span class="at">radius=</span><span class="sc">~</span>val<span class="sc">*</span><span class="dv">14</span> , </span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>      <span class="at">color=</span><span class="sc">~</span><span class="fu">ifelse</span>(data<span class="sc">$</span>val<span class="sc">&gt;</span><span class="dv">0</span> , <span class="st">&quot;red&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>      <span class="at">stroke =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>      <span class="at">fillOpacity =</span> <span class="fl">0.2</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>      <span class="at">popup =</span> <span class="sc">~</span><span class="fu">as.character</span>(name)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>   ) </span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>m</span></code></pre>
+        </div>
+        <div
+          class="leaflet html-widget html-fill-item"
+          id="htmlwidget-763bbbfaf3fd3ea5dc28"
+          style="width: 672px; height: 480px"
+        ></div>
+        <script
+          type="application/json"
+          data-for="htmlwidget-763bbbfaf3fd3ea5dc28"
+        >
+          {
+            "x": {
+              "options": {
+                "crs": {
+                  "crsClass": "L.CRS.EPSG3857",
+                  "code": null,
+                  "proj4def": null,
+                  "projectedBounds": null,
+                  "options": {}
+                }
+              },
+              "calls": [
+                {
+                  "method": "addTiles",
+                  "args": [
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    null,
+                    null,
+                    {
+                      "minZoom": 0,
+                      "maxZoom": 18,
+                      "tileSize": 256,
+                      "subdomains": "abc",
+                      "errorTileUrl": "",
+                      "tms": false,
+                      "noWrap": false,
+                      "zoomOffset": 0,
+                      "zoomReverse": false,
+                      "opacity": 1,
+                      "zIndex": 1,
+                      "detectRetina": false,
+                      "attribution": "&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"
+                    }
+                  ]
+                },
+                {
+                  "method": "addCircleMarkers",
+                  "args": [
+                    [
+                      -13, -50, -43, -11, 32, 12, 25, -37, 41, 17, 7, -34, 1,
+                      -26, 21, -16, -14, 10, -9, -4
+                    ],
+                    [
+                      132, 16, -128, -8, -41, -63, -131, -32, 100, 103, 70,
+                      -133, 118, 6, -92, -117, 18, -49, -48, 75
+                    ],
+                    [
+                      -8.119999999999999, 5.18, -9.94, -10.64, -6.58, -1.54,
+                      20.72, -7, -8.4, -17.5, -17.92, -0.28, 20.58, 7.98, 24.22,
+                      -9.799999999999999, -2.1, 2.94, -0.9800000000000001, -4.48
+                    ],
+                    null,
+                    null,
+                    {
+                      "interactive": true,
+                      "className": "",
+                      "stroke": true,
+                      "color": [
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "red",
+                        "red",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange"
+                      ],
+                      "weight": 5,
+                      "opacity": 0.5,
+                      "fill": true,
+                      "fillColor": [
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "red",
+                        "red",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange"
+                      ],
+                      "fillOpacity": 0.2
+                    },
+                    null,
+                    null,
+                    [
+                      "point_a",
+                      "point_b",
+                      "point_c",
+                      "point_d",
+                      "point_e",
+                      "point_f",
+                      "point_g",
+                      "point_h",
+                      "point_i",
+                      "point_j",
+                      "point_k",
+                      "point_l",
+                      "point_m",
+                      "point_n",
+                      "point_o",
+                      "point_p",
+                      "point_q",
+                      "point_r",
+                      "point_s",
+                      "point_t"
+                    ],
+                    null,
+                    null,
+                    {
+                      "interactive": false,
+                      "permanent": false,
+                      "direction": "auto",
+                      "opacity": 1,
+                      "offset": [0, 0],
+                      "textsize": "10px",
+                      "textOnly": false,
+                      "className": "",
+                      "sticky": true
+                    },
+                    null
+                  ]
+                }
+              ],
+              "limits": { "lat": [-50, 41], "lng": [-133, 132] }
+            },
+            "evals": [],
+            "jsHooks": []
+          }
+        </script>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># saveWidget(m, file=&quot;HtmlWidget/leaflet-182-add-circles-2.html&quot;, selfcontained = F)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/leaflet-182-add-circles-2.html"
+            width="100%"
+            height="400"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div
+        id="custom-circles-with-size-that-change-when-you-zoom"
+        class="section level1"
+      >
+        <h1>Custom circles with size that change when you zoom</h1>
+        <hr />
+        <p>
+          You can also add circles with the <code>addCircle()</code> function.
+          This time, the radius of the circle is
+          <strong>defined in meters</strong>. It means that its
+          <strong>size will change</strong> when you zoom on the map!
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#library</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a> </span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Create 20 markers (Random points)</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>   <span class="at">long=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>,<span class="dv">150</span>),<span class="dv">20</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>   <span class="at">lat=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">50</span>,<span class="dv">50</span>),<span class="dv">20</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>   <span class="at">val=</span><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>   <span class="at">name=</span><span class="fu">paste</span>(<span class="st">&quot;point&quot;</span>,letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>) </span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a> </span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co"># Show a CUSTOM circle at each position. Size in meters --&gt; change when you zoom.</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">leaflet</span>(<span class="at">data =</span> data) <span class="sc">%&gt;%</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>   <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>   <span class="fu">addCircles</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>      <span class="sc">~</span>long, <span class="sc">~</span>lat, </span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>      <span class="at">radius=</span><span class="sc">~</span>val<span class="sc">*</span><span class="dv">1000000</span> , </span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>      <span class="at">color=</span><span class="sc">~</span><span class="fu">ifelse</span>(data<span class="sc">$</span>val<span class="sc">&gt;</span><span class="dv">0</span> , <span class="st">&quot;red&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>      <span class="at">stroke =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>      <span class="at">fillOpacity =</span> <span class="fl">0.2</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>      <span class="at">popup =</span> <span class="sc">~</span><span class="fu">as.character</span>(name)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>   ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  <span class="fu">setView</span>(<span class="at">lng =</span> <span class="fl">166.45</span>, <span class="at">lat =</span> <span class="dv">21</span>, <span class="at">zoom =</span> <span class="dv">2</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>m</span></code></pre>
+        </div>
+        <div
+          class="leaflet html-widget html-fill-item"
+          id="htmlwidget-5211ca2f0c95e7af9c3a"
+          style="width: 672px; height: 480px"
+        ></div>
+        <script
+          type="application/json"
+          data-for="htmlwidget-5211ca2f0c95e7af9c3a"
+        >
+          {
+            "x": {
+              "options": {
+                "crs": {
+                  "crsClass": "L.CRS.EPSG3857",
+                  "code": null,
+                  "proj4def": null,
+                  "projectedBounds": null,
+                  "options": {}
+                }
+              },
+              "calls": [
+                {
+                  "method": "addTiles",
+                  "args": [
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    null,
+                    null,
+                    {
+                      "minZoom": 0,
+                      "maxZoom": 18,
+                      "tileSize": 256,
+                      "subdomains": "abc",
+                      "errorTileUrl": "",
+                      "tms": false,
+                      "noWrap": false,
+                      "zoomOffset": 0,
+                      "zoomReverse": false,
+                      "opacity": 1,
+                      "zIndex": 1,
+                      "detectRetina": false,
+                      "attribution": "&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"
+                    }
+                  ]
+                },
+                {
+                  "method": "addCircles",
+                  "args": [
+                    [
+                      46, 16, -16, 34, 17, -26, 7, 32, -14, -21, 45, 12, 9, 14,
+                      -42, 38, 0, -6, -30, -8
+                    ],
+                    [
+                      54, -1, -132, 66, 115, 15, -5, 145, -146, -129, 23, -38,
+                      -88, 114, 78, -58, -91, -99, 106, 4
+                    ],
+                    [
+                      830000, -350000, 1640000, 110000, -610000, 1020000,
+                      810000, -10000, -740000, -1050000, 70000, -2100000,
+                      -650000, -360000, 380000, -120000, -40000, 40000, 1010000,
+                      120000
+                    ],
+                    null,
+                    null,
+                    {
+                      "interactive": true,
+                      "className": "",
+                      "stroke": true,
+                      "color": [
+                        "red",
+                        "orange",
+                        "red",
+                        "red",
+                        "orange",
+                        "red",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "red",
+                        "red",
+                        "red"
+                      ],
+                      "weight": 5,
+                      "opacity": 0.5,
+                      "fill": true,
+                      "fillColor": [
+                        "red",
+                        "orange",
+                        "red",
+                        "red",
+                        "orange",
+                        "red",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "orange",
+                        "red",
+                        "orange",
+                        "orange",
+                        "red",
+                        "red",
+                        "red"
+                      ],
+                      "fillOpacity": 0.2
+                    },
+                    [
+                      "point_a",
+                      "point_b",
+                      "point_c",
+                      "point_d",
+                      "point_e",
+                      "point_f",
+                      "point_g",
+                      "point_h",
+                      "point_i",
+                      "point_j",
+                      "point_k",
+                      "point_l",
+                      "point_m",
+                      "point_n",
+                      "point_o",
+                      "point_p",
+                      "point_q",
+                      "point_r",
+                      "point_s",
+                      "point_t"
+                    ],
+                    null,
+                    null,
+                    {
+                      "interactive": false,
+                      "permanent": false,
+                      "direction": "auto",
+                      "opacity": 1,
+                      "offset": [0, 0],
+                      "textsize": "10px",
+                      "textOnly": false,
+                      "className": "",
+                      "sticky": true
+                    },
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "limits": { "lat": [-42, 46], "lng": [-146, 145] },
+              "setView": [[21, 166.45], 2, []]
+            },
+            "evals": [],
+            "jsHooks": []
+          }
+        </script>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># saveWidget(m, file=&quot;HtmlWidget/leaflet-182-add-circles-3.html&quot;, selfcontained = F)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/leaflet-182-add-circles-3.html"
+            width="100%"
+            height="400"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div id="add-rectangles" class="section level1">
+        <h1>Add rectangles</h1>
+        <hr />
+        <p>
+          Lastly, how to <strong>add a rectangle</strong> with the
+          <code>addRectangles()</code> function. You have to give the
+          <strong>2 coordinates of 2 opposites</strong> corners of the
+          rectangle.
+        </p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#library</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a> </span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Create 20 markers (Random points)</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>   <span class="at">long=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>,<span class="dv">150</span>),<span class="dv">20</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>   <span class="at">lat=</span><span class="fu">sample</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">50</span>,<span class="dv">50</span>),<span class="dv">20</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>   <span class="at">val=</span><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>   <span class="at">name=</span><span class="fu">paste</span>(<span class="st">&quot;point&quot;</span>,letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>],<span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>) </span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a> </span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Show a rectangle</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>m <span class="ot">=</span> <span class="fu">leaflet</span>() <span class="sc">%&gt;%</span> <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span>  </span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">addRectangles</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">lng1=</span><span class="sc">-</span><span class="fl">118.456554</span>, <span class="at">lat1=</span><span class="fl">34.078039</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">lng2=</span><span class="sc">-</span><span class="fl">118.436383</span>, <span class="at">lat2=</span><span class="fl">34.062717</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">fillColor =</span> <span class="st">&quot;transparent&quot;</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  )</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>m</span></code></pre>
+        </div>
+        <div
+          class="leaflet html-widget html-fill-item"
+          id="htmlwidget-2192a865c26623e1a500"
+          style="width: 672px; height: 480px"
+        ></div>
+        <script
+          type="application/json"
+          data-for="htmlwidget-2192a865c26623e1a500"
+        >
+          {
+            "x": {
+              "options": {
+                "crs": {
+                  "crsClass": "L.CRS.EPSG3857",
+                  "code": null,
+                  "proj4def": null,
+                  "projectedBounds": null,
+                  "options": {}
+                }
+              },
+              "calls": [
+                {
+                  "method": "addTiles",
+                  "args": [
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    null,
+                    null,
+                    {
+                      "minZoom": 0,
+                      "maxZoom": 18,
+                      "tileSize": 256,
+                      "subdomains": "abc",
+                      "errorTileUrl": "",
+                      "tms": false,
+                      "noWrap": false,
+                      "zoomOffset": 0,
+                      "zoomReverse": false,
+                      "opacity": 1,
+                      "zIndex": 1,
+                      "detectRetina": false,
+                      "attribution": "&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"
+                    }
+                  ]
+                },
+                {
+                  "method": "addRectangles",
+                  "args": [
+                    34.078039,
+                    -118.456554,
+                    34.062717,
+                    -118.436383,
+                    null,
+                    null,
+                    {
+                      "interactive": true,
+                      "className": "",
+                      "stroke": true,
+                      "color": "#03F",
+                      "weight": 5,
+                      "opacity": 0.5,
+                      "fill": true,
+                      "fillColor": "transparent",
+                      "fillOpacity": 0.2,
+                      "smoothFactor": 1,
+                      "noClip": false
+                    },
+                    null,
+                    null,
+                    null,
+                    {
+                      "interactive": false,
+                      "permanent": false,
+                      "direction": "auto",
+                      "opacity": 1,
+                      "offset": [0, 0],
+                      "textsize": "10px",
+                      "textOnly": false,
+                      "className": "",
+                      "sticky": true
+                    },
+                    null
+                  ]
+                }
+              ],
+              "limits": {
+                "lat": [34.062717, 34.078039],
+                "lng": [-118.456554, -118.436383]
+              }
+            },
+            "evals": [],
+            "jsHooks": []
+          }
+        </script>
+        <div class="sourceCode" id="cb8">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># saveWidget(m, file=&quot;HtmlWidget/leaflet-182-add-rectangles.html&quot;, selfcontained = F)</span></span></code></pre>
+        </div>
+        <center>
+          <iframe
+            src="HtmlWidget/leaflet-182-add-rectangles.html"
+            width="100%"
+            height="400"
+          >
+          </iframe>
+        </center>
+      </div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>
+          You might be interested in how to
+          <a href="180-change-background-in-leaflet-map.html"
+            >change the tile style</a
+          >
+          and the <a href="map.html">map section</a> of the leaflet map.
+        </p>
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
+
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

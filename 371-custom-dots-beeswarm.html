@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Customize dots in beeswarm
+plots &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="A beeswarm plot displays
+individual data points in a way that they don’t overlap, resulting in a
+swarming effect that resembles a swarm of bees. In the previous post we
+saw how to build one with R and the beeswarm package.<br>In this post,
+we’ll see how to custom the dots: changing their size, color and
+shape." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Customize dots in beeswarm
+plots" />
+    <meta property="og:image" content="https://www.r-graph-gallery.com/img/overview_RGG.png" />
+    <meta property="og:description" content="A beeswarm plot displays
+individual data points in a way that they don’t overlap, resulting in a
+swarming effect that resembles a swarm of bees. In the previous post we
+saw how to build one with R and the beeswarm package.<br>In this post,
+we’ll see how to custom the dots: changing their size, color and
+shape." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/371-custom-dots-beeswarm.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+   <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Customize dots in beeswarm plots</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">A <a
+href="beeswarm.html">beeswarm</a> plot displays individual data points
+in a way that they don’t overlap, resulting in a
+<strong><em>swarming</em></strong> effect that resembles a swarm of
+bees.<br/>In the <a
+href="https://www.r-graph-gallery.com/370-basic-beeswarm-plot.html">previous
+post</a> we saw how to build one with R and the beeswarm package.<br>In
+this post, we’ll see how to <strong>custom the dots</strong>: changing
+their size, color and shape.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="beeswarm.html"
+            >Beeswarm</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<hr />
+<p>For this post, we need to install and load the <a
+href="https://github.com/aroneklund/beeswarm">beeswarm</a> package.</p>
+<p>We can install it from CRAN using
+<code>install.packages("beeswarm")</code>. Then, we can load it:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages(&quot;beeswarm&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(beeswarm)</span></code></pre></div>
+<p><br/></p>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>Since <a href="beeswarm.html">beeswarm</a> plots are made to
+visualize <strong>individual data points</strong>, we need a dataset
+that contains numerical values. Here, we’ll use the <code>iris</code>
+dataset, which is a built-in dataset in R.</p>
+<p>We can easily load it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(iris)</span></code></pre></div>
+</div>
+<div id="change-dots-color" class="section level1">
+<h1>Change dots color</h1>
+<hr />
+<p>The package comes with a <code>beeswarm()</code> function, and thanks
+to its <code>col</code> argument, we can change the color of the dots.
+Here, we’ll use the <code>blue</code> color.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">beeswarm</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  iris<span class="sc">$</span>Sepal.Length,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">col=</span><span class="st">&quot;blue&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>)</span></code></pre></div>
+<p><img src="371-custom-dots-beeswarm_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="change-dots-symbol" class="section level1">
+<h1>Change dots symbol</h1>
+<hr />
+<p>The <code>pch</code> argument allows to change the symbol of the
+dots. Here, we’ll use the <code>16</code> symbol since it’s the same as
+before but filled.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">beeswarm</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  iris<span class="sc">$</span>Sepal.Length,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">pch=</span><span class="dv">16</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span></code></pre></div>
+<p><img src="371-custom-dots-beeswarm_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="change-dots-size" class="section level1">
+<h1>Change dots size</h1>
+<hr />
+<p>The <code>cex</code> argument allows to change the size of the dots.
+Here, we’ll use a <code>2.5</code> size (default is 1).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">beeswarm</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  iris<span class="sc">$</span>Sepal.Length,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">cex=</span><span class="fl">2.5</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span></code></pre></div>
+<p><img src="371-custom-dots-beeswarm_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="change-dots-position" class="section level1">
+<h1>Change dots position</h1>
+<hr />
+<p>The <code>method</code> argument allows to <strong>change the
+position of the dots</strong>. Here are the available
+<strong>options</strong>:</p>
+<ul>
+<li><code>swarm</code> (default): the dots are placed randomly, but they
+don’t overlap.</li>
+<li><code>center</code>: the dots are symetrically placed around the
+center of the plot.</li>
+<li><code>hex</code>: the dots are placed on a hexagonal grid.</li>
+<li><code>square</code>: the dots are placed on a square grid.</li>
+</ul>
+<p>In our case, we’ll use the <code>center</code> method:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">beeswarm</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  iris<span class="sc">$</span>Sepal.Length,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">method=</span><span class="st">&quot;center&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">cex=</span><span class="dv">2</span> <span class="co"># make the dots bigger</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>)</span></code></pre></div>
+<p><img src="371-custom-dots-beeswarm_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>This post explains how to <strong>customize the dots</strong> in a <a
+href="beeswarm.html">beeswarm</a> plot.</p>
+<p>You might also be interested in <a
+href="370-basic-beeswarm-plot.html">how to flip a beeswarm plot</a> or
+<a href="372-grouped-beeswarm.html">how to create a grouped beeswarm
+plot</a>.</p>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item" >
+      <a class="portfolio-link"  href="violin.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Violin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Violin</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="density-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Density150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Density</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link" href="histogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Histogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Histogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="boxplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Box1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Boxplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="ridgeline-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Joyplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Ridgeline</div>
+    </div>
+  </div>
+
+</div>
+</section>
+</div>
+<!-- ============================ CONTACT SECTION ============================ -->
+<section
+  id="contact"
+  class="bg"
+  style="background-color: white; padding-top: 60px"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2 text-center"></div>
+      <div class="col-lg-8 text-center">
+        <br /><br /><br />
+        <h2>❤️ 10 best R tricks ❤️</h2>
+        <p style="max-width: 620px; text-align: center">
+          👋 After crafting hundreds of R charts over 12 years, I've distilled
+          my top 10 tips and tricks. Receive them via email!
+          <b>One insight per day for the next 10 days</b>! 🔥
+        </p>
+        <div style="display: flex; justify-content: center">
+          <script
+            async
+            data-uid="329fda5a7e"
+            src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+          ></script>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

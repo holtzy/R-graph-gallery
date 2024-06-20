@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>
+      Treemap with annotations, labels and colors &#8211; the R Graph Gallery
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This post explains how to build a
+treemap with custom annotations and labels. The project is made using
+mainly the treemap and the tidyverse packages. The post provides
+explanation and reproducible code."
+    />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta
+      property="og:title"
+      content="Treemap with annotations, labels
+and colors"
+    />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:description"
+      content="This post explains how to
+build a treemap with custom annotations and labels. The project is made
+using mainly the treemap and the tidyverse packages. The post provides
+explanation and reproducible code."
+    />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-treemap-with-annotations-labels-and-colors.html.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Treemap with annotations, labels and colors</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to build a
+            <a href="https://r-graph-gallery.com/treemap.html">treemap</a> with
+            custom annotations and labels. The project is made using mainly the
+            <code>treemap</code> package and the
+            <a href="https://r-graph-gallery.com/best-dataviz-packages.html"
+              >tidyverse</a
+            >
+            packages. The post provides detailed explanation on how to reproduce
+            this chart with reproducible code.
+          </p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="treemap.html"
+            >Treemap section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.www.data-to-viz.com/graph/treemap.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 100px">
+      <div id="about-this-chart" class="section level1">
+        <h1>About this chart</h1>
+        <hr />
+        <p>
+          This post explains how to build a
+          <a href="https://r-graph-gallery.com/treemap.html">treemap</a> with
+          custom annotations and labels.
+        </p>
+        <p>
+          It was produced by
+          <a href="https://twitter.com/ysamano28">Yobanny Sámano</a> on the
+          occasion of a Tidy Tuesday in 2021! We’ll see how to reproduce it
+          using his code.
+        </p>
+        <p>
+          Since there are <strong>2 distinct versions</strong> of this chart,
+          we’ll see how to reproduce both of them.
+        </p>
+        <p>Let’s see what the final output looks like:</p>
+        <center>
+          <img
+            src="https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/img/graph/web-treemap-with-annotations-labels-and-colors.png"
+            width="70%"
+          />
+        </center>
+      </div>
+      <div id="load-data" class="section level1">
+        <h1>Load data</h1>
+        <hr />
+        <p>
+          To create our Treemap, we will need the following packages. Install
+          them if needed, then you can load them:
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#install.packages(c(&quot;tidyverse&quot;, &quot;treemap&quot;, &quot;ggfittext&quot;, &quot;scales&quot;, &quot;ggtext&quot;))</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(treemap)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(ggfittext)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(ggtext)</span></code></pre>
+        </div>
+        <p>
+          We will also need to load 2 datasets which may be downloaded at the
+          <a href="https://github.com/holtzy/R-graph-gallery/tree/master/DATA"
+            >Gallery repo</a
+          >
+          or loaded directy in R as shown below:
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>artwork <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artwork.csv&#39;</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>artists <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="st">&#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/artist_data.csv&#39;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span></code></pre>
+        </div>
+        <p>Then, let’s merge the datasets and clean the data a little bit:</p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>artwork_artist <span class="ot">&lt;-</span> artwork <span class="sc">%&gt;%</span> </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">left_join</span>(artists,<span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;artistId&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>            ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gender =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(artist, <span class="st">&quot;British&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Other&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                            <span class="fu">str_detect</span>(artist, <span class="st">&quot;Art &amp; Language&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Male&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                            <span class="cn">TRUE</span> <span class="sc">~</span> gender),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>         <span class="at">artist =</span> <span class="fu">case_when</span>(<span class="fu">str_detect</span>(artist, <span class="st">&quot;British&quot;</span>) <span class="sc">~</span> <span class="st">&quot;British School&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                            <span class="cn">TRUE</span> <span class="sc">~</span> artist)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(gender)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">group_by</span>(artist, gender) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="co">#filter(name != &quot;Turner, Joseph Mallord William&quot;) %&gt;% </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id_tree =</span> <span class="fu">row_number</span>())</span></code></pre>
+        </div>
+      </div>
+      <div id="make-the-first-treemap" class="section level1">
+        <h1>Make the first treemap</h1>
+        <hr />
+        <p>We start by creating a <em>simple</em> treemap:</p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>data_tree <span class="ot">&lt;-</span> <span class="fu">treemap</span>(artwork_artist,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                     <span class="at">index=</span><span class="fu">c</span>(<span class="st">&quot;artist&quot;</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                     <span class="at">vSize=</span><span class="st">&quot;total&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                     <span class="at">vColor =</span> <span class="st">&quot;gender&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>                     <span class="at">algorithm =</span> <span class="st">&quot;pivotSize&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                     <span class="at">sortID =</span> <span class="st">&quot;id_tree&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>                     <span class="at">mirror.y =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>                     <span class="at">mirror.x =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>                     <span class="at">border.lwds =</span> <span class="fl">0.7</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>                     <span class="at">aspRatio =</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">3</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-treemap-with-annotations-labels-and-colors_files/figure-html/unnamed-chunk-4-1.png"
+            width="672"
+          />
+        </p>
+        <p>And now we customize it:</p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>data_ggplot <span class="ot">&lt;-</span> data_tree[[<span class="st">&quot;tm&quot;</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(vSize)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>         <span class="at">xmax =</span> x0 <span class="sc">+</span> w,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>         <span class="at">ymax =</span> y0 <span class="sc">+</span> h,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>         <span class="at">label_artist =</span> <span class="fu">str_glue</span>(<span class="st">&quot;{artist}</span><span class="sc">\n</span><span class="st">({comma(vSize, accuracy = 1)})&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>         )</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>how_to_read <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;**How to read:**&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>                                <span class="st">&quot;Each rectangle represents an artist&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>                                <span class="st">&quot;The size represents the number of artworks&quot;</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>                                <span class="st">&quot;The color represents the gender of the artist, </span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="st">                                &lt;span style=&#39;color:#C95C35&#39;&gt;**female**&lt;/span&gt; or </span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="st">                                &lt;span style=&#39;color:#0A7575&#39;&gt;**male**&lt;/span&gt;&quot;</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>                      <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>),</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>                      <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.07</span>, <span class="sc">-</span><span class="fl">0.11</span>, <span class="sc">-</span><span class="fl">0.15</span>, <span class="sc">-</span><span class="fl">0.19</span>))</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_ggplot) <span class="sc">+</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> x0,</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>                <span class="at">ymin =</span> y0,</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>                <span class="at">xmax =</span> xmax,</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>                <span class="at">ymax=</span> ymax,</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>                <span class="at">fill =</span> vColor),</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">0.1</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>            <span class="at">colour =</span> <span class="st">&quot;#1E1D23&quot;</span>,</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>            <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>  <span class="co">#geom_fit_text(data = data_ggplot %&gt;% filter(rank &lt;= 200),</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>  <span class="co">#              aes(xmin = x0, </span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>  <span class="co">#                  xmax = xmax, </span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>  <span class="co">#                  ymin = y0,</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>  <span class="co">#                  ymax = ymax,</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>  <span class="co">#                  label = label_artist),</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>  <span class="co">#              colour = &quot;#E8EADC&quot;,</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>  <span class="co">#              family = &quot;Lora&quot;,</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>  <span class="co">#              min.size = 4,</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>  <span class="co">#              reflow = TRUE) +</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>  <span class="fu">geom_richtext</span>(<span class="at">data =</span> how_to_read,</span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>                <span class="fu">aes</span>(x, y, <span class="at">label =</span> label), </span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>                <span class="at">size =</span> <span class="fl">3.5</span>,</span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>                <span class="at">color =</span> <span class="st">&quot;#E8EADC&quot;</span>,</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>                <span class="at">fill =</span> <span class="cn">NA</span>,</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>                <span class="at">label.color =</span> <span class="cn">NA</span>,</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>                <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>                <span class="at">family =</span> <span class="st">&quot;serif&quot;</span>) <span class="sc">+</span>          </span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;The Tate Collection&#39;s Artists&quot;</span>,</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">&quot;Data Source: Tate Art Museum (github.com/tategallery/collection) | Design: Yobanny Samano&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#C95C35&quot;</span>, <span class="st">&quot;#0A7575&quot;</span>, <span class="st">&quot;#8f9089&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span><span class="st">&quot;#E8EADC&quot;</span>),</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#1E1D23&quot;</span>,</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>                                       <span class="at">colour =</span> <span class="st">&quot;#1E1D23&quot;</span>),</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">10</span>),</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;serif&quot;</span>,</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">25</span>,</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>                                  <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;serif&quot;</span>, </span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>                                    <span class="at">size =</span> <span class="dv">9</span>,</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>                                    <span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>        )</span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>p1</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-treemap-with-annotations-labels-and-colors_files/figure-html/unnamed-chunk-5-1.png"
+            width="672"
+          />
+        </p>
+      </div>
+      <div id="make-the-second-treemap" class="section level1">
+        <h1>Make the second treemap</h1>
+        <hr />
+        <p>Once again, we start by creating a <em>simple</em> treemap:</p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>data_tree <span class="ot">&lt;-</span> <span class="fu">treemap</span>(artwork_artist <span class="sc">%&gt;%</span> <span class="fu">filter</span>(total <span class="sc">!=</span> <span class="dv">39389</span>),</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                      <span class="at">index=</span><span class="fu">c</span>(<span class="st">&quot;artist&quot;</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                      <span class="at">vSize=</span><span class="st">&quot;total&quot;</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                      <span class="at">type=</span><span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                      <span class="at">vColor =</span> <span class="st">&quot;gender&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                      <span class="at">algorithm =</span> <span class="st">&quot;pivotSize&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                      <span class="at">sortID =</span> <span class="st">&quot;id_tree&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                      <span class="at">mirror.y =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                      <span class="at">mirror.x =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                      <span class="at">border.lwds =</span> <span class="fl">0.7</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>                      <span class="at">aspRatio =</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">3</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-treemap-with-annotations-labels-and-colors_files/figure-html/unnamed-chunk-6-1.png"
+            width="672"
+          />
+        </p>
+        <p>Now let’s customize it:</p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>data_ggplot <span class="ot">&lt;-</span> data_tree[[<span class="st">&quot;tm&quot;</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(vSize)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rank =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>         <span class="at">xmax =</span> x0 <span class="sc">+</span> w,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>         <span class="at">ymax =</span> y0 <span class="sc">+</span> h,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>         <span class="at">label_artist =</span> <span class="fu">str_glue</span>(<span class="st">&quot;{artist}</span><span class="sc">\n</span><span class="st">({comma(vSize, accuracy = 1)})&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>         )</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data_ggplot) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> x0,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                <span class="at">ymin =</span> y0,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                <span class="at">xmax =</span> xmax,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>                <span class="at">ymax=</span> ymax,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>                <span class="at">fill =</span> vColor),</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>            <span class="at">size =</span> <span class="fl">0.1</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>            <span class="at">colour =</span> <span class="st">&quot;#1E1D23&quot;</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>            <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  <span class="co">#geom_fit_text(data = data_ggplot %&gt;% filter(rank &lt;= 300),</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="co">#              aes(xmin = x0, </span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  <span class="co">#                  xmax = xmax, </span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="co">#                  ymin = y0,</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="co">#                  ymax = ymax,</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  <span class="co">#                  label = label_artist),</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  <span class="co">#              colour = &quot;#E8EADC&quot;,</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  <span class="co">#              family = &quot;Lora&quot;,</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  <span class="co">#              min.size = 3.5,</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>  <span class="co">#              reflow = TRUE) +</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  <span class="fu">geom_richtext</span>(<span class="at">data =</span> how_to_read,</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>                <span class="fu">aes</span>(x, y, <span class="at">label =</span> label), </span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>                <span class="at">size =</span> <span class="fl">3.5</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>                <span class="at">color =</span> <span class="st">&quot;#E8EADC&quot;</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>                <span class="at">fill =</span> <span class="cn">NA</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>                <span class="at">label.color =</span> <span class="cn">NA</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>                <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>                <span class="at">family =</span> <span class="st">&quot;serif&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;The Tate Collection&#39;s Artists&quot;</span>,</span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;(excluding William Turner)&quot;</span>,</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">&quot;Data Source: Tate Art Museum (github.com/tategallery/collection) | Design: Yobanny Samano&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#C95C35&quot;</span>, <span class="st">&quot;#0A7575&quot;</span>, <span class="st">&quot;#8f9089&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span><span class="st">&quot;#E8EADC&quot;</span>),</span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#1E1D23&quot;</span>,</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>                                       <span class="at">colour =</span> <span class="st">&quot;#1E1D23&quot;</span>),</span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">30</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">10</span>),</span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;serif&quot;</span>,</span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a>                                  <span class="at">size =</span> <span class="dv">25</span>,</span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>                                  <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;serif&quot;</span>,</span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>                                     <span class="at">size =</span> <span class="dv">14</span>,</span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a>                                     <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;serif&quot;</span>, </span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a>                                    <span class="at">size =</span> <span class="dv">9</span>,</span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a>                                    <span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a>        )</span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a>p2</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-treemap-with-annotations-labels-and-colors_files/figure-html/unnamed-chunk-7-1.png"
+            width="672"
+          />
+        </p>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="stacked-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/GroupedRed150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Grouped and Stacked barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="treemap.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Tree150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Treemap</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="doughnut-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Doughnut150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Doughnut</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="pie-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Pie150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Pie chart</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="dendrogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Dendrogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Dendrogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circle-packing.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularPacking150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular packing</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+    </script>
+
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

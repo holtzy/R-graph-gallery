@@ -30,21 +30,23 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 
 
 
+# Circular barplot
+***
 
 
-<center><img src="img/graph/299-circular-stacked-barplotBig.png" width="80%"></img></center>
+A [circular barplot](circular-barplot.html) is a [barplot](barplot.html) where bars are displayed along a circle instead of a line. This page aims to teach you how to make a **grouped and stacked** circular barplot. I highly recommend to visit graph [#295](295-basic-circular-barplot.html), [#296](296-add-labels-to-circular-barplot.html) and [#297](297-circular-barplot-with-groups.html) Before diving into this code, which is a bit rough.
+
+You first need to understand how to make a [stacked barplot](stacked-barplot.html) with ggplot2. Then understand how to properly add labels, calculating the good angles, flipping them if necessary, and adjusting their position. The trickiest part is probably the one allowing to **add space between each group**. All these steps are described one by one in the circular barchart [section](circular-barplot.html).
 
 
+# Libraries & Dataset
+***
 
-A [circular barplot](circular-barplot.html) is a [barplot](barplot.html) where bars are displayed along a circle instead of a line. This page aims to teach you how to make a grouped and stacked circular barplot. I highly recommend to visit graph [#295](295-basic-circular-barplot.html), [#296](296-add-labels-to-circular-barplot.html) and [#297](297-circular-barplot-with-groups.html) Before diving into this code, which is a bit rough.
+First we need to load the `tidyverse` and the `viridis` package.
 
-I tried to add as many comments as possible in the code, and thus hope that the method is understandable. If it is not, please comment and ask supplementary explanations.
+Then, we create a **fake dataset** for the purpose of this chart.
 
-You first need to understand how to make a [stacked barplot](stacked-barplot.html) with ggplot2. Then understand how to properly add labels, calculating the good angles, flipping them if necessary, and adjusting their position. The trickiest part is probably the one allowing to add space between each group. All these steps are described one by one in the circular barchart [section](circular-barplot.html).
-
-
-
-```{r thecode, eval=FALSE}
+```{r thecode1, eval=FALSE}
 # library
 library(tidyverse)
 library(viridis)
@@ -52,15 +54,35 @@ library(viridis)
 # Create dataset
 data <- data.frame(
   individual=paste( "Mister ", seq(1,60), sep=""),
-  group=c( rep('A', 10), rep('B', 30), rep('C', 14), rep('D', 6)) ,
+  group=factor(c( rep('A', 10), rep('B', 30), rep('C', 14), rep('D', 6))) ,
   value1=sample( seq(10,100), 60, replace=T),
   value2=sample( seq(10,100), 60, replace=T),
   value3=sample( seq(10,100), 60, replace=T)
 )
  
 # Transform data in a tidy format (long format)
-data <- data %>% gather(key = "observation", value="value", -c(1,2)) 
- 
+data <- data %>% gather(key = "observation", value="value", -c(1,2))
+```
+
+
+# Creating the chart 
+***
+
+Here are some concise bullet points explaining the R code for beginners:
+
+- **Adding Empty Bars:** Append placeholder rows with no data at the end of each group in the dataset to ensure clear visualization.
+  
+- **Sorting Data:** Rearrange the dataset by group and individual to maintain consistent ordering.
+
+- **Labeling:** Calculate the position and orientation for labels that display total values, ensuring readability based on their placement.
+
+- **Base and Grid Lines:** Set up baseline and grid lines to provide a reference scale on the plot, which helps in understanding data magnitude and distribution.
+
+- **Building the Plot:** Utilize ggplot2 to create a polar bar chart with stacked bars, value labels, and reference lines.
+
+- **Saving the Output:** Export the finalized chart as a PNG file, setting appropriate dimensions for clarity and presentation.
+
+```{r thecode, eval=FALSE}
 # Set a number of 'empty bar' to add at the end of each group
 empty_bar <- 2
 nObsType <- nlevels(as.factor(data$observation))
@@ -99,11 +121,11 @@ p <- ggplot(data) +
   scale_fill_viridis(discrete=TRUE) +
   
   # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
-  geom_segment(data=grid_data, aes(x = end, y = 0, xend = start, yend = 0), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 50, xend = start, yend = 50), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 100, xend = start, yend = 100), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 150, xend = start, yend = 150), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
-  geom_segment(data=grid_data, aes(x = end, y = 200, xend = start, yend = 200), colour = "grey", alpha=1, size=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 0, xend = start, yend = 0), colour = "grey", alpha=1, linewidth=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 50, xend = start, yend = 50), colour = "grey", alpha=1, linewidth=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 100, xend = start, yend = 100), colour = "grey", alpha=1, linewidth=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 150, xend = start, yend = 150), colour = "grey", alpha=1, linewidth=0.3 , inherit.aes = FALSE ) +
+  geom_segment(data=grid_data, aes(x = end, y = 200, xend = start, yend = 200), colour = "grey", alpha=1, linewidth=0.3 , inherit.aes = FALSE ) +
   
   # Add text showing the value of each 100/75/50/25 lines
   ggplot2::annotate("text", x = rep(max(data$id),5), y = c(0, 50, 100, 150, 200), label = c("0", "50", "100", "150", "200") , color="grey", size=6 , angle=0, fontface="bold", hjust=1) +
@@ -134,10 +156,16 @@ ggsave(p, file="output.png", width=10, height=10)
 
 
 
+<center><img src="img/graph/299-circular-stacked-barplotBig.png" width="80%"></img></center>
 
 
+# Going further
+***
 
+You might be interested in
 
+- the [circular barplot section](circular-barplot.html)
+- how to create an [advanced circular barplot](web-circular-barplot-with-R-and-ggplot2.html)
 
 
 

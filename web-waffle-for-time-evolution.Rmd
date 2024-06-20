@@ -1,0 +1,191 @@
+---
+title: "Waffle chart for evolution"
+descriptionMeta: "How to design a waffle chart for visualizing the chronological progression of various groups using R and ggplot2. It provides a reproducible code and an explanation of it."
+descriptionTop: "How to design a [waffle chart](https://r-graph-gallery.com/waffle.html) for visualizing the chronological progression of various groups using R and [ggplot2](https://r-graph-gallery.com/ggplot2-package.html). It provides a reproducible code and an explanation of it."
+sectionText: "Waffle section"
+sectionLink: "waffle.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "web-waffle-for-time-evolution"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  warning=FALSE, 
+  message=FALSE,
+  fig.align='center'
+)
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+
+
+# About
+***
+
+The chart we want to reproduce is a [waffle chart](waffle.html) about the **number of storms in the Atlantic Ocean**.
+
+
+It has been created by [Muhammad Azhar](https://imagineazhar.com/). Thanks to him for accepting sharing his work here!
+
+As a teaser, here's the chart we want to reproduce:
+
+<div style="text-align: center;">
+  <img src="img/graph/web-waffle-for-time-evolution.png" alt="Waffle Chart" style="width: 100%; max-width: 700px; height: auto;">
+</div>
+
+# Libraries
+***
+
+In order to create this chart, we will use the following **libraries**:
+
+```{r}
+library(tidyverse)
+library(showtext)
+library(ggtext)
+library(waffle)
+```
+
+
+# Data
+***
+
+The data is the `storms` dataset, available when loading the `tidyverse` library. It contains information about **storms in the Atlantic Ocean**.
+
+From this dataset, we will:
+
+- **Filter the data** to keep only the storms since 2010
+- Keep only the **storms with the status** `hurricane`, `tropical depression`, `tropical storm`, and `tropical wave`
+- **Count** the number of storms for each year and status
+
+```{r}
+storms_df <- storms|> 
+  filter(year >= 2010,
+         status %in% c("hurricane", "tropical depression",
+                       "tropical storm","tropical wave"))|> 
+  count(year, status)
+```
+
+Then we define the **fonts** and the **texts** that will be used in the chart:
+
+```{r}
+font_add_google("Outfit", "title_font")
+font_add_google("Cabin", "body_font")
+showtext_auto()
+
+title_font <- "title_font"
+body_font <- "body_font"
+
+title_text <- "In the Atlantic Ocean, tropical storms are more common than other cyclones."
+subtitle_text <- "Tropical Storm is a cyclone with maximum sustained winds of 39 to 73 mph (34 to 63 knots).\nshowing number of cyclones for each year since 2010"
+caption_text <- "Graphic: Muhammad Azhar | #30DayChartChallenge | Data: NOAA"
+```
+
+
+
+
+
+
+# Waffle chart for time series
+***
+
+[Waffle chart](waffle.html) can be used for various cases such [distribution plot]() or time series.
+
+In this case, we use it as a time series plot for displaying the number of storms, per year, with different statuses.
+
+```{r, fig.width=12, fig.height=6}
+p = ggplot(storms_df, aes(fill = status, values = n)) +
+  geom_waffle(color = "white", size = .25, n_rows = 10, flip = TRUE) +
+  facet_wrap(~year, nrow = 1, strip.position = "bottom") +
+  scale_x_discrete() + 
+  scale_y_continuous(labels = function(x) x * 10, # make this multiplyer the same as n_rows
+                     expand = c(0,0))+
+  MetBrewer::scale_fill_met_d("Hiroshige", direction=1)+
+  coord_equal()+
+  labs(title = title_text,
+       subtitle = subtitle_text,
+       caption = caption_text)+
+  theme_minimal()+
+  theme(
+    axis.title = element_blank(),
+    axis.text.x = element_text(family = body_font, size=12),
+    axis.text.y = element_text(family = body_font, size=12),
+  # Legend
+  legend.position = "top",
+  legend.title = element_blank(),
+  legend.spacing = unit(0.5, 'cm'),
+  legend.key.height= unit(0.5, 'cm'),
+  legend.key.width= unit(0.7, 'cm'),
+  legend.text = element_text(family = body_font,
+                             size=13,
+                             face = 'plain',
+                             color = "grey10"),
+  
+  # TITLE
+  plot.title.position = "plot",
+  plot.title = element_textbox(margin = margin(20, 0, 10, 0),
+                               size = 30,
+                               family = title_font,
+                               face = "bold",
+                               width = unit(55, "lines")),
+  
+  # SUB-TITLE
+  plot.subtitle = element_text(margin = margin(10, 0, 20, 0),
+                            size = 16,
+                            family = body_font,
+                            color = "grey15"),
+  # Caption
+  plot.caption = element_text(family=body_font,
+                              face="plain",
+                              size=14, 
+                              color="grey40",
+                              hjust=.5,
+                              margin=margin(20,0,0,0)),
+  
+  plot.background = element_rect(color="white", fill="white"),
+  plot.margin = margin(20, 40, 20, 40)
+)
+
+showtext_opts(dpi = 320)
+ggsave(
+  "img/graph/web-waffle-for-time-evolution.png",
+  dpi=320, width = 12, height = 9
+)
+showtext_auto(FALSE)
+```
+
+
+<center>
+  <img src="img/graph/web-waffle-for-time-evolution.png" width="100%" />
+</center>
+
+# Going further
+***
+
+This post explains how to create a [waffle chart](waffle.html) with nice features such as **annotations**, nice **color** theme and others, using R and [ggplot2](https://r-graph-gallery.com/ggplot2-package.html).
+
+If you want to learn more, you can check the [waffle section](waffle.html) of the gallery and [how to play with subgroups and colors](407-geom-waffle-multiple-groups.html) in waffle charts.
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+# Correlation | Ranking | Evolution.. 
+htmltools::includeHTML("htmlChunkRelatedRanking.html")
+```

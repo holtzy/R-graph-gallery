@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -52,7 +52,10 @@
     />
     <meta
       name="description"
-      content="This post descriibes how to build a very simple cartogram with R and the cartogram package. It is a step a step approach leading to a choropleth map with distorted region size."
+      content="This post descriibes how to build
+a very simple cartogram with R and the cartogram package. It is a step a
+step approach leading to a choropleth map with distorted region
+size."
     />
     <meta
       name="keywords"
@@ -63,10 +66,16 @@
 
     <!-- Control appearance when shared by social media -->
     <meta property="og:title" content="Basic Cartogram with R" />
-    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
     <meta
       property="og:description"
-      content="This post descriibes how to build a very simple cartogram with R and the cartogram package. It is a step a step approach leading to a choropleth map with distorted region size."
+      content="This post descriibes how to
+build a very simple cartogram with R and the cartogram package. It is a
+step a step approach leading to a choropleth map with distorted region
+size."
     />
     <meta
       property="og:url"
@@ -105,6 +114,13 @@
     <script>
       $(function () {
         $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
       });
     </script>
 
@@ -175,170 +191,216 @@
     </style>
 
     <div class="container">
-      <h1 id="very-basic-map">Very basic map</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            A <a href="cartogram.html">cartogram</a> is a map in which the
-            geometry of regions is distorted in order to convey the information
-            of an alternate variable. In this post, we are going to draw a map
-            of Africa where the size of each country is distorted proportionally
-            to its population.
-          </p>
-          <p>
-            First of all, you need to understand what a geospatial object is,
-            and how to plot it with <code>R</code>. See the
-            <a href="map.html">background map section</a> of the gallery!
-          </p>
-          <p>
-            Let’s use the <code>maptools</code> library which provides a
-            geospatial object with the Africa’s boundaries. Note that you can
-            get a similar object from a shapefile, or from a geojson file!
-          </p>
-          <p>
-            We can plot the boundaries using the <code>plot()</code> function:
-          </p>
+      <div id="very-basic-map" class="section level1">
+        <h1>Very basic map</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              A <a href="cartogram.html">cartogram</a> is a map in which the
+              geometry of regions is <strong>distorted</strong> in order to
+              convey the information of an alternate variable. In this post, we
+              are going to draw a map of Africa where the size of each country
+              is <strong>distorted proportionally to its population</strong>.
+            </p>
+            <p>
+              First of all, you need to understand what a geospatial object is,
+              and how to plot it with <code>R</code>. See the
+              <a href="map.html">background map section</a> of the gallery!
+            </p>
+            <p>
+              Let’s get a geospatial object from a shape file available
+              <a href="http://thematicmapping.org/downloads/world_borders.php"
+                >here</a
+              >. This step is extensively described in
+              <a href="168-load-a-shape-file-into-r.html">this post</a> in case
+              you’re not familiar with it.
+            </p>
+            <p>
+              We can plot the boundaries using the <code>plot()</code> function:
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="331-basic-cartogram_files/figure-html/thecode-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="331-basic-cartogram_files/figure-html/thecode-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Get the shape file of Africa</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(maptools)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">data</span>(wrld_simpl)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">afr=wrld_simpl[wrld_simpl<span class="op">$</span>REGION<span class="op">==</span><span class="dv">2</span>,]</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"> </a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># We can visualize the region&#39;s boundaries with the plot function</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">plot</span>(afr)</a></code></pre>
-      </div>
-      <h1 id="carto">Distort country size with <code>cartogram</code></h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The geospatial object has a <code>data slot</code>: an attached data
-            frame that provides several information for each region. It notably
-            gives the population of each country in 2005.
-          </p>
-          <p>
-            We can thus use the <code>cartogram</code> library to distort the
-            size of each country, proportionally to this column. The new
-            geospatial object we get can be draw with the same
-            <code>plot</code> function!
-          </p>
-          <p>See how Nigeria is now bigger?</p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="331-basic-cartogram_files/figure-html/thecode2-1.png"
-              width="100%"
-            />
-          </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Get the shape file of Africa, see how on</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># https://r-graph-gallery.com/168-load-a-shape-file-into-r.html</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># I stored the data on a DATA folder and read it from there</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>wrld_simpl <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;DATA/world_shape_file/TM_WORLD_BORDERS_SIMPL-0.3.shp&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>afr <span class="ot">&lt;-</span> wrld_simpl[wrld_simpl<span class="sc">$</span>REGION <span class="sc">==</span> <span class="dv">2</span>, ]</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># We can visualize the region&#39;s boundaries with the plot function</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(afr))</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># We work with the cartogram library </span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(cartogram)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"> </a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># construct a cartogram using the population in 2005</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">afr_cartogram &lt;-<span class="st"> </span><span class="kw">cartogram</span>(afr, <span class="st">&quot;POP2005&quot;</span>, <span class="dt">itermax=</span><span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"> </a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># This is a new geospatial object, we can visualise it!</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">plot</span>(afr_cartogram)</a></code></pre>
-      </div>
-      <h1 id="choro">Cartogram and choropleth</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            Cartogram are very often used in combination with
-            <a href="https://www.r-graph-gallery.com/chloropleth-map.html"
-              >choropleth map</a
-            >. Since we have a spatial object and a numeric value associated
-            with each region, it is possible to color each region according to
-            its value.
-          </p>
-          <p>
-            Let’s use <a href="ggplot2-package.html">ggplot2</a> to add some
-            color, title, legend, background and so on. We now have a nice
-            cartogram chloropleth map of Africa!
-          </p>
+      <div id="carto" class="section level1">
+        <h1>Distort country size with <code>cartogram</code></h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              The geospatial object has several information for each region. It
+              notably gives the population of each country in 2005.
+            </p>
+            <p>
+              We can thus use the <code>cartogram</code> library to
+              <strong>distort the size of each country</strong>, proportionally
+              to this column. The new geospatial object we get can be draw with
+              the same <code>plot</code> function!
+            </p>
+            <p>See how Nigeria is now bigger?</p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="331-basic-cartogram_files/figure-html/thecode2-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="331-basic-cartogram_files/figure-html/thecode3-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># It is a new geospatial object: we can use all the usual techniques on it! Let&#39;s start with a basic ggplot2 chloropleth map:</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">library</span>(broom)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">spdf_fortified &lt;-<span class="st"> </span><span class="kw">tidy</span>(afr_cartogram)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">spdf_fortified =<span class="st"> </span>spdf_fortified <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(. , afr_cartogram<span class="op">@</span>data, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>=<span class="st">&quot;ISO3&quot;</span>)) </a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> POP2005, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">  </span><span class="kw">coord_map</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">  </span><span class="kw">theme_void</span>()</a></code></pre>
-      </div>
-      <h1 id="clean">Make it pretty</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            Same thing with a tiny bit of customization. See more explanation in
-            the <a href="choropleth.html">choropleth</a> an
-            <a href="ggplot2-package.html">ggplot2</a> sections.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="331-basic-cartogram_files/figure-html/thecode4-1.png"
-              width="100%"
-            />
-          </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># We work with the cartogram library</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(cartogram)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># construct a cartogram using the population in 2005</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># need first to &quot;change&quot; the projection to Mercator (AKA Google Maps): EPSG: 3857</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>afr_merc <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(afr, <span class="dv">3857</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>afr_cartogram <span class="ot">&lt;-</span> <span class="fu">cartogram_cont</span>(afr_merc, <span class="st">&quot;POP2005&quot;</span>, <span class="at">itermax =</span> <span class="dv">5</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># And back to the previous projection</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>afr_cartogram <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(afr_cartogram, <span class="fu">st_crs</span>(afr))</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co"># This is a new geospatial object, we can visualise it!</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(afr_cartogram))</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># As seen before, we can do better with a bit of customization</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(viridis)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> POP2005<span class="op">/</span><span class="dv">1000000</span>, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">  </span><span class="kw">scale_fill_viridis</span>(<span class="dt">name=</span><span class="st">&quot;Population (M)&quot;</span>, <span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">50</span>,<span class="dv">100</span>, <span class="dv">140</span>), <span class="dt">guide =</span> <span class="kw">guide_legend</span>( <span class="dt">keyheight =</span> <span class="kw">unit</span>(<span class="dv">3</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">keywidth=</span><span class="kw">unit</span>(<span class="dv">12</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">label.position =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">title.position =</span> <span class="st">&#39;top&#39;</span>, <span class="dt">nrow=</span><span class="dv">1</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="st">  </span><span class="kw">labs</span>( <span class="dt">title =</span> <span class="st">&quot;Africa 2005 Population&quot;</span> ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">ylim</span>(<span class="op">-</span><span class="dv">35</span>,<span class="dv">35</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">    <span class="dt">text =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">&quot;#22211d&quot;</span>), </a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">    <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>), </a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">    <span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>), </a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">    <span class="dt">legend.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">22</span>, <span class="dt">hjust=</span><span class="fl">0.5</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.4</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">    <span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.26</span>)</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre>
+      <div id="choro" class="section level1">
+        <h1>Cartogram and choropleth</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              Cartogram are very often used in combination with
+              <a href="https://www.r-graph-gallery.com/chloropleth-map.html"
+                >choropleth map</a
+              >. Since we have a spatial object and a numeric value associated
+              with each region, it is possible to color each region according to
+              its value.
+            </p>
+            <p>
+              Let’s use <a href="ggplot2-package.html">ggplot2</a> to add some
+              <strong>color</strong>, <strong>title</strong>,
+              <strong>legend</strong>, background and so on. We now have a nice
+              cartogram choropleth map of Africa!
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="331-basic-cartogram_files/figure-html/thecode3-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># It is a new geospatial object: we can use all the usual techniques on it! Let&#39;s start with a basic ggplot2 choropleth map:</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">ggplot</span>(afr_cartogram) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> POP2005), <span class="at">linewidth =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
+        </div>
       </div>
-      <!-- Close container -->
+      <div id="clean" class="section level1">
+        <h1>Make it pretty</h1>
+        <hr />
+        <div class="row">
+          <div class="col-md-6 col-sm-12 align-self-center">
+            <p>
+              Same thing with a tiny bit of <strong>customization</strong>. See
+              more explanation in the
+              <a href="choropleth-map.html">choropleth</a> an
+              <a href="ggplot2-package.html">ggplot2</a> sections.
+            </p>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <p>
+              <img
+                src="331-basic-cartogram_files/figure-html/thecode4-1.png"
+                width="100%"
+              />
+            </p>
+          </div>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># As seen before, we can do better with a bit of customization</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">ggplot</span>(afr_cartogram) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> POP2005 <span class="sc">/</span> <span class="dv">1000000</span>), <span class="at">linewidth =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Population (M)&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">140</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>      <span class="at">keyheight =</span> <span class="fu">unit</span>(<span class="dv">3</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>      <span class="at">keywidth =</span> <span class="fu">unit</span>(<span class="dv">12</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>      <span class="at">label.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>, <span class="at">nrow =</span> <span class="dv">1</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    )</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Africa 2005 Population&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#22211d&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f4&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">22</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>        <span class="at">b =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">t =</span> <span class="fl">0.4</span>, <span class="at">l =</span> <span class="dv">2</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>        <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>      )</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    ),</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.26</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+      </div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>
+          This post explains how to build a very simple cartogram with
+          <code>R</code> and the <code>cartogram</code> package.
+        </p>
+        <p>
+          You might be interested by how to
+          <a href="332-hexbin-chloropleth-cartogram.html"
+            >combine cartogram and hexbin map</a
+          >, and more generally by the
+          <a href="cartogram.html">cartogram section</a> of the gallery.
+        </p>
+        <!-- Close container -->
+      </div>
     </div>
     <!-- ============================ RELATED SECTION ============================ -->
     <section
@@ -439,7 +501,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -451,31 +512,18 @@
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>

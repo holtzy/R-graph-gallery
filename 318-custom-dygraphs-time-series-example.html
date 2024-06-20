@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -54,7 +54,9 @@
     />
     <meta
       name="description"
-      content="This post shows what is possible to do for time series visualization with the dygraphs package, using a good amount of customization. Reproducible code is provided."
+      content="This post shows what is possible
+to do for time series visualization with the dygraphs package, using a
+good amount of customization. Reproducible code is provided."
     />
     <meta
       name="keywords"
@@ -64,11 +66,17 @@
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Custom dygraphs time series example" />
+    <meta
+      property="og:title"
+      content="Custom dygraphs time series
+example"
+    />
     <meta property="og:image" content="img/overview_RGG.png" />
     <meta
       property="og:description"
-      content="This post shows what is possible to do for time series visualization with the dygraphs package, using a good amount of customization. Reproducible code is provided."
+      content="This post shows what is
+possible to do for time series visualization with the dygraphs package,
+using a good amount of customization. Reproducible code is provided."
     />
     <meta
       property="og:url"
@@ -107,6 +115,13 @@
     <script>
       $(function () {
         $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
       });
     </script>
 
@@ -202,35 +217,37 @@
       <div class="sourceCode" id="cb1">
         <pre
           class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Library</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dygraphs)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(xts)          <span class="co"># To make the convertion data-frame / xts format</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(lubridate)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"> </a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># Read the data (hosted on the gallery website)</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://python-graph-gallery.com/wp-content/uploads/bike.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;,&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>(<span class="dv">300</span>)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Check type of variable</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># str(data)</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"> </a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co"># Since my time is currently a factor, I have to convert it to a date-time format!</span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">data<span class="op">$</span>datetime &lt;-<span class="st"> </span><span class="kw">ymd_hms</span>(data<span class="op">$</span>datetime)</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"> </a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># Then you can create the xts necessary to use dygraph</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">don &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="dt">x =</span> data<span class="op">$</span>count, <span class="dt">order.by =</span> data<span class="op">$</span>datetime)</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="co"># Finally the plot</span></a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">p &lt;-<span class="st"> </span><span class="kw">dygraph</span>(don) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="st">  </span><span class="kw">dyOptions</span>(<span class="dt">labelsUTC =</span> <span class="ot">TRUE</span>, <span class="dt">fillGraph=</span><span class="ot">TRUE</span>, <span class="dt">fillAlpha=</span><span class="fl">0.1</span>, <span class="dt">drawGrid =</span> <span class="ot">FALSE</span>, <span class="dt">colors=</span><span class="st">&quot;#D8AE5A&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="st">  </span><span class="kw">dyRangeSelector</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="st">  </span><span class="kw">dyCrosshair</span>(<span class="dt">direction =</span> <span class="st">&quot;vertical&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-24" data-line-number="24"><span class="st">  </span><span class="kw">dyHighlight</span>(<span class="dt">highlightCircleSize =</span> <span class="dv">5</span>, <span class="dt">highlightSeriesBackgroundAlpha =</span> <span class="fl">0.2</span>, <span class="dt">hideOnMouseOut =</span> <span class="ot">FALSE</span>)  <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="st">  </span><span class="kw">dyRoller</span>(<span class="dt">rollPeriod =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb1-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="co"># save the widget</span></a>
-<a class="sourceLine" id="cb1-28" data-line-number="28"><span class="co"># library(htmlwidgets)</span></a>
-<a class="sourceLine" id="cb1-29" data-line-number="29"><span class="co"># saveWidget(p, file=paste0( getwd(), &quot;/HtmlWidget/dygraphs318.html&quot;))</span></a></code></pre>
+        ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Library</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dygraphs)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(xts)          <span class="co"># To make the convertion data-frame / xts format</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a> </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># Read the data (hosted on the gallery website)</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&#39;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/bike.csv&#39;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&#39;DATA/bike.csv&#39;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.table</span>(path, <span class="at">header=</span>T, <span class="at">sep=</span><span class="st">&quot;,&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">300</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Check type of variable</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># str(data)</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a> </span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co"># Since my time is currently a factor, I have to convert it to a date-time format!</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>data<span class="sc">$</span>datetime <span class="ot">&lt;-</span> <span class="fu">ymd_hms</span>(data<span class="sc">$</span>datetime)</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a> </span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co"># Then you can create the xts necessary to use dygraph</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>don <span class="ot">&lt;-</span> <span class="fu">xts</span>(<span class="at">x =</span> data<span class="sc">$</span>count, <span class="at">order.by =</span> data<span class="sc">$</span>datetime)</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co"># Finally the plot</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">dygraph</span>(don) <span class="sc">%&gt;%</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>  <span class="fu">dyOptions</span>(<span class="at">labelsUTC =</span> <span class="cn">TRUE</span>, <span class="at">fillGraph=</span><span class="cn">TRUE</span>, <span class="at">fillAlpha=</span><span class="fl">0.1</span>, <span class="at">drawGrid =</span> <span class="cn">FALSE</span>, <span class="at">colors=</span><span class="st">&quot;#D8AE5A&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="fu">dyRangeSelector</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>  <span class="fu">dyCrosshair</span>(<span class="at">direction =</span> <span class="st">&quot;vertical&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>  <span class="fu">dyHighlight</span>(<span class="at">highlightCircleSize =</span> <span class="dv">5</span>, <span class="at">highlightSeriesBackgroundAlpha =</span> <span class="fl">0.2</span>, <span class="at">hideOnMouseOut =</span> <span class="cn">FALSE</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>  <span class="fu">dyRoller</span>(<span class="at">rollPeriod =</span> <span class="dv">1</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co"># save the widget</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co"># library(htmlwidgets)</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co"># saveWidget(p, file=paste0( getwd(), &quot;/HtmlWidget/dygraphs318.html&quot;))</span></span></code></pre>
       </div>
       <!-- Close container -->
     </div>
@@ -253,7 +270,7 @@
               </div>
               <img
                 class="img-fluid"
-                src="img/section/ScatterPlot150.png"
+                src="https://www.r-graph-gallery.com/img/section/ScatterPlot150.png"
                 alt=""
               />
             </a>
@@ -266,7 +283,11 @@
                   <i class="fa fa-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="img/section/Heatmap150.png" alt="" />
+              <img
+                class="img-fluid"
+                src="https://www.r-graph-gallery.com/img/section/Heatmap150.png"
+                alt=""
+              />
             </a>
             <div class="captionPortfolio">Heatmap</div>
           </div>
@@ -279,7 +300,7 @@
               </div>
               <img
                 class="img-fluid"
-                src="img/section/Correlogram150.png"
+                src="https://www.r-graph-gallery.com/img/section/Correlogram150.png"
                 alt=""
               />
             </a>
@@ -294,7 +315,7 @@
               </div>
               <img
                 class="img-fluid"
-                src="img/section/BubblePlot150.png"
+                src="https://www.r-graph-gallery.com/img/section/BubblePlot150.png"
                 alt=""
               />
             </a>
@@ -309,7 +330,7 @@
               </div>
               <img
                 class="img-fluid"
-                src="img/section/ScatterConnected150.png"
+                src="https://www.r-graph-gallery.com/img/section/ScatterConnected150.png"
                 alt=""
               />
             </a>
@@ -326,7 +347,7 @@
               </div>
               <img
                 class="img-fluid"
-                src="img/section/2dDensity150.png"
+                src="https://www.r-graph-gallery.com/img/section/2dDensity150.png"
                 alt=""
               />
             </a>
@@ -335,7 +356,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -347,31 +367,18 @@
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>

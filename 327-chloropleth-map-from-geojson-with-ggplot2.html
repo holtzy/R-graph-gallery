@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <!-- Google Analytics + AdThrive -->
@@ -52,7 +52,10 @@
     />
     <meta
       name="description"
-      content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided."
+      content="How to build a choropleth map with
+R and the ggplot2 package. This post shows how to load geospatial data
+in R, merge region features and build the map. Reproducible code is
+provided."
     />
     <meta
       name="keywords"
@@ -62,11 +65,21 @@
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Choropleth map with R and ggplot2" />
-    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta
+      property="og:title"
+      content="Choropleth map with R and
+ggplot2"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
     <meta
       property="og:description"
-      content="This post describes how to build a choropleth map with R and the ggplot2 package. It shows how to load geospatial data in R, merge region features and build the map. Reproducible code is provided."
+      content="How to build a choropleth
+map with R and the ggplot2 package. This post shows how to load
+geospatial data in R, merge region features and build the map.
+Reproducible code is provided."
     />
     <meta
       property="og:url"
@@ -108,6 +121,13 @@
       });
     </script>
 
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
@@ -138,11 +158,12 @@
         </ul>
         <center>
           <p style="max-width: 600px; margin-top: 40px">
-            This post describes how to build a
-            <a href="choropleth-map.html">choropleth map</a> with
-            <code>R</code> and the <code>ggplot2</code> package. It shows how to
-            load geospatial data in R, merge region features and build the map.
-            Reproducible code is provided.
+            How to build a <a href="choropleth-map.html">choropleth map</a> with
+            <code>R</code> and the
+            <a href="ggplot2-package.html">ggplot2</a> package. This post shows
+            how to <strong>load geospatial data</strong> in R,
+            <strong>merge region</strong> features and
+            <strong>build the map</strong>. Reproducible code is provided.
           </p>
         </center>
         <div style="text-align: center">
@@ -176,352 +197,388 @@
     </style>
 
     <div class="container" style="padding-top: 100px">
-      <p>Two inputs are needed to build a choropleth map:</p>
-      <ul>
-        <li>
-          A geospatial object providing region boundaries (city districts of the
-          south of France in this example). Data are available at the geoJSON
-          format
-          <a href="https://github.com/gregoiredavid/france-geojson">here</a>,
-          and this post explains in detail how to read and represent geoJSON
-          format with R.
-        </li>
-        <li>
-          A numeric variable that we use to color each geographical unit. Here
-          we will use the number of restaurant per city. The data has been found
-          <a href="https://www.insee.fr/fr/accueil">here</a>. (Thanks
-          <span class="citation">[@joelgombin]</span>(<a
-            href="https://twitter.com/joelgombin"
-            class="uri"
-            >https://twitter.com/joelgombin</a
-          >)).
-        </li>
-      </ul>
-      <h1 id="find-and-download-a-.geojson-file">
-        Find and download a <code>.geoJSON</code> file
-      </h1>
-      <hr />
-      <p>
-        This step has been extensively describe in
-        <a href="325-background-map-from-geojson-format-in-r/">chart #325</a>.
-        The geojsonio library allows to read this type of format in R. To plot
-        it with ggplot2, we first need to transform it to a data frame using the
-        tidy function of the broom library. Then, the geom_polygon() function
-        allows to represent this type of object !
-      </p>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre>
+      <div id="about-choropleth-map" class="section level1">
+        <h1>About choropleth map</h1>
+        <hr />
+        <p>
+          Two inputs are needed to build a
+          <a href="choropleth-map.html">choropleth map</a>:
+        </p>
+        <ul>
+          <li>
+            A <strong>geospatial object</strong> providing region boundaries
+            (city districts of the south of France in this example). Data are
+            available at the geoJSON format
+            <a href="https://github.com/gregoiredavid/france-geojson">here</a>,
+            and this post explains in detail how to read and represent geoJSON
+            format with R.
+          </li>
+          <li>
+            A <strong>numeric variable</strong> that we use to color each
+            geographical unit. Here we will use the number of restaurant per
+            city. The data has been found
+            <a href="https://www.insee.fr/fr/accueil">here</a>.
+          </li>
+        </ul>
       </div>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Geospatial data available at the geojson format</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(geojsonio)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">spdf &lt;-<span class="st"> </span><span class="kw">geojson_read</span>(<span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,  <span class="dt">what =</span> <span class="st">&quot;sp&quot;</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">spdf &lt;-<span class="st"> </span>spdf[ <span class="kw">substr</span>(spdf<span class="op">@</span>data<span class="op">$</span>code,<span class="dv">1</span>,<span class="dv">2</span>)  <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>, <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span>) , ]</a></code></pre>
-      </div>
-      <h1 id="basic-background-map">Basic background map</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            We now have a geospatial object called <code>spdf</code>. This
-            object could be plotted as is using the <code>plot()</code> function
-            as explained <a href="choropleth-map-in-r.html">here</a>.
-          </p>
-          <p>
-            However, an additionnal step is required to plot it with
-            <code>ggplot2</code> that expects a data frame as input. It is
-            possible to make the convertion using the <code>tidy</code> function
-            of the <code>broom</code> package as shown below.
-          </p>
-          <p>Finally, <code>geom_polygon</code> is used to plot the shape.</p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode10-1.png"
-              width="100%"
-            />
-          </p>
+      <div id="find-and-download-a-.geojson-file" class="section level1">
+        <h1>Find and download a <code>.geoJSON</code> file</h1>
+        <hr />
+        <p>
+          This step has been extensively describe in
+          <a href="325-background-map-from-geojson-format-in-r.html"
+            >chart #325</a
+          >. The <code>sf</code> library allows to read this type of format in
+          R. For plotting it with <a href="ggplot2-package.html">ggplot2</a>,
+          the <code>geom_sf()</code> function allows to
+          <strong>represent this type of object</strong>.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Geospatial data available at the geojson format</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>tmp_geojson <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.geojson&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">download.file</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes.geojson&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  tmp_geojson</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(tmp_geojson)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co"># Since it is a bit too much data, I select only a subset of it:</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>my_sf <span class="ot">&lt;-</span> my_sf[<span class="fu">substr</span>(my_sf<span class="sc">$</span>code, <span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="st">&quot;06&quot;</span>, <span class="st">&quot;83&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="st">&quot;13&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;34&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;66&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>), ]</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">#plot(spdf)</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co"># I need to fortify the data AND keep trace of the commune code! (Takes ~2 minutes)</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">library</span>(broom)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">spdf_fortified &lt;-<span class="st"> </span><span class="kw">tidy</span>(spdf, <span class="dt">region =</span> <span class="st">&quot;code&quot;</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># Now I can plot this shape easily as described before:</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>( <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group), <span class="dt">fill=</span><span class="st">&quot;white&quot;</span>, <span class="dt">color=</span><span class="st">&quot;grey&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre>
-      </div>
-      <h1 id="read-the-numeric-variable">Read the numeric variable</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The number of restaurant per city district has been found on the
-            internet and a clean version is stored on the gallery website. It is
-            thus easy to read it with read.table. Before doing a choropleth map,
-            it is a good practice to check the distribution of your variable.
-          </p>
-          <p>
-            Here, we have a ‘long tail’ distribution: a few cities have a lot of
-            restaurant. Thus we will probably need to apply a log scale to our
-            color palette. It will avoid that all the variation is absorbed by
-            these high values.
-          </p>
+      <div id="basic-background-map" class="section level1">
+        <h1>Basic background map</h1>
+        <hr />
+        <p>
+          We now have a geospatial object called <code>my_sf</code>. This object
+          could be plotted as is using the <code>plot()</code> function as
+          explained <a href="choropleth-map-in-r.html">here</a>.
+        </p>
+        <p>
+          On <a href="ggplot2-package.html">ggplot2</a> we can use
+          <code>geom_sf()</code> to plot the shape.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <div data-pagedtable="false">
-            <script data-pagedtable-source type="application/json">
-              {
-                "columns": [
-                  {
-                    "label": [""],
-                    "name": ["_rn_"],
-                    "type": [""],
-                    "align": ["left"]
-                  },
-                  {
-                    "label": ["reg"],
-                    "name": [1],
-                    "type": ["int"],
-                    "align": ["right"]
-                  },
-                  {
-                    "label": ["dep"],
-                    "name": [2],
-                    "type": ["fctr"],
-                    "align": ["left"]
-                  },
-                  {
-                    "label": ["depcom"],
-                    "name": [3],
-                    "type": ["fctr"],
-                    "align": ["left"]
-                  },
-                  {
-                    "label": ["dciris"],
-                    "name": [4],
-                    "type": ["fctr"],
-                    "align": ["left"]
-                  },
-                  {
-                    "label": ["an"],
-                    "name": [5],
-                    "type": ["int"],
-                    "align": ["right"]
-                  },
-                  {
-                    "label": ["typequ"],
-                    "name": [6],
-                    "type": ["fctr"],
-                    "align": ["left"]
-                  },
-                  {
-                    "label": ["nb_equip"],
-                    "name": [7],
-                    "type": ["int"],
-                    "align": ["right"]
-                  }
-                ],
-                "data": [
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01001",
-                    "4": "01001",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "1",
-                    "_rn_": "1"
-                  },
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01004",
-                    "4": "01004_0101",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "7",
-                    "_rn_": "2"
-                  },
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01004",
-                    "4": "01004_0102",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "15",
-                    "_rn_": "3"
-                  },
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01004",
-                    "4": "01004_0201",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "11",
-                    "_rn_": "4"
-                  },
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01004",
-                    "4": "01004_0202",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "3",
-                    "_rn_": "5"
-                  },
-                  {
-                    "1": "84",
-                    "2": "01",
-                    "3": "01005",
-                    "4": "01005",
-                    "5": "2016",
-                    "6": "A504",
-                    "7": "4",
-                    "_rn_": "6"
-                  }
-                ],
-                "options": {
-                  "columns": { "min": {}, "max": [10] },
-                  "rows": { "min": [10], "max": [10] },
-                  "pages": {}
+        <p>
+          <img
+            src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode10-1.png"
+            width="100%"
+          />
+        </p>
+      </div>
+      <div id="read-the-numeric-variable" class="section level1">
+        <h1>Read the numeric variable</h1>
+        <hr />
+        <p>
+          The number of restaurant per city district has been found on the
+          internet and a clean version is stored on the gallery website. It is
+          thus easy to read it with <code>read.table()</code>. Before doing a
+          <a href="choropleth-map.html">choropleth map</a>, it is a good
+          practice to check the distribution of your variable.
+        </p>
+        <p>
+          Here, we have a <em>long tail</em> distribution: a few cities have a
+          lot of restaurant. Thus we will probably need to apply a
+          <strong>log scale to our color palette</strong>. It will avoid that
+          all the variation is absorbed by these high values.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># read data</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.table</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">header =</span> T, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">head</span>(data)</span></code></pre>
+        </div>
+        <div data-pagedtable="false">
+          <script data-pagedtable-source type="application/json">
+            {
+              "columns": [
+                {
+                  "label": [""],
+                  "name": ["_rn_"],
+                  "type": [""],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["reg"],
+                  "name": [1],
+                  "type": ["int"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["dep"],
+                  "name": [2],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["depcom"],
+                  "name": [3],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["dciris"],
+                  "name": [4],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["an"],
+                  "name": [5],
+                  "type": ["int"],
+                  "align": ["right"]
+                },
+                {
+                  "label": ["typequ"],
+                  "name": [6],
+                  "type": ["chr"],
+                  "align": ["left"]
+                },
+                {
+                  "label": ["nb_equip"],
+                  "name": [7],
+                  "type": ["int"],
+                  "align": ["right"]
                 }
+              ],
+              "data": [
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01001",
+                  "4": "01001",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "1",
+                  "_rn_": "1"
+                },
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01004",
+                  "4": "01004_0101",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "7",
+                  "_rn_": "2"
+                },
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01004",
+                  "4": "01004_0102",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "15",
+                  "_rn_": "3"
+                },
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01004",
+                  "4": "01004_0201",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "11",
+                  "_rn_": "4"
+                },
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01004",
+                  "4": "01004_0202",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "3",
+                  "_rn_": "5"
+                },
+                {
+                  "1": "84",
+                  "2": "01",
+                  "3": "01005",
+                  "4": "01005",
+                  "5": "2016",
+                  "6": "A504",
+                  "7": "4",
+                  "_rn_": "6"
+                }
+              ],
+              "options": {
+                "columns": { "min": {}, "max": [10] },
+                "rows": { "min": [10], "max": [10] },
+                "pages": {}
               }
-            </script>
-          </div>
-          <p>
-            <img
-              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode2-1.png"
-              width="100%"
-            />
-          </p>
+            }
+          </script>
+        </div>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Distribution of the number of restaurant?</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> nb_equip)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">10</span>, <span class="at">fill =</span> <span class="st">&quot;skyblue&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>()</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode2-1.png"
+            width="100%"
+          />
+        </p>
+      </div>
+      <div id="merge-geospatial-and-numeric-data" class="section level1">
+        <h1>Merge geospatial and numeric data</h1>
+        <hr />
+        <p>
+          This is a key step in
+          <a href="choropleth-map.html">choropleth map</a>: your 2 inputs must
+          have a id in common to make the link between them!
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Make the merge</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>my_sf_merged <span class="ot">&lt;-</span> my_sf <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">left_join</span>(data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;code&quot;</span> <span class="ot">=</span> <span class="st">&quot;depcom&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="co"># Note that if the number of restaurant is NA, it is in fact 0</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb_equip =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(nb_equip), <span class="fl">0.01</span>, nb_equip))</span></code></pre>
         </div>
       </div>
-      <div class="sourceCode" id="cb4">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># read data</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">data &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/data_on_french_states.csv&quot;</span>, <span class="dt">header=</span>T, <span class="dt">sep=</span><span class="st">&quot;;&quot;</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">head</span>(data)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Distribution of the number of restaurant?</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">data <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="st">  </span><span class="kw">ggplot</span>( <span class="kw">aes</span>(<span class="dt">x=</span>nb_equip)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">bins=</span><span class="dv">20</span>, <span class="dt">fill=</span><span class="st">&#39;skyblue&#39;</span>, <span class="dt">color=</span><span class="st">&#39;#69b3a2&#39;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_log10</span>()</a></code></pre>
-      </div>
-      <h1 id="merge-geospatial-and-numeric-data">
-        Merge geospatial and numeric data
-      </h1>
-      <hr />
-      <p>
-        This is a key step in choropleth map: your 2 inputs must have a id in
-        common to make the link between them!
-      </p>
-      <div class="sourceCode" id="cb5">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Make the merge</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">spdf_fortified =<span class="st"> </span>spdf_fortified <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw">left_join</span>(. , data, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>=<span class="st">&quot;depcom&quot;</span>))</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co"># Note that if the number of restaurant is NA, it is in fact 0</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">spdf_fortified<span class="op">$</span>nb_equip[ <span class="kw">is.na</span>(spdf_fortified<span class="op">$</span>nb_equip)] =<span class="st"> </span><span class="fl">0.001</span></a></code></pre>
-      </div>
-      <h1 id="read-the-numeric-variable-1">Read the numeric variable</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            We can make a first basic choropleth map. We just need to add fill =
-            our value in the aesthetic of our polygons.
-          </p>
+      <div id="read-the-numeric-variable-1" class="section level1">
+        <h1>Read the numeric variable</h1>
+        <hr />
+        <p>
+          We can make a first basic choropleth map. We just need to add
+          <code>fill = our_value</code> in the aesthetic of our polygons.
+        </p>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(my_sf_merged) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> nb_equip)) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre>
         </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode3-1.png"
-              width="100%"
-            />
-          </p>
+        <p>
+          <img
+            src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode3-1.png"
+            width="100%"
+          />
+        </p>
+      </div>
+      <div
+        id="customized-choropleth-map-with-r-and-ggplot2"
+        class="section level1"
+      >
+        <h1>Customized choropleth map with R and ggplot2</h1>
+        <hr />
+        <p>
+          We need to change the <strong>color palette</strong>, improve the
+          <strong>legend</strong>, use a log
+          <strong>scale transformation</strong> for the colorscale, change
+          <strong>background</strong> and add <strong>titles</strong> and
+          explanation.
+        </p>
+        <p>Here is the code to do that, and the final result!</p>
+        <div class="sourceCode" id="cb7">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(my_sf_merged) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> nb_equip), <span class="at">linewidth =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">trans =</span> <span class="st">&quot;log&quot;</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;Number of restaurant&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>      <span class="at">keyheight =</span> <span class="fu">unit</span>(<span class="dv">3</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>      <span class="at">keywidth =</span> <span class="fu">unit</span>(<span class="dv">12</span>, <span class="at">units =</span> <span class="st">&quot;mm&quot;</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>      <span class="at">label.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>      <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>      <span class="at">nrow =</span> <span class="dv">1</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    )</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;South of France Restaurant concentration&quot;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Number of restaurant per city district&quot;</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Data: INSEE | Creation: Yan Holtz | r-graph-gallery.com&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;#22211d&quot;</span>),</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.01</span>, <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>        <span class="at">b =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">t =</span> <span class="fl">0.4</span>, <span class="at">l =</span> <span class="dv">2</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>        <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>      )</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    ),</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">15</span>, <span class="at">hjust =</span> <span class="fl">0.01</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>        <span class="at">b =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">t =</span> <span class="fl">0.43</span>, <span class="at">l =</span> <span class="dv">2</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>        <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>      )</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>    ),</span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(</span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">10</span>,</span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#4e4d47&quot;</span>,</span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>      <span class="at">margin =</span> <span class="fu">margin</span>(</span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>        <span class="at">b =</span> <span class="fl">0.3</span>, <span class="at">r =</span> <span class="sc">-</span><span class="dv">99</span>, <span class="at">t =</span> <span class="fl">0.3</span>,</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>        <span class="at">unit =</span> <span class="st">&quot;cm&quot;</span></span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a>      )</span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a>    ),</span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.09</span>)</span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>  )</span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a></span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>p</span></code></pre>
         </div>
+        <p>
+          <img
+            src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode9-1.png"
+            width="100%"
+          />
+        </p>
       </div>
-      <div class="sourceCode" id="cb6">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> nb_equip, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">coord_map</span>()</a></code></pre>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>
+          This post explains how to build a
+          <a href="choropleth-map.html">choropleth map</a> with R and
+          <a href="ggplot2-package.html">ggplot2</a>.
+        </p>
+        <p>
+          You might be interested in how to create an
+          <a href="183-choropleth-map-with-leaflet.html"
+            >interactive choropleth map</a
+          >, and more generally in the
+          <a href="choropleth-map.html">choropleth section</a> of the gallery.
+        </p>
+        <!-- Close container -->
       </div>
-      <h1 id="customized-choropleth-map-with-r-and-ggplot2">
-        Customized choropleth map with R and ggplot2
-      </h1>
-      <hr />
-      <p>
-        There is a bit of work to do to get a descent figure. We need to change
-        the color palette, improve the legend, use a log scale transformation
-        for the colorscale, change background and add titles and explanation.
-        Here is the code to do that, and the final result!
-      </p>
-      <div class="sourceCode" id="cb7">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">library</span>(viridis)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_polygon</span>(<span class="dt">data =</span> spdf_fortified, <span class="kw">aes</span>(<span class="dt">fill =</span> nb_equip, <span class="dt">x =</span> long, <span class="dt">y =</span> lat, <span class="dt">group =</span> group) , <span class="dt">size=</span><span class="dv">0</span>, <span class="dt">alpha=</span><span class="fl">0.9</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">  </span><span class="kw">scale_fill_viridis</span>(<span class="dt">trans =</span> <span class="st">&quot;log&quot;</span>, <span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">50</span>,<span class="dv">100</span>), <span class="dt">name=</span><span class="st">&quot;Number of restaurant&quot;</span>, <span class="dt">guide =</span> <span class="kw">guide_legend</span>( <span class="dt">keyheight =</span> <span class="kw">unit</span>(<span class="dv">3</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">keywidth=</span><span class="kw">unit</span>(<span class="dv">12</span>, <span class="dt">units =</span> <span class="st">&quot;mm&quot;</span>), <span class="dt">label.position =</span> <span class="st">&quot;bottom&quot;</span>, <span class="dt">title.position =</span> <span class="st">&#39;top&#39;</span>, <span class="dt">nrow=</span><span class="dv">1</span>) ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="st">  </span><span class="kw">labs</span>(</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="dt">title =</span> <span class="st">&quot;South of France Restaurant concentration&quot;</span>,</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">    <span class="dt">subtitle =</span> <span class="st">&quot;Number of restaurant per city district&quot;</span>,</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="dt">caption =</span> <span class="st">&quot;Data: INSEE | Creation: Yan Holtz | r-graph-gallery.com&quot;</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-11" data-line-number="11"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">    <span class="dt">text =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">&quot;#22211d&quot;</span>),</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">    <span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
-<a class="sourceLine" id="cb7-14" data-line-number="14">    <span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">    <span class="dt">legend.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;#f5f5f2&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
-<a class="sourceLine" id="cb7-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">    <span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">22</span>, <span class="dt">hjust=</span><span class="fl">0.01</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.4</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">    <span class="dt">plot.subtitle =</span> <span class="kw">element_text</span>(<span class="dt">size=</span> <span class="dv">17</span>, <span class="dt">hjust=</span><span class="fl">0.01</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">-0.1</span>, <span class="dt">t =</span> <span class="fl">0.43</span>, <span class="dt">l =</span> <span class="dv">2</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>)),</a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">    <span class="dt">plot.caption =</span> <span class="kw">element_text</span>( <span class="dt">size=</span><span class="dv">12</span>, <span class="dt">color =</span> <span class="st">&quot;#4e4d47&quot;</span>, <span class="dt">margin =</span> <span class="kw">margin</span>(<span class="dt">b =</span> <span class="fl">0.3</span>, <span class="dt">r=</span><span class="op">-</span><span class="dv">99</span>, <span class="dt">unit =</span> <span class="st">&quot;cm&quot;</span>) ),</a>
-<a class="sourceLine" id="cb7-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb7-21" data-line-number="21">    <span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="fl">0.7</span>, <span class="fl">0.09</span>)</a>
-<a class="sourceLine" id="cb7-22" data-line-number="22">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="st">  </span><span class="kw">coord_map</span>()</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">p</a></code></pre>
-      </div>
-      <p>
-        <img
-          src="327-chloropleth-map-from-geojson-with-ggplot2_files/figure-html/thecode9-1.png"
-          width="100%"
-        />
-      </p>
-      <!-- Close container -->
     </div>
     <!-- ============================ RELATED SECTION ============================ -->
     <section
@@ -622,7 +679,6 @@
         </div>
       </div>
     </section>
-
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -634,31 +690,18 @@
           <div class="col-lg-2 text-center"></div>
           <div class="col-lg-8 text-center">
             <br /><br /><br />
-            <h2 class="section-heading text-uppercase" style="color: black">
-              Contact
-            </h2>
-            <p>
-              This document is a work by
-              <a href="https://www.yan-holtz.com">Yan Holtz</a>. Any feedback is
-              highly encouraged. You can fill an issue on
-              <a href="https://github.com/holtzy/D3-graph-gallery/issues"
-                >Github</a
-              >, drop me a message on
-              <a href="https://twitter.com/R_Graph_Gallery">Twitter</a>, or send
-              an email pasting <a href="">yan.holtz.data</a> with
-              <a href="">gmail.com</a>.
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
             </p>
-            <div style="text-align: center">
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://github.com/holtzy"
-                >Github</a
-              >
-              <a
-                class="btn btn-primary btn-xl text-uppercase js-scroll-trigger"
-                href="https://twitter.com/R_Graph_Gallery"
-                >Twitter</a
-              >
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
             </div>
           </div>
         </div>

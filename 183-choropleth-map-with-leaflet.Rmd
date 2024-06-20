@@ -22,14 +22,17 @@ output:
 
 
 ```{r global options, include = FALSE}
-knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = "ragg_png", dpi = 300)
 ```
 
 <div class="container" style="padding-top: 50px" >
 
 
 
-`leaflet` is a R package allowing to build interactive maps. If you're not familiar to it, have a look to this [leaflet introduction](179-show-a-map-with-leaflet-r.html). This post is a step-by-step tutorial leading to the following [choropleth map](choropleth-map.html).
+`leaflet` is a R package allowing to build **interactive maps**. If you're not familiar to it, have a look to this [leaflet introduction](179-show-a-map-with-leaflet-r.html). This post is a step-by-step tutorial leading to the following [choropleth map](choropleth-map.html).
+
+Here is an example of what you can do with `leaflet` (try to zoom in and out!):
+
 <br>
 
 <center><iframe src="./HtmlWidget/choroplethLeaflet5.html" height="400" width="100%" style="border:none;"></iframe></center>
@@ -49,18 +52,21 @@ knitr::opts_chunk$set( warning=FALSE, message=FALSE)
 ***
 <u>Note</u>: this step is described in detail [here](168-load-a-shape-file-into-r.html). Read it if you are not familiar with geospatial data management in R.
 
-The region boundaries required to make maps are usually stored in geospatial objects. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [background map](maps.html) section for possibilities.
+The region boundaries required to make maps are usually stored in **geospatial objects**. Those objects can come from [shapefiles](168-load-a-shape-file-into-r.html), [geojson files](325-background-map-from-geojson-format-in-r.html) or provided in a [R package](278-the-maps-library.html). See the [background map](map.html) section for possibilities.
 
 This tutorial uses a geospatial object stored in a shape file available [here](http://thematicmapping.org/downloads/world_borders.php). Start by downloading the file:
 
 ```{r, eval=FALSE}
-# Download the shapefile. (note that I store it in a folder called DATA. You have to change that if needed.)
-download.file("http://thematicmapping.org/downloads/TM_WORLD_BORDERS_SIMPL-0.3.zip" , destfile="DATA/world_shape_file.zip")
+# Download the shapefile (note that I put it in a folder called DATA)
+download.file(
+  "https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/world_shape_file.zip",
+  destfile = "DATA/world_shape_file.zip"
+)
 # You now have it in your current working directory, have a look!
 
 # Unzip this file. You can do it with R (as below), or clicking on the object you downloaded.
 system("unzip DATA/world_shape_file.zip")
-#  -- > You now have 4 files. One of these files is a .shp file! (TM_WORLD_BORDERS_SIMPL-0.3.shp)
+#  -- > You now have 4 files. One of these files is a .shp file! (world_shape_file.shp)
 ```
 
 <br>
@@ -68,20 +74,19 @@ system("unzip DATA/world_shape_file.zip")
 And load it in R
 
 ```{r}
-# Read this shape file with the rgdal library. 
-library(rgdal)
-world_spdf <- readOGR( 
-  dsn= paste0(getwd(),"/DATA/world_shape_file/") , 
-  layer="TM_WORLD_BORDERS_SIMPL-0.3",
-  verbose=FALSE
-)
+# Read this shape file with the sf library.
+library(sf)
+world_sf <- read_sf(paste0(
+  getwd(), "/DATA/world_shape_file/",
+  "TM_WORLD_BORDERS_SIMPL-0.3.shp"
+))
 
 # Clean the data object
 library(dplyr)
-world_spdf@data$POP2005[ which(world_spdf@data$POP2005 == 0)] = NA
-world_spdf@data$POP2005 <- as.numeric(as.character(world_spdf@data$POP2005)) / 1000000 %>% round(2)
+world_sf <- world_sf %>%
+  mutate(POP2005 = ifelse(POP2005 == 0, NA, round(POP2005 / 1000000, 2)))
 
-# -- > Now you have a Spdf object (spatial polygon data frame). You can start doing maps!
+# -- > Now you have a sf object (simple feature data frame). You can start doing maps!
 ```
 
 
@@ -96,11 +101,11 @@ world_spdf@data$POP2005 <- as.numeric(as.character(world_spdf@data$POP2005)) / 1
 
 It is now possible to draw a first [choropleth map](choropleth-map.html). Here are the main steps to follow:
 
-- create a color palette thanks to the `colorNumeric()` function
-- make the background map with `leaflet()`, `addTiles()` and `setView()`
-- use `addPolygons()` to add the shape of all country, with a color representing the number of people in the country. 
+- create a **color palette** thanks to the `colorNumeric()` function
+- make the **background map** with `leaflet()`, `addTiles()` and `setView()`
+- use `addPolygons()` to add the **shape of all country**, with a color representing the number of people in the country. 
 
-The resulting map is quite disapointing: China and India having very numerous population, all the variation between other countries gets hard to observe on the map.
+The resulting map is quite disappointing: China and India having very numerous population, all the variation between other countries gets hard to observe on the map.
 
 <center><iframe src="./HtmlWidget/choroplethLeaflet1.html" height="400" width="100%" style="border:none;"></iframe></center>
 
@@ -110,14 +115,17 @@ The resulting map is quite disapointing: China and India having very numerous po
 library(leaflet)
 
 # Create a color palette for the map:
-mypalette <- colorNumeric( palette="viridis", domain=world_spdf@data$POP2005, na.color="transparent")
-mypalette(c(45,43))
+mypalette <- colorNumeric(
+  palette = "viridis", domain = world_sf$POP2005,
+  na.color = "transparent"
+)
+mypalette(c(45, 43))
 
 # Basic choropleth with leaflet?
-m <- leaflet(world_spdf) %>% 
-  addTiles()  %>% 
-  setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons( fillColor = ~mypalette(POP2005), stroke=FALSE )
+m <- leaflet(world_sf) %>%
+  addTiles() %>%
+  setView(lat = 10, lng = 0, zoom = 2) %>%
+  addPolygons(fillColor = ~ mypalette(POP2005), stroke = FALSE)
 
 m
 
@@ -144,7 +152,7 @@ m
 
 In a choropleth map, each region has a color that represents the value of a numeric variable (population here).
 
-It is a good practice to check the distribution of this variable to understand what kind of color scale should be used. Using a [histogram](histogram.html) is often a good option for that:
+It is a good practice to check the **distribution** of this variable to understand what kind of color scale should be used. Using a [histogram](histogram.html) is often a good option for that:
 
 </div>
 
@@ -156,11 +164,10 @@ It is a good practice to check the distribution of this variable to understand w
 library(ggplot2)
 
 # Distribution of the population per country?
-world_spdf@data %>% 
-  ggplot( aes(x=as.numeric(POP2005))) + 
-    geom_histogram(bins=20, fill='#69b3a2', color='white') +
-    xlab("Population (M)") + 
-    theme_bw()
+ggplot(world_sf, aes(x = POP2005)) +
+  geom_histogram(bins = 20, fill = "#69b3a2", color = "white") +
+  xlab("Population (M)") +
+  theme_bw()
 ```
 
 </div>
@@ -205,23 +212,42 @@ Bins
 
 ```{r, eval=FALSE}
 # Color by quantile
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("YlOrRd", POP2005)(POP2005) )
-m
- 
-# Numeric palette
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorNumeric("YlOrRd", POP2005)(POP2005) )
-m
- 
-# Bin
-m <- leaflet(world_spdf)%>% addTiles()  %>% setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons( stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorBin("YlOrRd", POP2005)(POP2005) )
+m <- leaflet(world_sf) %>%
+  addTiles() %>%
+  setView(lat = 10, lng = 0, zoom = 2) %>%
+  addPolygons(
+    stroke = FALSE, fillOpacity = 0.5,
+    smoothFactor = 0.5, color = ~ colorQuantile("YlOrRd", POP2005)(POP2005)
+  )
 m
 
-# save the widget in a html file if needed.
-# library(htmlwidgets)
-# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet2.html"))
+# # save the widget in a html file if needed.
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet2.html"))
+
+# Numeric palette
+m <- leaflet(world_sf) %>%
+  addTiles() %>%
+  setView(lat = 10, lng = 0, zoom = 2) %>%
+  addPolygons(
+    stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5,
+    color = ~ colorNumeric("YlOrRd", POP2005)(POP2005)
+  )
+m
+
+
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet3.html"))
+
+# Bin
+m <- leaflet(world_sf) %>%
+  addTiles() %>%
+  setView(lat = 10, lng = 0, zoom = 2) %>%
+  addPolygons(
+    stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5,
+    color = ~ colorBin("YlOrRd", POP2005)(POP2005)
+  )
+m
+
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet4.html"))
 ```
 
 
@@ -238,10 +264,10 @@ m
 # Customizied leaflet choropleth map
 ***
 
-In order to get a quality choropleth map, there are several improvements we need to apply:
+In order to get a **quality** [choropleth map](choropleth-map.html), there are several improvements we need to apply:
 
 - Add a legend with `addLegend()`
-- Change the color scale: binning is a good option here since it avoids to put too much weight on China and India
+- Change the **color scale**: binning is a good option here since it **avoids to put too much weight** on China and India
 - Add a tooltip with `labelOptions`. When you hover a specific region, a box appears with custom text. This is very handy to add additional information to your map.
 
 Here is the result and the code:
@@ -253,57 +279,62 @@ Here is the result and the code:
 ```{r, eval=FALSE}
 # Create a color palette with handmade bins.
 library(RColorBrewer)
-mybins <- c(0,10,20,50,100,500,Inf)
-mypalette <- colorBin( palette="YlOrBr", domain=world_spdf@data$POP2005, na.color="transparent", bins=mybins)
- 
+mybins <- c(0, 10, 20, 50, 100, 500, Inf)
+mypalette <- colorBin(
+  palette = "YlOrBr", domain = world_sf$POP2005,
+  na.color = "transparent", bins = mybins
+)
+
 # Prepare the text for tooltips:
 mytext <- paste(
-    "Country: ", world_spdf@data$NAME,"<br/>", 
-    "Area: ", world_spdf@data$AREA, "<br/>", 
-    "Population: ", round(world_spdf@data$POP2005, 2), 
-    sep="") %>%
+  "Country: ", world_sf$NAME, "<br/>",
+  "Area: ", world_sf$AREA, "<br/>",
+  "Population: ", round(world_sf$POP2005, 2),
+  sep = ""
+) %>%
   lapply(htmltools::HTML)
- 
+
 # Final Map
-leaflet(world_spdf) %>% 
-  addTiles()  %>% 
-  setView( lat=10, lng=0 , zoom=2) %>%
-  addPolygons( 
-    fillColor = ~mypalette(POP2005), 
-    stroke=TRUE, 
-    fillOpacity = 0.9, 
-    color="white", 
-    weight=0.3,
+m <- leaflet(world_sf) %>%
+  addTiles() %>%
+  setView(lat = 10, lng = 0, zoom = 2) %>%
+  addPolygons(
+    fillColor = ~ mypalette(POP2005),
+    stroke = TRUE,
+    fillOpacity = 0.9,
+    color = "white",
+    weight = 0.3,
     label = mytext,
-    labelOptions = labelOptions( 
-      style = list("font-weight" = "normal", padding = "3px 8px"), 
-      textsize = "13px", 
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "13px",
       direction = "auto"
     )
   ) %>%
-  addLegend( pal=mypalette, values=~POP2005, opacity=0.9, title = "Population (M)", position = "bottomleft" )
+  addLegend(
+    pal = mypalette, values = ~POP2005, opacity = 0.9,
+    title = "Population (M)", position = "bottomleft"
+  )
 
-m  
-  
+m
+
 # save the widget in a html file if needed.
-# library(htmlwidgets)
-# saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet5.html"))
+# htmlwidgets::saveWidget(m, file=paste0( getwd(), "/HtmlWidget/choroplethLeaflet5.html"))
 ```
   
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+# Going further
+***
+
+This post explains how to build a basic [choropleth map](choropleth-map.html) with R and the leaflet package.
+
+You might be interested in how to create a [choropleth map in ggplot2](327-chloropleth-map-from-geojson-with-ggplot2.html), and more generally in the [choropleth section](choropleth-map.html).
 
 </div>
-
-
-
-
 
 
 ```{r, echo=FALSE}

@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Beeswarm plot &#124; the R Graph Gallery</title>
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="How to build a beeswarm plot with R and the beeswarm and ggbeeswarm packages: from the most basic example to highly customized examples."
+    />
+    <meta
+      name="keywords"
+      content="Data,Dataviz,Datavisualization,Javascript,R,ggplot2,beeswarm,swarm"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <meta
+      property="og:title"
+      content="Beeswarm plot &#124; the R Graph Gallery"
+    />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta
+      property="og:description"
+      content="How to build a beeswarm plot with R and the beeswarm and ggbeeswarm packages: from the most basic example to highly customized examples."
+    />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body id="page-top">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <div id="modal_subscribe_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
+      });
+    </script>
+
+    <!-- Header -->
+    <header class="masthead" style="padding-top: 150px; padding-bottom: 80px">
+      <div class="textlanding">
+        <h1>Beeswarm plot</h1>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <br /><br />
+        <p style="max-width: 700px; margin: auto">
+          A <b>beeswarm plot</b>, also known as a swarmplot, is a graph type
+          that presents individual data points without overlap, creating a
+          distinct "swarming" effect reminiscent of a bee swarm.<br />In this
+          section, we present various examples implemented using R and the
+          <code>beeswarm</code> and <code>ggbeeswarm</code> packages.
+        </p>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    <!-- ======================== PORTFOLIO SECTION ============================ -->
+    <!-- Images must be 480 x 480, resize them with ./script_reformat_img.sh output_name.png -->
+    <section class="bg" id="portfolio" style="padding-top: 10px">
+      <div class="container">
+        <div class="mySeryTitle">The <code>beeswarm</code> package.</div>
+        <hr />
+        <p>
+          This simple-to-use package allows to build <b>beeswarm</b> plots in R
+          with just one or two lines of code.
+        </p>
+        <p>
+          It is a great choice for <b>simple and quick visualizations</b>. The
+          package is available on CRAN, so you can install it with
+          <code>install.packages("beeswarm")</code>.
+        </p>
+        <div id="portfolio-items" class="row">
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="370-basic-beeswarm-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Most basic beeswarm</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    The most basic beeswarm plot you can build with R
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/370-basic-beeswarm-plot-1.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="370-basic-beeswarm-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Flipped beeswarm</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Flip the beeswarm plot to have the variable on the y axis
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/370-basic-beeswarm-plot-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="371-custom-dots-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Change color of the dots</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Change the color of the dots in a beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/371-custom-dots-beeswarm-1.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="371-custom-dots-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Change style of the dots</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Custom the style of the dots in a beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/371-custom-dots-beeswarm-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="371-custom-dots-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Dots size</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Change the size of the dots in a beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/371-custom-dots-beeswarm-3.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="372-grouped-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Grouped beeswarm</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Most simple way to build a grouped beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/372-grouped-beeswarm-1.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="372-grouped-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Grouped and colored beeswarm</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Custom the colors of the dots in a grouped beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/372-grouped-beeswarm-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a class="portfolio-link" href="372-grouped-beeswarm.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Change dot position</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Change the position behavior of the dots in a grouped
+                    beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/372-grouped-beeswarm-3.png"
+                alt=""
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg" id="portfolio" style="padding-top: 10px">
+      <div class="container">
+        <div class="mySeryTitle">The <code>ggbeeswarm</code> package.</div>
+        <hr />
+        <p>
+          This package is a <a href="ggplot2-package.html">ggplot2</a> extension
+          that allows to build <b>beeswarm</b> plots directly from the
+          <a href="ggplot2-package.html">ggplot2</a> package.
+        </p>
+        <p>
+          It is a great choice for <b>highly customized visualizations</b> since
+          it allows us to use the
+          <a href="ggplot2-package.html">ggplot2</a> syntax and features. The
+          package is available on CRAN, so you can install it with
+          <code>install.packages("ggbeeswarm")</code>.
+        </p>
+
+        <div id="portfolio-items" class="row">
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="373-basic-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Most basic beeswarm</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Combine ggplot2 and ggbeeswarm to build a basic beeswarm
+                    plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/373-basic-beeswarm-with-ggbeeswarm-1.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="373-basic-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Flipped beeswarm plot</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Flip the beeswarm plot to have the variable on the y axis
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/373-basic-beeswarm-with-ggbeeswarm-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="373-basic-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Custom color and theme</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Custom colors and overall theme of a beeswarm plot
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/373-basic-beeswarm-with-ggbeeswarm-3.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="374-grouped-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Simple grouped beeswarm plot</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Grouped beeswarm plot according to a categorical variable
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/374-grouped-beeswarm-with-ggbeeswarm-1.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="374-grouped-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Grouped with color</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Grouped beeswarm plot with custom colors
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/374-grouped-beeswarm-with-ggbeeswarm-2.png"
+                alt=""
+              />
+            </a>
+          </div>
+
+          <div class="col-md-4 col-sm-6 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="374-grouped-beeswarm-with-ggbeeswarm.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <p>Grouped with custom color</p>
+                  <hr />
+                  <p class="explanation_portfolio">
+                    Grouped beeswarm plot with custom colors and style
+                  </p>
+                </div>
+              </div>
+              <img
+                class="img-fluid imgOfPortfolio"
+                src="img/graph/374-grouped-beeswarm-with-ggbeeswarm-3.png"
+                alt=""
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="violin.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Violin150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Violin</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="density-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Density150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Density</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="histogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Histogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Histogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="boxplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Box1150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Boxplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="ridgeline-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Joyplot150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Ridgeline</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ CONTACT SECTION ============================ -->
+
+    <!-- ANCHOR -->
+    <a name="contactanchor"></a>
+
+    <section id="contact" class="bg" style="background-color: white"></section>
+
+    <!-- THIS ALLOWS TO INSERT THE CONTACT CHUNK THAT IS STORED IN A CONTACT.HTML FILE-->
+    <script>
+      $(function () {
+        $("#contact").load("html_chunk/contact.html");
+      });
+    </script>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter"></footer>
+
+    <!-- THIS ALLOWS TO INSERT THE FOOTER THAT IS STORED IN A FOOTER.HTML FILE-->
+    <script>
+      $(function () {
+        $("#myFooter").load("html_chunk/footer.html");
+      });
+    </script>
+
+    <!-- ============================ -->
+
+    <!-- =============== JAVASCRIPT SECTION =============== -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+
+    <!--============================== -->
+  </body>
+</html>
