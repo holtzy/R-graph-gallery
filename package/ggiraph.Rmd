@@ -1,0 +1,380 @@
+---
+title: "Make ggplot2 dynamic and interactive with **ggiraph**"
+logo: "ggiraph"
+descriptionMeta: "This post explains how to create interactive ggplot2 graphs with a high level of customization using the **ggiraph** extension. It provides several reproducible examples and detailed explanations."
+descriptionTop: "The `ggiraph` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of creating **interactive** and **dynamic** graphs. It's an htmlwidget, which means it's highly compatible with RMarkdown/Quarto document and Shiny application.<br/><br/>This post showcases the **key features** of `ggiraph` and provides a set of **graph examples** using the package."
+documentationLink: "ardata.fr/ggiraph-book/"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+
+The `ggiraph` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **creating interactive charts**.
+
+Try to **hover** the chart below:
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a set of function to **add interactivity** such as `geom_point_interactive()` for an interactive version of `geom_point()`, `geom_sf_interactive()` for an interactive version of `geom_sf()` etc.
+
+✍️ **author** &rarr; David Gohel
+
+📘 **documentation** &rarr; [github](https://github.com/davidgohel/ggiraph)
+
+⭐️ *more than 500 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "65%", fig.align='center'}
+library(ggplot2)
+library(ggiraph)
+
+myplot <- ggplot(
+  data = diamonds,
+  mapping = aes(x = color, fill = cut, data_id = cut)
+) +
+  theme_minimal() +
+  geom_bar_interactive(
+    aes(tooltip = sprintf("%s: %.0f", fill, after_stat(count))),
+    size = 3
+  )
+
+interactive_plot <- girafe(ggobj = myplot)
+htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-1.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-1.html" height="400" width="400" style="border:none;"></iframe>
+
+</div>
+</div>
+
+# Installation
+***
+To get started with `ggiraph`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("ggiraph")
+```
+
+# Basic usage 
+***
+
+Here's an example of the `geom_point_interactive()` function that "replaces" the original `geom_point()` from [ggplot2](../ggplot2-package.html).
+
+Note that what makes the chart **interactive** in the `tooltip` (column of dataset that contains tooltips to be displayed when mouse is over elements) and `data_id` (column of dataset that contains id to be associated with elements) arguments.
+
+```{r}
+library(ggiraph)
+library(tidyverse)
+
+mtcars_db <- rownames_to_column(mtcars, var = "carname")
+
+myplot <- ggplot(
+  data = mtcars_db,
+  mapping = aes(
+    x = disp, y = qsec,
+    # here we add iteractive aesthetics
+    tooltip = carname, data_id = carname
+  )
+) +
+  geom_point_interactive(
+    size = 3, hover_nearest = TRUE
+  )
+
+interactive_plot <- girafe(ggobj = myplot)
+htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-2.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-2.html" height="700" width="700" style="border:none;"></iframe>
+
+# Key features
+***
+
+## &rarr; Combining Plots
+
+`ggiraph` becomes very powerful when **multiple plots** are displayed in the same charts. Due to its efficient mapping, we can easily create **"connected" plots** with cool hover effects!
+
+Example:
+
+```{r}
+library(ggiraph)
+library(tidyverse)
+library(patchwork)
+
+mtcars_db <- rownames_to_column(mtcars, var = "carname")
+
+# First plot: Scatter plot
+scatter <- ggplot(
+  data = mtcars_db,
+  mapping = aes(
+    x = disp, y = qsec,
+    tooltip = carname, data_id = carname
+  )
+) +
+  geom_point_interactive(
+    size = 3, hover_nearest = TRUE
+  ) +
+  labs(
+    title = "Displacement vs Quarter Mile",
+    x = "Displacement", y = "Quarter Mile"
+  ) +
+  theme_bw()
+
+# Second plot: Bar plot
+bar <- ggplot(
+  data = mtcars_db,
+  mapping = aes(
+    x = reorder(carname, mpg), y = mpg,
+    tooltip = paste("Car:", carname, "<br>MPG:", mpg),
+    data_id = carname
+  )
+) +
+  geom_col_interactive(fill = "skyblue") +
+  coord_flip() +
+  labs(
+    title = "Miles per Gallon by Car",
+    x = "Car", y = "Miles per Gallon"
+  ) +
+  theme_bw()
+
+# Combine the plots using patchwork
+combined_plot <- scatter + bar +
+  plot_layout(ncol = 2)
+
+# Create a single interactive plot with both subplots
+interactive_plot <- girafe(ggobj = combined_plot)
+
+# Set options for the interactive plot
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
+  opts_selection(type = "single", css = "fill:red;stroke:black;"),
+  opts_toolbar(saveaspng = FALSE)
+)
+
+htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-3.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-3.html" height="600" width="820" style="border:none;"></iframe>
+
+## &rarr; Use your own CSS for better styling
+
+Thanks to the `options` argument in the `girafe()` function, we can provide lots of customization feature with **CSS**:
+
+- colors
+- hover effects
+- shapes
+- durations
+
+Example:
+
+```{r}
+library(ggiraph)
+library(tidyverse)
+library(ggplot2)
+library(hrbrthemes)
+library(viridis)
+library(scales)
+
+# Prepare data
+mtcars_db <- rownames_to_column(mtcars, var = "carname") %>%
+  mutate(efficiency = ifelse(mpg > mean(mpg), "Above Average", "Below Average"))
+
+# Create the plot
+barplot <- ggplot(
+  data = mtcars_db,
+  mapping = aes(
+    x = reorder(carname, mpg),
+    y = mpg,
+    tooltip = paste(
+      "<strong>Car:</strong>", carname,
+      "<br><strong>MPG:</strong>", round(mpg, 1),
+      "<br><strong>Horsepower:</strong>", hp,
+      "<br><strong>Weight:</strong>", wt, "tons"
+    ),
+    data_id = carname,
+    fill = mpg,
+    color = efficiency
+  )
+) +
+  geom_col_interactive(width = 0.7) +
+  coord_flip() +
+  scale_fill_viridis(option = "C") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(title = "Miles per Gallon by Car") +
+  theme_ipsum(base_size = 14, plot_title_size = 22) +
+  theme(
+    legend.position = "none",
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(size = 10),
+    panel.background = element_rect(fill = "white")
+  )
+
+# Create interactive plot
+interactive_plot <- girafe(
+  ggobj = barplot,
+  width_svg = 10,
+  height_svg = 8,
+  options = list(
+    opts_hover(css = "fill:#6f1d1b;"),
+    opts_hover_inv(css = "opacity:0.3;"),
+    opts_selection(type = "multiple", css = "fill:#FF851B;stroke:black;"),
+    opts_toolbar(saveaspng = FALSE, position = "topright", delay_mouseout = 10000),
+    opts_tooltip(
+      css = "background-color:black;color:white;padding:30px;border-radius:10px;box-shadow:10px 10px 10px rgba(0,0,0,0.3);font-family:Arial;font-size:20px;",
+      opacity = 0.9,
+      use_fill = TRUE
+    ),
+    opts_sizing(rescale = TRUE),
+    opts_zoom(max = 2)
+  )
+)
+
+# Save the plot
+htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-4.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-4.html" height="650" width="750" style="border:none;"></iframe>
+
+## &rarr; `onclick` effects with JavaScript
+
+Using the `onclick` argument, you can define actions to be performed when the user clicks on certain parameters using JavaScript (JS).
+
+In the following example, we use JS to make the rectangles change colour and display confetti when the user clicks.
+
+```{r}
+library(ggplot2)
+library(ggiraph)
+library(htmltools)
+
+my_text <- "the R-Graph-Gallery"
+p1 <- ggplot(
+  data = diamonds,
+  mapping = aes(x = color, fill = cut, data_id = cut)
+) +
+  geom_bar_interactive(
+    aes(tooltip = sprintf("%s: %.0f", fill, after_stat(count))),
+    size = 10,
+    `data-blah` = my_text,
+    extra_interactive_params = c("data-blah"),
+    onclick = paste0(
+      "this.style.fill = this.style.fill === \"red\" ? this.getAttribute(\"original-fill\") : \"red\";",
+      "this.classList.toggle(\"highlighted\");",
+      "var tooltip = document.getElementById(\"custom-tooltip\");",
+      "tooltip.innerHTML = \"A chart by: \" + this.getAttribute(\"data-blah\");",
+      "tooltip.style.display = \"block\";",
+      "tooltip.style.left = (event.pageX + 10) + \"px\";",
+      "tooltip.style.top = (event.pageY + 10) + \"px\";",
+      "setTimeout(function() { tooltip.style.display = \"none\"; }, 1500);",
+      "confetti({
+        particleCount: 1000,
+        spread: 70,
+        origin: { y: 0.6 }
+      });"
+    )
+  ) +
+  theme_classic()
+
+interactive_plot <- girafe(ggobj = p1)
+
+html_content <- htmltools::tags$html(
+  htmltools::tags$head(
+    htmltools::tags$script(src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"),
+    htmltools::tags$style("
+      .highlighted {
+        stroke: black;
+        stroke-width: 2px;
+      }
+      #custom-tooltip {
+        position: absolute;
+        background: white;
+        border: 1px solid black;
+        padding: 5px;
+        display: none;
+        pointer-events: none;
+      }
+    ")
+  ),
+  htmltools::tags$body(
+    interactive_plot,
+    htmltools::tags$div(id = "custom-tooltip")
+  )
+)
+
+htmltools::save_html(html_content, "../HtmlWidget/ggiraph-5.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-5.html" height="650" width="750" style="border:none;"></iframe>
+
+## &rarr; Interactive maps
+
+Interactivity is a very interesting feature, **especially** for [choropleth maps](../choropleth-map.html), as it is very intuitive to **fly over a specific region** and want to know more.
+
+In the following example, we see how to use `ggiraph` with [sf](sf.html) to create an interactive choropleth map with additional information:
+
+```{r}
+library(ggthemes)
+library(sf)
+
+atlas <- readr::read_rds(
+  "https://github.com/viniciusoike/restateinsight/raw/main/static/data/atlas_sp_hdi.rds"
+)
+choropleth <- ggplot(atlas) +
+  geom_sf_interactive(aes(
+    fill = HDI,
+    tooltip = paste(
+      "<strong>HDI:</strong>", HDI,
+      "<br><strong>Population:</strong>", round(pop, 1)
+    ),
+    data_id = code_udh
+  ), lwd = 0.05, color = "white") +
+  scale_fill_fermenter(
+    name = "",
+    breaks = seq(0.65, 0.95, 0.05),
+    direction = 1,
+    palette = "YlGnBu"
+  ) +
+  labs(
+    title = "HDI in Sao Paulo, BR (2010)",
+    subtitle = "Microregion HDI in Sao Paulo",
+    caption = "Source: Atlas Brasil"
+  ) +
+  theme_map() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 18, hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+
+interactive_plot <- girafe(ggobj = choropleth)
+htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-6.html")
+```
+
+<iframe src="../HtmlWidget/ggiraph-6.html" height="1000" width="750" style="border:none;"></iframe>
+
+# Gallery of ggiraph examples
+***
+<section class=bg id=portfolio style=padding-top:10px><div class=container><div class=row id=portfolio-items><div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-dumbbell-chart-with-a-gap-column.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dumbbell plot with gap section<hr><p class=explanation_portfolio>An extended dumbbell plot originally published by the Pew research center. Clean design with a gap section on the right hand side.</div></div><img alt="Dumbell chart with gap column on the right"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-dumbbell-chart-with-a-gap-column-2.png></a></div><div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../line-chart-dual-Y-axis-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Dual Y axis<hr><p class=explanation_portfolio>A few examples showing how to use the sec.axis argument to add a second Y axis.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/graph/line-chart-dual-Y-axis-ggplot2_2.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><a class=portfolio-link href=../web-circular-lollipop-plot-with-ggplot2.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Circular lollipop chart<hr><p class=explanation_portfolio>A circular lollipop chart with customized layout, in circle legend and groups.<br><br>A work by <b>Cédric Scherer</b> for the <b>TidyTuesday</b> challenge.</div></div><img alt="Circular lollipop chart with R and ggplot2"class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2-square.png></a></div><div class="portfolio-item col-sm-6 col-md-5"><div class=portfolio-item><a class=portfolio-link href=../web-lineplots-and-area-chart-the-economist.html><div class=portfolio-hover><div class=portfolio-hover-content><p>Line and Area charts by The Economist<hr><p class=explanation_portfolio>Learn how to mimick the style of The Economist with libraries like ggplot2, ggiraph, grid, ggtext and more.</div></div><img alt=""class="img-fluid imgOfPortfolio"src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png></a></div></div></div></div></section>
+
+<!-- Close container -->
+</div>
