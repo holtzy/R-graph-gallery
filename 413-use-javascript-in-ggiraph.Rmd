@@ -1,0 +1,275 @@
+---
+title: "Use JavaScript for ggiraph"
+descriptionMeta: "This post explains how to use the ggiraph package to create interactive graph and how to JavaScript to add additional effects for your ggplot interactive graphs."
+descriptionTop: "This post explains how to use the [ggiraph](package/ggiraph.html) package to create **interactive graph** and how to **JavaScript** to add additional effects for your ggplot interactive graphs, with reproducible code and explanations.<br><br>For an introduction to `ggiraph`, check the [dedicated post](package/ggiraph.html)"
+sectionText: "Interactive section"
+sectionLink: "interactive-charts.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "413-use-javascript-in-ggiraph"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+
+# Libraries and dataset
+***
+
+First we need to load the [ggiraph](package/ggiraph.html) and [ggplot2](ggplot2-package.html) libraries.
+
+The input dataset is about **consumer confidence** in 9 different countries at differente dates:
+
+```{r}
+# library
+library(ggplot2)
+library(ggiraph)
+library(tidyverse)
+library(gapminder)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+
+# The dataset is provided in the gapminder library
+data <- gapminder %>%
+  filter(year == "2007") %>%
+  dplyr::select(-year) %>%
+  arrange(desc(pop)) %>%
+  mutate(country = factor(country, country))
+```
+
+
+
+# Simple bubble chart
+***
+
+Let's start with a **simple interactive version** of this bubble chart. It uses the `geom_point_interactive()` function to replace the `geom_point()` one and make it interactive.
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = gdpPercap,
+    y = lifeExp,
+    size = pop,
+    fill = continent,
+    tooltip = paste("Country:", country, "<br>Life Expectancy:", lifeExp, "<br>GDP per capita:", gdpPercap),
+    data_id = continent
+  )) +
+  geom_point_interactive(alpha = 0.5, shape = 21, color = "black") +
+  scale_size(range = c(.1, 24), name = "Population (M)") +
+  scale_fill_viridis(discrete = TRUE, guide = FALSE, option = "A") +
+  theme_ipsum() +
+  ylab("Life Expectancy") +
+  xlab("Gdp per Capita") +
+  theme(legend.position = "none")
+
+interactive_plot <- girafe(ggobj = plot)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-point-interactive-1.html")
+```
+
+<iframe src="HtmlWidget/geom-point-interactive-1.html" height="650" width="850" style="border:none;"></iframe>
+
+
+
+# JavaScript and the `onclick` argument
+***
+
+**JavaScript** is a powerful programming language primarily used to create **interactive and dynamic** content on web pages. When it comes to integrating **JavaScript** with R, particularly in the context of charts, one common use case involves the `onclick` **event handler**.
+
+The `onclick` argument in **JavaScript** allows you to specify functionality that should occur when an element, like a part of a chart, is clicked.
+
+Let's see a basic example where a simple **pop-up** appears when clicking on one of the bubble.
+
+*Note: all quotes `"` inside JS code must be preceded by a `\` for R to understand them correctly.*
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = gdpPercap,
+    y = lifeExp,
+    size = pop,
+    fill = continent,
+    tooltip = paste("Country:", country, "<br>Life Expectancy:", lifeExp, "<br>GDP/capita:", gdpPercap),
+    data_id = continent
+  )) +
+  geom_point_interactive(
+    alpha = 0.5,
+    shape = 21,
+    color = "black",
+    onclick = "alert(\"Hello from R-Graph-Gallery.com\");"
+  ) +
+  scale_size(range = c(.1, 24), name = "Population (M)") +
+  scale_fill_viridis(discrete = TRUE, guide = FALSE, option = "A") +
+  theme_ipsum() +
+  ylab("Life Expectancy") +
+  xlab("Gdp per Capita") +
+  labs(title = "Try to click on a bubble!") +
+  theme(legend.position = "none")
+
+interactive_plot <- girafe(ggobj = plot)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-point-interactive-2.html")
+```
+
+<iframe src="HtmlWidget/geom-point-interactive-2.html" height="650" width="850" style="border:none;"></iframe>
+
+
+
+# Change properties on click
+***
+
+The following code uses [D3.js](https://d3-graph-gallery.com/) to **change the properties** of the clicked point.
+
+For example: `d3.select(this).style(\"fill\", \"red\");` tells to your computer that `this` (**the point** you just clicked on) change its `style` so that the `fill` parameter becomes `red`.
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = gdpPercap,
+    y = lifeExp,
+    size = pop,
+    fill = continent,
+    tooltip = paste("Country:", country, "<br>Life Expectancy:", lifeExp, "<br>GDP/capita:", gdpPercap),
+    data_id = continent
+  )) +
+  geom_point_interactive(
+    alpha = 0.5,
+    shape = 21,
+    color = "black",
+    onclick = "
+      // Change point color
+      d3.select(this).style(\"fill\", \"red\");
+
+      // Increase point size
+      d3.select(this).attr(\"r\", function() {
+        return parseFloat(d3.select(this).attr(\"r\")) + 1.5;
+      });
+    "
+  ) +
+  scale_size(range = c(.1, 24), name = "Population (M)") +
+  scale_fill_viridis(discrete = TRUE, guide = FALSE, option = "A") +
+  theme_ipsum() +
+  ylab("Life Expectancy") +
+  xlab("Gdp per Capita") +
+  labs(title = "Try to click on a bubble!") +
+  theme(legend.position = "none")
+
+interactive_plot <- girafe(ggobj = plot)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-point-interactive-3.html")
+```
+
+<iframe src="HtmlWidget/geom-point-interactive-3.html" height="650" width="850" style="border:none;"></iframe>
+
+
+
+# A more advanced example
+***
+
+Since you can do anything you want with **JavaScript**, the only limitation is your imagination!
+
+The following example shows how to add a **confetti effect** when clicking + some other simple features using the `onclick` argument and a bit of **JavaScript**
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = gdpPercap,
+    y = lifeExp,
+    size = pop,
+    fill = continent,
+    tooltip = paste("Country:", country, "<br>Life Expectancy:", lifeExp, "<br>GDP/capita:", gdpPercap),
+    data_id = continent
+  )) +
+  geom_point_interactive(
+    alpha = 0.5,
+    shape = 21,
+    color = "black",
+    onclick = paste0(
+      "this.style.fill = this.style.fill === \"red\" ? this.getAttribute(\"original-fill\") : \"red\";",
+      "this.classList.toggle(\"highlighted\");",
+      "var tooltip = document.getElementById(\"custom-tooltip\");",
+      "tooltip.innerHTML = \"A chart by: R-Graph-Gallery.com\";",
+      "tooltip.style.display = \"block\";",
+      "tooltip.style.left = (event.pageX + 10) + \"px\";",
+      "tooltip.style.top = (event.pageY + 10) + \"px\";",
+      "setTimeout(function() { tooltip.style.display = \"none\"; }, 1500);",
+      "confetti({
+        particleCount: 1000,
+        spread: 70,
+        origin: { y: 0.6 }
+      });"
+    )
+  ) +
+  scale_size(range = c(.1, 24), name = "Population (M)") +
+  scale_fill_viridis(discrete = TRUE, guide = FALSE, option = "A") +
+  theme_ipsum() +
+  ylab("Life Expectancy") +
+  xlab("Gdp per Capita") +
+  labs(title = "Click on a bubble for amazing effects!") +
+  theme(legend.position = "none")
+
+interactive_plot <- girafe(ggobj = plot)
+
+html_content <- htmltools::tags$html(
+  htmltools::tags$head(
+    htmltools::tags$script(src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"),
+    htmltools::tags$style("
+      .highlighted {
+        stroke: black;
+        stroke-width: 10px;
+      }
+      #custom-tooltip {
+        position: absolute;
+        background: white;
+        border: 1px solid black;
+        padding: 5px;
+        display: none;
+        pointer-events: none;
+      }
+    ")
+  ),
+  htmltools::tags$body(
+    interactive_plot,
+    htmltools::tags$div(id = "custom-tooltip")
+  )
+)
+htmltools::save_html(html_content, "HtmlWidget/geom-point-interactive-4.html")
+```
+
+<iframe src="HtmlWidget/geom-point-interactive-4.html" height="650" width="850" style="border:none;"></iframe>
+
+
+# Going further
+***
+
+You might be interested in:
+
+- learn how [integrate CSS in ggiraph charts](412-customize-css-in-interactive-ggiraph.html)
+- discover all [ggiraph features](package/ggiraph.html)
+- browse the [interactive chart section](interactive-charts.html)
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
