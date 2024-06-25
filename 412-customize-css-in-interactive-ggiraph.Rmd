@@ -1,0 +1,242 @@
+---
+title: "Customize CSS in ggiraph"
+descriptionMeta: "This post explains how to use the ggiraph package to create interactive graph and how to customize it with additional CSS. It provides reproducible code and explanations."
+descriptionTop: "This post explains how to use the [ggiraph](package/ggiraph.html) package to create **interactive graph** and how to customize it with additional CSS, with reproducible code and explanations.<br><br>For an introduction to `ggiraph`, check the [dedicated post](package/ggiraph.html)"
+sectionText: "Interactive section"
+sectionLink: "interactive-charts.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "412-customize-css-in-interactive-ggiraph"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+
+# Libraries and dataset
+***
+
+First we need to load the [ggiraph](package/ggiraph.html) and [ggplot2](ggplot2-package.html) libraries.
+
+The input dataset is about **consumer confidence** in 9 different countries at differente dates:
+
+```{r}
+# library
+library(ggplot2)
+library(ggiraph)
+library(tidyverse)
+
+# Create data
+data <- read.csv("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/dataConsumerConfidence.csv") %>%
+  mutate(date = lubridate::my(Time)) %>%
+  select(-Time) %>%
+  pivot_longer(!date, names_to = "country", values_to = "value") %>%
+  na.omit() %>%
+  mutate(country = as.factor(country))
+```
+
+
+
+# Simple line chart
+***
+
+Let's start with a **simple interactive version** of this line chart. It uses the `geom_line_interactive()` function to replace the `geom_line()` one and make it interactive.
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = date,
+    y = value,
+    color = country,
+    tooltip = country,
+    data_id = country
+  )) +
+  geom_line_interactive(hover_nearest = TRUE) +
+  theme_classic()
+
+interactive_plot <- girafe(ggobj = plot)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-1.html")
+```
+
+<iframe src="HtmlWidget/geom-line-interactive-1.html" height="650" width="850" style="border:none;"></iframe>
+
+
+
+# Change CSS
+***
+
+Although `CSS` is primarily used for styling **web pages**, it can also be relevant in customizing visuals in **R**, especially when dealing with web-based outputs like interactive charts or Shiny applications.
+
+The easiest way to add `CSS` in [ggiraph](package/ggiraph.html) is to use the `girafe_options()` function.
+
+Then we use `opts_hover(css = "fill:#ffe7a6;stroke:black;cursor:pointer;")` to **fill the lines** on hover with a given color and change the color of the lines to black.
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = date,
+    y = value,
+    color = country,
+    tooltip = country,
+    data_id = country
+  )) +
+  geom_line_interactive(hover_nearest = TRUE) +
+  theme_classic()
+
+interactive_plot <- girafe(ggobj = plot)
+
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = "fill:#ffe7a6;stroke:black;cursor:pointer;"),
+  opts_selection(type = "single", css = "fill:red;stroke:black;"),
+  opts_toolbar(saveaspng = FALSE)
+)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-2.html")
+```
+
+<iframe src="HtmlWidget/geom-line-interactive-2.html" height="650" width="850" style="border:none;"></iframe>
+
+
+
+# More advanced usage
+***
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = date,
+    y = value,
+    color = country,
+    tooltip = country,
+    data_id = country
+  )) +
+  geom_line_interactive(hover_nearest = TRUE) +
+  theme_classic()
+
+interactive_plot <- girafe(ggobj = plot)
+
+hover_css <- "
+  fill: #ffe7a6;
+  fill-opacity: 0.5;
+  stroke: black;
+  stroke-width: 7px;
+  stroke-dasharray: 5,5;
+  transition: fill-opacity 0.5s, stroke-width 0.5s, stroke-dasharray 0.5s, filter 0.5s;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+"
+
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = hover_css),
+  opts_toolbar(saveaspng = FALSE)
+)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-3.html")
+```
+
+<iframe src="HtmlWidget/geom-line-interactive-3.html" height="650" width="850" style="border:none;"></iframe>
+
+
+# Combine CSS with other ggiraph features
+***
+
+```{r}
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = date,
+    y = value,
+    color = country,
+    group = country,
+    tooltip = paste("Country:", country, "<br>Date:", date, "<br>Value:", round(value, 2)),
+    data_id = country
+  )) +
+  geom_line_interactive(size = 1.2, hover_nearest = TRUE) +
+  geom_point_interactive(aes(size = value), alpha = 0.7) +
+  scale_color_viridis_d() +
+  scale_size_continuous(range = c(1, 2)) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Interactive Country Data Visualization",
+    subtitle = "Try to hover and click on the lines!",
+    caption = "R-Graph-Gallery.com",
+    x = "Date",
+    y = "Consumer Confidence"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 16, face = "italic"),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "ivory", color = NA),
+    plot.background = element_rect(fill = "ivory", color = NA)
+  )
+
+interactive_plot <- girafe(ggobj = plot)
+
+hover_css <- "
+  stroke: black;
+  stroke-width: 1px;
+  r: 8px;
+  transition: all 0.3s ease;
+"
+
+tooltip_css <- "
+  background-color: #2C3E50;
+  color: #ECF0F1;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+"
+
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = hover_css),
+  opts_tooltip(css = tooltip_css, use_fill = TRUE),
+  opts_selection(type = "multiple", only_shiny = FALSE),
+  opts_zoom(min = 0.5, max = 2),
+  opts_toolbar(saveaspng = TRUE, position = "topright", pngname = "country_data_plot"),
+  opts_sizing(rescale = TRUE)
+)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-4.html")
+```
+
+<iframe src="HtmlWidget/geom-line-interactive-4.html" height="750" width="890" style="border:none;"></iframe>
+
+
+# Going further
+***
+
+You might be interested in:
+
+- learn how [integrate JavaScript in ggiraph charts](413-use-javascript-in-ggiraph.html)
+- discover all [ggiraph features](package/ggiraph.html)
+- browse the [interactive chart section](interactive-charts.html)
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
