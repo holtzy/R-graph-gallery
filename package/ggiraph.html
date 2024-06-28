@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Make ggplot2 dynamic and interactive with
+<strong>ggiraph</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+interactive ggplot2 graphs with a high level of customization using the
+<strong>ggiraph</strong> extension. It provides several reproducible
+examples and detailed explanations." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Make ggplot2 dynamic and
+interactive with <strong>ggiraph</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create interactive ggplot2 graphs with a high level of customization
+using the <strong>ggiraph</strong> extension. It provides several
+reproducible examples and detailed explanations." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Make ggplot2 dynamic and interactive with
+<strong>ggiraph</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>ggiraph</code> package in R is an
+extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of creating
+<strong>interactive</strong> and <strong>dynamic</strong> graphs. It’s
+an htmlwidget, which means it’s highly compatible with RMarkdown/Quarto
+document and Shiny application.<br/><br/>This post showcases the
+<strong>key features</strong> of <code>ggiraph</code> and provides a set
+of <strong>graph examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://ardata.fr/ggiraph-book/"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/ggiraph.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{ggiraph}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>ggiraph</code> package in R is an extension of the <a
+href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+package, designed to simplify the process of <strong>creating
+interactive charts</strong>.</p>
+<p>Try to <strong>hover</strong> the chart below:</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of function to <strong>add interactivity</strong>
+such as <code>geom_point_interactive()</code> for an interactive version
+of <code>geom_point()</code>, <code>geom_sf_interactive()</code> for an
+interactive version of <code>geom_sf()</code> etc.</p>
+<p>✍️ <strong>author</strong> → David Gohel</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://github.com/davidgohel/ggiraph">github</a></p>
+<p>⭐️ <em>more than 500 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<iframe src="../HtmlWidget/ggiraph-1.html" height="400" width="400" style="border:none;">
+</iframe>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>ggiraph</code>, you can install it directly
+from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ggiraph&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>Here’s an example of the <code>geom_point_interactive()</code>
+function that “replaces” the original <code>geom_point()</code> from <a
+href="../ggplot2-package.html">ggplot2</a>.</p>
+<p>Note that what makes the chart <strong>interactive</strong> in the
+<code>tooltip</code> (column of dataset that contains tooltips to be
+displayed when mouse is over elements) and <code>data_id</code> (column
+of dataset that contains id to be associated with elements)
+arguments.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>mtcars_db <span class="ot">&lt;-</span> <span class="fu">rownames_to_column</span>(mtcars, <span class="at">var =</span> <span class="st">&quot;carname&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>myplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">data =</span> mtcars_db,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="at">x =</span> disp, <span class="at">y =</span> qsec,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="co"># here we add iteractive aesthetics</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="at">tooltip =</span> carname, <span class="at">data_id =</span> carname</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  )</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">hover_nearest =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  )</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> myplot)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-2.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-2.html" height="700" width="700" style="border:none;">
+</iframe>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="combining-plots" class="section level2">
+<h2>→ Combining Plots</h2>
+<p><code>ggiraph</code> becomes very powerful when <strong>multiple
+plots</strong> are displayed in the same charts. Due to its efficient
+mapping, we can easily create <strong>“connected” plots</strong> with
+cool hover effects!</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>mtcars_db <span class="ot">&lt;-</span> <span class="fu">rownames_to_column</span>(mtcars, <span class="at">var =</span> <span class="st">&quot;carname&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># First plot: Scatter plot</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="at">data =</span> mtcars_db,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="at">x =</span> disp, <span class="at">y =</span> qsec,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="at">tooltip =</span> carname, <span class="at">data_id =</span> carname</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  )</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>, <span class="at">hover_nearest =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Displacement vs Quarter Mile&quot;</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Displacement&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Quarter Mile&quot;</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co"># Second plot: Bar plot</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>bar <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  <span class="at">data =</span> mtcars_db,</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">reorder</span>(carname, mpg), <span class="at">y =</span> mpg,</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>    <span class="at">tooltip =</span> <span class="fu">paste</span>(<span class="st">&quot;Car:&quot;</span>, carname, <span class="st">&quot;&lt;br&gt;MPG:&quot;</span>, mpg),</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>    <span class="at">data_id =</span> carname</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  )</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="at">fill =</span> <span class="st">&quot;skyblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Miles per Gallon by Car&quot;</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Car&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Miles per Gallon&quot;</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co"># Combine the plots using patchwork</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> scatter <span class="sc">+</span> bar <span class="sc">+</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co"># Create a single interactive plot with both subplots</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co"># Set options for the interactive plot</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>  interactive_plot,</span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:cyan;stroke:black;cursor:pointer;&quot;</span>),</span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>  <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;single&quot;</span>, <span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>),</span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>  <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>)</span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-3.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-3.html" height="600" width="820" style="border:none;">
+</iframe>
+</div>
+<div id="use-your-own-css-for-better-styling" class="section level2">
+<h2>→ Use your own CSS for better styling</h2>
+<p>Thanks to the <code>options</code> argument in the
+<code>girafe()</code> function, we can provide lots of customization
+feature with <strong>CSS</strong>:</p>
+<ul>
+<li>colors</li>
+<li>hover effects</li>
+<li>shapes</li>
+<li>durations</li>
+</ul>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>mtcars_db <span class="ot">&lt;-</span> <span class="fu">rownames_to_column</span>(mtcars, <span class="at">var =</span> <span class="st">&quot;carname&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">efficiency =</span> <span class="fu">ifelse</span>(mpg <span class="sc">&gt;</span> <span class="fu">mean</span>(mpg), <span class="st">&quot;Above Average&quot;</span>, <span class="st">&quot;Below Average&quot;</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co"># Create the plot</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>barplot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="at">data =</span> mtcars_db,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">reorder</span>(carname, mpg),</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="at">y =</span> mpg,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">tooltip =</span> <span class="fu">paste</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="st">&quot;&lt;strong&gt;Car:&lt;/strong&gt;&quot;</span>, carname,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="st">&quot;&lt;br&gt;&lt;strong&gt;MPG:&lt;/strong&gt;&quot;</span>, <span class="fu">round</span>(mpg, <span class="dv">1</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="st">&quot;&lt;br&gt;&lt;strong&gt;Horsepower:&lt;/strong&gt;&quot;</span>, hp,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>      <span class="st">&quot;&lt;br&gt;&lt;strong&gt;Weight:&lt;/strong&gt;&quot;</span>, wt, <span class="st">&quot;tons&quot;</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    ),</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    <span class="at">data_id =</span> carname,</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    <span class="at">fill =</span> mpg,</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>    <span class="at">color =</span> efficiency</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  )</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>  <span class="fu">scale_fill_viridis</span>(<span class="at">option =</span> <span class="st">&quot;C&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))) <span class="sc">+</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Miles per Gallon by Car&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>  <span class="fu">theme_ipsum</span>(<span class="at">base_size =</span> <span class="dv">14</span>, <span class="at">plot_title_size =</span> <span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>  )</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co"># Create interactive plot</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>  <span class="at">ggobj =</span> barplot,</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>  <span class="at">width_svg =</span> <span class="dv">10</span>,</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>  <span class="at">height_svg =</span> <span class="dv">8</span>,</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:#6f1d1b;&quot;</span>),</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">&quot;opacity:0.3;&quot;</span>),</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>    <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;multiple&quot;</span>, <span class="at">css =</span> <span class="st">&quot;fill:#FF851B;stroke:black;&quot;</span>),</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>    <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">&quot;topright&quot;</span>, <span class="at">delay_mouseout =</span> <span class="dv">10000</span>),</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>      <span class="at">css =</span> <span class="st">&quot;background-color:black;color:white;padding:30px;border-radius:10px;box-shadow:10px 10px 10px rgba(0,0,0,0.3);font-family:Arial;font-size:20px;&quot;</span>,</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>      <span class="at">opacity =</span> <span class="fl">0.9</span>,</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>      <span class="at">use_fill =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>    ),</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>    <span class="fu">opts_sizing</span>(<span class="at">rescale =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>    <span class="fu">opts_zoom</span>(<span class="at">max =</span> <span class="dv">2</span>)</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>  )</span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>)</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a></span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a><span class="co"># Save the plot</span></span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-4.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-4.html" height="650" width="750" style="border:none;">
+</iframe>
+</div>
+<div id="onclick-effects-with-javascript" class="section level2">
+<h2>→ <code>onclick</code> effects with JavaScript</h2>
+<p>Using the <code>onclick</code> argument, you can define
+<strong>actions</strong> to be performed when the user
+<strong>clicks</strong> on certain parameters using JavaScript (JS).</p>
+<p>In the following example, we use JS to make the rectangles
+<strong>change colour</strong> and <strong>display confetti</strong>
+when the user clicks.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">library</span>(htmltools)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>my_text <span class="ot">&lt;-</span> <span class="st">&quot;the R-Graph-Gallery&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">data =</span> diamonds,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> color, <span class="at">fill =</span> cut, <span class="at">data_id =</span> cut)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">geom_bar_interactive</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">tooltip =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%s: %.0f&quot;</span>, fill, <span class="fu">after_stat</span>(count))),</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">10</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="st">`</span><span class="at">data-blah</span><span class="st">`</span> <span class="ot">=</span> my_text,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">extra_interactive_params =</span> <span class="fu">c</span>(<span class="st">&quot;data-blah&quot;</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">onclick =</span> <span class="fu">paste0</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>      <span class="st">&quot;this.style.fill = this.style.fill === </span><span class="sc">\&quot;</span><span class="st">red</span><span class="sc">\&quot;</span><span class="st"> ? this.getAttribute(</span><span class="sc">\&quot;</span><span class="st">original-fill</span><span class="sc">\&quot;</span><span class="st">) : </span><span class="sc">\&quot;</span><span class="st">red</span><span class="sc">\&quot;</span><span class="st">;&quot;</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>      <span class="st">&quot;this.classList.toggle(</span><span class="sc">\&quot;</span><span class="st">highlighted</span><span class="sc">\&quot;</span><span class="st">);&quot;</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>      <span class="st">&quot;var tooltip = document.getElementById(</span><span class="sc">\&quot;</span><span class="st">custom-tooltip</span><span class="sc">\&quot;</span><span class="st">);&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>      <span class="st">&quot;tooltip.innerHTML = </span><span class="sc">\&quot;</span><span class="st">A chart by: </span><span class="sc">\&quot;</span><span class="st"> + this.getAttribute(</span><span class="sc">\&quot;</span><span class="st">data-blah</span><span class="sc">\&quot;</span><span class="st">);&quot;</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>      <span class="st">&quot;tooltip.style.display = </span><span class="sc">\&quot;</span><span class="st">block</span><span class="sc">\&quot;</span><span class="st">;&quot;</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>      <span class="st">&quot;tooltip.style.left = (event.pageX + 10) + </span><span class="sc">\&quot;</span><span class="st">px</span><span class="sc">\&quot;</span><span class="st">;&quot;</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>      <span class="st">&quot;tooltip.style.top = (event.pageY + 10) + </span><span class="sc">\&quot;</span><span class="st">px</span><span class="sc">\&quot;</span><span class="st">;&quot;</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>      <span class="st">&quot;setTimeout(function() { tooltip.style.display = </span><span class="sc">\&quot;</span><span class="st">none</span><span class="sc">\&quot;</span><span class="st">; }, 1500);&quot;</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>      <span class="st">&quot;confetti({</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="st">        particleCount: 1000,</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="st">        spread: 70,</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="st">        origin: { y: 0.6 }</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="st">      });&quot;</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>    )</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> p1)</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>html_content <span class="ot">&lt;-</span> htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">html</span>(</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>  htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">head</span>(</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>    htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">script</span>(<span class="at">src =</span> <span class="st">&quot;https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js&quot;</span>),</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>    htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">style</span>(<span class="st">&quot;</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="st">      .highlighted {</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="st">        stroke: black;</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="st">        stroke-width: 2px;</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="st">      #custom-tooltip {</span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="st">        position: absolute;</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="st">        background: white;</span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="st">        border: 1px solid black;</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="st">        padding: 5px;</span></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="st">        display: none;</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="st">        pointer-events: none;</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="st">    &quot;</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>  ),</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>  htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">body</span>(</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>    interactive_plot,</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>    htmltools<span class="sc">::</span>tags<span class="sc">$</span><span class="fu">div</span>(<span class="at">id =</span> <span class="st">&quot;custom-tooltip&quot;</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>  )</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>)</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(html_content, <span class="st">&quot;../HtmlWidget/ggiraph-5.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-5.html" height="650" width="750" style="border:none;">
+</iframe>
+</div>
+<div id="interactive-maps" class="section level2">
+<h2>→ Interactive maps</h2>
+<p>Interactivity is a very interesting feature,
+<strong>especially</strong> for <a
+href="../choropleth-map.html">choropleth maps</a>, as it is very
+intuitive to <strong>fly over a specific region</strong> and want to
+know more.</p>
+<p>In the following example, we see how to use <code>ggiraph</code> with
+<a href="sf.html">sf</a> to create an interactive choropleth map with
+additional information:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="st">&quot;https://github.com/viniciusoike/restateinsight/raw/main/static/data/atlas_sp_hdi.rds&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>choropleth <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">geom_sf_interactive</span>(<span class="fu">aes</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">fill =</span> HDI,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">tooltip =</span> <span class="fu">paste</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>      <span class="st">&quot;&lt;strong&gt;HDI:&lt;/strong&gt;&quot;</span>, HDI,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      <span class="st">&quot;&lt;br&gt;&lt;strong&gt;Population:&lt;/strong&gt;&quot;</span>, <span class="fu">round</span>(pop, <span class="dv">1</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    ),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="at">data_id =</span> code_udh</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  ), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>),</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;YlGnBu&quot;</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;HDI in Sao Paulo, BR (2010)&quot;</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Microregion HDI in Sao Paulo&quot;</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Source: Atlas Brasil&quot;</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="fu">theme_map</span>() <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  )</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> choropleth)</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-6.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-6.html" height="1000" width="750" style="border:none;">
+</iframe>
+</div>
+</div>
+<div id="gallery-of-ggiraph-examples" class="section level1">
+<h1>Gallery of ggiraph examples</h1>
+<hr />
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../412-customize-css-in-interactive-ggiraph.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Custom the fill properties using CSS
+<hr>
+<p class="explanation_portfolio">
+Learn how to add your own custom CSS to your interactive ggiraph charts
+</p>
+</div>
+</div>
+<img alt="ggiraph with custom css" class="img-fluid imgOfPortfolio" src=../img/graph/412-customize-css-in-interactive-ggiraph-1.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../412-customize-css-in-interactive-ggiraph.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Change properties with hover
+<hr>
+<p class="explanation_portfolio">
+Discover how to add CSS properties for an infinite customization in
+ggiraph
+</p>
+</div>
+</div>
+<img alt="ggiraph with custom css" class="img-fluid imgOfPortfolio" src=../img/graph/412-customize-css-in-interactive-ggiraph-2.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../412-customize-css-in-interactive-ggiraph.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Advanced interactive use case
+<hr>
+<p class="explanation_portfolio">
+Learn how to combine CSS and JavaScript to create amazing interactive
+charts
+</p>
+</div>
+</div>
+<img alt="ggiraph with custom css" class="img-fluid imgOfPortfolio" src=../img/graph/412-customize-css-in-interactive-ggiraph-3.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../413-use-javascript-in-ggiraph.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Change plot properties on user click
+</p>
+<hr>
+<p class="explanation_portfolio">
+Discover how to use the <code>onclick</code> argument to add javascript
+features in your ggiraph charts
+</p>
+</div>
+</div>
+<img alt="ggiraph with javascript and onclick argument" class="img-fluid imgOfPortfolio" src=../img/graph/413-use-javascript-in-ggiraph-1.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../413-use-javascript-in-ggiraph.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Confetti effect
+</p>
+<hr>
+<p class="explanation_portfolio">
+Add a confetti effect each time you click on your chart
+</p>
+</div>
+</div>
+<img alt="ggiraph with javascript and onclick argument" class="img-fluid imgOfPortfolio" src=../img/graph/413-use-javascript-in-ggiraph-2.png>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
