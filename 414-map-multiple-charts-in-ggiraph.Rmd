@@ -31,7 +31,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
 # Most simple example
 ***
 
+In order to **map the hover effect** between multiple charts, we have to use the same value for the `data_id` argument. In our case, we want our mapping at the **car level**, using the `mtcars` dataset. 
 
+Then we put the charts together using the [patchwork package](package/patchwork.html)
 
 ```{r}
 library(ggiraph)
@@ -61,7 +63,9 @@ htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-1.html")
 # Combine 3 charts together
 ***
 
+With the `data_id` argument, we can craft **mini dashboards** featuring numerous charts.
 
+As before, we generate **three distinct charts** using the same `data_id` (in this case, the country) to form a cohesive figure with three **interconnected charts**  !
 
 ```{r}
 library(ggiraph)
@@ -124,10 +128,12 @@ htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-2.html")
 
 
 
-# JavaScript and the `onclick` argument
+# Combine with CSS
 ***
 
+_Note: If you haven't already, check the post on [how to use CSS in ggiraph](412-customize-css-in-interactive-ggiraph.html)._
 
+In this example, we'll use the `girafe_options()` function to provide **additionnal CSS** when hovering the charts. 
 
 ```{r}
 library(ggiraph)
@@ -161,7 +167,7 @@ p2 <- ggplot(education_data, aes(x = reorder(Country, Literacy_Rate), y = Litera
   labs(title = "Literacy Rate by Country", x = "Country", y = "Literacy Rate (%)") +
   theme_minimal()
 
-# Create the third chart
+# Create the third chart (Lollipop)
 p3 <- ggplot(education_data, aes(x = Average_Scores, y = reorder(Country, Average_Scores), tooltip = paste(Country, "Avg Score:", round(Average_Scores, 1)), data_id = Country)) +
   geom_segment_interactive(aes(xend = 0, yend = Country), color = "gray") +
   geom_point_interactive(size = 6, aes(color = Average_Scores)) +
@@ -189,8 +195,11 @@ interactive_plot <- interactive_plot %>%
   girafe_options(
     opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
     opts_selection(type = "single", css = "fill:red;stroke:black;"),
-    opts_toolbar(saveaspng = FALSE)
+    opts_toolbar(saveaspng = FALSE),
+    opts_sizing(rescale = TRUE),
+    opts_tooltip(css = "border: 2px solid #4CAF50; border-radius: 10px; box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2); background-color: #f9f9f9; padding: 10px;")
   )
+
 
 # Save the interactive plot
 htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-3.html")
