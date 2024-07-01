@@ -1,0 +1,224 @@
+---
+title: "Combine charts in ggiraph"
+descriptionMeta: "This post explains how to use the ggiraph package to create multiple interactive graphs, from very simple example to more complex ones."
+descriptionTop: "This post explains how to use the ggiraph package to create multiple interactive graphs, from very simple example to more complex ones.<br><br>For an introduction to `ggiraph`, check the [dedicated post](package/ggiraph.html)"
+sectionText: "Interactive section"
+sectionLink: "interactive-charts.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "414-map-multiple-charts-in-ggiraph"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+
+# Most simple example
+***
+
+
+
+```{r}
+library(ggiraph)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+data(mtcars)
+mtcars$car <- rownames(mtcars)
+
+p1 <- ggplot(mtcars, aes(wt, mpg, tooltip = car, data_id = car)) +
+  geom_point_interactive(size = 4)
+
+p2 <- ggplot(mtcars, aes(x = reorder(car, mpg), y = mpg, tooltip = car, data_id = car)) +
+  geom_col_interactive() +
+  coord_flip()
+
+combined_plot <- p1 + p2 + plot_layout(ncol = 2)
+
+interactive_plot <- girafe(ggobj = combined_plot)
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-1.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-1.html" height="650" width="850" style="border:none;"></iframe>
+
+
+# Combine 3 charts together
+***
+
+
+
+```{r}
+library(ggiraph)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(tidyr)
+set.seed(123)
+
+# Create a sample dataset
+happiness_data <- data.frame(
+  Country = c("Denmark", "Switzerland", "Iceland", "Norway", "Finland", "Canada", "Netherlands", "New Zealand", "Australia", "Sweden"),
+  Happiness_Score = rnorm(mean = 30, sd = 20, n = 10),
+  GDP_per_capita = rnorm(mean = 30, sd = 20, n = 10),
+  Social_support = rnorm(mean = 30, sd = 20, n = 10),
+  Healthy_life_expectancy = rnorm(mean = 30, sd = 20, n = 10)
+)
+
+# Create the first chart (Scatter plot)
+p1 <- ggplot(happiness_data, aes(GDP_per_capita, Happiness_Score, tooltip = Country, data_id = Country)) +
+  geom_point_interactive(size = 4, aes(color = Happiness_Score)) +
+  scale_color_viridis_c() +
+  labs(title = "GDP per Capita vs Happiness Score", x = "GDP per Capita", y = "Happiness Score") +
+  theme_minimal()
+
+# Create the second chart (Bar plot)
+p2 <- ggplot(happiness_data, aes(x = reorder(Country, Happiness_Score), y = Happiness_Score, tooltip = Country, data_id = Country)) +
+  geom_col_interactive(aes(fill = Happiness_Score)) +
+  scale_fill_viridis_c() +
+  coord_flip() +
+  labs(title = "Happiness Score by Country", x = "Country", y = "Happiness Score") +
+  theme_minimal()
+
+# Create the third chart (Heatmap)
+p3 <- ggplot(happiness_data, aes(x = Social_support, y = reorder(Country, Social_support), tooltip = paste(Country, "Social Support:", round(Social_support, 3)), data_id = Country)) +
+  geom_segment_interactive(aes(xend = 0, yend = Country), color = "gray") +
+  geom_point_interactive(size = 4, aes(color = Social_support)) +
+  scale_color_viridis_c() +
+  labs(title = "Social Support by Country", x = "Social Support", y = "") +
+  theme_minimal()
+
+# Combine the plots
+combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 0.8))
+
+# Create the interactive plot
+interactive_plot <- girafe(ggobj = combined_plot, width_svg = 10, height_svg = 8)
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
+    opts_selection(type = "single", css = "fill:red;stroke:black;"),
+    opts_toolbar(saveaspng = FALSE)
+  )
+
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-2.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-2.html" height="800" width="850" style="border:none;"></iframe>
+
+
+
+# JavaScript and the `onclick` argument
+***
+
+
+
+```{r}
+library(ggiraph)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(tidyr)
+set.seed(123)
+
+# Create a sample dataset (Education Data)
+education_data <- data.frame(
+  Country = c("USA", "Canada", "Germany", "UK", "France", "Japan", "Australia", "India", "Brazil", "China"),
+  Literacy_Rate = rnorm(mean = 90, sd = 5, n = 10),
+  School_Enrollment = rnorm(mean = 80, sd = 10, n = 10),
+  Government_Spending = rnorm(mean = 15, sd = 5, n = 10),
+  Average_Scores = rnorm(mean = 70, sd = 10, n = 10)
+)
+
+# Create the first chart (Scatter plot)
+p1 <- ggplot(education_data, aes(Government_Spending, Literacy_Rate, tooltip = Country, data_id = Country)) +
+  geom_point_interactive(size = 6, aes(color = Literacy_Rate)) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(title = "Government Spending vs Literacy Rate", x = "Government Spending (% of GDP)", y = "Literacy Rate (%)") +
+  theme_minimal()
+
+# Create the second chart (Bar plot)
+p2 <- ggplot(education_data, aes(x = reorder(Country, Literacy_Rate), y = Literacy_Rate, tooltip = Country, data_id = Country)) +
+  geom_col_interactive(aes(fill = Literacy_Rate)) +
+  scale_fill_viridis_c(option = "plasma") +
+  coord_flip() +
+  labs(title = "Literacy Rate by Country", x = "Country", y = "Literacy Rate (%)") +
+  theme_minimal()
+
+# Create the third chart
+p3 <- ggplot(education_data, aes(x = Average_Scores, y = reorder(Country, Average_Scores), tooltip = paste(Country, "Avg Score:", round(Average_Scores, 1)), data_id = Country)) +
+  geom_segment_interactive(aes(xend = 0, yend = Country), color = "gray") +
+  geom_point_interactive(size = 6, aes(color = Average_Scores)) +
+  scale_color_viridis_c(option = "plasma") +
+  labs(title = "Average Scores by Country", x = "Average Scores", y = "") +
+  theme_minimal()
+
+# Create the fourth chart (Line plot)
+p4 <- ggplot(education_data, aes(x = reorder(Country, School_Enrollment), y = School_Enrollment, group = 1, tooltip = Country, data_id = Country)) +
+  geom_line_interactive(size = 2, aes(color = School_Enrollment)) +
+  geom_point_interactive(size = 5, aes(color = School_Enrollment)) +
+  scale_color_viridis_c(option = "plasma") +
+  coord_flip() +
+  labs(title = "School Enrollment by Country", x = "Country", y = "School Enrollment (%)") +
+  theme_minimal()
+
+# Combine the plots
+combined_plot <- (p1 + p2) / (p3 + p4) + plot_layout(heights = c(1, 0.8))
+
+# Create the interactive plot
+interactive_plot <- girafe(ggobj = combined_plot, width_svg = 12, height_svg = 10)
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
+    opts_selection(type = "single", css = "fill:red;stroke:black;"),
+    opts_toolbar(saveaspng = FALSE)
+  )
+
+# Save the interactive plot
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-3.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-3.html" height="800" width="850" style="border:none;"></iframe>
+
+
+
+# Going further
+***
+
+You might be interested in:
+
+- learn how [integrate CSS in ggiraph charts](412-customize-css-in-interactive-ggiraph.html)
+- learn how [integrate JavaScript in ggiraph charts](413-use-javascript-in-ggiraph.html)
+- discover all [ggiraph features](package/ggiraph.html)
+- browse the [interactive chart section](interactive-charts.html)
+
+
+
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
