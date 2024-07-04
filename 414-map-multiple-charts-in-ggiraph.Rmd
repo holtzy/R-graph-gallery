@@ -1,7 +1,7 @@
 ---
 title: "Combine charts in ggiraph"
-descriptionMeta: "This post explains how to use the ggiraph package to create multiple interactive graphs, from very simple example to more complex ones."
-descriptionTop: "This post explains how to use the [ggiraph](package/ggiraph.html) package to create **multiple interactive graphs**, from very simple example to more complex ones.<br><br>For an introduction to `ggiraph`, check the [dedicated post](package/ggiraph.html)"
+descriptionMeta: "This post explains how to use the ggiraph package to create and link multiple interactive graphs, from very simple example to more complex ones."
+descriptionTop: "This post explains how to use the [ggiraph](package/ggiraph.html) package to create and link **multiple interactive graphs**, from very simple example to more complex ones.<br><br>For an introduction to `ggiraph`, check the [dedicated post](package/ggiraph.html)"
 sectionText: "Interactive section"
 sectionLink: "interactive-charts.html"
 DataToVizText: "Data to Viz"
@@ -27,11 +27,27 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
 
 <div class="container">
 
+# Libraries
+***
+
+First of all, we need to load a bunch of libraries:
+
+
+```{r}
+library(ggiraph) # install.packages('ggiraph')
+library(ggplot2) # install.packages('ggplot2')
+library(dplyr) # install.packages('dplyr')
+library(patchwork) # install.packages('patchwork')
+library(tidyr) # install.packages('tidyr')
+library(sf) # install.packages('sf')
+set.seed(123)
+```
+
 
 # Most simple example
 ***
 
-In order to **map the hover effect** between multiple charts, we have to use the same value for the `data_id` argument. In our case, we want our mapping at the **car level**, using the `mtcars` dataset. 
+In order to **map the hover effect** between multiple charts, we **only** have to use the `data_id` argument. For example, in our case, we specify `data_id = car` since we want our mapping at the **car level**, using the `mtcars` dataset. 
 
 Then we put the charts together using the [patchwork package](package/patchwork.html)
 
@@ -44,9 +60,11 @@ library(patchwork)
 data(mtcars)
 mtcars$car <- rownames(mtcars)
 
+# data_id in the aes mapping
 p1 <- ggplot(mtcars, aes(wt, mpg, tooltip = car, data_id = car)) +
   geom_point_interactive(size = 4)
 
+# data_id in the aes mapping
 p2 <- ggplot(mtcars, aes(x = reorder(car, mpg), y = mpg, tooltip = car, data_id = car)) +
   geom_col_interactive() +
   coord_flip()
@@ -60,146 +78,174 @@ htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-1.html")
 <iframe src="HtmlWidget/multiple-ggiraph-1.html" height="650" width="850" style="border:none;"></iframe>
 
 
-# Combine 3 charts together
+# Customize charts as usual
 ***
 
-With the `data_id` argument, we can craft **mini dashboards** featuring numerous charts.
+## Create dataset
 
-As before, we generate **three distinct charts** using the same `data_id` (in this case, the country) to form a cohesive figure with three **interconnected charts**  !
+Let's start by creating a simple dataset for our next charts:
 
 ```{r}
-library(ggiraph)
-library(ggplot2)
-library(dplyr)
-library(patchwork)
-library(tidyr)
-set.seed(123)
+# Read the full world map
+world_sf <- read_sf("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/world.geojson")
 
 # Create a sample dataset
 happiness_data <- data.frame(
-  Country = c("Denmark", "Switzerland", "Iceland", "Norway", "Finland", "Canada", "Netherlands", "New Zealand", "Australia", "Sweden"),
-  Happiness_Score = rnorm(mean = 30, sd = 20, n = 10),
-  GDP_per_capita = rnorm(mean = 30, sd = 20, n = 10),
-  Social_support = rnorm(mean = 30, sd = 20, n = 10),
-  Healthy_life_expectancy = rnorm(mean = 30, sd = 20, n = 10)
+  Country = c(
+    "France", "Germany", "United Kingdom",
+    "Japan", "China", "Vietnam",
+    "United States of America", "Canada", "Mexico"
+  ),
+  Continent = c(
+    "Europe", "Europe", "Europe",
+    "Asia", "Asia", "Asia",
+    "North America", "North America", "North America"
+  ),
+  Happiness_Score = rnorm(mean = 30, sd = 20, n = 9),
+  GDP_per_capita = rnorm(mean = 30, sd = 20, n = 9),
+  Social_support = rnorm(mean = 30, sd = 20, n = 9),
+  Healthy_life_expectancy = rnorm(mean = 30, sd = 20, n = 9)
 )
 
+# Join the happiness data with the full world map
+world_sf <- world_sf %>%
+  left_join(happiness_data, by = c("name" = "Country"))
+```
+
+## Create the charts
+
+Since we only need to specify the column of our dataset in `data_id`, the rest of our charts is **customizable** as any other [ggplot2](ggplot2-package.html) chart!
+
+```{r}
 # Create the first chart (Scatter plot)
-p1 <- ggplot(happiness_data, aes(GDP_per_capita, Happiness_Score, tooltip = Country, data_id = Country)) +
-  geom_point_interactive(size = 4, aes(color = Happiness_Score)) +
-  scale_color_viridis_c() +
-  labs(title = "GDP per Capita vs Happiness Score", x = "GDP per Capita", y = "Happiness Score") +
-  theme_minimal()
-
-# Create the second chart (Bar plot)
-p2 <- ggplot(happiness_data, aes(x = reorder(Country, Happiness_Score), y = Happiness_Score, tooltip = Country, data_id = Country)) +
-  geom_col_interactive(aes(fill = Happiness_Score)) +
-  scale_fill_viridis_c() +
-  coord_flip() +
-  labs(title = "Happiness Score by Country", x = "Country", y = "Happiness Score") +
-  theme_minimal()
-
-# Create the third chart (Heatmap)
-p3 <- ggplot(happiness_data, aes(x = Social_support, y = reorder(Country, Social_support), tooltip = paste(Country, "Social Support:", round(Social_support, 3)), data_id = Country)) +
-  geom_segment_interactive(aes(xend = 0, yend = Country), color = "gray") +
-  geom_point_interactive(size = 4, aes(color = Social_support)) +
-  scale_color_viridis_c() +
-  labs(title = "Social Support by Country", x = "Social Support", y = "") +
-  theme_minimal()
-
-# Combine the plots
-combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 0.8))
-
-# Create the interactive plot
-interactive_plot <- girafe(ggobj = combined_plot, width_svg = 10, height_svg = 8)
-
-# Add interactivity
-interactive_plot <- interactive_plot %>%
-  girafe_options(
-    opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
-    opts_selection(type = "single", css = "fill:red;stroke:black;"),
-    opts_toolbar(saveaspng = FALSE)
+p1 <- ggplot(world_sf, aes(
+  GDP_per_capita,
+  Happiness_Score,
+  tooltip = name,
+  data_id = name,
+  color = name
+)) +
+  geom_point_interactive(data = filter(world_sf, !is.na(Happiness_Score)), size = 4) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
   )
 
+# Create the second chart (Bar plot)
+p2 <- ggplot(world_sf, aes(
+  x = reorder(name, Happiness_Score),
+  y = Happiness_Score,
+  tooltip = name,
+  data_id = name,
+  fill = name
+)) +
+  geom_col_interactive(data = filter(world_sf, !is.na(Happiness_Score))) +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
+  )
+
+# Create the third chart (choropleth)
+p3 <- ggplot() +
+  geom_sf(data = world_sf, fill = "lightgrey", color = "lightgrey") +
+  geom_sf_interactive(
+    data = filter(world_sf, !is.na(Happiness_Score)),
+    aes(fill = name, tooltip = name, data_id = name)
+  ) +
+  theme_void() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
+  )
+
+# Combine the plots
+combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 2))
+
+# Create the interactive plot
+interactive_plot <- girafe(ggobj = combined_plot)
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = "fill:black;stroke:black;")
+)
+
+# save as an html widget
 htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-2.html")
 ```
 
 <iframe src="HtmlWidget/multiple-ggiraph-2.html" height="800" width="850" style="border:none;"></iframe>
 
-
-
-# Combine with CSS
+# Highlight all the items of a group
 ***
 
-_Note: If you haven't already, check the post on [how to use CSS in ggiraph](412-customize-css-in-interactive-ggiraph.html)._
+Previously, the interactivity and connection between charts were at the "country" level, meaning that when you **hovered over a country**, the same country was **highlighted** in other charts.
 
-In this example, we'll use the `girafe_options()` function to provide **additionnal CSS** when hovering the charts. 
+But what if we want to use the "continent" level instead? All we need to do is **change** `data_id = name` (country) to `data_id = Continent`. Additionally, we **adjust the color mapping** so that all countries within a given continent share the same color.
+
+Give it a try by hovering over the charts below:
 
 ```{r}
-library(ggiraph)
-library(ggplot2)
-library(dplyr)
-library(patchwork)
-library(tidyr)
-set.seed(123)
-
-# Create a sample dataset (Education Data)
-education_data <- data.frame(
-  Country = c("USA", "Canada", "Germany", "UK", "France", "Japan", "Australia", "India", "Brazil", "China"),
-  Literacy_Rate = rnorm(mean = 90, sd = 5, n = 10),
-  School_Enrollment = rnorm(mean = 80, sd = 10, n = 10),
-  Government_Spending = rnorm(mean = 15, sd = 5, n = 10),
-  Average_Scores = rnorm(mean = 70, sd = 10, n = 10)
-)
-
 # Create the first chart (Scatter plot)
-p1 <- ggplot(education_data, aes(Government_Spending, Literacy_Rate, tooltip = Country, data_id = Country)) +
-  geom_point_interactive(size = 6, aes(color = Literacy_Rate)) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(title = "Government Spending vs Literacy Rate", x = "Government Spending (% of GDP)", y = "Literacy Rate (%)") +
-  theme_minimal()
-
-# Create the second chart (Bar plot)
-p2 <- ggplot(education_data, aes(x = reorder(Country, Literacy_Rate), y = Literacy_Rate, tooltip = Country, data_id = Country)) +
-  geom_col_interactive(aes(fill = Literacy_Rate)) +
-  scale_fill_viridis_c(option = "plasma") +
-  coord_flip() +
-  labs(title = "Literacy Rate by Country", x = "Country", y = "Literacy Rate (%)") +
-  theme_minimal()
-
-# Create the third chart (Lollipop)
-p3 <- ggplot(education_data, aes(x = Average_Scores, y = reorder(Country, Average_Scores), tooltip = paste(Country, "Avg Score:", round(Average_Scores, 1)), data_id = Country)) +
-  geom_segment_interactive(aes(xend = 0, yend = Country), color = "gray") +
-  geom_point_interactive(size = 6, aes(color = Average_Scores)) +
-  scale_color_viridis_c(option = "plasma") +
-  labs(title = "Average Scores by Country", x = "Average Scores", y = "") +
-  theme_minimal()
-
-# Create the fourth chart (Line plot)
-p4 <- ggplot(education_data, aes(x = reorder(Country, School_Enrollment), y = School_Enrollment, group = 1, tooltip = Country, data_id = Country)) +
-  geom_line_interactive(size = 2, aes(color = School_Enrollment)) +
-  geom_point_interactive(size = 5, aes(color = School_Enrollment)) +
-  scale_color_viridis_c(option = "plasma") +
-  coord_flip() +
-  labs(title = "School Enrollment by Country", x = "Country", y = "School Enrollment (%)") +
-  theme_minimal()
-
-# Combine the plots
-combined_plot <- (p1 + p2) / (p3 + p4) + plot_layout(heights = c(1, 0.8))
-
-# Create the interactive plot
-interactive_plot <- girafe(ggobj = combined_plot, width_svg = 12, height_svg = 10)
-
-# Add interactivity
-interactive_plot <- interactive_plot %>%
-  girafe_options(
-    opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
-    opts_selection(type = "single", css = "fill:red;stroke:black;"),
-    opts_toolbar(saveaspng = FALSE),
-    opts_sizing(rescale = TRUE),
-    opts_tooltip(css = "border: 2px solid #4CAF50; border-radius: 10px; box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2); background-color: #f9f9f9; padding: 10px;")
+p1 <- ggplot(world_sf, aes(
+  GDP_per_capita,
+  Happiness_Score,
+  tooltip = name,
+  data_id = Continent,
+  color = Continent
+)) +
+  geom_point_interactive(data = filter(world_sf, !is.na(Happiness_Score)), size = 4) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
   )
 
+# Create the second chart (Bar plot)
+p2 <- ggplot(world_sf, aes(
+  x = reorder(name, Happiness_Score),
+  y = Happiness_Score,
+  tooltip = name,
+  data_id = Continent,
+  fill = Continent
+)) +
+  geom_col_interactive(data = filter(world_sf, !is.na(Happiness_Score))) +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
+  )
+
+# Create the third chart (choropleth)
+p3 <- ggplot() +
+  geom_sf(data = world_sf, fill = "lightgrey", color = "lightgrey") +
+  geom_sf_interactive(
+    data = filter(world_sf, !is.na(Happiness_Score)),
+    aes(fill = Continent, tooltip = name, data_id = Continent)
+  ) +
+  theme_void() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "none"
+  )
+
+# Combine the plots
+combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 2))
+
+# Create the interactive plot
+interactive_plot <- girafe(ggobj = combined_plot)
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = "fill:black;stroke:black;")
+)
 
 # Save the interactive plot
 htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-3.html")
@@ -208,6 +254,147 @@ htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-3.html")
 <iframe src="HtmlWidget/multiple-ggiraph-3.html" height="800" width="850" style="border:none;"></iframe>
 
 
+
+# Customise hover effect with CSS
+***
+
+Although `CSS` is primarily used for styling **web pages**, it can also be relevant in customizing visuals in **R**, especially when dealing with web-based outputs like **interactive charts** or **Shiny applications**.
+
+`CSS` code has the following structure: a property named (such as `font-size`), a colon (`:`), and the value of that property (`14px` in the following example). Each element is then separated by a `;`.
+
+_Note: If you haven't already, check the post on [how to use CSS in ggiraph](412-customize-css-in-interactive-ggiraph.html)._
+
+In this example, we'll use the `girafe_options()` function and pass it several arguments:
+- `opts_hover()` for passing the CSS when **hovering**
+- `opts_tooltip()` for passing the CSS of the **tooltip**
+
+```{r}
+tooltip_css <- "
+  border-radius: 12px;
+  color: #333;
+  background-color: white;
+  padding: 10px;
+  font-size: 14px;
+"
+
+hover_css <- "fill: #4e54c8;"
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = hover_css),
+    opts_tooltip(css = tooltip_css)
+  )
+
+# Save the interactive plot
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-4.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-4.html" height="800" width="850" style="border:none;"></iframe>
+
+
+# More complex CSS
+***
+
+Since [CSS](412-customize-css-in-interactive-ggiraph.html) allows a super **high level of customization**, we can use it to create way more complex and advanced examples!
+
+In the following case:
+
+Tooltip CSS:
+
+- `background`: Creates a gradient from light gray to slightly darker gray
+- `border`: Removes any border
+- `border-radius`: Rounds the corners of the tooltip
+- `box-shadow`: Adds a subtle 3D effect with light and shadow
+- `color`: Sets the text color to dark gray
+- `font-family`: Specifies the font types to use
+- `font-size`: Sets the text size
+- `padding`: Adds space inside the tooltip
+- `transition`: Enables smooth changes in properties over 0.5 seconds
+
+Hover CSS:
+
+- `fill`: Changes the main color of the hovered element to purple
+- `stroke`: Adds a light blue outline
+- `stroke-width`: Sets the thickness of the outline
+- `cursor`: Changes the mouse cursor to a pointing hand
+- `filter`: Increases brightness and adds a soft glow effect
+- `transition`: Enables smooth changes in properties over 0.5 seconds
+
+```{r}
+tooltip_css <- "
+  background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 3px 3px 10px #d1d1d1, -3px -3px 10px #ffffff;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  padding: 12px;
+  transition: all 0.5s ease-out;
+"
+
+hover_css <- "
+  fill: #4e54c8;
+  stroke: #8f94fb;
+  cursor: pointer;
+  filter: brightness(1.2) drop-shadow(0 0 5px rgba(78, 84, 200, 0.5));
+  transition: all 0.5s ease-out;
+"
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = hover_css),
+    opts_tooltip(css = tooltip_css)
+  )
+
+# Save the interactive plot
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-5.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-5.html" height="800" width="850" style="border:none;"></iframe>
+
+# Hide the groups: more hover effects
+***
+
+One effective method to **emphasize** the group you're hovering over is to **reduce the transparency of other groups**, allowing the user's focus to naturally gravitate towards the desired elements!
+
+In practice, we utilize the `opts_hover_inv()` (defines what happen to non-hovered groups) function along with some `CSS`:
+
+- **`opacity: 0.5;`**: Adjusts the element's transparency to 50%, making it semi-transparent and less prominent.
+
+- **`filter: saturate(20%);`**: Decreases the color saturation to 20% of its original level, giving the element a dull, nearly grayscale appearance.
+
+```{r}
+tooltip_css <- "
+  border-radius: 12px;
+  color: #333;
+  background-color: white;
+  padding: 10px;
+  font-size: 14px;
+  transition: all 0.5s ease-out;
+"
+
+hover_css <- "
+  fill: #4e54c8;
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+"
+
+# Add interactivity
+interactive_plot <- interactive_plot %>%
+  girafe_options(
+    opts_hover(css = hover_css),
+    opts_tooltip(css = tooltip_css),
+    opts_hover_inv(css = "opacity:0.5;filter:saturate(20%);")
+  )
+
+# Save the interactive plot
+htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-6.html")
+```
+
+<iframe src="HtmlWidget/multiple-ggiraph-6.html" height="800" width="850" style="border:none;"></iframe>
 
 # Going further
 ***

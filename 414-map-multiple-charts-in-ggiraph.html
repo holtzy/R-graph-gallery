@@ -51,8 +51,8 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="description" content="This post explains how to use the
-ggiraph package to create multiple interactive graphs, from very simple
-example to more complex ones." />
+ggiraph package to create and link multiple interactive graphs, from
+very simple example to more complex ones." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -67,8 +67,8 @@ example to more complex ones." />
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
     <meta property="og:description" content="This post explains how to
-use the ggiraph package to create multiple interactive graphs, from very
-simple example to more complex ones." />
+use the ggiraph package to create and link multiple interactive graphs,
+from very simple example to more complex ones." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/414-map-multiple-charts-in-ggiraph.html"
@@ -140,10 +140,10 @@ simple example to more complex ones." />
         <center>
           <p style="max-width: 600px; margin-top: 40px">This post
 explains how to use the <a href="package/ggiraph.html">ggiraph</a>
-package to create <strong>multiple interactive graphs</strong>, from
-very simple example to more complex ones.<br><br>For an introduction to
-<code>ggiraph</code>, check the <a href="package/ggiraph.html">dedicated
-post</a></p>
+package to create and link <strong>multiple interactive graphs</strong>,
+from very simple example to more complex ones.<br><br>For an
+introduction to <code>ggiraph</code>, check the <a
+href="package/ggiraph.html">dedicated post</a></p>
         </center>
         <div style="text-align: center">
           <a
@@ -177,179 +177,379 @@ post</a></p>
     </style>
 
     <div class="container">
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<hr />
+<p>First of all, we need to load a bunch of libraries:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph) <span class="co"># install.packages(&#39;ggiraph&#39;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co"># install.packages(&#39;ggplot2&#39;)</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co"># install.packages(&#39;dplyr&#39;)</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co"># install.packages(&#39;patchwork&#39;)</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(tidyr) <span class="co"># install.packages(&#39;tidyr&#39;)</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(sf) <span class="co"># install.packages(&#39;sf&#39;)</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code></pre></div>
+</div>
 <div id="most-simple-example" class="section level1">
 <h1>Most simple example</h1>
 <hr />
 <p>In order to <strong>map the hover effect</strong> between multiple
-charts, we have to use the same value for the <code>data_id</code>
-argument. In our case, we want our mapping at the <strong>car
+charts, we <strong>only</strong> have to use the <code>data_id</code>
+argument. For example, in our case, we specify
+<code>data_id = car</code> since we want our mapping at the <strong>car
 level</strong>, using the <code>mtcars</code> dataset.</p>
 <p>Then we put the charts together using the <a
 href="package/patchwork.html">patchwork package</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>mtcars<span class="sc">$</span>car <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mtcars)</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(wt, mpg, <span class="at">tooltip =</span> car, <span class="at">data_id =</span> car)) <span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">4</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(car, mpg), <span class="at">y =</span> mpg, <span class="at">tooltip =</span> car, <span class="at">data_id =</span> car)) <span class="sc">+</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>() <span class="sc">+</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> p1 <span class="sc">+</span> p2 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-1.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/multiple-ggiraph-1.html" height="650" width="850" style="border:none;">
-</iframe>
-</div>
-<div id="combine-3-charts-together" class="section level1">
-<h1>Combine 3 charts together</h1>
-<hr />
-<p>With the <code>data_id</code> argument, we can craft <strong>mini
-dashboards</strong> featuring numerous charts.</p>
-<p>As before, we generate <strong>three distinct charts</strong> using
-the same <code>data_id</code> (in this case, the country) to form a
-cohesive figure with three <strong>interconnected charts</strong> !</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co"># Create a sample dataset</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>happiness_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="at">Country =</span> <span class="fu">c</span>(<span class="st">&quot;Denmark&quot;</span>, <span class="st">&quot;Switzerland&quot;</span>, <span class="st">&quot;Iceland&quot;</span>, <span class="st">&quot;Norway&quot;</span>, <span class="st">&quot;Finland&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Netherlands&quot;</span>, <span class="st">&quot;New Zealand&quot;</span>, <span class="st">&quot;Australia&quot;</span>, <span class="st">&quot;Sweden&quot;</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="at">Happiness_Score =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">GDP_per_capita =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">Social_support =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">Healthy_life_expectancy =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">10</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>)</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># Create the first chart (Scatter plot)</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(happiness_data, <span class="fu">aes</span>(GDP_per_capita, Happiness_Score, <span class="at">tooltip =</span> Country, <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="fu">aes</span>(<span class="at">color =</span> Happiness_Score)) <span class="sc">+</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;GDP per Capita vs Happiness Score&quot;</span>, <span class="at">x =</span> <span class="st">&quot;GDP per Capita&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Happiness Score&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co"># Create the second chart (Bar plot)</span></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(happiness_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Country, Happiness_Score), <span class="at">y =</span> Happiness_Score, <span class="at">tooltip =</span> Country, <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Happiness_Score)) <span class="sc">+</span></span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Happiness Score by Country&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Country&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Happiness Score&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co"># Create the third chart (Heatmap)</span></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(happiness_data, <span class="fu">aes</span>(<span class="at">x =</span> Social_support, <span class="at">y =</span> <span class="fu">reorder</span>(Country, Social_support), <span class="at">tooltip =</span> <span class="fu">paste</span>(Country, <span class="st">&quot;Social Support:&quot;</span>, <span class="fu">round</span>(Social_support, <span class="dv">3</span>)), <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  <span class="fu">geom_segment_interactive</span>(<span class="fu">aes</span>(<span class="at">xend =</span> <span class="dv">0</span>, <span class="at">yend =</span> Country), <span class="at">color =</span> <span class="st">&quot;gray&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">4</span>, <span class="fu">aes</span>(<span class="at">color =</span> Social_support)) <span class="sc">+</span></span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span></span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Social Support by Country&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Social Support&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.8</span>))</span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot, <span class="at">width_svg =</span> <span class="dv">10</span>, <span class="at">height_svg =</span> <span class="dv">8</span>)</span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
-<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
-<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:cyan;stroke:black;cursor:pointer;&quot;</span>),</span>
-<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a>    <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;single&quot;</span>, <span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>),</span>
-<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>    <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>  )</span>
-<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-2.html&quot;</span>)</span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>mtcars<span class="sc">$</span>car <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mtcars)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># data_id in the aes mapping</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(wt, mpg, <span class="at">tooltip =</span> car, <span class="at">data_id =</span> car)) <span class="sc">+</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">4</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># data_id in the aes mapping</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(car, mpg), <span class="at">y =</span> mpg, <span class="at">tooltip =</span> car, <span class="at">data_id =</span> car)) <span class="sc">+</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>() <span class="sc">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> p1 <span class="sc">+</span> p2 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-1.html&quot;</span>)</span></code></pre></div>
+<iframe src="HtmlWidget/multiple-ggiraph-1.html" height="650" width="850" style="border:none;">
+</iframe>
+</div>
+<div id="customize-charts-as-usual" class="section level1">
+<h1>Customize charts as usual</h1>
+<hr />
+<div id="create-dataset" class="section level2">
+<h2>Create dataset</h2>
+<p>Let’s start by creating a simple dataset for our next charts:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Read the full world map</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/world.geojson&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Create a sample dataset</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>happiness_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">Country =</span> <span class="fu">c</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="st">&quot;France&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;United Kingdom&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;China&quot;</span>, <span class="st">&quot;Vietnam&quot;</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="st">&quot;United States of America&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Mexico&quot;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  ),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">Continent =</span> <span class="fu">c</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  ),</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">Happiness_Score =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">GDP_per_capita =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="at">Social_support =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">Healthy_life_expectancy =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>)</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co"># Join the happiness data with the full world map</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> world_sf <span class="sc">%&gt;%</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="fu">left_join</span>(happiness_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;Country&quot;</span>))</span></code></pre></div>
+</div>
+<div id="create-the-charts" class="section level2">
+<h2>Create the charts</h2>
+<p>Since we only need to specify the column of our dataset in
+<code>data_id</code>, the rest of our charts is
+<strong>customizable</strong> as any other <a
+href="ggplot2-package.html">ggplot2</a> chart!</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create the first chart (Scatter plot)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(world_sf, <span class="fu">aes</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  GDP_per_capita,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  Happiness_Score,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">tooltip =</span> name,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">data_id =</span> name,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">color =</span> name</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)), <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  )</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co"># Create the second chart (Bar plot)</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(world_sf, <span class="fu">aes</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">reorder</span>(name, Happiness_Score),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">y =</span> Happiness_Score,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="at">tooltip =</span> name,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="at">data_id =</span> name,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  <span class="at">fill =</span> name</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>)) <span class="sc">+</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score))) <span class="sc">+</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>  )</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co"># Create the third chart (choropleth)</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world_sf, <span class="at">fill =</span> <span class="st">&quot;lightgrey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;lightgrey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>  <span class="fu">geom_sf_interactive</span>(</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)),</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> name, <span class="at">tooltip =</span> name, <span class="at">data_id =</span> name)</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>  )</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>  interactive_plot,</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:black;stroke:black;&quot;</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>)</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co"># save as an html widget</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-2.html&quot;</span>)</span></code></pre></div>
 <iframe src="HtmlWidget/multiple-ggiraph-2.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
-<div id="combine-with-css" class="section level1">
-<h1>Combine with CSS</h1>
+</div>
+<div id="highlight-all-the-items-of-a-group" class="section level1">
+<h1>Highlight all the items of a group</h1>
 <hr />
+<p>Previously, the interactivity and connection between charts were at
+the “country” level, meaning that when you <strong>hovered over a
+country</strong>, the same country was <strong>highlighted</strong> in
+other charts.</p>
+<p>But what if we want to use the “continent” level instead? All we need
+to do is <strong>change</strong> <code>data_id = name</code> (country)
+to <code>data_id = Continent</code>. Additionally, we <strong>adjust the
+color mapping</strong> so that all countries within a given continent
+share the same color.</p>
+<p>Give it a try by hovering over the charts below:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Create the first chart (Scatter plot)</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(world_sf, <span class="fu">aes</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  GDP_per_capita,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  Happiness_Score,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">tooltip =</span> name,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">data_id =</span> Continent,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">color =</span> Continent</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)), <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  )</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co"># Create the second chart (Bar plot)</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(world_sf, <span class="fu">aes</span>(</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">reorder</span>(name, Happiness_Score),</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="at">y =</span> Happiness_Score,</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="at">tooltip =</span> name,</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  <span class="at">data_id =</span> Continent,</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  <span class="at">fill =</span> Continent</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>)) <span class="sc">+</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score))) <span class="sc">+</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>  )</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co"># Create the third chart (choropleth)</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world_sf, <span class="at">fill =</span> <span class="st">&quot;lightgrey&quot;</span>, <span class="at">color =</span> <span class="st">&quot;lightgrey&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>  <span class="fu">geom_sf_interactive</span>(</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)),</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> Continent, <span class="at">tooltip =</span> name, <span class="at">data_id =</span> Continent)</span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>  )</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>  interactive_plot,</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:black;stroke:black;&quot;</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>)</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-3.html&quot;</span>)</span></code></pre></div>
+<iframe src="HtmlWidget/multiple-ggiraph-3.html" height="800" width="850" style="border:none;">
+</iframe>
+</div>
+<div id="customise-hover-effect-with-css" class="section level1">
+<h1>Customise hover effect with CSS</h1>
+<hr />
+<p>Although <code>CSS</code> is primarily used for styling <strong>web
+pages</strong>, it can also be relevant in customizing visuals in
+<strong>R</strong>, especially when dealing with web-based outputs like
+<strong>interactive charts</strong> or <strong>Shiny
+applications</strong>.</p>
+<p><code>CSS</code> code has the following structure: a property named
+(such as <code>font-size</code>), a colon (<code>:</code>), and the
+value of that property (<code>14px</code> in the following example).
+Each element is then separated by a <code>;</code>.</p>
 <p><em>Note: If you haven’t already, check the post on <a
 href="412-customize-css-in-interactive-ggiraph.html">how to use CSS in
 ggiraph</a>.</em></p>
 <p>In this example, we’ll use the <code>girafe_options()</code> function
-to provide <strong>additionnal CSS</strong> when hovering the
-charts.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># Create a sample dataset (Education Data)</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>education_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">Country =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;UK&quot;</span>, <span class="st">&quot;France&quot;</span>, <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;Australia&quot;</span>, <span class="st">&quot;India&quot;</span>, <span class="st">&quot;Brazil&quot;</span>, <span class="st">&quot;China&quot;</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">Literacy_Rate =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">90</span>, <span class="at">sd =</span> <span class="dv">5</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">School_Enrollment =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">80</span>, <span class="at">sd =</span> <span class="dv">10</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">Government_Spending =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">5</span>, <span class="at">n =</span> <span class="dv">10</span>),</span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">Average_Scores =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">70</span>, <span class="at">sd =</span> <span class="dv">10</span>, <span class="at">n =</span> <span class="dv">10</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>)</span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># Create the first chart (Scatter plot)</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(education_data, <span class="fu">aes</span>(Government_Spending, Literacy_Rate, <span class="at">tooltip =</span> Country, <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="fu">aes</span>(<span class="at">color =</span> Literacy_Rate)) <span class="sc">+</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Government Spending vs Literacy Rate&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Government Spending (% of GDP)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Literacy Rate (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co"># Create the second chart (Bar plot)</span></span>
-<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(education_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Country, Literacy_Rate), <span class="at">y =</span> Literacy_Rate, <span class="at">tooltip =</span> Country, <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Literacy_Rate)) <span class="sc">+</span></span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Literacy Rate by Country&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Country&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Literacy Rate (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co"># Create the third chart (Lollipop)</span></span>
-<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(education_data, <span class="fu">aes</span>(<span class="at">x =</span> Average_Scores, <span class="at">y =</span> <span class="fu">reorder</span>(Country, Average_Scores), <span class="at">tooltip =</span> <span class="fu">paste</span>(Country, <span class="st">&quot;Avg Score:&quot;</span>, <span class="fu">round</span>(Average_Scores, <span class="dv">1</span>)), <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>  <span class="fu">geom_segment_interactive</span>(<span class="fu">aes</span>(<span class="at">xend =</span> <span class="dv">0</span>, <span class="at">yend =</span> Country), <span class="at">color =</span> <span class="st">&quot;gray&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="fu">aes</span>(<span class="at">color =</span> Average_Scores)) <span class="sc">+</span></span>
-<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Average Scores by Country&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Average Scores&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co"># Create the fourth chart (Line plot)</span></span>
-<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(education_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Country, School_Enrollment), <span class="at">y =</span> School_Enrollment, <span class="at">group =</span> <span class="dv">1</span>, <span class="at">tooltip =</span> Country, <span class="at">data_id =</span> Country)) <span class="sc">+</span></span>
-<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>  <span class="fu">geom_line_interactive</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="fu">aes</span>(<span class="at">color =</span> School_Enrollment)) <span class="sc">+</span></span>
-<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>  <span class="fu">geom_point_interactive</span>(<span class="at">size =</span> <span class="dv">5</span>, <span class="fu">aes</span>(<span class="at">color =</span> School_Enrollment)) <span class="sc">+</span></span>
-<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;School Enrollment by Country&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Country&quot;</span>, <span class="at">y =</span> <span class="st">&quot;School Enrollment (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
-<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a></span>
-<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
-<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> (p3 <span class="sc">+</span> p4) <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.8</span>))</span>
-<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
-<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot, <span class="at">width_svg =</span> <span class="dv">12</span>, <span class="at">height_svg =</span> <span class="dv">10</span>)</span>
-<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a></span>
-<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
-<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
-<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
-<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:cyan;stroke:black;cursor:pointer;&quot;</span>),</span>
-<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>    <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;single&quot;</span>, <span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>),</span>
-<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>    <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>    <span class="fu">opts_sizing</span>(<span class="at">rescale =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> <span class="st">&quot;border: 2px solid #4CAF50; border-radius: 10px; box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2); background-color: #f9f9f9; padding: 10px;&quot;</span>)</span>
-<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>  )</span>
-<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a></span>
-<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
-<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-3.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/multiple-ggiraph-3.html" height="800" width="850" style="border:none;">
+and pass it several arguments: - <code>opts_hover()</code> for passing
+the CSS when <strong>hovering</strong> - <code>opts_tooltip()</code> for
+passing the CSS of the <strong>tooltip</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="st">  color: #333;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="st">  background-color: white;</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="st">  padding: 10px;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;fill: #4e54c8;&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  )</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-4.html&quot;</span>)</span></code></pre></div>
+<iframe src="HtmlWidget/multiple-ggiraph-4.html" height="800" width="850" style="border:none;">
+</iframe>
+</div>
+<div id="more-complex-css" class="section level1">
+<h1>More complex CSS</h1>
+<hr />
+<p>Since <a href="412-customize-css-in-interactive-ggiraph.html">CSS</a>
+allows a super <strong>high level of customization</strong>, we can use
+it to create way more complex and advanced examples!</p>
+<p>In the following case:</p>
+<p>Tooltip CSS:</p>
+<ul>
+<li><code>background</code>: Creates a gradient from light gray to
+slightly darker gray</li>
+<li><code>border</code>: Removes any border</li>
+<li><code>border-radius</code>: Rounds the corners of the tooltip</li>
+<li><code>box-shadow</code>: Adds a subtle 3D effect with light and
+shadow</li>
+<li><code>color</code>: Sets the text color to dark gray</li>
+<li><code>font-family</code>: Specifies the font types to use</li>
+<li><code>font-size</code>: Sets the text size</li>
+<li><code>padding</code>: Adds space inside the tooltip</li>
+<li><code>transition</code>: Enables smooth changes in properties over
+0.5 seconds</li>
+</ul>
+<p>Hover CSS:</p>
+<ul>
+<li><code>fill</code>: Changes the main color of the hovered element to
+purple</li>
+<li><code>stroke</code>: Adds a light blue outline</li>
+<li><code>stroke-width</code>: Sets the thickness of the outline</li>
+<li><code>cursor</code>: Changes the mouse cursor to a pointing
+hand</li>
+<li><code>filter</code>: Increases brightness and adds a soft glow
+effect</li>
+<li><code>transition</code>: Enables smooth changes in properties over
+0.5 seconds</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="st">  background: linear-gradient(145deg, #f0f0f0, #e6e6e6);</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="st">  border: none;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="st">  box-shadow: 3px 3px 10px #d1d1d1, -3px -3px 10px #ffffff;</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="st">  color: #333;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="st">  font-family: &#39;Segoe UI&#39;, Tahoma, Geneva, Verdana, sans-serif;</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="st">  padding: 12px;</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="st">  fill: #4e54c8;</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="st">  stroke: #8f94fb;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="st">  filter: brightness(1.2) drop-shadow(0 0 5px rgba(78, 84, 200, 0.5));</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  )</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-5.html&quot;</span>)</span></code></pre></div>
+<iframe src="HtmlWidget/multiple-ggiraph-5.html" height="800" width="850" style="border:none;">
+</iframe>
+</div>
+<div id="hide-the-groups-more-hover-effects" class="section level1">
+<h1>Hide the groups: more hover effects</h1>
+<hr />
+<p>One effective method to <strong>emphasize</strong> the group you’re
+hovering over is to <strong>reduce the transparency of other
+groups</strong>, allowing the user’s focus to naturally gravitate
+towards the desired elements!</p>
+<p>In practice, we utilize the <code>opts_hover_inv()</code> (defines
+what happen to non-hovered groups) function along with some
+<code>CSS</code>:</p>
+<ul>
+<li><p><strong><code>opacity: 0.5;</code></strong>: Adjusts the
+element’s transparency to 50%, making it semi-transparent and less
+prominent.</p></li>
+<li><p><strong><code>filter: saturate(20%);</code></strong>: Decreases
+the color saturation to 20% of its original level, giving the element a
+dull, nearly grayscale appearance.</p></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="st">  color: #333;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="st">  background-color: white;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="st">  padding: 10px;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="st">  fill: #4e54c8;</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css),</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">&quot;opacity:0.5;filter:saturate(20%);&quot;</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>  )</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-6.html&quot;</span>)</span></code></pre></div>
+<iframe src="HtmlWidget/multiple-ggiraph-6.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
 <div id="going-further" class="section level1">
