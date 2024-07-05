@@ -247,7 +247,9 @@ arguments.</p>
 plots</strong> are displayed in the same charts. Due to its efficient
 mapping, we can easily create <strong>“connected” plots</strong> with
 cool hover effects!</p>
-<p>Example:</p>
+<p><em>Note: check the <a
+href="../414-map-multiple-charts-in-ggiraph.html">dedicated post on how
+to combine plots in ggiraph</a> to learn more about it.</em></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
@@ -309,16 +311,24 @@ cool hover effects!</p>
 </div>
 <div id="use-your-own-css-for-better-styling" class="section level2">
 <h2>→ Use your own CSS for better styling</h2>
-<p>Thanks to the <code>options</code> argument in the
-<code>girafe()</code> function, we can provide lots of customization
-feature with <strong>CSS</strong>:</p>
-<ul>
-<li>colors</li>
-<li>hover effects</li>
-<li>shapes</li>
-<li>durations</li>
-</ul>
-<p>Example:</p>
+<p>Although <code>CSS</code> is primarily used for styling <strong>web
+pages</strong>, it can also be relevant in customizing visuals in
+<strong>R</strong>, especially when dealing with web-based outputs like
+<strong>interactive charts</strong> or <strong>Shiny
+applications</strong>.</p>
+<p><code>CSS</code> code has the following structure: a property named
+(such as <code>font-size</code>), a colon (<code>:</code>), and the
+value of that property (<code>14px</code>). Each element is then
+separated by a <code>;</code>.</p>
+<p><em>Note: If you haven’t already, check the posts on <a
+href="../412-customize-css-in-interactive-ggiraph.html">how to use CSS
+in ggiraph</a> and how to <a
+href="../414-map-multiple-charts-in-ggiraph.html">combine multiple plots
+and use CSS in ggiraph</a>.</em></p>
+<p>In this example, we’ll use the <code>girafe_options()</code> function
+and pass it several arguments: - <code>opts_hover()</code> for passing
+the CSS when <strong>hovering</strong> - <code>opts_tooltip()</code> for
+passing the CSS of the <strong>tooltip</strong></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -465,43 +475,106 @@ know more.</p>
 <p>In the following example, we see how to use <code>ggiraph</code> with
 <a href="sf.html">sf</a> to create an interactive choropleth map with
 additional information:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="st">&quot;https://github.com/viniciusoike/restateinsight/raw/main/static/data/atlas_sp_hdi.rds&quot;</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>choropleth <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">geom_sf_interactive</span>(<span class="fu">aes</span>(</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">fill =</span> HDI,</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">tooltip =</span> <span class="fu">paste</span>(</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>      <span class="st">&quot;&lt;strong&gt;HDI:&lt;/strong&gt;&quot;</span>, HDI,</span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>      <span class="st">&quot;&lt;br&gt;&lt;strong&gt;Population:&lt;/strong&gt;&quot;</span>, <span class="fu">round</span>(pop, <span class="dv">1</span>)</span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    ),</span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="at">data_id =</span> code_udh</span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  ), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(</span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>),</span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;YlGnBu&quot;</span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;HDI in Sao Paulo, BR (2010)&quot;</span>,</span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Microregion HDI in Sao Paulo&quot;</span>,</span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Source: Atlas Brasil&quot;</span></span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="fu">theme_map</span>() <span class="sc">+</span></span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">18</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  )</span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a></span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> choropleth)</span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-6.html&quot;</span>)</span></code></pre></div>
-<iframe src="../HtmlWidget/ggiraph-6.html" height="1000" width="750" style="border:none;">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="st">&quot;https://github.com/viniciusoike/restateinsight/raw/main/static/data/atlas_sp_hdi.rds&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>pop_hdi <span class="ot">&lt;-</span> atlas <span class="sc">|&gt;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="at">group_hdi =</span> <span class="fu">findInterval</span>(HDI, <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>), <span class="at">left.open =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="at">group_hdi =</span> <span class="fu">factor</span>(group_hdi)</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="fu">group_by</span>(group_hdi) <span class="sc">|&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">score =</span> <span class="fu">sum</span>(pop, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> score <span class="sc">/</span> <span class="fu">sum</span>(score) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="at">y_text =</span> <span class="fu">if_else</span>(group_hdi <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>), share <span class="sc">+</span> <span class="dv">3</span>, share <span class="sc">-</span> <span class="dv">3</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(share, <span class="dv">1</span>), <span class="st">&quot;%&quot;</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="at">data_id =</span> <span class="fu">as.character</span>(group_hdi) <span class="co"># Add data_id to pop_hdi</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  )</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>atlas <span class="ot">&lt;-</span> atlas <span class="sc">|&gt;</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group_hdi =</span> <span class="fu">findInterval</span>(HDI, <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>), <span class="at">left.open =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>pmap <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(atlas) <span class="sc">+</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  <span class="fu">geom_sf_interactive</span>(<span class="fu">aes</span>(<span class="at">fill =</span> HDI, <span class="at">data_id =</span> group_hdi, <span class="at">tooltip =</span> <span class="fu">paste</span>(<span class="st">&quot;HDI:&quot;</span>, HDI)), <span class="at">lwd =</span> <span class="fl">0.05</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>  <span class="fu">scale_fill_fermenter</span>(</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="fl">0.65</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span>),</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>    <span class="at">direction =</span> <span class="dv">1</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;YlGnBu&quot;</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;HDI in Sao Paulo, BR (2010)&quot;</span>,</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Microregion HDI in Sao Paulo&quot;</span>,</span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Source: Atlas Brasil&quot;</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>  <span class="fu">theme_map</span>() <span class="sc">+</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="fl">0.5</span>,</span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>    <span class="at">legend.key.size =</span> <span class="fu">unit</span>(<span class="fl">1.25</span>, <span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>    <span class="at">legend.key.width =</span> <span class="fu">unit</span>(<span class="fl">1.75</span>, <span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a>    <span class="at">legend.margin =</span> <span class="fu">margin</span>(),</span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>  )</span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>x_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>  <span class="st">&quot;0.650 or less&quot;</span>, <span class="st">&quot;0.650 to 0.699&quot;</span>, <span class="st">&quot;0.700 to 0.749&quot;</span>, <span class="st">&quot;0.750 to 0.799&quot;</span>,</span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>  <span class="st">&quot;0.800 to 0.849&quot;</span>, <span class="st">&quot;0.850 to 0.899&quot;</span>, <span class="st">&quot;0.900 to 0.949&quot;</span>, <span class="st">&quot;0.950 or more&quot;</span></span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>)</span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a></span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a>pcol <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pop_hdi, <span class="fu">aes</span>(group_hdi, share, <span class="at">fill =</span> group_hdi)) <span class="sc">+</span></span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a>  <span class="fu">geom_col_interactive</span>(<span class="fu">aes</span>(<span class="at">data_id =</span> data_id, <span class="at">tooltip =</span> <span class="fu">paste</span>(<span class="st">&quot;Share:&quot;</span>, label))) <span class="sc">+</span></span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a>  <span class="fu">geom_text_interactive</span>(</span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">y =</span> y_text, <span class="at">label =</span> label, <span class="at">color =</span> group_hdi, <span class="at">data_id =</span> data_id),</span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">4</span></span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb6-69"><a href="#cb6-69" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> x_labels) <span class="sc">+</span></span>
+<span id="cb6-70"><a href="#cb6-70" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;YlGnBu&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-71"><a href="#cb6-71" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;black&quot;</span>, <span class="dv">5</span>), <span class="fu">rep</span>(<span class="st">&quot;white&quot;</span>, <span class="dv">2</span>), <span class="st">&quot;black&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-72"><a href="#cb6-72" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">&quot;none&quot;</span>, <span class="at">color =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-73"><a href="#cb6-73" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-74"><a href="#cb6-74" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Population share by HDI group&quot;</span>,</span>
+<span id="cb6-75"><a href="#cb6-75" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb6-76"><a href="#cb6-76" tabindex="-1"></a>    <span class="at">y =</span> <span class="cn">NULL</span></span>
+<span id="cb6-77"><a href="#cb6-77" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-78"><a href="#cb6-78" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb6-79"><a href="#cb6-79" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb6-80"><a href="#cb6-80" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-81"><a href="#cb6-81" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb6-82"><a href="#cb6-82" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb6-83"><a href="#cb6-83" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb6-84"><a href="#cb6-84" tabindex="-1"></a>  )</span>
+<span id="cb6-85"><a href="#cb6-85" tabindex="-1"></a></span>
+<span id="cb6-86"><a href="#cb6-86" tabindex="-1"></a>p_hdi_atlas <span class="ot">&lt;-</span> pmap <span class="sc">+</span> <span class="fu">inset_element</span>(pcol, <span class="at">left =</span> <span class="fl">0.62</span>, <span class="at">bottom =</span> <span class="fl">0.10</span>, <span class="at">right =</span> <span class="fl">0.99</span>, <span class="at">top =</span> <span class="fl">0.90</span>)</span>
+<span id="cb6-87"><a href="#cb6-87" tabindex="-1"></a>p_hdi_atlas <span class="ot">&lt;-</span> pmap <span class="sc">+</span> pcol</span>
+<span id="cb6-88"><a href="#cb6-88" tabindex="-1"></a></span>
+<span id="cb6-89"><a href="#cb6-89" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(</span>
+<span id="cb6-90"><a href="#cb6-90" tabindex="-1"></a>  <span class="at">ggobj =</span> p_hdi_atlas,</span>
+<span id="cb6-91"><a href="#cb6-91" tabindex="-1"></a>  <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb6-92"><a href="#cb6-92" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:orange;&quot;</span>),</span>
+<span id="cb6-93"><a href="#cb6-93" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">&quot;opacity:0.5;&quot;</span>),</span>
+<span id="cb6-94"><a href="#cb6-94" tabindex="-1"></a>    <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;single&quot;</span>, <span class="at">only_shiny =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb6-95"><a href="#cb6-95" tabindex="-1"></a>    <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-96"><a href="#cb6-96" tabindex="-1"></a>  )</span>
+<span id="cb6-97"><a href="#cb6-97" tabindex="-1"></a>)</span>
+<span id="cb6-98"><a href="#cb6-98" tabindex="-1"></a></span>
+<span id="cb6-99"><a href="#cb6-99" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/ggiraph-6.html&quot;</span>)</span></code></pre></div>
+<iframe src="../HtmlWidget/ggiraph-6.html" height="800" width="750" style="border:none;">
 </iframe>
 </div>
 </div>
