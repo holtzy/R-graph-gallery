@@ -95,7 +95,7 @@ myplot <- ggplot(
   mapping = aes(
     x = disp, y = qsec,
     # here we add interactive aesthetics
-    tooltip = carname, data_id = am
+    tooltip = carname, data_id = carname
   )
 ) +
   geom_point_interactive(
@@ -112,6 +112,8 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-2.html")
 
 # Key features
 ***
+
+<br/>
 
 ## &rarr; Combining Plots
 
@@ -171,8 +173,7 @@ interactive_plot <- girafe(ggobj = combined_plot)
 interactive_plot <- girafe_options(
   interactive_plot,
   opts_hover(css = "fill:cyan;stroke:black;cursor:pointer;"),
-  opts_selection(type = "single", css = "fill:red;stroke:black;"),
-  opts_toolbar(saveaspng = FALSE)
+  opts_selection(type = "single", css = "fill:red;stroke:black;")
 )
 
 htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-3.html")
@@ -189,8 +190,11 @@ Although `CSS` is primarily used for styling **web pages**, it can also be relev
 _Note: If you haven't already, check the posts on [how to use CSS in ggiraph](../412-customize-css-in-interactive-ggiraph.html) and how to [combine multiple plots and use CSS in ggiraph](../414-map-multiple-charts-in-ggiraph.html)._
 
 In this example, we'll use the `girafe_options()` function and pass it several arguments:
+
 - `opts_hover()` for passing the CSS when **hovering**
 - `opts_tooltip()` for passing the CSS of the **tooltip**
+
+<br/>
 
 ```{r}
 library(ggiraph)
@@ -260,11 +264,22 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-4.html")
 
 <iframe src="../HtmlWidget/ggiraph-4.html" height="650" width="750" style="border:none;"></iframe>
 
+
+
+
+
+
+
+
+
 ## &rarr; `onclick` effects with JavaScript
 
 Using the `onclick` argument, you can define **actions** to be performed when the user **clicks** on certain parameters using JavaScript (JS).
 
 In the following example, we use JS to make the rectangles **change colour** and **display confetti** when the user clicks.
+
+_Note: check the post on [how to use Javascript in ggiraph](../413-use-javascript-in-ggiraph.html)._
+
 
 ```{r}
 library(ggplot2)
@@ -382,12 +397,7 @@ pmap <- ggplot(atlas) +
   ) +
   theme_map() +
   theme(
-    legend.position = "top",
-    legend.justification = 0.5,
-    legend.key.size = unit(1.25, "cm"),
-    legend.key.width = unit(1.75, "cm"),
-    legend.text = element_text(size = 6),
-    legend.margin = margin(),
+    legend.position = "none",
     plot.title = element_text(size = 16, hjust = 0.5),
     plot.subtitle = element_text(hjust = 0.5)
   )
@@ -422,16 +432,14 @@ pcol <- ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
     axis.text.x = element_blank()
   )
 
-p_hdi_atlas <- pmap + inset_element(pcol, left = 0.62, bottom = 0.10, right = 0.99, top = 0.90)
-p_hdi_atlas <- pmap + pcol
+p_hdi_atlas <- pmap + pcol + plot_layout(widths = c(4, 1))
 
 interactive_plot <- girafe(
   ggobj = p_hdi_atlas,
   options = list(
     opts_hover(css = "fill:orange;"),
     opts_hover_inv(css = "opacity:0.5;"),
-    opts_selection(type = "single", only_shiny = FALSE),
-    opts_toolbar(saveaspng = FALSE)
+    opts_selection(type = "single", only_shiny = FALSE)
   )
 )
 
