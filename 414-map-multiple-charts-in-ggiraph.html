@@ -231,28 +231,30 @@ href="package/patchwork.html">patchwork package</a></p>
 <p>Let’s start by creating a simple dataset for our next charts:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Read the full world map</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="st">&quot;https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/world.geojson&quot;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Create a sample dataset</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>happiness_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">Country =</span> <span class="fu">c</span>(</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="st">&quot;France&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;United Kingdom&quot;</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;China&quot;</span>, <span class="st">&quot;Vietnam&quot;</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="st">&quot;United States of America&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Mexico&quot;</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  ),</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">Continent =</span> <span class="fu">c</span>(</span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  ),</span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">Happiness_Score =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">GDP_per_capita =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="at">Social_support =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">Healthy_life_expectancy =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>)</span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>)</span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co"># Join the happiness data with the full world map</span></span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> world_sf <span class="sc">%&gt;%</span></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="fu">left_join</span>(happiness_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;Country&quot;</span>))</span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> world_sf <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name <span class="sc">!=</span> <span class="st">&quot;Antarctica&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> world_sf <span class="sc">%&gt;%</span> <span class="fu">filter</span>(name <span class="sc">!=</span> <span class="st">&quot;Greenland&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Create a sample dataset</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>happiness_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">Country =</span> <span class="fu">c</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="st">&quot;France&quot;</span>, <span class="st">&quot;Germany&quot;</span>, <span class="st">&quot;United Kingdom&quot;</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="st">&quot;Japan&quot;</span>, <span class="st">&quot;China&quot;</span>, <span class="st">&quot;Vietnam&quot;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="st">&quot;United States of America&quot;</span>, <span class="st">&quot;Canada&quot;</span>, <span class="st">&quot;Mexico&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  ),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">Continent =</span> <span class="fu">c</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>, <span class="st">&quot;Europe&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>, <span class="st">&quot;Asia&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span>, <span class="st">&quot;North America&quot;</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  ),</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="at">Happiness_Score =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="at">GDP_per_capita =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="at">Social_support =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>),</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="at">Healthy_life_expectancy =</span> <span class="fu">rnorm</span>(<span class="at">mean =</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="dv">20</span>, <span class="at">n =</span> <span class="dv">9</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>)</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co"># Join the happiness data with the full world map</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>world_sf <span class="ot">&lt;-</span> world_sf <span class="sc">%&gt;%</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  <span class="fu">left_join</span>(happiness_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span> <span class="ot">=</span> <span class="st">&quot;Country&quot;</span>))</span></code></pre></div>
 </div>
 <div id="create-the-charts" class="section level2">
 <h2>Create the charts</h2>
@@ -300,25 +302,26 @@ href="ggplot2-package.html">ggplot2</a> chart!</p>
 <span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)),</span>
 <span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> name, <span class="at">tooltip =</span> name, <span class="at">data_id =</span> name)</span>
 <span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>  )</span>
-<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a></span>
-<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
-<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a></span>
-<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
-<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
-<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
-<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>  interactive_plot,</span>
-<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:black;stroke:black;&quot;</span>)</span>
-<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>)</span>
-<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a></span>
-<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a><span class="co"># save as an html widget</span></span>
-<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-2.html&quot;</span>)</span></code></pre></div>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">3857</span>)) <span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>  )</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>  interactive_plot,</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>)</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a><span class="co"># save as an html widget</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-2.html&quot;</span>)</span></code></pre></div>
 <iframe src="HtmlWidget/multiple-ggiraph-2.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
@@ -376,25 +379,26 @@ share the same color.</p>
 <span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(world_sf, <span class="sc">!</span><span class="fu">is.na</span>(Happiness_Score)),</span>
 <span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> Continent, <span class="at">tooltip =</span> name, <span class="at">data_id =</span> Continent)</span>
 <span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
-<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>  )</span>
-<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a></span>
-<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
-<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a></span>
-<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
-<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
-<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
-<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>  interactive_plot,</span>
-<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:black;stroke:black;&quot;</span>)</span>
-<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>)</span>
-<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a></span>
-<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
-<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-3.html&quot;</span>)</span></code></pre></div>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(<span class="dv">3857</span>)) <span class="sc">+</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>  )</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="co"># Combine the plots</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> (p1 <span class="sc">+</span> p2) <span class="sc">/</span> p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="co"># Create the interactive plot</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> combined_plot)</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe_options</span>(</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>  interactive_plot,</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>)</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>)</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-3.html&quot;</span>)</span></code></pre></div>
 <iframe src="HtmlWidget/multiple-ggiraph-3.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
@@ -425,17 +429,20 @@ passing the CSS of the <strong>tooltip</strong></p>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="st">  font-size: 14px;</span></span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;fill: #4e54c8;&quot;</span></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  )</span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-4.html&quot;</span>)</span></code></pre></div>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="st">  filter: brightness(75%);</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="st">  transition: all 0.3s ease;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>  )</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-4.html&quot;</span>)</span></code></pre></div>
 <iframe src="HtmlWidget/multiple-ggiraph-4.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
@@ -463,8 +470,7 @@ shadow</li>
 </ul>
 <p>Hover CSS:</p>
 <ul>
-<li><code>fill</code>: Changes the main color of the hovered element to
-purple</li>
+<li><code>filter: brightness(75%)</code>: Makes the element darker</li>
 <li><code>stroke</code>: Adds a light blue outline</li>
 <li><code>stroke-width</code>: Sets the thickness of the outline</li>
 <li><code>cursor</code>: Changes the mouse cursor to a pointing
@@ -487,22 +493,21 @@ effect</li>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="st">  fill: #4e54c8;</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="st">  stroke: #8f94fb;</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="st">  filter: brightness(1.2) drop-shadow(0 0 5px rgba(78, 84, 200, 0.5));</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="st">&quot;</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
-<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
-<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
-<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
-<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
-<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  )</span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
-<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-5.html&quot;</span>)</span></code></pre></div>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="st">  filter: brightness(75%);</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="st">  filter: brightness(1.2) drop-shadow(0 0 5px rgba(78, 84, 200, 0.5));</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co"># Add interactivity</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> interactive_plot <span class="sc">%&gt;%</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css)</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  )</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/multiple-ggiraph-5.html&quot;</span>)</span></code></pre></div>
 <iframe src="HtmlWidget/multiple-ggiraph-5.html" height="800" width="850" style="border:none;">
 </iframe>
 </div>
@@ -515,15 +520,9 @@ groups</strong>, allowing the user’s focus to naturally gravitate
 towards the desired elements!</p>
 <p>In practice, we utilize the <code>opts_hover_inv()</code> (defines
 what happen to non-hovered groups) function along with some
-<code>CSS</code>:</p>
-<ul>
-<li><p><strong><code>opacity: 0.5;</code></strong>: Adjusts the
-element’s transparency to 50%, making it semi-transparent and less
-prominent.</p></li>
-<li><p><strong><code>filter: saturate(20%);</code></strong>: Decreases
-the color saturation to 20% of its original level, giving the element a
-dull, nearly grayscale appearance.</p></li>
-</ul>
+<code>CSS</code> using the <strong><code>opacity: 0.3;</code></strong>
+that adjusts the element’s transparency to 30%, making it
+<strong>semi-transparent</strong> and less prominent.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>tooltip_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="st">  border-radius: 12px;</span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="st">  color: #333;</span></span>
@@ -534,7 +533,7 @@ dull, nearly grayscale appearance.</p></li>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>hover_css <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="st">  fill: #4e54c8;</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="st">  filter: brightness(75%);</span></span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="st">  cursor: pointer;</span></span>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="st">  transition: all 0.5s ease-out;</span></span>
 <span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="st">&quot;</span></span>
@@ -544,7 +543,7 @@ dull, nearly grayscale appearance.</p></li>
 <span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  <span class="fu">girafe_options</span>(</span>
 <span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>    <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
 <span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>    <span class="fu">opts_tooltip</span>(<span class="at">css =</span> tooltip_css),</span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">&quot;opacity:0.5;filter:saturate(20%);&quot;</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="fu">opts_hover_inv</span>(<span class="at">css =</span> <span class="st">&quot;opacity:0.3; transition: all 0.2s ease-out;&quot;</span>)</span>
 <span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>  )</span>
 <span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
 <span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co"># Save the interactive plot</span></span>
