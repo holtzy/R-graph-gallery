@@ -47,6 +47,10 @@ set.seed(123)
 # Most simple example
 ***
 
+The `ggiraph` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **creating interactive charts**.
+
+It offers a set of function to **add interactivity** such as `geom_point_interactive()` for an interactive version of `geom_point()`, `geom_sf_interactive()` for an interactive version of `geom_sf()` etc.
+
 In order to **map the hover effect** between multiple charts, we **only** have to use the `data_id` argument. For example, in our case, we specify `data_id = car` since we want our mapping at the **car level**, using the `mtcars` dataset. 
 
 Then we put the charts together using the [patchwork package](package/patchwork.html)
@@ -88,6 +92,8 @@ Let's start by creating a simple dataset for our next charts:
 ```{r}
 # Read the full world map
 world_sf <- read_sf("https://raw.githubusercontent.com/holtzy/R-graph-gallery/master/DATA/world.geojson")
+world_sf <- world_sf %>% filter(name != "Antarctica")
+world_sf <- world_sf %>% filter(name != "Greenland")
 
 # Create a sample dataset
 happiness_data <- data.frame(
@@ -157,6 +163,7 @@ p3 <- ggplot() +
     data = filter(world_sf, !is.na(Happiness_Score)),
     aes(fill = name, tooltip = name, data_id = name)
   ) +
+  coord_sf(crs = st_crs(3857)) +
   theme_void() +
   theme(
     axis.title.x = element_blank(),
@@ -171,7 +178,7 @@ combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 2))
 interactive_plot <- girafe(ggobj = combined_plot)
 interactive_plot <- girafe_options(
   interactive_plot,
-  opts_hover(css = "fill:black;stroke:black;")
+  opts_hover(css = "fill:red;stroke:black;")
 )
 
 # save as an html widget
@@ -230,6 +237,7 @@ p3 <- ggplot() +
     data = filter(world_sf, !is.na(Happiness_Score)),
     aes(fill = Continent, tooltip = name, data_id = Continent)
   ) +
+  coord_sf(crs = st_crs(3857)) +
   theme_void() +
   theme(
     axis.title.x = element_blank(),
@@ -244,7 +252,7 @@ combined_plot <- (p1 + p2) / p3 + plot_layout(heights = c(1, 2))
 interactive_plot <- girafe(ggobj = combined_plot)
 interactive_plot <- girafe_options(
   interactive_plot,
-  opts_hover(css = "fill:black;stroke:black;")
+  opts_hover(css = "fill:red;stroke:black;")
 )
 
 # Save the interactive plot
@@ -277,7 +285,10 @@ tooltip_css <- "
   font-size: 14px;
 "
 
-hover_css <- "fill: #4e54c8;"
+hover_css <- "
+  filter: brightness(75%);
+  transition: all 0.3s ease;
+"
 
 # Add interactivity
 interactive_plot <- interactive_plot %>%
@@ -314,7 +325,7 @@ Tooltip CSS:
 
 Hover CSS:
 
-- `fill`: Changes the main color of the hovered element to purple
+- `filter: brightness(75%)`: Makes the element darker
 - `stroke`: Adds a light blue outline
 - `stroke-width`: Sets the thickness of the outline
 - `cursor`: Changes the mouse cursor to a pointing hand
@@ -335,8 +346,7 @@ tooltip_css <- "
 "
 
 hover_css <- "
-  fill: #4e54c8;
-  stroke: #8f94fb;
+  filter: brightness(75%);
   cursor: pointer;
   filter: brightness(1.2) drop-shadow(0 0 5px rgba(78, 84, 200, 0.5));
   transition: all 0.5s ease-out;
@@ -360,11 +370,7 @@ htmltools::save_html(interactive_plot, "HtmlWidget/multiple-ggiraph-5.html")
 
 One effective method to **emphasize** the group you're hovering over is to **reduce the transparency of other groups**, allowing the user's focus to naturally gravitate towards the desired elements!
 
-In practice, we utilize the `opts_hover_inv()` (defines what happen to non-hovered groups) function along with some `CSS`:
-
-- **`opacity: 0.5;`**: Adjusts the element's transparency to 50%, making it semi-transparent and less prominent.
-
-- **`filter: saturate(20%);`**: Decreases the color saturation to 20% of its original level, giving the element a dull, nearly grayscale appearance.
+In practice, we utilize the `opts_hover_inv()` (defines what happen to non-hovered groups) function along with some `CSS` using the **`opacity: 0.3;`** that adjusts the element's transparency to 30%, making it **semi-transparent** and less prominent.
 
 ```{r}
 tooltip_css <- "
@@ -377,7 +383,7 @@ tooltip_css <- "
 "
 
 hover_css <- "
-  fill: #4e54c8;
+  filter: brightness(75%);
   cursor: pointer;
   transition: all 0.5s ease-out;
 "
@@ -387,7 +393,7 @@ interactive_plot <- interactive_plot %>%
   girafe_options(
     opts_hover(css = hover_css),
     opts_tooltip(css = tooltip_css),
-    opts_hover_inv(css = "opacity:0.5;filter:saturate(20%);")
+    opts_hover_inv(css = "opacity:0.3; transition: all 0.2s ease-out;")
   )
 
 # Save the interactive plot

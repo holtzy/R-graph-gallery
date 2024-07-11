@@ -52,8 +52,12 @@ data <- read.csv("https://raw.githubusercontent.com/holtzy/R-graph-gallery/maste
 
 
 
-# Simple line chart
+# Simple line chart with ggiraph
 ***
+
+The `ggiraph` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to simplify the process of **creating interactive charts**.
+
+It offers a set of function to **add interactivity** such as `geom_point_interactive()` for an interactive version of `geom_point()`, `geom_sf_interactive()` for an interactive version of `geom_sf()` etc.
 
 Let's start with a **simple interactive version** of this line chart. It uses the `geom_line_interactive()` function to replace the `geom_line()` one and make it interactive.
 
@@ -114,6 +118,46 @@ htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-2.html"
 <iframe src="HtmlWidget/geom-line-interactive-2.html" height="650" width="850" style="border:none;"></iframe>
 
 
+# Highlight a specific line
+***
+
+When displaying multiple lines in a single chart, it's easy to end up with a cluttered [spaghetti chart](https://www.data-to-viz.com/caveat/spaghetti.html). One effective way to enhance readability is by implementing a hover effect that elegantly **fades out** non-hovered lines while highlighting the selected line.
+
+This can be achieved using CSS with the following properties:
+
+1. `stroke`: Change the color of the hovered line (e.g., `stroke: #69B3A2;`)
+2. `stroke-width`: Increase the width of the hovered line for emphasis
+3. `transition`: Add a smooth transition effect (e.g., `transition: all 0.3s ease;`)
+4. `opacity`: Reduce the opacity of non-hovered lines (e.g., `opacity: 0.5;`)
+5. `filter`: Apply a grayscale effect to non-hovered lines (e.g., `filter: grayscale(90%);`)
+
+```{r}
+library(hrbrthemes) # for the `theme_ipsum()`
+
+plot <- data %>%
+  ggplot(mapping = aes(
+    x = date,
+    y = value,
+    color = country,
+    tooltip = country,
+    data_id = country
+  )) +
+  geom_line_interactive(hover_nearest = TRUE) +
+  theme_ipsum()
+
+interactive_plot <- girafe(ggobj = plot)
+
+interactive_plot <- girafe_options(
+  interactive_plot,
+  opts_hover(css = "stroke:#69B3A2; stroke-width: 3px; transition: all 0.3s ease;"),
+  opts_hover_inv("opacity:0.5;filter:saturate(10%);"),
+  opts_toolbar(saveaspng = FALSE)
+)
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-3.html")
+```
+
+<iframe src="HtmlWidget/geom-line-interactive-3.html" height="650" width="850" style="border:none;"></iframe>
+
 
 # More advanced usage
 ***
@@ -147,14 +191,34 @@ interactive_plot <- girafe_options(
   opts_hover(css = hover_css),
   opts_toolbar(saveaspng = FALSE)
 )
-htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-3.html")
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-4.html")
 ```
 
-<iframe src="HtmlWidget/geom-line-interactive-3.html" height="650" width="850" style="border:none;"></iframe>
+<iframe src="HtmlWidget/geom-line-interactive-4.html" height="650" width="850" style="border:none;"></iframe>
 
 
 # Combine CSS with other ggiraph features
 ***
+
+Since `CSS` provides an infinite number of possibilities, you can use it to create very original charts!
+
+Hover CSS:
+
+- `stroke: black;`: Sets the outline color of the hovered element to black.
+- `stroke-width: 1px;`: Sets the width of the outline to 1 pixel.
+- `r: 8px;`: Sets the radius of circular elements (like points) to 8 pixels, making them larger on hover.
+- `transition: all 0.3s ease;`: Applies a smooth transition effect for all property changes, lasting 0.3 seconds.
+
+Tooltip CSS:
+
+- `background-color: #2C3E50;`: Sets a dark blue background for the tooltip.
+- `color: #ECF0F1;`: Sets the text color to a light gray.
+- `padding: 10px;`: Adds 10 pixels of space inside the tooltip around its content.
+- `border-radius: 5px;`: Rounds the corners of the tooltip.
+- `font-family: 'Arial', sans-serif;`: Sets the font to Arial or a sans-serif fallback.
+- `font-size: 14px;`: Sets the text size to 14 pixels.
+- `box-shadow: 0px 0px 10px rgba(0,0,0,0.5);`: Adds a subtle shadow effect to the tooltip.
+
 
 ```{r}
 plot <- data %>%
@@ -215,10 +279,10 @@ interactive_plot <- girafe_options(
   opts_toolbar(saveaspng = TRUE, position = "topright", pngname = "country_data_plot"),
   opts_sizing(rescale = TRUE)
 )
-htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-4.html")
+htmltools::save_html(interactive_plot, "HtmlWidget/geom-line-interactive-5.html")
 ```
 
-<iframe src="HtmlWidget/geom-line-interactive-4.html" height="750" width="890" style="border:none;"></iframe>
+<iframe src="HtmlWidget/geom-line-interactive-5.html" height="750" width="890" style="border:none;"></iframe>
 
 
 # Going further
