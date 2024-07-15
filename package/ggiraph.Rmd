@@ -121,6 +121,8 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-2.html")
 
 _Note: check the [dedicated post on how to combine plots in ggiraph](../414-map-multiple-charts-in-ggiraph.html) to learn more about it._
 
+### Combine 2 charts
+
 ```{r}
 library(ggiraph)
 library(tidyverse)
@@ -181,6 +183,22 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-3.html")
 
 <iframe src="../HtmlWidget/ggiraph-3.html" height="600" width="820" style="border:none;"></iframe>
 
+### Combine 3 charts
+
+It is even possible to create more complex examples by adding, for example, a map:
+
+<iframe src="../HtmlWidget/multiple-ggiraph-6.html" height="600" width="820" style="border:none;"></iframe>
+
+<a class="btn btn-secondary text-uppercase"
+    href = "../414-map-multiple-charts-in-ggiraph.html"
+    >Code</a>
+
+
+
+
+
+<br/><br/>
+
 ## &rarr; Use your own CSS for better styling
 
 Although `CSS` is primarily used for styling **web pages**, it can also be relevant in customizing visuals in **R**, especially when dealing with web-based outputs like **interactive charts** or **Shiny applications**.
@@ -193,8 +211,6 @@ In this example, we'll use the `girafe_options()` function and pass it several a
 
 - `opts_hover()` for passing the CSS when **hovering**
 - `opts_tooltip()` for passing the CSS of the **tooltip**
-
-<br/>
 
 ```{r}
 library(ggiraph)
@@ -270,7 +286,7 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-4.html")
 
 
 
-
+<br/><br/>
 
 ## &rarr; `onclick` effects with JavaScript
 
@@ -348,6 +364,16 @@ htmltools::save_html(html_content, "../HtmlWidget/ggiraph-5.html")
 
 <iframe src="../HtmlWidget/ggiraph-5.html" height="650" width="750" style="border:none;"></iframe>
 
+
+
+
+
+
+
+
+
+<br/><br/>
+
 ## &rarr; Interactive maps
 
 Interactivity is a very interesting feature, **especially** for [choropleth maps](../choropleth-map.html), as it is very intuitive to **fly over a specific region** and want to know more.
@@ -415,7 +441,7 @@ pcol <- ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
   geom_hline(yintercept = 0) +
   geom_text_interactive(
     aes(y = y_text, label = label, color = group_hdi, data_id = data_id),
-    size = 4
+    size = 2
   ) +
   coord_flip() +
   scale_x_discrete(labels = x_labels) +
@@ -423,19 +449,21 @@ pcol <- ggplot(pop_hdi, aes(group_hdi, share, fill = group_hdi)) +
   scale_color_manual(values = c(rep("black", 5), rep("white", 2), "black")) +
   guides(fill = "none", color = "none") +
   labs(
-    title = "Population share by HDI group",
+    title = "",
     x = NULL,
     y = NULL
   ) +
   theme_void() +
   theme(
     panel.grid = element_blank(),
-    plot.title = element_text(size = 10),
-    axis.text.y = element_text(size = 6),
-    axis.text.x = element_blank()
+    plot.title = element_text(size = 8), # Reduced title size
+    axis.text.y = element_text(size = 5), # Reduced y-axis text size
+    axis.text.x = element_blank(),
+    aspect.ratio = 1.5
   )
 
-p_hdi_atlas <- pmap + pcol + plot_layout(widths = c(4, 1))
+p_hdi_atlas <- pmap + pcol + plot_layout(widths = c(3, 1))
+p_hdi_atlas <- pmap + inset_element(pcol, left = 0.5, bottom = 0, right = 1, top = 0.5)
 
 interactive_plot <- girafe(
   ggobj = p_hdi_atlas,
@@ -450,6 +478,10 @@ htmltools::save_html(interactive_plot, "../HtmlWidget/ggiraph-6.html")
 ```
 
 <iframe src="../HtmlWidget/ggiraph-6.html" height="800" width="750" style="border:none;"></iframe>
+
+
+
+<br/><br/>
 
 # Gallery of ggiraph examples
 ***
