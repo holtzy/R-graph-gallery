@@ -1,0 +1,238 @@
+---
+title: "Enhancing Text in ggplot2 with **ggtext**"
+logo: "ggtext"
+descriptionMeta: "This post explains how to enhance text elements in ggplot2 plots using the ggtext package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `ggtext` package in R is an extension of [ggplot2](https://r-graph-gallery.com/ggplot2-package.html), designed to **improve text rendering** in plots.<br/>This post showcases the **key features** of `ggtext` and provides a set of **graph examples** using the package."
+documentationLink: "github.com/wilkelab/ggtext"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+# Quick start
+***
+The `ggtext` package in R extends the text rendering capabilities of [ggplot2](https://r-graph-gallery.com/ggplot2-package.html), allowing for **rich text formatting** in plot elements.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It provides functions to render **markdown** and **HTML** text in ggplot2 plots, enabling more flexible and visually appealing text elements.
+
+✍️ **author** &rarr; Claus O. Wilke
+
+📘 **documentation** &rarr; [github](https://github.com/wilkelab/ggtext)
+
+⭐️ *more than 600 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(ggtext)
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(
+    title = "Car <span style='color:blue;'>Weight</span> vs. <span style='color:red;'>MPG</span>",
+    subtitle = "Relationship between <span style='color:blue;'>**weight**</span> and <span style='color:red;'>**miles per gallon**</span>"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    plot.subtitle = element_markdown()
+  )
+```
+
+</div>
+</div>
+
+# Installation
+***
+To get started with `ggtext`, you can install it from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("ggtext")
+```
+
+# Basic usage 
+***
+
+The `ggtext` package allows you to use markdown and HTML formatting in text elements of ggplot2 plots. Here's a basic example:
+
+In this example, we use HTML tags (`span`) in the subtitle to color specific words. The `element_markdown()` function in the `theme()` call enables the rendering of this formatted text.
+
+```{r}
+library(ggplot2)
+library(ggtext)
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(
+    title = "Car Weight vs. MPG",
+    subtitle = "Relationship between <span style='color:blue;'>weight</span> and <span style='color:red;'>miles per gallon</span>"
+  ) +
+  theme(plot.subtitle = element_markdown())
+```
+
+
+# Key features
+***
+
+## &rarr; Rich Text Formatting
+You can use markdown and HTML to format text, including bold, italic, and colored text.
+
+Example:
+
+```{r}
+library(ggplot2)
+library(ggtext)
+
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  labs(
+    title = "Car Weight vs. MPG",
+    subtitle = "**Bold text**, *italic text*, and <span style='color:#72874EFF;'>**colored text**</span>"
+  ) +
+  theme(plot.subtitle = element_markdown())
+```
+
+
+<br><br>
+
+
+## &rarr; `ggtext` as a legend
+
+Using `ggtext`, we can change the axis labels so that they are colored to match the bar colors:
+
+- **Inline Coloring**:
+  - `color` defines bar and text colors.
+  - `name` combines `item_name` and `group` with HTML tags for styling: `<i style='color:{color}'>**{item_name}**</i> ({group})`.
+
+- **Theming**:
+  - `axis.text.y = element_markdown()` applies HTML/CSS formatting to y-axis labels.
+
+This has direct benefits:
+
+- **No Legend Needed**: Labels are color-matched to bars, making the plot intuitive.
+- **Enhanced Visualization**: Improved readability and aesthetics through direct color association.
+
+```{r}
+library(tidyverse)
+library(ggtext)
+library(glue)
+
+data <- tibble(
+  item_name = c("Item A", "Item B", "Item C", "Item D"),
+  group = c("Group 1", "Group 2", "Group 3", "Group 4"),
+  value = c(-1.5, 1.0, 2.5, 4.0)
+)
+
+data %>%
+  mutate(
+    color = c("#FF5733", "#33FF57", "#3357FF", "#FF33FF"),
+    name = glue("<i style='color:{color}'>**{item_name}**</i> ({group})"),
+    name = fct_reorder(name, value)
+  ) %>%
+  ggplot(aes(value, name, fill = color)) +
+  geom_col(alpha = 0.5) +
+  scale_fill_identity() +
+  labs(caption = "Adapted example from the ***{ggtext}*** documentation<br>(using made-up data)") +
+  theme(
+    axis.text.y = element_markdown(),
+    plot.caption = element_markdown(lineheight = 1.2)
+  )
+```
+
+
+<br><br>
+
+## &rarr; Box around text
+
+`ggtext` can be used to create boxes around your text in different styles:
+
+- `geom_richtext()`: Replaces the usual `geom_text()` to render the text in `label` with special formatting.
+- The `label` entries use:
+  - `**bold**` for bold text.
+  - `<br>` for **line breaks**.
+  - `<span style='color:green'>` for colored text.
+  - `<sup>` and `<sub>` for **superscript** and **subscript**.
+  - `<span style='font-size:16pt'>` for larger text.
+
+This setup allows the plot to display text with **mixed styles** (e.g., bold, colored, italicized) and structured formats (e.g., line breaks, superscripts) within a single text label.
+
+
+```{r}
+library(ggplot2)
+library(tibble)
+library(ggtext)
+
+df <- tibble(
+  label = c(
+    "Another text **in bold.**",
+    "Different linebreaks<br>Linebreaks<br><br>Double Linebreaks",
+    "*y*<sup>3</sup> + 7*y* + *D*<sub>*j*</sub>",
+    "More <span style='color:green'>green text **in bold.**</span><br>And *italicized text.*<br>
+    And some <span style='font-size:16pt; color:purple'>large</span> text."
+  ),
+  x = c(.3, .2, .6, .8),
+  y = c(.7, .3, .2, .4),
+  hjust = c(0.5, 0, 1, 0.5),
+  vjust = c(0.5, 1, 0.5, 0.5),
+  angle = c(0, 10, 30, -30),
+  color = c("black", "green", "black", "purple"),
+  fill = c("ivory", "white", "lightgreen", "white")
+)
+
+ggplot(df) +
+  aes(
+    x, y,
+    label = label, angle = angle, color = color, fill = fill,
+    hjust = hjust, vjust = vjust
+  ) +
+  geom_richtext() +
+  geom_point(color = "black", size = 1) +
+  scale_color_identity() +
+  scale_fill_identity() +
+  xlim(0, 1) +
+  ylim(0, 1)
+```
+
+
+<br><br>
+
+## Valid HTML/CSS properties
+
+Unfortunatley, `ggtext` only supports a **limited amount of features**. Only the following will work:
+
+- **bold** text when surrounded by `**` &rarr; \*\*some text that will renders bold\*\*
+- **italic** text when surrounded by `*` &rarr; \*some text that will renders italic\*
+- **color** text: `<span>` with a `color` value in `style` &rarr; \<span style='color:green'>green text\</span>
+- **font size**: `<span>` with a `font-size` value in `style` &rarr; \<span style='font-size:30px'>large text\</span>
+- **sub or superscript**: `<sub>` or `<sup>` &rarr; \<sub>subscript\</sub> and \<sup>subscript\</sup>
+
+If you want access to more text formatting functions, we **strongly** recommend that you check out and use the brand new [marquee](https://marquee.r-lib.org/) package.
+
+# Gallery of ggtext examples
+***
+
+The gallery is full of examples that use `ggtext` to improve their style. If you want to delve into some **real-life examples**, take a look at them!
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div class=row id=portfolio-items> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-circular-lollipop-plot-with-ggplot2.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Circular lollipop <hr> <p class=explanation_portfolio>Use of circular lollipop with nice style </div> </div><img alt="circular lollipop" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-circular-lollipop-plot-with-ggplot2.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-line-chart-small-multiple-all-group-greyed-out.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Small multiple line chart <hr> <p class=explanation_portfolio>Discover how to create a small multiple line charts with a nice color schema </div> </div><img alt="Small multiple line chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/we-line-chart-consumer-confidence.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-extended-dumbbell-plot-ggplot2.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Dumbell chart <hr> <p class=explanation_portfolio>Learn how to use a dumbell chart in combination with a nice legend </div> </div><img alt="Dumbell chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-extended-dumbbell-plot-ggplot2-square.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-dumbell-chart.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Dumbell chart <hr> <p class=explanation_portfolio>Discover how to create a dumbell chart with a nice color schema </div> </div><img alt="dumbell chart" class="img-fluid imgOfPortfolio" src=../img/graph/web-dumbell-chart.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-line-chart-with-labels-at-end-of-line.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Line chart <hr> <p class=explanation_portfolio>Learn how to create a line chart with inline labels with nice colors </div> </div><img alt="Line chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-line-chart-with-labels-at-end-of-line.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-lineplots-and-area-chart-the-economist.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Combine line and area chart <hr> <p class=explanation_portfolio>Discover how to combine a line chart and an area chart to highlight trends </div> </div><img alt="Combine line and area chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-lineplots-and-area-chart-the-economist.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-lollipop-plot-with-r-mario-kart-64-world-records.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Dumbell chart <hr> <p class=explanation_portfolio>Learn how to create a dumbell chart with a nice legend and annotations </div> </div><img alt="Dumbell chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/lollipop-plot-with-r-mario-kart-64-world-records-square.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-ridgeline-plot-with-inside-plot-and-annotations.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Ridgeline plot <hr> <p class=explanation_portfolio>Discover how to create a ridgeline plot with a dedicated small chart as a legend </div> </div><img alt="Ridgeline plot" class="img-fluid imgOfPortfolio" src=../img/graph/web-ridgeline-plot-with-inside-plot-and-annotations-square.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-stacked-area-chart-inline-labels.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Stacked area chart <hr> <p class=explanation_portfolio>Learn how to create a smoothed stacked area chart with inline labels </div> </div><img alt="Stacked area chart" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-stacked-area-chart-inline-labels.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-streamchart-with-ggstream.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Streamgraph <hr> <p class=explanation_portfolio>Discover how to create a streamgraph with a nice color schema and great annotations </div> </div><img alt="Streamgraph" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-streamchart-with-ggstream-square.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-treemap-with-annotations-labels-and-colors.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Treemap <hr> <p class=explanation_portfolio>Learn how to create a treemap that with a nice subtitle for the legend </div> </div><img alt="Treemap" class="img-fluid imgOfPortfolio" src=../img/graph/web-treemap-with-annotations-labels-and-colors.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-valued-dots-map-bertin.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Map of the France <hr> <p class=explanation_portfolio>Discover how to create a map of the France that uses the style of Jacques Bertin </div> </div><img alt="Map of the France" class="img-fluid imgOfPortfolio" src=../img/fromTheWeb/web-valued-dots-map-bertin.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-waffle-chart-share.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Waffle chart <hr> <p class=explanation_portfolio>Learn how to use waffle charts to represents share's of different categories with nice annotations </div> </div><img alt="Waffle chart" class="img-fluid imgOfPortfolio" src=../img/graph/web-waffle-chart-share.png> </a></div> <div class="portfolio-item col-sm-6 col-md-6"><a class=portfolio-link href=../web-waffle-for-time-evolution.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Waffle chart <hr> <p class=explanation_portfolio>Discover how to use waffle charts to represent evolution and trends, in combination with great annotations </div> </div><img alt="Waffle chart" class="img-fluid imgOfPortfolio" src=../img/graph/web-waffle-for-time-evolution-square.png> </a></div> </div> </div> </section>
+
+
+<!-- Close container -->
+</div>
