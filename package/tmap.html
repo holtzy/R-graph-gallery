@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Create Beautiful Thematic Maps with
+<strong>tmap</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+thematic maps using the tmap package in R. It provides several
+reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Create Beautiful Thematic Maps
+with <strong>tmap</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create thematic maps using the tmap package in R. It provides several
+reproducible examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Create Beautiful Thematic Maps with
+<strong>tmap</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>tmap</code> package in R is
+designed for creating <strong>thematic maps</strong>, allowing users to
+visualize spatial data in an intuitive and flexible way.<br/>This post
+showcases the <strong>key features</strong> of <code>tmap</code> and
+provides a set of <strong>map examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://r-tmap.github.io/tmap/"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/tmap.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{tmap}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>tmap</code> package in R is designed for creating
+<strong>thematic maps</strong>, allowing users to visualize spatial data
+in an intuitive and flexible way.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of <strong>functions</strong> that make it easy to
+create complex maps with a consistent and user-friendly syntax, similar
+to <a href="../ggplot2-package.html">ggplot2</a>. It’s built on top of
+<a href="sf.html">sf</a> and <a
+href="../179-show-a-map-with-leaflet-r.html">leaflet</a>.</p>
+<p>✍️ <strong>author</strong> → Martijn Tennekes</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://r-tmap.github.io/tmap/">website</a></p>
+<p>⭐️ <em>more than 800 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<p><img src="tmap_files/figure-html/unnamed-chunk-1-1.png" width="85%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>tmap</code>, you can install it directly
+from CRAN using the <code>install.packages</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;tmap&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>tmap</code> package uses a layered approach to building
+maps, similar to <a href="../ggplot2-package.html">ggplot2</a>. You
+start with <code>tm_shape()</code> to define the data, then add layers
+with various <code>tm_*()</code> functions.</p>
+<p>Here’s a basic example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;pop_est&quot;</span>, <span class="at">style =</span> <span class="st">&quot;quantile&quot;</span>, <span class="at">title =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
+<p><img src="tmap_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="draw-borders" class="section level2">
+<h2>→ Draw borders</h2>
+<p>You can create <strong>minimalist maps</strong> using the
+<code>tm_borders()</code> function:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">tm_borders</span>()</span></code></pre></div>
+<p><img src="tmap_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="multiple-layers" class="section level2">
+<h2>→ Multiple Layers</h2>
+<p>You can <strong>add multiple layers</strong> to your map using the
+<code>+</code> operator. The following example will add the
+<code>name</code> of each country with a <code>size</code> proportional
+to the <code>AREA</code> column:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;income_grp&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;Blues&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">tm_text</span>(<span class="st">&quot;name&quot;</span>, <span class="at">size =</span> <span class="st">&quot;AREA&quot;</span>)</span></code></pre></div>
+<p><img src="tmap_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="faceted-maps" class="section level2">
+<h2>→ Faceted Maps</h2>
+<p>Use <code>tm_facets()</code> to create <strong>small multiples based
+on a variable</strong>. Here, we use the <code>continent</code> column
+to create a facet:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;gdp_cap_est&quot;</span>, <span class="at">style =</span> <span class="st">&quot;quantile&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="fu">tm_facets</span>(<span class="st">&quot;continent&quot;</span>, <span class="at">free.coords =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="tmap_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="style-customization" class="section level2">
+<h2>→ Style Customization</h2>
+<p>You can apply any custom style to your <code>tmap</code> maps. In the
+following example, we:</p>
+<ul>
+<li><strong>Color and Style</strong>:
+<ul>
+<li>Uses a reversed RdYlBu palette for life expectancy</li>
+<li>Applies the “pretty” style for class intervals</li>
+<li>Sets white borders with reduced opacity for countries</li>
+</ul></li>
+<li><strong>Text</strong>:
+<ul>
+<li>Overlays country codes (ISO A3) on each country</li>
+</ul></li>
+<li><strong>Legend</strong>:
+<ul>
+<li>Moves the legend outside the map</li>
+<li>Customizes legend appearance (frame, background color, text
+size)</li>
+</ul></li>
+<li><strong>Layout</strong>:
+<ul>
+<li>Adds a title with custom positioning and size</li>
+<li>Sets a background color for the entire plot</li>
+<li>Adds a frame around the map</li>
+<li>Customizes inner margins</li>
+</ul></li>
+<li><strong>Additional Elements</strong>:
+<ul>
+<li>Includes a compass and scale bar</li>
+<li>Adds credits for the data source</li>
+</ul></li>
+<li><strong>Overall Style</strong>:
+<ul>
+<li>Applies the “natural” built-in style as a base</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Prepare the data</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>world_data <span class="ot">&lt;-</span> World <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(life_exp)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pop_density =</span> pop_est <span class="sc">/</span> area)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Create the customized map</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="fu">tm_shape</span>(world_data) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;life_exp&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;-RdYlBu&quot;</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="at">style =</span> <span class="st">&quot;pretty&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">7</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Life Expectancy&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;life_exp&quot;</span>, <span class="st">&quot;gdp_cap_est&quot;</span>),</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    <span class="at">border.col =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    <span class="at">border.alpha =</span> <span class="fl">0.5</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="fu">tm_text</span>(<span class="st">&quot;iso_a3&quot;</span>, <span class="at">size =</span> <span class="st">&quot;AREA&quot;</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Global Life Expectancy and Economic Indicators&quot;</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="at">title.position =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>, <span class="st">&quot;top&quot;</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="at">title.size =</span> <span class="fl">1.5</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>    <span class="at">bg.color =</span> <span class="st">&quot;#f5f5f5&quot;</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>    <span class="at">inner.margins =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>),</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="at">frame =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">frame.lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>    <span class="at">legend.outside =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">legend.outside.position =</span> <span class="st">&quot;right&quot;</span>,</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>    <span class="at">legend.frame =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    <span class="at">legend.bg.color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="at">legend.text.size =</span> <span class="fl">0.7</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;bottom&quot;</span>), <span class="at">text.size =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>  <span class="fu">tm_credits</span>(<span class="st">&quot;Data: {tmap} World dataset&quot;</span>, <span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>), <span class="at">size =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>  <span class="fu">tm_style</span>(<span class="st">&quot;natural&quot;</span>)</span></code></pre></div>
+<p><img src="tmap_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+</div>
+<div id="interactive-maps" class="section level2">
+<h2>→ Interactive Maps</h2>
+<p>You can super easily make all your <code>tmap</code> maps switch to
+interactive mode with <code>tmap_mode("view")</code>. In this example,
+we:</p>
+<ul>
+<li><strong>Filters</strong> the World dataset to focus on European
+countries.</li>
+<li>Uses GDP per capita for the <strong>polygon fill color</strong>,
+with a “jenks” classification method and the “viridis” color
+palette.</li>
+<li>Adds <strong>popup information</strong> for country name,
+population, and GDP per capita.</li>
+<li>Includes country borders with <strong>reduced opacity</strong>.</li>
+<li>Adds <strong>bubbles representing population size</strong> and
+colored by life expectancy.</li>
+<li>Customizes the layout with a <strong>title</strong> and places the
+<strong>legend outside the map</strong>.</li>
+<li>Includes a <strong>scale bar</strong> and compass for better
+orientation.</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>europe <span class="ot">&lt;-</span> World <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">filter</span>(continent <span class="sc">==</span> <span class="st">&quot;Europe&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">&quot;view&quot;</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>my_tmap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(europe) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;gdp_cap_est&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">style =</span> <span class="st">&quot;jenks&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    <span class="at">palette =</span> <span class="st">&quot;viridis&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;GDP per capita&quot;</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;pop_est&quot;</span>, <span class="st">&quot;gdp_cap_est&quot;</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">id =</span> <span class="st">&quot;name&quot;</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  <span class="fu">tm_bubbles</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    <span class="at">size =</span> <span class="st">&quot;pop_est&quot;</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">col =</span> <span class="st">&quot;life_exp&quot;</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>    <span class="at">scale =</span> <span class="fl">0.5</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="at">title.size =</span> <span class="st">&quot;Population&quot;</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">title.col =</span> <span class="st">&quot;Life Expectancy&quot;</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">popup.vars =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;European Countries: GDP, Population, and Life Expectancy&quot;</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    <span class="at">legend.outside =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    <span class="at">legend.outside.position =</span> <span class="st">&quot;right&quot;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;bottom&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;top&quot;</span>))</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="fu">tmap_save</span>(my_tmap, <span class="at">filename =</span> <span class="st">&quot;../HtmlWidget/my_interactive_map.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/my_interactive_map.html" height="600" width="600" style="border:none;">
+</iframe>
+</center>
+<p><em>Note: You can return to static display mode by
+running:<code>tmap_mode("plot")</code></em></p>
+<p><br></p>
+</div>
+</div>
+<div id="gallery-of-tmap-examples" class="section level1">
+<h1>Gallery of tmap examples</h1>
+<hr />
+<p>If you want to learn more about <code>tmap</code>, it’s highly
+suggested to have a look at:</p>
+<ul>
+<li>this <a href="../416-introduction-to-tmap.html">introduction to
+tmap</a></li>
+<li><a href="../417-advanced-tmap-usage.html">advanced features of
+tmap</a></li>
+</ul>
+<section class=bg id=portfolio style=padding-top:10px>
+<div class=container>
+<div class=row id=portfolio-items>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../417-advanced-tmap-usage.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Facetted map with tmap
+<hr>
+<p class=explanation_portfolio>
+Learn how to create facetted map with tmap axis.
+</div>
+</div>
+<img alt="Facetted map with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-1.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../417-advanced-tmap-usage.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Combine layout in tmap
+<hr>
+<p class=explanation_portfolio>
+Learn how to combine choropleth and bubble map with tmap axis.
+</div>
+</div>
+<img alt="advanced layout with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-2.png>
+</a>
+</div>
+<div class="portfolio-item col-sm-6 col-md-4">
+<a class=portfolio-link href=../417-advanced-tmap-usage.html>
+<div class=portfolio-hover>
+<div class=portfolio-hover-content>
+<p>
+Change projection
+<hr>
+<p class=explanation_portfolio>
+How to change your map projection using tmap axis.
+</div>
+</div>
+<img alt="change map projection with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-3.png>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
