@@ -1,0 +1,271 @@
+---
+title: "Create Beautiful Thematic Maps with **tmap**"
+logo: "tmap"
+descriptionMeta: "This post explains how to create thematic maps using the tmap package in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `tmap` package in R is designed for creating **thematic maps**, allowing users to visualize spatial data in an intuitive and flexible way.<br/>This post showcases the **key features** of `tmap` and provides a set of **map examples** using the package."
+documentationLink: "r-tmap.github.io/tmap/"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+# Quick start
+***
+
+The `tmap` package in R is designed for creating **thematic maps**, allowing users to visualize spatial data in an intuitive and flexible way.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a set of **functions** that make it easy to create complex maps with a consistent and user-friendly syntax, similar to [ggplot2](../ggplot2-package.html). It's built on top of [sf](sf.html) and [leaflet](../179-show-a-map-with-leaflet-r.html).
+
+✍️ **author** &rarr; Martijn Tennekes
+
+📘 **documentation** &rarr; [website](https://r-tmap.github.io/tmap/)
+
+⭐️ *more than 800 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(tmap)
+data("World")
+tm_shape(World) +
+  tm_polygons("income_grp", palette = "Blues", title = "Income Group") +
+  tm_layout(frame = FALSE)
+```
+
+</div>
+</div>
+
+# Installation
+***
+
+To get started with `tmap`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("tmap")
+```
+
+# Basic usage 
+***
+
+The `tmap` package uses a layered approach to building maps, similar to [ggplot2](../ggplot2-package.html). You start with `tm_shape()` to define the data, then add layers with various `tm_*()` functions.
+
+Here's a basic example:
+
+```{r}
+library(tmap)
+data("World")
+
+tm_shape(World) +
+  tm_polygons("pop_est", style = "quantile", title = "Population")
+```
+
+# Key features
+***
+
+## &rarr; Draw borders
+
+You can create **minimalist maps** using the `tm_borders()` function:
+
+```{r}
+library(tmap)
+data("World")
+
+tm_shape(World) +
+  tm_borders()
+```
+
+<br>
+
+
+## &rarr; Multiple Layers
+
+You can **add multiple layers** to your map using the `+` operator. The following example will add the `name` of each country with a `size` proportional to the `AREA` column:
+
+```{r}
+library(tmap)
+data("World")
+
+tm_shape(World) +
+  tm_polygons("income_grp", palette = "Blues") +
+  tm_text("name", size = "AREA")
+```
+
+<br>
+
+## &rarr; Faceted Maps
+
+Use `tm_facets()` to create **small multiples based on a variable**. Here, we use the `continent` column to create a facet:
+
+```{r}
+library(tmap)
+data("World")
+
+tm_shape(World) +
+  tm_polygons("gdp_cap_est", style = "quantile") +
+  tm_facets("continent", free.coords = FALSE)
+```
+
+<br>
+
+
+## &rarr; Style Customization
+
+You can apply any custom style to your `tmap` maps. In the following example, we:
+
+- **Color and Style**:
+  - Uses a reversed RdYlBu palette for life expectancy
+  - Applies the "pretty" style for class intervals
+  - Sets white borders with reduced opacity for countries
+
+- **Text**:
+  - Overlays country codes (ISO A3) on each country
+
+- **Legend**:
+  - Moves the legend outside the map
+  - Customizes legend appearance (frame, background color, text size)
+
+- **Layout**:
+  - Adds a title with custom positioning and size
+  - Sets a background color for the entire plot
+  - Adds a frame around the map
+  - Customizes inner margins
+
+- **Additional Elements**:
+  - Includes a compass and scale bar
+  - Adds credits for the data source
+
+- **Overall Style**:
+  - Applies the "natural" built-in style as a base
+
+```{r}
+library(tmap)
+library(dplyr)
+
+# Prepare the data
+data("World")
+world_data <- World %>%
+  filter(!is.na(life_exp)) %>%
+  mutate(pop_density = pop_est / area)
+
+# Create the customized map
+tm_shape(world_data) +
+  tm_polygons("life_exp",
+    palette = "-RdYlBu",
+    style = "pretty",
+    n = 7,
+    title = "Life Expectancy",
+    popup.vars = c("name", "life_exp", "gdp_cap_est"),
+    border.col = "white",
+    border.alpha = 0.5
+  ) +
+  tm_text("iso_a3", size = "AREA", col = "black", fontface = "bold", alpha = 0.7) +
+  tm_layout(
+    title = "Global Life Expectancy and Economic Indicators",
+    title.position = c("center", "top"),
+    title.size = 1.5,
+    bg.color = "#f5f5f5",
+    inner.margins = c(0.1, 0.1, 0.1, 0.1),
+    frame = TRUE,
+    frame.lwd = 2,
+    legend.outside = TRUE,
+    legend.outside.position = "right",
+    legend.frame = TRUE,
+    legend.bg.color = "white",
+    legend.text.size = 0.7
+  ) +
+  tm_compass(position = c("left", "top"), size = 2) +
+  tm_scale_bar(position = c("left", "bottom"), text.size = 0.6) +
+  tm_credits("Data: {tmap} World dataset", position = c("right", "bottom"), size = 0.6) +
+  tm_style("natural")
+```
+
+<br>
+
+## &rarr; Interactive Maps
+
+You can super easily make all your `tmap` maps switch to interactive mode with `tmap_mode("view")`. In this example, we:
+
+- **Filters** the World dataset to focus on European countries.
+- Uses GDP per capita for the **polygon fill color**, with a "jenks" classification method and the "viridis" color palette.
+- Adds **popup information** for country name, population, and GDP per capita.
+- Includes country borders with **reduced opacity**.
+- Adds **bubbles representing population size** and colored by life expectancy.
+- Customizes the layout with a **title** and places the **legend outside the map**.
+- Includes a **scale bar** and compass for better orientation.
+
+```{r}
+library(tmap)
+library(dplyr)
+data("World")
+
+europe <- World %>%
+  filter(continent == "Europe")
+
+tmap_mode("view")
+
+my_tmap <- tm_shape(europe) +
+  tm_polygons("gdp_cap_est",
+    style = "jenks",
+    palette = "viridis",
+    title = "GDP per capita",
+    popup.vars = c("name", "pop_est", "gdp_cap_est"),
+    id = "name"
+  ) +
+  tm_borders(alpha = 0.5) +
+  tm_bubbles(
+    size = "pop_est",
+    col = "life_exp",
+    scale = 0.5,
+    title.size = "Population",
+    title.col = "Life Expectancy",
+    popup.vars = TRUE
+  ) +
+  tm_layout(
+    title = "European Countries: GDP, Population, and Life Expectancy",
+    legend.outside = TRUE,
+    legend.outside.position = "right"
+  ) +
+  tm_scale_bar(position = c("left", "bottom")) +
+  tm_compass(position = c("right", "top"))
+
+tmap_save(my_tmap, filename = "../HtmlWidget/my_interactive_map.html")
+```
+
+<center>
+  <iframe src="../HtmlWidget/my_interactive_map.html" height="600" width="600" style="border:none;"></iframe>
+</center>
+
+_Note: You can return to static display mode by running:`tmap_mode("plot")`_
+
+<br>
+
+# Gallery of tmap examples
+***
+
+If you want to learn more about `tmap`, it's highly suggested to have a look at:
+
+- this [introduction to tmap](../416-introduction-to-tmap.html)
+- [advanced features of tmap](../417-advanced-tmap-usage.html)
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div class=row id=portfolio-items> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../417-advanced-tmap-usage.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Facetted map with tmap <hr> <p class=explanation_portfolio>Learn how to create facetted map with tmap axis. </div> </div><img alt="Facetted map with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-1.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../417-advanced-tmap-usage.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Combine layout in tmap <hr> <p class=explanation_portfolio>Learn how to combine choropleth and bubble map with tmap axis. </div> </div><img alt="advanced layout with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-2.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../417-advanced-tmap-usage.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Change projection <hr> <p class=explanation_portfolio>How to change your map projection using tmap axis. </div> </div><img alt="change map projection with tmap" class="img-fluid imgOfPortfolio" src=../img/graph/417-advanced-tmap-usage-3.png> </a></div> </div> </div> </div> </section>
+
+<!-- Close container -->
+</div>
