@@ -43,8 +43,8 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Summer Movie Genres: A Sankey Bump Chart
-Analysis &#8211; the R Graph Gallery</title>
+    <title>Sankey Bump Chart in R with ggplot2 and
+ggsankey &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
@@ -62,8 +62,8 @@ movies over decades using ggplot2 and ggsankey." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Summer Movie Genres: A Sankey
-Bump Chart Analysis" />
+    <meta property="og:title" content="Sankey Bump Chart in R with
+ggplot2 and ggsankey" />
     <meta
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
@@ -73,7 +73,7 @@ create a Sankey bump chart in R to visualize the genre distribution of
 summer movies over decades using ggplot2 and ggsankey." />
     <meta
       property="og:url"
-      content="https://www.r-graph-gallery.com/web-sankey-diagram-with-hilight.html"
+      content="https://www.r-graph-gallery.com/web-sankey-diagram-with-highlight.html"
     />
     <meta property="og:type" content="website" />
 
@@ -114,8 +114,8 @@ summer movies over decades using ggplot2 and ggsankey." />
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
-        <center><h1>Summer Movie Genres: A Sankey Bump Chart
-Analysis</h1></center>
+        <center><h1>Sankey Bump Chart in R with ggplot2 and
+ggsankey</h1></center>
         <hr class="short_hr" />
         <br />
         <ul class="list-inline social-buttons">
@@ -190,14 +190,15 @@ their prevalence has changed over time.</p>
 <p>The visualization is based on data from IMDb and focuses on movies
 with “summer” in their titles, providing insights into the evolving
 trends in summer-themed cinema.</p>
+<p>It has been created by <a href="https://karaman.is/">Georgios
+Karamanis</a>. Thanks to him for sharing this beautiful chart!</p>
 </div>
 <div id="libraries" class="section level1">
 <h1>Libraries</h1>
 <hr />
 <p>This chart requires several libraries, including
-<code>tidyverse</code> for data manipulation, <code>ggsankey</code> for
-creating the Sankey bump chart, and <code>camcorder</code> for recording
-the plotting process.</p>
+<code>tidyverse</code> for data manipulation and <code>ggsankey</code>
+for creating the Sankey bump chart.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggsankey)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(shadowtext)</span></code></pre></div>
@@ -265,14 +266,15 @@ within each decade</li>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>      <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;grey99&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>   )</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>p</span></code></pre></div>
-<p><img src="web-sankey-diagram-with-hilight_files/figure-html/unnamed-chunk-4-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>p</span></code></pre></div>
+<p><img src="web-sankey-diagram-with-highlight_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="preparing-label-data" class="section level1">
 <h1>Preparing Label Data</h1>
 <hr />
 <p>Label data for the start and end of each genre line is prepared.</p>
+<p>This code extracts the start and end positions for each genre line
+and joins them with the corresponding genre counts.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>g_labs_start <span class="ot">&lt;-</span> <span class="fu">ggplot_build</span>(p) <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>   .<span class="sc">$</span>data <span class="sc">%&gt;%</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>   .[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span></span>
@@ -294,8 +296,6 @@ within each decade</li>
 <span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">mean</span>(y)</span>
 <span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>   ) <span class="sc">%&gt;%</span></span>
 <span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>   <span class="fu">left_join</span>(summer_genres <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(genres) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as.numeric</span>(decade) <span class="sc">==</span> <span class="fu">max</span>(<span class="fu">as.numeric</span>(decade))), <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;label&quot;</span> <span class="ot">=</span> <span class="st">&quot;genres&quot;</span>))</span></code></pre></div>
-<p>This code extracts the start and end positions for each genre line
-and joins them with the corresponding genre counts.</p>
 </div>
 <div id="final-visualization" class="section level1">
 <h1>Final Visualization</h1>
@@ -312,7 +312,7 @@ Customizes the theme for a polished look</p>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>na_col <span class="ot">&lt;-</span> <span class="st">&quot;#866f85&quot;</span></span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>   <span class="fu">geom_sankey_bump</span>(<span class="at">data =</span> summer_genres, <span class="fu">aes</span>(<span class="at">x =</span> decade, <span class="at">node =</span> genres, <span class="at">fill =</span> <span class="fu">if_else</span>(genres <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Drama&quot;</span>, <span class="st">&quot;Comedy&quot;</span>, <span class="st">&quot;Romance&quot;</span>), genres, <span class="cn">NA</span>), <span class="at">value =</span> prop)) <span class="sc">+</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>   <span class="fu">geom_shadowtext</span>(<span class="at">data =</span> g_labs_start, <span class="fu">aes</span>(x, y, <span class="at">label =</span> <span class="fu">paste</span>(label, <span class="st">&quot;·&quot;</span>, n), <span class="at">color =</span> <span class="fu">if_else</span>(label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Drama&quot;</span>, <span class="st">&quot;Comedy&quot;</span>, <span class="st">&quot;Romance&quot;</span>), label, <span class="cn">NA</span>)), <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">nudge_x =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">bg.color =</span> <span class="st">&quot;grey99&quot;</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>) <span class="sc">+</span></span>
 <span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>   <span class="fu">geom_shadowtext</span>(<span class="at">data =</span> g_labs_end, <span class="fu">aes</span>(x, y, <span class="at">label =</span> <span class="fu">paste</span>(label, <span class="st">&quot;·&quot;</span>, n), <span class="at">color =</span> <span class="fu">if_else</span>(label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Drama&quot;</span>, <span class="st">&quot;Comedy&quot;</span>, <span class="st">&quot;Romance&quot;</span>), label, <span class="cn">NA</span>)), <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">nudge_x =</span> <span class="fl">0.1</span>, <span class="at">bg.color =</span> <span class="st">&quot;grey99&quot;</span>) <span class="sc">+</span></span>
@@ -332,12 +332,14 @@ Customizes the theme for a polished look</p>
 <span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>      <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">20</span>),</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
 <span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>      <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">lineheight =</span> <span class="dv">1</span>),</span>
 <span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>      <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="at">hjust =</span> <span class="dv">0</span>),</span>
 <span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">40</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>   )</span></code></pre></div>
-<p><img src="web-sankey-diagram-with-hilight_files/figure-html/unnamed-chunk-6-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>   )</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>plot</span></code></pre></div>
+<p><img src="web-sankey-diagram-with-highlight_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="going-further" class="section level1">
 <h1>Going further</h1>

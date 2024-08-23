@@ -1,12 +1,12 @@
 ---
-title: "Summer Movie Genres: A Sankey Bump Chart Analysis"
+title: "Sankey Bump Chart in R with ggplot2 and ggsankey"
 descriptionMeta: "This post explains how to create a Sankey bump chart in R to visualize the genre distribution of summer movies over decades using ggplot2 and ggsankey."
 descriptionTop: "This post explains how to create a Sankey bump chart in R to visualize the genre distribution of summer movies over decades using [ggplot2](package/ggplot2.html) and [ggsankey](package/ggsankey.html). The chart **highlights specific genres** and adds labels to show genre counts."
 sectionText: "Sankey bump chart"
 sectionLink: "package/ggsankey.html"
 DataToVizText: "Data to Viz"
 DataToVizLink: "data-to-viz.com/graph/sankey.html"
-url: "web-sankey-diagram-with-hilight"
+url: "web-sankey-diagram-with-highlight"
 output:
   html_document:
       self_contained: false    
@@ -24,9 +24,7 @@ output:
 knitr::opts_chunk$set(
    warning = FALSE,
    message = FALSE,
-   fig.align = "center",
-   fig.width = 12,
-   fig.height = 7
+   fig.align = "center"
 )
 ```
 
@@ -39,10 +37,12 @@ This chart visualizes the **genre distribution of summer movies** over decades u
 
 The visualization is based on data from IMDb and focuses on movies with "summer" in their titles, providing insights into the evolving trends in summer-themed cinema.
 
+It has been created by [Georgios Karamanis](https://karaman.is/). Thanks to him for sharing this beautiful chart!
+
 # Libraries
 ***
 
-This chart requires several libraries, including `tidyverse` for data manipulation, `ggsankey` for creating the Sankey bump chart, and `camcorder` for recording the plotting process.
+This chart requires several libraries, including `tidyverse` for data manipulation and `ggsankey` for creating the Sankey bump chart.
 
 ```{r}
 library(tidyverse)
@@ -116,7 +116,6 @@ p <- ggplot(summer_genres, aes(x = decade, node = genres, fill = genres, value =
       legend.position = "bottom",
       plot.background = element_rect(fill = "grey99", color = NA)
    )
-
 p
 ```
 
@@ -124,6 +123,8 @@ p
 ***
 
 Label data for the start and end of each genre line is prepared.
+
+This code extracts the start and end positions for each genre line and joins them with the corresponding genre counts.
 
 ```{r}
 g_labs_start <- ggplot_build(p) %>%
@@ -149,7 +150,6 @@ g_labs_end <- ggplot_build(p) %>%
    left_join(summer_genres %>% group_by(genres) %>% filter(as.numeric(decade) == max(as.numeric(decade))), by = c("label" = "genres"))
 ```
 
-This code extracts the start and end positions for each genre line and joins them with the corresponding genre counts.
 
 # Final Visualization
 ***
@@ -170,7 +170,7 @@ pal <- c(
 
 na_col <- "#866f85"
 
-ggplot() +
+plot <- ggplot() +
    geom_sankey_bump(data = summer_genres, aes(x = decade, node = genres, fill = if_else(genres %in% c("Drama", "Comedy", "Romance"), genres, NA), value = prop)) +
    geom_shadowtext(data = g_labs_start, aes(x, y, label = paste(label, "·", n), color = if_else(label %in% c("Drama", "Comedy", "Romance"), label, NA)), hjust = 1, nudge_x = -0.1, bg.color = "grey99", fontface = "bold") +
    geom_shadowtext(data = g_labs_end, aes(x, y, label = paste(label, "·", n), color = if_else(label %in% c("Drama", "Comedy", "Romance"), label, NA)), hjust = 0, nudge_x = 0.1, bg.color = "grey99") +
@@ -190,11 +190,13 @@ ggplot() +
       axis.text.y = element_blank(),
       panel.grid.major.y = element_blank(),
       panel.grid.minor.y = element_blank(),
-      plot.title = element_text(face = "bold", size = 20),
+      plot.title = element_text(face = "bold", size = 16),
       plot.subtitle = element_text(lineheight = 1),
       plot.caption = element_text(margin = margin(10, 0, 0, 0), hjust = 0),
       plot.margin = margin(10, 40, 10, 20)
    )
+
+plot
 ```
 
 
