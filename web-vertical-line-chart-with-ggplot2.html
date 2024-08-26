@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Vertical linechart with
+ggplot2 &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create a
+beautiful vertical line chart combined with nice customized legend made
+with ggplot2. It shows the party advantage in the U.S. House of
+Representatives from 1976 to the present." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Vertical linechart with
+ggplot2" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This post explains how to
+create a beautiful vertical line chart combined with nice customized
+legend made with ggplot2. It shows the party advantage in the U.S. House
+of Representatives from 1976 to the present." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-vertical-line-chart-with-ggplot2.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Vertical linechart with ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to create a beautiful vertical <a
+href="line-plot.html">line chart</a> with <a
+href="ggplot2-package.html">ggplot2</a>. It shows the party advantage in
+the U.S. House of Representatives from 1976 to the present.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="line-plot.html"
+            >Line chart</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/line.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This chart uses a vertical line chart to show the party advantage in
+the U.S. House of Representatives from 1976 to the present. The chart is
+inspired by a graphic from FiveThirtyEight and has been created by <a
+href="https://aman.bh/">Aman Bhargava</a>.</p>
+<p>Thanks to him for sharing its work!</p>
+</div>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<hr />
+<p>First we start by loading the necessary libraries.</p>
+<p><em>Note: Install <code>urbnmapr</code> with
+<code>devtools::install_github("UrbanInstitute/urbnmapr")</code> since
+it’s not on CRAN.</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidytuesdayR)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(urbnmapr)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre></div>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>The main dataset is retrieved from the TidyTuesday GitHub
+repository.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-11-07/house.csv&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/DATA/democrats-and-republicans.csv?raw=true&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;DATA/democrats-and-republicans.csv&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>advantage_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/DATA/US-presidents.csv?raw=true&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;DATA/US-presidents.csv&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>presidents_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span></code></pre></div>
+</div>
+<div id="creating-the-right-chart" class="section level1">
+<h1>Creating the right chart</h1>
+<hr />
+<ul>
+<li>Use <code>ggplot()</code> to create the base plot</li>
+<li>Add <strong>segments</strong> representing each president’s term,
+colored by party</li>
+<li>Add <strong>text labels</strong> for each president’s name</li>
+<li>Customize the <strong>theme</strong> to remove unnecessary
+elements</li>
+<li>Set up the y-axis scale to <strong>align</strong> with the main
+chart</li>
+<li>Use <code>coord_flip()</code> to make the chart vertical</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>right_chart <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>   <span class="fu">geom_segment</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>      <span class="at">data =</span> presidents_df,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>         <span class="at">x =</span> Start_Year,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>         <span class="at">y =</span> <span class="dv">330</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>         <span class="at">xend =</span> End_Year,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>         <span class="at">yend =</span> <span class="dv">330</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>         <span class="at">colour =</span> prez_party</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>      ),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>      <span class="at">linewidth =</span> <span class="fl">1.5</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>      <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>   <span class="fu">geom_text</span>(</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>      <span class="at">data =</span> presidents_df,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>         <span class="at">x =</span> (Start_Year <span class="sc">+</span> End_Year) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fl">0.1</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>         <span class="at">y =</span> <span class="dv">400</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>         <span class="at">label =</span> president,</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>      ),</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>      <span class="at">color =</span> <span class="st">&quot;#7A7A7A&quot;</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>      <span class="at">size =</span> <span class="fl">3.8</span>,</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="dv">0</span>, <span class="co"># Center the text horizontally</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>      <span class="at">vjust =</span> <span class="dv">1</span>, <span class="co"># Adjust vertical position of text,</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>      <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>   <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>      <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">300</span>, <span class="dv">1500</span>),</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">&quot;left&quot;</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>   <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#64B6EC&quot;</span>, <span class="st">&quot;#FF8972&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>   <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">0</span>, <span class="at">r =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">0</span>, <span class="at">l =</span> <span class="dv">0</span>, <span class="st">&quot;points&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>   <span class="fu">coord_flip</span>()</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>right_chart</span></code></pre></div>
+<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="creating-the-left-chart" class="section level1">
+<h1>Creating the left chart</h1>
+<hr />
+<ul>
+<li>Use <strong>ggplot</strong> to create the base plot with year on the
+y-axis and advantage on the x-axis</li>
+<li>Add a <strong>line</strong> geom to show the trend over time</li>
+<li>Add a <strong>horizontal line</strong> at <code>y=0</code> to
+separate Democrat and Republican advantage</li>
+<li>Add points to highlight non-zero advantage values</li>
+<li>Customize the <strong>theme</strong>, colors, and labels to match
+the desired style</li>
+<li>Set up the scales for x and y axes, including custom breaks and
+labels</li>
+<li>Add title, subtitle, and caption to provide <strong>context</strong>
+for the chart</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>left_chart <span class="ot">&lt;-</span> advantage_df <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>      <span class="at">x =</span> year,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>      <span class="at">y =</span> advantage,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>      <span class="at">color =</span> majority,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>      <span class="at">fill =</span> majority</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>   )) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>   <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>   <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="fu">aes</span>(<span class="at">linewidth =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>   <span class="fu">geom_point</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>      <span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>      <span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">filter</span>(advantage <span class="sc">!=</span> <span class="dv">0</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>      <span class="at">size =</span> <span class="dv">2</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>      <span class="at">stroke =</span> <span class="dv">1</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>      <span class="at">show.legend =</span> <span class="cn">FALSE</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>   <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>   <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>   <span class="fu">theme</span>(</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">15</span>, <span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">0</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="at">panel.grid.major.x =</span> <span class="fu">element_line</span>(),</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>      <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>      <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>      <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>         <span class="at">colour =</span> <span class="st">&quot;#7A7A7A&quot;</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>         <span class="at">size =</span> <span class="dv">12</span>,</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>         <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>      ),</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>      <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>      <span class="at">axis.ticks.y.right =</span> <span class="fu">element_line</span>(),</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>         <span class="at">colour =</span> <span class="st">&quot;#7A7A7A&quot;</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>         <span class="at">family =</span> <span class="st">&quot;DecimaMonoPro&quot;</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>         <span class="at">size =</span> <span class="dv">12</span>,</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>         <span class="at">face =</span> <span class="st">&quot;bold&quot;</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>      ),</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>         <span class="at">size =</span> <span class="dv">24</span>,</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>         <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>         <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>         <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a>         <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="dv">10</span>)</span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>      ),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>      <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>         <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>         <span class="at">lineheight =</span> <span class="fl">1.1</span>,</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>         <span class="at">size =</span> <span class="dv">14</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>         <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="dv">20</span>)</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>      ),</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>      <span class="at">plot.caption =</span> <span class="fu">element_text</span>(</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>         <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>         <span class="at">colour =</span> <span class="st">&quot;#7A7A7A&quot;</span>,</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>         <span class="at">size =</span> <span class="dv">11</span>,</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>         <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>      )</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>   <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF330F&quot;</span>, <span class="st">&quot;#2FA3DC&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a>   <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#FF8972&quot;</span>, <span class="st">&quot;#64B6EC&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>   <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">300</span>, <span class="sc">-</span><span class="dv">200</span>, <span class="sc">-</span><span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>),</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>      <span class="at">labels =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>         <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="sc">-</span><span class="dv">300</span>, <span class="fu">paste0</span>(<span class="fu">abs</span>(x), <span class="st">&quot; seats&quot;</span>), <span class="fu">abs</span>(x))</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>      },</span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>      <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">300</span>, <span class="dv">300</span>),</span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">&quot;right&quot;</span></span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>   ) <span class="sc">+</span></span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>   <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1976</span>, <span class="dv">2023</span>, <span class="at">by =</span> <span class="dv">4</span>)) <span class="sc">+</span></span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a>   <span class="fu">labs</span>(</span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">str_to_upper</span>(<span class="st">&quot;  ◄ More Democrats | More Republicans ►&quot;</span>),</span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">str_wrap</span>(</span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>         <span class="st">&quot;Party Advantage in the U.S. House of Representatives, 1976-Present&quot;</span>,</span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>         <span class="at">width =</span> <span class="dv">50</span></span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>      ),</span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="fu">str_wrap</span>(</span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a>         <span class="st">&quot;Recent trends in the U.S. House show a close margin between Democrats and Republicans, resulting in fewer dramatic swings in party dominance.&quot;</span>,</span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a>         <span class="at">width =</span> <span class="dv">75</span></span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a>      ),</span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">&quot;Source: MIT Election Data and Science Lab, tidytuesday project </span><span class="sc">\n</span><span class="st">ggplot re-creation of an original graphic by FiveThirtyEight</span><span class="sc">\n\n</span><span class="st">Graphic: Aman Bhargava | Twitter: @thedivtagguy | 🔗 aman.bh&quot;</span></span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>   )</span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>left_chart</span></code></pre></div>
+<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="combine-the-charts-with-patchwork" class="section level1">
+<h1>Combine the charts with <a
+href="package/patchwork.html">patchwork</a></h1>
+<hr />
+<ul>
+<li>Use the <a href="package/patchwork.html">patchwork</a> library to
+combine the two charts</li>
+<li>Adjust the relative widths of the charts using
+<code>plot_layout()</code></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>left_chart <span class="sc">+</span> right_chart <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>Learning more about <a href="line-plot.html">line charts</a></li>
+<li>Use a bump chart to <a
+href="web-bump-plot-with-highlights.html">highlight changes over
+time</a></li>
+<li>Use a waffle chart to <a
+href="web-waffle-for-time-evolution.html">highlight changes over
+time</a></li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="line-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Line150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Line plot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="area-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Area150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-area-graph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/StackedArea150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Stacked area</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="streamgraph.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Stream150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Streamchart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="time-series.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Time150.gif" alt="">
+        </a>
+        <div class="captionPortfolio">Time Series</div>
+      </div>
+    </div>
+
+  </div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
