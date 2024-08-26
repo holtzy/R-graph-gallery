@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <!-- <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script> -->
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Create Interactive Chord Diagrams with
+<strong>chorddiag</strong></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create
+interactive chord diagrams using the chorddiag package in R. It provides
+several reproducible examples with explanation and R code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Package,Library"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="../img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Create Interactive Chord Diagrams
+with <strong>chorddiag</strong>" />
+    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:description" content="This post explains how to
+create interactive chord diagrams using the chorddiag package in R. It
+provides several reproducible examples with explanation and R code." />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="../vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="../css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("../html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("../html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header>
+      <div class="container py-5">
+        <div class="row">
+          <!-- Main col is for the title and description -->
+          <div class="col-12 col-sm-9">
+            <h1>Create Interactive Chord Diagrams with
+<strong>chorddiag</strong></h1>
+            <hr class="short_hr ml-0" />
+            <p class="mt-4">The <code>chorddiag</code> package in R is
+designed to create <strong>interactive chord diagrams</strong> using the
+D3 JavaScript library.<br/>This post showcases the <strong>key
+features</strong> of <code>chorddiag</code> and provides a set of
+<strong>graph examples</strong> using the package.</p>
+            <a
+              class="btn btn-secondary btn-sm"
+              href="https://github.com/mattflor/chorddiag"
+            >
+              Documentation
+            </a>
+          </div>
+          <!-- Next col is for the image and caption -->
+          <div
+            class="col-4 col-sm-2 offset-0 offset-sm-1 d-flex justify-center align-items-center mt-4"
+          >
+            <div style="width: 100%">
+              <div class="package-page-hex">
+                <div class="package-page-hex-background">
+                  <img
+                    src="../img/r-package-img/chorddiag.png"
+                    style="margin: 0px"
+                  />
+                </div>
+              </div>
+              <center>
+                <p>{chorddiag}</p>
+              </center>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("../html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="quick-start" class="section level1">
+<h1>Quick start</h1>
+<hr />
+<p>The <code>chorddiag</code> package in R is designed to create
+<strong>interactive chord diagrams</strong> using the D3 JavaScript
+library.</p>
+<div class="row">
+<div class="col-md-5 col-sm-12 align-self-center">
+<p>It offers a set of <strong>functions</strong> that make it easy to
+create and customize chord diagrams for visualizing relationships
+between entities.</p>
+<p>✍️ <strong>author</strong> → Matthias Flor</p>
+<p>📘 <strong>documentation</strong> → <a
+href="https://github.com/mattflor/chorddiag">github</a></p>
+<p>⭐️ <em>more than 100 stars on github</em></p>
+</div>
+<div class="col-md-7 col-sm-12">
+<div class="chorddiag html-widget html-fill-item" id="htmlwidget-24bde25b4b0d2fe1ab68" style="width:85%;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-24bde25b4b0d2fe1ab68">{"x":{"matrix":[[11975,5871,8916,2868],[1951,10048,2060,6171],[8010,16145,8090,8045],[1013,990,940,6907]],"options":{"type":"directional","width":null,"height":null,"margin":100,"showGroupnames":true,"groupNames":["black","blonde","brown","red"],"groupColors":["#000000","#FFDD89","#957244","#F26223"],"groupThickness":0.1,"groupPadding":0.03490658503988659,"groupnamePadding":[30,30,30,30],"groupnameFontsize":18,"groupedgeColor":null,"chordedgeColor":"#808080","categoryNames":null,"categorynamePadding":100,"categorynameFontsize":28,"showTicks":true,"tickInterval":1000,"ticklabelFontsize":10,"fadeLevel":0.1,"showTooltips":true,"showZeroTooltips":true,"tooltipNames":["black","blonde","brown","red"],"tooltipFontsize":12,"tooltipUnit":"","tooltipGroupConnector":" &#x25B6; ","precision":"null","clickAction":null,"clickGroupAction":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<hr />
+<p>To get started with <code>chorddiag</code>, you can install it from
+GitHub using the <code>devtools</code> package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;mattflor/chorddiag&quot;</span>)</span></code></pre></div>
+</div>
+<div id="basic-usage" class="section level1">
+<h1>Basic usage</h1>
+<hr />
+<p>The <code>chorddiag</code> package allows you to create chord
+diagrams using the <code>chorddiag()</code> function.</p>
+<p>Here’s a basic example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(chorddiag)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>   <span class="fu">c</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>      <span class="dv">11975</span>, <span class="dv">5871</span>, <span class="dv">8916</span>, <span class="dv">2868</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>      <span class="dv">1951</span>, <span class="dv">10048</span>, <span class="dv">2060</span>, <span class="dv">6171</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>      <span class="dv">8010</span>, <span class="dv">16145</span>, <span class="dv">8090</span>, <span class="dv">8045</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>      <span class="dv">1013</span>, <span class="dv">990</span>, <span class="dv">940</span>, <span class="dv">6907</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>   ),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>   <span class="at">byrow =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>   <span class="at">nrow =</span> <span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">4</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>groupNames <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;blonde&quot;</span>, <span class="st">&quot;brown&quot;</span>, <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>groupColors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#000000&quot;</span>, <span class="st">&quot;#FFDD89&quot;</span>, <span class="st">&quot;#957244&quot;</span>, <span class="st">&quot;#F26223&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">chorddiag</span>(m, <span class="at">groupNames =</span> groupNames, <span class="at">groupColors =</span> groupColors)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># save the plot as an HTML file</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/chord_diagram-1.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/chord_diagram-1.html" alt="chord diagram" height="640" width="100%" style="border:none;"></iframe>
+</iframe>
+</center>
+</div>
+<div id="key-features" class="section level1">
+<h1>Key features</h1>
+<hr />
+<div id="customizing-colors" class="section level2">
+<h2>→ Customizing Colors</h2>
+<p>You can customize the colors of your chord diagram using the
+<code>groupColors</code> parameter.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">chorddiag</span>(m, <span class="at">groupNames =</span> groupNames, <span class="at">groupColors =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;red&quot;</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># save the plot as an HTML file</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/chord_diagram-2.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/chord_diagram-2.html" height="640" width="100%" alt="chord diagram" style="border:none;"></iframe>
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="adjusting-margins" class="section level2">
+<h2>→ Adjusting Margins</h2>
+<p>Use the <code>margin</code> parameter to adjust the margins of your
+chord diagram.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">chorddiag</span>(m, <span class="at">groupNames =</span> groupNames, <span class="at">margin =</span> <span class="dv">100</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># save the plot as an HTML file</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/chord_diagram-3.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/chord_diagram-3.html" height="640" width="100%" alt="chord diagram" style="border:none;"></iframe>
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="customizing-labels" class="section level2">
+<h2>→ Customizing Labels</h2>
+<p>You can customize the labels of your chord diagram using the
+<code>groupnamePadding</code> and <code>groupnameFontsize</code>
+parameters.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">chorddiag</span>(m, <span class="at">groupNames =</span> groupNames, <span class="at">groupnamePadding =</span> <span class="dv">20</span>, <span class="at">groupnameFontsize =</span> <span class="dv">12</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"># save the plot as an HTML file</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/chord_diagram-4.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/chord_diagram-4.html" height="640" width="100%" alt="chord diagram" style="border:none;"></iframe>
+</iframe>
+</center>
+<p><br></p>
+</div>
+<div id="adding-tooltips" class="section level2">
+<h2>→ Adding Tooltips</h2>
+<p><code>chorddiag</code> allows you to add tooltips to your chord
+diagram using the <code>tooltipGroupConnector</code> parameter.</p>
+<p>Example:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">chorddiag</span>(m, <span class="at">groupNames =</span> groupNames, <span class="at">tooltipGroupConnector =</span> <span class="st">&quot; to &quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># save the plot as an HTML file</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>htmlwidgets<span class="sc">::</span><span class="fu">saveWidget</span>(interactive_plot, <span class="st">&quot;../HtmlWidget/chord_diagram-5.html&quot;</span>)</span></code></pre></div>
+<center>
+<iframe src="../HtmlWidget/chord_diagram-5.html" height="640" width="100%" alt="chord diagram" style="border:none;"></iframe>
+</iframe>
+</center>
+<p><br></p>
+</div>
+</div>
+<div id="gallery-of-chorddiag-examples" class="section level1">
+<h1>Gallery of chorddiag examples</h1>
+<hr />
+<!-- Close container -->
+</div>
+</div> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="../js/agency.min.js"></script>
+  </body>
+</html>
