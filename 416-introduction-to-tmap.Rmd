@@ -1,0 +1,137 @@
+---
+title: "Introduction to Thematic Maps with tmap"
+descriptionMeta: "This post introduces the tmap package in R, explaining how to create thematic maps. It provides simple, reproducible code examples and explains the main concepts behind tmap."
+descriptionTop: "This post introduces the [tmap](package/tmap.html) package in R, explaining how to create [thematic maps](https://www.r-graph-gallery.com/choropleth-map.html). It provides simple, reproducible code examples and explains the **main concepts** behind tmap."
+sectionText: "Map section"
+sectionLink: "map.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "416-introduction-to-tmap"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+# Introduction to tmap
+***
+
+The [tmap](package/tmap.html) package is a powerful tool for creating thematic maps in R. It provides an intuitive and flexible way to visualize spatial data, similar to how `ggplot2` works for general data visualization.
+
+# Libraries and dataset
+***
+
+First, let's install and load the [tmap](package/tmap.html) package. We'll use the built-in `World` dataset for our examples.
+
+```{r}
+# Install tmap if you haven't already
+# install.packages("tmap")
+
+# Load the library
+library(tmap)
+
+# Load the World dataset
+data("World")
+```
+
+# Basic Concept: Layers
+***
+
+The main concept in [tmap](package/tmap.html) is building maps using layers. You start with `tm_shape()` to define the data, then add layers with various `tm_*()` functions.
+
+Let's create a simple world map:
+
+```{r}
+tm_shape(World) +
+  tm_polygons()
+```
+
+This creates a basic world map where each country is a polygon.
+
+# Adding Data to the Map
+***
+
+We can add data to our map by specifying a variable in `tm_polygons()`:
+
+```{r}
+tm_shape(World) +
+  tm_polygons("pop_est", palette = "Blues", title = "Population")
+```
+
+Here, we're coloring countries based on their population estimates.
+
+# Customizing the Map
+***
+
+[tmap](package/tmap.html) offers many ways to customize your map. Let's add borders and adjust the color palette:
+
+```{r}
+tm_shape(World) +
+  tm_polygons("pop_est", palette = "viridis", title = "Population") +
+  tm_borders(col = "white", lwd = 0.5) +
+  tm_layout(legend.outside = TRUE)
+```
+
+# Adding Multiple Layers
+***
+
+We can add multiple layers to our map. Let's add country names:
+
+```{r}
+tm_shape(World) +
+  tm_polygons("pop_est", palette = "viridis", title = "Population") +
+  tm_borders(col = "white", lwd = 0.5) +
+  tm_text("name", size = 0.4) +
+  tm_layout(legend.outside = TRUE)
+```
+
+# Interactive Maps
+***
+
+[tmap](package/tmap.html) can create both static and interactive maps. To switch to interactive mode:
+
+```{r}
+tmap_mode("view")
+
+my_tmap <- tm_shape(World) +
+  tm_polygons("pop_est", palette = "viridis", title = "Population")
+
+tmap_save(my_tmap, filename = "HtmlWidget/416-introduction-to-tmap-interactive.html")
+```
+
+<center>
+  <iframe src="HtmlWidget/416-introduction-to-tmap-interactive.html" height="600" width="600" style="border:none;"></iframe>
+</center>
+
+Remember to switch back to plot mode for static maps:
+
+```{r}
+tmap_mode("plot")
+```
+
+# Going further
+***
+
+You might be interested in
+- [learning more about the tmap package](package/tmap.html)
+- discover [more features of tmap](417-advanced-tmap-usage.html)
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedMap.html")
+```

@@ -1,0 +1,280 @@
+---
+title: "Network Analysis with **igraph**"
+logo: "igraph"
+descriptionMeta: "This post explains how to perform network analysis and visualization using the igraph package in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `igraph` package in R is a powerful tool for **network analysis and visualization**. It provides a wide range of functions for creating, manipulating, and analyzing graphs and networks.<br/>This post showcases the **key features** of `igraph` and provides a set of **graph examples** using the package."
+documentationLink: "r.igraph.org/"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+# Quick start
+***
+The `igraph` package in R is a comprehensive toolkit for **network analysis and visualization**. It provides functionality for creating, manipulating, and analyzing various types of graphs and networks.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a wide range of **algorithms** and **visualization techniques** for working with network data.
+
+✍️ **author** &rarr; Gábor Csárdi, Kirill Müller
+
+📘 **documentation** &rarr; [igraph.org](https://r.igraph.org/)
+
+⭐️ *more than 500 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(igraph)
+# Create a simple graph
+g <- make_ring(10)
+# Plot the graph
+plot(g, vertex.size = 30, vertex.label = 1:10, vertex.color = "lightblue", edge.arrow.size = 0.5)
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `igraph`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("igraph")
+```
+
+# Vocabulary
+***
+
+Key components of a graph in `igraph`:
+
+- **Vertex (Node)**: Basic unit of a graph (e.g., a person in a social network)
+- **Edge (Link)**: Connection between two vertices (e.g., a friendship)
+- **Directed Edge**: One-way connection (e.g., following on Twitter/X)
+- **Undirected Edge**: Two-way connection (e.g., Facebook friendship)
+- **Weighted Edge**: Edge with a numerical value (e.g., distance between cities)
+- **Degree**: Number of edges connected to a vertex
+- **Path**: Sequence of edges connecting two vertices
+- **Subgraph**: Smaller graph within a larger graph
+- **Connected Component**: Subgraph where all vertices are connected
+
+
+# Basic usage 
+***
+
+The `igraph` package allows you to **create**, **manipulate**, and **analyze** graphs and networks. 
+
+Here's a basic example where:
+
+- `make_ring(5)` creates a circular graph with 5 vertices
+- `print(g)` displays basic information about the graph
+- `plot(g)` visualizes the graph
+
+```{r}
+library(igraph)
+
+# Create a simple graph
+g <- make_ring(5)
+
+# Print basic information about the graph
+print(g)
+
+# Plot the graph
+plot(g)
+```
+
+
+# Key features
+***
+
+<br>
+
+## &rarr; Creating Graphs
+
+You can create graphs using various functions like `make_graph()`, `sample_gnm()`, or `graph_from_edgelist()`.
+
+Example:
+
+- `sample_gnm(10, 20)` creates a **random graph** with 10 vertices and 20 edges
+- The resulting graph is visualized using `plot(g)`
+
+
+```{r}
+# Create a random graph
+g <- sample_gnm(10, 20)
+plot(g)
+```
+
+<br>
+
+## &rarr; Graph Analysis
+
+`igraph` provides numerous functions for analyzing graph properties.
+
+Example:
+
+- `degree(g)` calculates the **degree centrality** for each vertex in the graph (number of connections each vertex has)
+
+```{r}
+# Calculate degree centrality
+deg <- degree(g)
+print(deg)
+```
+
+<br>
+
+## &rarr; Community Detection
+
+You can detect communities in networks using various algorithms.
+
+Example:
+
+- `cluster_louvain(g)` applies the **Louvain community detection** algorithm to the graph
+- `plot(comm, g)` **visualizes the graph** with nodes colored by their detected communities
+
+
+```{r}
+# Detect communities using the Louvain method
+comm <- cluster_louvain(g)
+plot(comm, g)
+```
+
+<br>
+
+## &rarr; Graph Layouts
+
+`igraph` offers various layout algorithms for visualizing graphs.
+
+Example:
+
+- `layout_with_fr(g)` computes a **force-directed layout** for the graph
+- The layout is then used in `plot(g, layout = layout)` to visualize the graph
+
+```{r}
+# Use a force-directed layout
+layout <- layout_with_fr(g)
+plot(g, layout = layout)
+```
+
+<br>
+
+## Customizing Graph Appearance
+
+- We create a **scale-free** network using `sample_pa()`
+- Vertex sizes are set **proportional** to their degrees
+- Vertex colors are assigned **based on degree** using a rainbow palette
+- Edge widths are set based on **edge betweenness centrality**
+- The graph is plotted with **curved edges** and **without vertex labels**
+
+
+```{r}
+# Create a scale-free network
+g <- sample_pa(100, power = 1, m = 1, directed = FALSE)
+
+# Customize the graph appearance
+V(g)$size <- degree(g) * 2 # Vertex size based on degree
+V(g)$color <- rainbow(100)[cut(degree(g), breaks = 100)] # Vertex color based on degree
+E(g)$width <- edge_betweenness(g) * 0.03 # Edge width based on betweenness
+
+# Plot the customized graph
+plot(g,
+  vertex.label = NA, # Remove vertex labels
+  edge.curved = 0.2, # Add curve to edges
+  layout = layout_with_fr(g)
+)
+```
+
+
+<br>
+
+## Visualizing Weighted Graphs
+
+Explanation:
+
+
+- We create a **weighted graph** from a data frame of edges
+- Edge widths in the plot are **proportional** to their weights
+- Vertices are arranged in a **circular layout**
+
+```{r}
+# Create a weighted graph
+edges <- data.frame(
+  from = sample(1:10, 20, replace = TRUE),
+  to = sample(1:10, 20, replace = TRUE),
+  weight = runif(20)
+)
+g <- graph_from_data_frame(edges, directed = FALSE)
+
+# Plot the weighted graph
+plot(g,
+  edge.width = E(g)$weight * 8, # Edge width based on weight
+  vertex.size = 20,
+  vertex.color = "lightblue",
+  vertex.label.color = "black",
+  edge.color = "gray50",
+  layout = layout_in_circle(g)
+)
+```
+
+
+<br>
+
+## Interactive Graph Visualization
+
+For interactive graph visualization, you can use the `visNetwork` package, which integrates well with `igraph`:
+
+- We create a graph using `sample_pa()`
+- Node and edge data are prepared for `visNetwork`
+- The interactive visualization allows zooming, panning, and node selection
+
+```{r}
+library(visNetwork)
+
+# Create a graph
+g <- sample_pa(50, power = 1, m = 1, directed = FALSE)
+
+# Prepare node and edge data
+nodes <- data.frame(
+  id = 1:vcount(g),
+  label = 1:vcount(g),
+  size = degree(g) * 3
+)
+edges <- as_data_frame(g, what = "edges")
+
+# Create an interactive visualization
+interative_graph <- visNetwork(nodes, edges) %>%
+  visIgraphLayout() %>%
+  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+
+htmltools::save_html(interative_graph, "../HtmlWidget/interactive-network.html")
+```
+
+<center><iframe src="../HtmlWidget/interactive-network.html" height="500" width="100%" style="border:none;"></iframe></center>
+
+<br>
+
+# Gallery of igraph examples
+***
+
+The Gallery is filled with **chart examples** that uses `igraph`! Browse them below:
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div class=row id=portfolio-items> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../247-network-chart-layouts.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Network layout</p> <hr> <p class=explanation_portfolio>Discover the different layout possibles</p> </div> </div><img alt="igraph different layout" class="img-fluid imgOfPortfolio" src=../img/graph/247-network-chart-layouts.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../248-igraph-plotting-parameters.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Customize style</p> <hr> <p class=explanation_portfolio>Learn how to customize your igraph plots</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/248-igraph-plotting-parameters.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../249-igraph-network-map-a-color.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Colors</p> <hr> <p class=explanation_portfolio>Discover how to change the colors of your igraph plots</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/249-igraph-network-map-a-color.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../251-network-with-node-size-based-on-edges-number.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Node size</p> <hr> <p class=explanation_portfolio>Custom node size in your igraph plot</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/251-network-with-node-size-based-on-edges-number.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../257-input-formats-for-network-charts.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Input format</p> <hr> <p class=explanation_portfolio>Learn what are the right input format for an igraph chart</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/257-input-formats-for-network-charts.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hierarchical Edge Bundling</p> <hr> <p class=explanation_portfolio>Use igraph to create hierarchical edge bundling</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hierarchical Edge Bundling</p> <hr> <p class=explanation_portfolio>Use igraph to create hierarchical edge bundling</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling2.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Hierarchical Edge Bundling</p> <hr> <p class=explanation_portfolio>Use igraph to create hierarchical edge bundling</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling3.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../310-custom-hierarchical-edge-bundling.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Custom Hierarchical Edge Bundling</p> <hr> <p class=explanation_portfolio>Use igraph to customize hierarchical edge bundling</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/310-custom-hierarchical-edge-bundling3.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../313-basic-circle-packing-with-several-levels.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Circle packing</p> <hr> <p class=explanation_portfolio>Learn the basics of circle packing</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/313-basic-circle-packing-with-several-levels.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../314-custom-circle-packing-with-several-levels.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Custom circle packing</p> <hr> <p class=explanation_portfolio>Customize circle packing charts</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/314-custom-circle-packing-with-several-levels2.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../335-custom-ggraph-dendrogram.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Dendrogram with igraph</p> <hr> <p class=explanation_portfolio>Learn how to create a dendrogram with igraph</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/335-custom-ggraph-dendrogram.png> </a></div> <div class="portfolio-item col-sm-6 col-md-4"><a class=portfolio-link href=../339-circular-dendrogram-with-ggraph.html> <div class=portfolio-hover> <div class=portfolio-hover-content> <p>Circular dendrograph</p> <hr> <p class=explanation_portfolio>Discover how to create a circular dendrogram</p> </div> </div><img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/339-circular-dendrogram-with-ggraph.png> </a></div> </div> </div> </section>
+
+
+<!-- Close container -->
+</div>
