@@ -1,0 +1,226 @@
+---
+title: "Create Circular Plots with **circlize**"
+logo: "circlize"
+descriptionMeta: "This post explains how to create circular and chord diagrams using the circlize package in R. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `circlize` package in R is designed for creating **circular plots**, including circular heatmaps, [chord diagrams](../chord-diagram.html), and more.<br/><br/>This post showcases the **key features** of `circlize` and provides a set of **graph examples** using the package."
+documentationLink: "jokergoo.github.io/circlize_book/book/"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.align = "center")
+```
+
+<div class="container">
+
+# Quick start
+***
+The `circlize` package in R is designed for creating **circular plots**, including circular heatmaps, chord diagrams, and more.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It provides a flexible framework for implementing **circular layouts in R**, making it easy to visualize complex relationships and patterns in data. This package is particularly useful for **genomics**, **network** analysis, and other fields where circular visualizations can provide unique insights.
+
+✍️ **author** &rarr; Zuguang Gu
+
+📘 **documentation** &rarr; [Book](https://jokergoo.github.io/circlize_book/book/)
+
+⭐️ *more than 900 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(circlize)
+# Set a seed for reproducibility
+set.seed(999)
+
+# Create a sample matrix
+mat <- matrix(sample(18, 18), 3, 6)
+rownames(mat) <- paste0("S", 1:3)
+colnames(mat) <- paste0("E", 1:6)
+
+# Define custom colors for sectors
+grid.col <- c(
+   S1 = "red", S2 = "green", S3 = "blue",
+   E1 = "grey", E2 = "grey", E3 = "grey", E4 = "grey", E5 = "grey", E6 = "grey"
+)
+
+# Create a customized chord diagram
+chordDiagram(mat, grid.col = grid.col)
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `circlize`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("circlize")
+```
+
+
+# Basic usage 
+***
+
+The `circlize` package provides a set of functions for creating circular plots.
+
+In this example, we create a simple **3x6 matrix** with random values and use it to generate a [chord diagram](../chord-diagram.html). The `chordDiagram()` function automatically creates a circular layout where each row and column of the matrix is represented as a sector, and the values in the matrix determine the **thickness** of the links between sectors.
+
+```{r}
+library(circlize)
+
+# Set a seed for reproducibility
+set.seed(999)
+
+# Create a sample matrix
+mat <- matrix(sample(18, 18), 3, 6)
+rownames(mat) <- paste0("S", 1:3)
+colnames(mat) <- paste0("E", 1:6)
+
+# Create a basic chord diagram
+chordDiagram(mat)
+```
+
+
+# Key features
+***
+
+<br>
+
+## &rarr; Chord Diagrams
+
+[Chord diagram](../chord-diagram.html) are particularly useful for visualizing relationships between entities. The `chordDiagram` function makes it easy to create these diagrams.
+
+This diagram shows the **relationships** between three "S" entities and six "E" entities. The **size** of each link represents the **value** in the corresponding cell of the matrix.
+
+_Note: for interactive chord diagrams, you can use the [chorddiag package](chorddiag.html)_
+
+```{r}
+library(circlize)
+
+# Create a sample matrix
+mat <- matrix(sample(18, 18), 3, 6)
+rownames(mat) <- paste0("S", 1:3)
+colnames(mat) <- paste0("E", 1:6)
+
+# Create a chord diagram
+chordDiagram(mat)
+```
+
+
+
+<br>
+
+## &rarr; Genomic Data Visualization
+
+`circlize` is particularly useful for visualizing genomic data. It provides functions to easily plot genomic features on a circular layout.
+
+This example creates a circular representation of the human genome (hg19) and adds random **genomic points** to it.
+
+- `circos.initializeWithIdeogram()` function sets up the basic structure of the plot
+- `circos.genomicTrackPlotRegion()` adds the data points to the plot
+
+
+```{r}
+library(circlize)
+
+# Generate random genomic data
+bed <- generateRandomBed(nr = 100)
+
+# Initialize the plot with an ideogram
+circos.initializeWithIdeogram(species = "hg19")
+
+# Add genomic points
+circos.genomicTrackPlotRegion(bed, stack = TRUE, panel.fun = function(region, value, ...) {
+   circos.genomicPoints(region, value, ...)
+})
+```
+
+
+
+<br>
+
+## &rarr; Customization
+
+`circlize` offers extensive customization options for your plots. You can control colors, sector sizes, link transparency, and much more.
+
+In this example, we customize the **colors of the sectors**. The "S" sectors are given distinct colors, while the "E" sectors are all grey.
+
+```{r}
+library(circlize)
+
+# Set a seed for reproducibility
+set.seed(999)
+
+# Create a sample matrix
+mat <- matrix(sample(18, 18), 3, 6)
+rownames(mat) <- paste0("S", 1:3)
+colnames(mat) <- paste0("E", 1:6)
+
+# Define custom colors for sectors
+grid.col <- c(
+   S1 = "red", S2 = "green", S3 = "blue",
+   E1 = "grey", E2 = "grey", E3 = "grey", E4 = "grey", E5 = "grey", E6 = "grey"
+)
+
+# Create a customized chord diagram
+chordDiagram(mat, grid.col = grid.col)
+```
+
+
+
+<br>
+
+## &rarr; Circular Heatmaps
+
+Circular heatmaps are another powerful feature of `circlize`. They allow you to visualize matrix data in a circular layout thanks to the `circos.heatmap()` function.
+
+The `colorRamp2` function is used to define a **color scheme** that maps values to colors.
+
+```{r, echo=FALSE}
+circos.clear()
+```
+
+```{r}
+library(circlize)
+
+# Create a sample matrix
+set.seed(123)
+mat <- matrix(rnorm(80), 8, 10)
+rownames(mat) <- paste0("R", 1:8)
+colnames(mat) <- paste0("C", 1:10)
+
+# Create a color mapping function
+col_fun <- colorRamp2(c(-2, 0, 2), c("blue", "white", "red"))
+
+# Create a circular heatmap
+circos.heatmap(mat, col = col_fun)
+```
+
+
+<br>
+
+<br>
+
+# Gallery of circlize examples
+***
+
+Here are a few more examples to showcase the versatility of `circlize`:
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div id="portfolio-items" class="row"> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../224-basic-circular-plot.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Introduction to circlize</p> <hr /> <p class="explanation_portfolio"> An introduction to the R circlize package: how to initalize a circular graph and fill it with a scatterplot. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/224-basic-circular-plot.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../225-circular-plot-custom-a-track.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Customization</p> <hr /> <p class="explanation_portfolio"> Apply customization to the circular chart: color, background, track height and more. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/225-circular-plot-custom-a-track.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../226-plot-types-for-circular-plot.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Chart types</p> <hr /> <p class="explanation_portfolio"> Learn how to use other chart types like line chart, barcharts, vertical ablines and more. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/226-plot-types-for-circular-plot.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../227-add-several-tracks.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Stack tracks</p> <hr /> <p class="explanation_portfolio"> You can stack several tracks to show several series one on top of each other. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/227-add-several-tracks.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../229-several-circular-plots-in-a-figure.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Several in figure</p> <hr /> <p class="explanation_portfolio"> How to display several on same window. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/229-several-circular-plots-in-a-figure.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../230-draw-part-of-the-circular-plot-only.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Select a section</p> <hr /> <p class="explanation_portfolio"> Select a section of the circular chart only. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/230-draw-part-of-the-circular-plot-only.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../228-add-links-between-regions.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Introduction to arcs</p> <hr /> <p class="explanation_portfolio"> How to use circos.arc to draw arcs between entities, resulting in a chord diagram. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/228-add-links-between-regions.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../123-circular-plot-circlize-package-2.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Basic chord diagram</p> <hr /> <p class="explanation_portfolio"> How to build a basic chord diagram from an edge list or an adjacency matrix with R and the circlize package. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/123-circular-plot-circlize-package-2.png" alt="" /> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../122-a-circular-plot-with-the-circlize-package.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Customized chord diagram</p> <hr /> <p class="explanation_portfolio"> Build links manually to allow more flexiility on the display. </p> </div> </div> <img class="img-fluid imgOfPortfolio" src="../img/graph/122-a-circular-plot-with-the-circlize-package.png" alt="" /> </a> </div> </div> </div> </section>
+
+<!-- Close container -->
+</div>
