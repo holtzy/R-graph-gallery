@@ -1,0 +1,230 @@
+---
+title: "Animate Your Plots with **gganimate**"
+logo: "gganimate"
+descriptionMeta: "This post explains how to create animated plots using the gganimate package, an extension of ggplot2. It provides several reproducible examples with explanation and R code."
+descriptionTop: "The `gganimate` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to **create animated visualizations**.<br/>This post showcases the **key features** of `gganimate` and provides a set of **animated graph examples** using the package."
+documentationLink: "gganimate.com"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template-pkg-post.html
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container">
+
+# Quick start
+***
+The `gganimate` package in R is an extension of the [ggplot2](https://r-graph-gallery.com/ggplot2-package.html) package, designed to **create animated and interactive visualizations**.
+
+<div class = "row">
+
+<div class = "col-md-5  col-sm-12 align-self-center">
+
+It offers a set of **grammar extensions** that make it easy to specify animations in a declarative manner.
+
+✍️ **author** &rarr; Thomas Lin Pedersen
+
+📘 **documentation** &rarr; [gganimate.com](https://gganimate.com/)
+
+⭐️ *more than 2000 stars on github*
+</div>
+
+<div class = "col-md-7  col-sm-12">
+
+```{r, echo=FALSE, out.width = "85%", fig.align='center'}
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy")
+
+anim <- p + transition_time(year) +
+  ease_aes("linear")
+
+anim
+```
+</div>
+</div>
+
+# Installation
+***
+To get started with `gganimate`, you can install it directly from CRAN using the `install.packages` function:
+
+```{r eval=FALSE}
+install.packages("gganimate")
+```
+
+# Basic usage 
+***
+
+The `gganimate` package extends the grammar of graphics to include the description of animation. You start with a regular ggplot2 plot and add **animation-specific layers** to it.
+
+Here's a basic example where the `year` variable is used to animate the plot:
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(title = "Year: {frame_time}", x = "GDP per capita", y = "life expectancy")
+
+anim <- p + transition_time(year) +
+  ease_aes("linear")
+
+anim_save("../img/graph/gganimate-1.gif", anim)
+```
+
+<img src="../img/graph/gganimate-1.gif" width="100%">
+
+
+
+# Key features
+***
+
+<br>
+
+## &rarr; Transitions
+
+Transitions allow you to animate changes in your data over time or between different states.
+
+This animation transitions between different gears (3, 4, and 5). The `transition_states()` function creates smooth transitions **between these discrete states**. Points fade in and out as they enter or exit each state.
+
+
+```{r}
+library(ggplot2)
+library(gganimate)
+
+# Create a basic scatter plot
+p <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point(size = 3) +
+  labs(
+    title = "Car Weight vs MPG",
+    subtitle = "Gear: {closest_state}",
+    x = "Weight (1000 lbs)", y = "Miles per Gallon"
+  )
+
+# Add animation
+anim <- p +
+  transition_states(gear,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_fade()
+
+anim_save("../img/graph/gganimate-2.gif", anim)
+```
+
+<img src="../img/graph/gganimate-2.gif" width="100%">
+
+
+
+<br>
+
+## &rarr; Tweening
+
+**Tweening** interpolates between different aesthetic values to create smooth animations over **continuous variables**.
+
+This animation shows how life expectancy, GDP per capita, and population have changed over time for different countries. The `transition_time()` function creates a smooth animation over the years, with the **points moving to their new positions** each year.
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+
+# Create a basic scatter plot
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
+  geom_point(alpha = 0.7) +
+  scale_color_viridis_d() +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(
+    title = "Year: {frame_time}",
+    x = "GDP per capita",
+    y = "Life expectancy"
+  )
+
+# Add animation
+anim <- p +
+  transition_time(year) +
+  ease_aes("linear")
+
+anim_save("../img/graph/gganimate-3.gif", anim)
+```
+
+<img src="../img/graph/gganimate-3.gif" width="100%">
+
+<br>
+
+## &rarr; Enter and Exit
+
+You can control **how data points appear and disappear** during transitions.
+
+This animation shows the average MPG for cars with different numbers of cylinders. The `enter_grow()` function makes **new bars grow** from the bottom, while `exit_shrink()` makes **disappearing bars shrink down**.
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(dplyr)
+
+# Prepare data
+data <- mtcars %>%
+  mutate(cyl = factor(cyl)) %>%
+  group_by(cyl) %>%
+  summarize(mpg = mean(mpg))
+
+# Create a basic bar plot
+p <- ggplot(data, aes(x = cyl, y = mpg, fill = cyl)) +
+  geom_col() +
+  labs(
+    title = "Average MPG by Number of Cylinders",
+    subtitle = "Showing: {closest_state}",
+    x = "Number of Cylinders",
+    y = "Average Miles per Gallon"
+  )
+
+# Add animation
+anim <- p +
+  transition_states(cyl) +
+  enter_grow() +
+  exit_shrink()
+
+anim_save("../img/graph/gganimate-4.gif", anim)
+```
+
+<img src="../img/graph/gganimate-4.gif" width="100%">
+
+
+<br>
+
+# Gallery of gganimate examples
+***
+
+The gallery is filled with `gganimate` examples that showcase the **power and flexibility** of the package. Each example includes a brief explanation and a link to the full code!
+
+<section class=bg id=portfolio style=padding-top:10px> <div class=container> <div id="portfolio-items" class="row"> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../271-ggplot2-animated-gif-chart-with-gganimate.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Scatter / bubble</p> <hr> <p class="explanation_portfolio">Check how to animate a bubble or scatterplot to visualize evolution over time.</p> </div> </div> <img class="img-fluid" src="../img/graph/271-ggplot2-animated-gif-chart-with-gganimate1.gif" alt=""> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../271-ggplot2-animated-gif-chart-with-gganimate.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Small multiple</p> <hr> <p class="explanation_portfolio">Any customization offered by ggplot2 can be used in gganimate. Here is an illustration using small multiple.</p> </div> </div> <img class="img-fluid" src="../img/graph/271-ggplot2-animated-gif-chart-with-gganimate2.gif" alt=""> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../288-animated-barplot-transition.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Barplot transition</p> <hr> <p class="explanation_portfolio">A transition between 2 states in a barplot, smoothly.</p> </div> </div> <img class="img-fluid" src="../img/graph/288-animated-barplot-transition.gif" alt=""> </a> </div> <div class="col-md-4 col-sm-6 portfolio-item"> <a class="portfolio-link" href="../287-smooth-animation-with-tweenr.html"> <div class="portfolio-hover"> <div class="portfolio-hover-content"> <p>Line apparition</p> <hr> <p class="explanation_portfolio">A line chart progressively displayed.</p> </div> </div> <img class="img-fluid" src="../img/graph/287-smooth-animation-with-tweenr.gif" alt=""> </a> </div> </div> </div> </section>
+
+
+<!-- Close container -->
+</div>
