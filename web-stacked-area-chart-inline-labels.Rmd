@@ -54,7 +54,7 @@ Today's plot requires quite a lot of packages to be built. You can install them 
 
 ```{r}
 library(tidyverse)
-#library(janitor)
+# library(janitor)
 library(readxl)
 library(ggstream)
 library(showtext)
@@ -62,7 +62,7 @@ library(ggtext)
 ```
 <br>
 
-You are probably familiar with the `tidyverse` already. `readxl` will be used in the next section to load the dataset from a `xlsx` format directly. `ggstream` is used to smooth the area shapes. `showtext` is used to load some custom fonts.
+You are probably familiar with the `tidyverse` already. `readxl` will be used in the next section to load the dataset from a `xlsx` format directly. `ggstream` is used to smooth the area shapes. [showtext](package/showtext.html) is used to load some custom fonts.
 
 
 
@@ -93,9 +93,9 @@ Last but not least, the `geom_area` geom can be used to create a stacked area ch
 
 ```{r}
 # Stacked area chart with smoothing
-df %>% 
+df %>%
   ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
-  geom_area() 
+  geom_area()
 ````
 
 That's it! 🔥
@@ -109,9 +109,9 @@ It is possible to make the lines smoother thanks to the `geom_stream` geom of th
 
 ```{r}
 # Stacked area chart with smoothing
-df %>% 
+df %>%
   ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
-  geom_stream(type = "ridge", bw=1) 
+  geom_stream(type = "ridge", bw = 1)
 ````
 
 
@@ -121,31 +121,32 @@ df %>%
 What looks especially good in Gilbert's chart is the color palette. Let's build a vector of color that we then inject into the chart using the `scale_fill_manual` and `scale_color_manual` functions:
 
 ```{r}
-#Color palette
-pal=c("#003f5c",
-      "#2f4b7c",
-      "#665191",
-      "#a05195",
-      "#d45087",
-      "#f95d6a",
-      "#ff7c43",
-      "#ffa600")
+# Color palette
+pal <- c(
+  "#003f5c",
+  "#2f4b7c",
+  "#665191",
+  "#a05195",
+  "#d45087",
+  "#f95d6a",
+  "#ff7c43",
+  "#ffa600"
+)
 
 # Stacking order
 order <- c("United States", "China", "Japan", "Germany", "United Kingdom", "France", "India", "Other")
 
 # Use them for the plot
-df %>% 
+df %>%
   arrange(total_wealth) %>%
-  mutate(country = factor(country, levels=order)) %>% 
+  mutate(country = factor(country, levels = order)) %>%
   ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
-  geom_stream(type = "ridge" ,bw=1) +
-  
-  scale_fill_manual(values=pal) +
-  scale_color_manual(values=pal) +
-  scale_x_continuous(breaks=c(2000,2005,2010,2015,2021),labels = c("2000","2005","2010","2015","2021")) +
-  scale_y_continuous(expand = c(0,0)) +
-  coord_cartesian(clip = "off") 
+  geom_stream(type = "ridge", bw = 1) +
+  scale_fill_manual(values = pal) +
+  scale_color_manual(values = pal) +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2021), labels = c("2000", "2005", "2010", "2015", "2021")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  coord_cartesian(clip = "off")
 ````
 
 
@@ -156,7 +157,7 @@ df %>%
 
 Before adding the title, legend and inline labels we need to load some **custom fonts**.
 
-This is made possible thanks to the `showtext` package and its `font_add_google()` function. Using custom fonts can be a bit tricky. Fortunately, I wrote a [complete tutorial](https://r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) just in case the following code sounds strange to you.
+This is made possible thanks to the [showtext](package/showtext.html) package and its `font_add_google()` function. Using custom fonts can be a bit tricky. Fortunately, I wrote a [complete tutorial](https://r-graph-gallery.com/custom-fonts-in-R-and-ggplot2.html) just in case the following code sounds strange to you.
 
 ```{r}
 # Name of the fonts we need
@@ -164,8 +165,8 @@ font <- "Josefin Sans"
 font2 <- "Open Sans"
 
 # Use the font_add_google() function to load fonts from the web
-font_add_google(family=font, font, db_cache = FALSE)
-font_add_google(family=font2, font2, db_cache = FALSE)
+font_add_google(family = font, font, db_cache = FALSE)
+font_add_google(family = font2, font2, db_cache = FALSE)
 
 fa_path <- systemfonts::font_info(family = "Font Awesome 6 Brands")[["path"]]
 font_add(family = "fa-brands", regular = fa_path)
@@ -182,11 +183,12 @@ showtext_auto(enable = TRUE)
 Since we are talking about thext, let's also create the caption text that appear at the bottom of the figure:
 
 ```{r}
-caption_text  <- str_glue("**Data:**  James Davies, Rodrigo Lluberas and Anthony Shorrocks, Credit Suisse Global Wealth Databook 2022<br>",
-                          "**Design:** Gilbert Fontana <br><br>",
-                          "<span style='font-family: \"fa-brands\"'>&#xf09b;</span> gilbertfontana<br>",
-                          "<span style='font-family: \"fa-brands\"'>&#xf099;</span> GilbertFontana<br>",
-                          "<span style='font-family: \"fa-brands\"'>&#xf16d;</span> gilbert.fontana"
+caption_text <- str_glue(
+  "**Data:**  James Davies, Rodrigo Lluberas and Anthony Shorrocks, Credit Suisse Global Wealth Databook 2022<br>",
+  "**Design:** Gilbert Fontana <br><br>",
+  "<span style='font-family: \"fa-brands\"'>&#xf09b;</span> gilbertfontana<br>",
+  "<span style='font-family: \"fa-brands\"'>&#xf099;</span> GilbertFontana<br>",
+  "<span style='font-family: \"fa-brands\"'>&#xf16d;</span> gilbert.fontana"
 )
 ``` 
 
@@ -204,157 +206,182 @@ The final figure can now be created:
 - vertical segments are made made one by one using the `geom_segment()` function
 
 ```{r}
-plot <- df %>% 
+plot <- df %>%
   arrange(total_wealth) %>%
-  mutate(country = factor(country, levels=order)) %>% 
+  mutate(country = factor(country, levels = order)) %>%
   ggplot(aes(year, total_wealth, fill = country, label = country, color = country)) +
-  geom_stream(type = "ridge" ,bw=1) +
-  
-  #Title
-  annotate("text", x = 2000, y = 410000,
-           label = "Aggregated\nHousehold\nWealth",
-           hjust=0,
-           size=15,
-           lineheight=.9,
-           fontface="bold", family=font,
-           color="black") +
-  
-  #USA
-  annotate("text", x = 2021.2, y = 420000,
-           label = "USA $145,793B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold", family=font2,
-           color=pal[1]) +
-  #China
-  annotate("text", x = 2021.2, y = 300000,
-           label = "China $85,107B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[2]) +
-  #Japan
-  annotate("text", x = 2021.2, y = 245000,
-           label = "Japan $25,692B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[3]) +
-  #Germany
-  annotate("text", x = 2021.2, y = 220000,
-           label = "Germany $17,489B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[4]) +
-  #UK
-  annotate("text", x = 2021.2, y = 200000,
-           label = "UK $16,261B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[5]) +
-  #France
-  annotate("text", x = 2021.2, y = 183000,
-           label = "France $16,159B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[6]) +
-  #India
-  annotate("text", x = 2021.2, y = 165000,
-           label = "India $14,225B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[7]) +
-  #Other
-  annotate("text", x = 2021.2, y = 80000,
-           label = "Rest of the world $142,841B",
-           hjust=0,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=pal[8]) +
-  
+  geom_stream(type = "ridge", bw = 1) +
+
+  # Title
+  annotate("text",
+    x = 2000, y = 410000,
+    label = "Aggregated\nHousehold\nWealth",
+    hjust = 0,
+    size = 15,
+    lineheight = .9,
+    fontface = "bold", family = font,
+    color = "black"
+  ) +
+
+  # USA
+  annotate("text",
+    x = 2021.2, y = 420000,
+    label = "USA $145,793B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[1]
+  ) +
+  # China
+  annotate("text",
+    x = 2021.2, y = 300000,
+    label = "China $85,107B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[2]
+  ) +
+  # Japan
+  annotate("text",
+    x = 2021.2, y = 245000,
+    label = "Japan $25,692B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[3]
+  ) +
+  # Germany
+  annotate("text",
+    x = 2021.2, y = 220000,
+    label = "Germany $17,489B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[4]
+  ) +
+  # UK
+  annotate("text",
+    x = 2021.2, y = 200000,
+    label = "UK $16,261B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[5]
+  ) +
+  # France
+  annotate("text",
+    x = 2021.2, y = 183000,
+    label = "France $16,159B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[6]
+  ) +
+  # India
+  annotate("text",
+    x = 2021.2, y = 165000,
+    label = "India $14,225B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[7]
+  ) +
+  # Other
+  annotate("text",
+    x = 2021.2, y = 80000,
+    label = "Rest of the world $142,841B",
+    hjust = 0,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = pal[8]
+  ) +
+
   ## Vertical segments
-  geom_segment(aes(x = 2000, y = 0, xend = 2000, yend = 117426+20000),color="black") +
-  geom_point(aes(x = 2000, y = 117426+20000),color="black") +
-  annotate("text", x = 2000, y = 117426+30000,
-           label = "$117,844B",
-           hjust=0.5,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=txt_col) +
-  
-  geom_segment(aes(x = 2005, y = 0, xend = 2005, yend = 181731+20000),color="black") +
-  geom_point(aes(x = 2005, y = 181731+20000),color="black") +
-  annotate("text", x = 2005, y = 181731+30000,
-           label = "$182,350B",
-           hjust=0.5,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=txt_col) +
-  
-  geom_segment(aes(x = 2010, y = 0, xend = 2010, yend = 250932+20000),color="black") +
-  geom_point(aes(x = 2010, y = 250932+20000),color="black") +
-  annotate("text", x = 2010, y = 250932+30000,
-           label = "$251,885B",
-           hjust=0.5,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=txt_col) +
-  
-  geom_segment(aes(x = 2015, y = 0, xend = 2015, yend = 296203+25000),color="black") +
-  geom_point(aes(x = 2015, y = 296203+25000),color="black") +
-  annotate("text", x = 2015, y = 296203+35000,
-           label = "$297,698B",
-           hjust=0.5,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=txt_col) +
-  
-  geom_segment(aes(x = 2021, y = 0, xend = 2021, yend = 461370+50000),color="black") +
-  geom_point(aes(x = 2021, y = 461370+50000),color="black") +
-  annotate("text", x = 2021, y = 461370+50000,
-           label = "$463,567B",
-           hjust=1.1,
-           size=3,
-           lineheight=.8,
-           fontface="bold",family=font2,
-           color=txt_col) +
-  
-  #Color scale
-  scale_fill_manual(values=pal) +
-  scale_color_manual(values=pal) +
-  scale_x_continuous(breaks=c(2000,2005,2010,2015,2021),labels = c("2000","2005","2010","2015","2021")) +
-  scale_y_continuous(expand = c(0,0)) +
-  
-  #Last customization
+  geom_segment(aes(x = 2000, y = 0, xend = 2000, yend = 117426 + 20000), color = "black") +
+  geom_point(aes(x = 2000, y = 117426 + 20000), color = "black") +
+  annotate("text",
+    x = 2000, y = 117426 + 30000,
+    label = "$117,844B",
+    hjust = 0.5,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = txt_col
+  ) +
+  geom_segment(aes(x = 2005, y = 0, xend = 2005, yend = 181731 + 20000), color = "black") +
+  geom_point(aes(x = 2005, y = 181731 + 20000), color = "black") +
+  annotate("text",
+    x = 2005, y = 181731 + 30000,
+    label = "$182,350B",
+    hjust = 0.5,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = txt_col
+  ) +
+  geom_segment(aes(x = 2010, y = 0, xend = 2010, yend = 250932 + 20000), color = "black") +
+  geom_point(aes(x = 2010, y = 250932 + 20000), color = "black") +
+  annotate("text",
+    x = 2010, y = 250932 + 30000,
+    label = "$251,885B",
+    hjust = 0.5,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = txt_col
+  ) +
+  geom_segment(aes(x = 2015, y = 0, xend = 2015, yend = 296203 + 25000), color = "black") +
+  geom_point(aes(x = 2015, y = 296203 + 25000), color = "black") +
+  annotate("text",
+    x = 2015, y = 296203 + 35000,
+    label = "$297,698B",
+    hjust = 0.5,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = txt_col
+  ) +
+  geom_segment(aes(x = 2021, y = 0, xend = 2021, yend = 461370 + 50000), color = "black") +
+  geom_point(aes(x = 2021, y = 461370 + 50000), color = "black") +
+  annotate("text",
+    x = 2021, y = 461370 + 50000,
+    label = "$463,567B",
+    hjust = 1.1,
+    size = 3,
+    lineheight = .8,
+    fontface = "bold", family = font2,
+    color = txt_col
+  ) +
+
+  # Color scale
+  scale_fill_manual(values = pal) +
+  scale_color_manual(values = pal) +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2021), labels = c("2000", "2005", "2010", "2015", "2021")) +
+  scale_y_continuous(expand = c(0, 0)) +
+
+  # Last customization
   coord_cartesian(clip = "off") +
   xlab("") +
   ylab("") +
-  labs(caption = caption_text #"Data: Flash Eurobarometer, Number 509 (October 2022)"
+  labs(
+    caption = caption_text # "Data: Flash Eurobarometer, Number 509 (October 2022)"
   ) +
   theme(
     axis.line.x = element_line(linewidth = .75),
     panel.grid = element_blank(),
-    axis.text.y=element_blank(),
-    axis.text.x = element_text(color=txt_col, size=10,margin = margin(5,0,0,0)),
-    plot.margin = margin(20,120,20,20),
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(color = txt_col, size = 10, margin = margin(5, 0, 0, 0)),
+    plot.margin = margin(20, 120, 20, 20),
     legend.position = "none",
-    plot.caption = element_markdown(hjust=0, margin=margin(10,0,0,0), size=8, color=txt_col, lineheight = 1.2),
+    plot.caption = element_markdown(hjust = 0, margin = margin(10, 0, 0, 0), size = 8, color = txt_col, lineheight = 1.2),
   )
 ```
 <br>
