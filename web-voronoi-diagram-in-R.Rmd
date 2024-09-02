@@ -1,0 +1,206 @@
+---
+title: "R Consortium ISC Grants: Voronoi Treemap Visualization"
+descriptionMeta: "This post demonstrates how to create a Voronoi treemap in R to visualize R Consortium ISC grants using ggplot2, VoronoiPlus, and ggtext."
+descriptionTop: "This post demonstrates how to create a Voronoi treemap in R to visualize the distribution of R Consortium ISC grants by project year using [ggplot2](ggplot2-package.html), [VoronoiPlus](package/VoronoiPlus.html), and [ggtext](package/ggtext.html). The chart **highlights the size of funding** for each project."
+sectionText: "Voronoi Treemap"
+sectionLink: "package/VoronoiPlus.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/treemap.html"
+url: "web-voronoi-treemap-r-consortium"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+   warning = FALSE,
+   message = FALSE,
+   fig.align = "center",
+   fig.width = 12,
+   fig.height = 7
+)
+```
+
+<div class="container">
+
+# About
+***
+
+This post visualizes the **R Consortium ISC Grants** by creating a Voronoi [treemap](treemap.html). Each polygon in the [treemap](treemap.html) represents a different grant project, with the area of the polygon proportional to the funding amount. The [treemap](treemap.html) highlights the distribution of funds over different years and provides an insightful overview of the projects that received grants from the R Consortium Infrastructure Steering Committee (ISC).
+
+It has been created by [Nicola Rennie](https://nrennie.rbind.io/). Thanks to her for sharing this beautiful chart!
+
+# Libraries
+***
+
+To create this visualization, we will use several R packages: `tidyverse` for data manipulation, `showtext` for custom fonts, `ggtext` for enhanced text styling, and `VoronoiPlus` for generating the Voronoi [treemap](treemap.html).
+
+Install VoronoiPlus with `devtools::install_github("AllanCameron/VoronoiPlus")`
+
+```{r}
+library(tidyverse)
+library(showtext)
+library(ggtext)
+# library(nrBrand)
+library(glue)
+library(sf)
+library(VoronoiPlus)
+```
+
+# Dataset
+***
+
+The dataset is part of the TidyTuesday initiative and includes information about grants awarded by the R Consortium ISC. The dataset contains columns for the year the grant was awarded, whether the project was funded, and the project title.
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load("2024-02-20")
+isc_grants <- tuesdata$isc_grants
+```
+
+The data is processed by selecting relevant columns, computing Voronoi polygons based on the grant data, and preparing labels for each year.
+
+```{r}
+# Data wrangling
+grant_data <- isc_grants |>
+   select(year, funded, title)
+
+vor_data <- voronoi_treemap(funded ~ year + title, data = grant_data)
+set.seed(1234)
+groups <- filter(vor_data, level == 1)
+subgroups <- filter(vor_data, level == 2) |>
+   group_by(group) |>
+   mutate(alpha = runif(1, 0, 0.6)) |>
+   ungroup()
+
+year_labels <- groups |>
+   select(group, x, y) |>
+   st_as_sf(coords = c("x", "y")) |>
+   group_by(group) |>
+   summarise(geometry = st_combine(geometry)) |>
+   st_cast("POLYGON") |>
+   st_centroid() %>%
+   mutate(
+      x = st_coordinates(.)[, 1],
+      y = st_coordinates(.)[, 2]
+   ) |>
+   st_drop_geometry()
+```
+
+# Fonts and Colors
+***
+
+Custom fonts and colors are loaded to enhance the aesthetics of the plot. Google fonts `Roboto` and `Roboto Slab` are used for text, while a color palette from `rcartocolor` is applied to represent different years.
+
+```{r}
+# Load fonts
+font_add_google("Roboto", "roboto")
+font_add_google("Roboto Slab", "robotoslab")
+showtext_auto()
+
+# Define colors and fonts
+bg_col <- "#fafafa"
+text_col <- "black"
+highlight_col <- "#1c68bc"
+
+cols_vec <- rcartocolor::carto_pal(length(unique(grant_data$year)) + 1, "Prism")[1:length(unique(grant_data$year))]
+names(cols_vec) <- unique(grant_data$year)
+
+body_font <- "roboto"
+title_font <- "robotoslab"
+```
+
+# Plotting
+***
+
+The final visualization is a Voronoi treemap that uses custom polygons to represent different grant projects, with labels indicating the year.
+
+```{r}
+# Define text
+social <- nrBrand::social_caption(
+   bg_colour = bg_col,
+   icon_colour = highlight_col,
+   font_colour = text_col,
+   font_family = body_font
+)
+title <- glue("<br><span style='font-size: 48px; font-weight: bold; font-family:{title_font};'>R Consortium ISC Grants</span><br><br>")
+st <- glue("<span style='font-family:{body_font};'>The R Consortium Infrastructure Steering Committee (ISC) Grant Program has been awarding grants since 2016. They will accept proposals again between March 1 and April 1, 2024 (and then again in the fall). Each polygon represents a different project, with the size of the area representing the funding amount.</span><br><br>")
+cap <- paste0(title, st, "**Data**: R Consortium ISC<br>**Graphic**:", social)
+
+# Plot
+ggplot() +
+   geom_polygon(
+      data = groups,
+      mapping = aes(x = x, y = y, group = group, fill = group),
+      colour = text_col,
+      linewidth = 0.9
+   ) +
+   geom_polygon(
+      data = subgroups,
+      mapping = aes(x = x, y = y, group = group, alpha = alpha),
+      fill = bg_col,
+      colour = text_col,
+      linewidth = 0.3
+   ) +
+   geom_polygon(
+      data = groups,
+      mapping = aes(x = x, y = y, group = group),
+      colour = "transparent",
+      fill = bg_col,
+      alpha = 0.3,
+      linewidth = 0.9
+   ) +
+   geom_text(
+      data = year_labels,
+      mapping = aes(x = x, y = y, label = group),
+      colour = text_col,
+      family = title_font,
+      fontface = "bold",
+      size = 12
+   ) +
+   scale_alpha_identity() +
+   scale_fill_manual(values = cols_vec) +
+   labs(
+      caption = cap
+   ) +
+   coord_equal() +
+   theme_void(base_size = 24, base_family = body_font) +
+   theme(
+      legend.position = "none",
+      plot.margin = margin(-16, 0, 0, 0),
+      plot.background = element_rect(fill = bg_col, colour = bg_col),
+      panel.background = element_rect(fill = text_col, colour = text_col),
+      plot.caption = element_textbox_simple(
+         colour = text_col,
+         hjust = 0,
+         halign = 0,
+         margin = margin(l = 10, t = 8),
+         lineheight = 0.5,
+         family = body_font
+      )
+   )
+```
+
+# Going further
+***
+
+You might be interested in:
+
+- Learning more about [Voronoi diagrams](voronoi-diagram.html)
+- How to create [an interactive Voronoi treemap](interactive-voronoi-treemap.html)
+- Explore [other visualization techniques](visualization-techniques.html)
+
+<!-- Close container -->
+</div>
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```

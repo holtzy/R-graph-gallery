@@ -217,34 +217,47 @@ vertices</li>
 are connected</li>
 </ul>
 </div>
-<div id="basic-usage" class="section level1">
-<h1>Basic usage</h1>
+<div id="create-a-graph-object" class="section level1">
+<h1>Create a graph object</h1>
 <hr />
-<p>The <code>igraph</code> package allows you to
-<strong>create</strong>, <strong>manipulate</strong>, and
-<strong>analyze</strong> graphs and networks.</p>
-<p>Here’s a basic example where:</p>
+<p>The <code>igraph</code> package offers 3 different ways to create a
+graph object:</p>
 <ul>
-<li><code>make_ring(5)</code> creates a circular graph with 5
-vertices</li>
-<li><code>print(g)</code> displays basic information about the
-graph</li>
-<li><code>plot(g)</code> visualizes the graph</li>
+<li><strong>Adjacency Matrix</strong>: A square matrix where rows and
+columns represent vertices, and values represent edge weights</li>
+<li><strong>Incidence Matrix</strong>: A matrix where rows represent
+vertices and columns represent edges</li>
+<li><strong>Edge List</strong>: A data frame with two columns (from and
+to) representing edges</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Create a simple graph</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">make_ring</span>(<span class="dv">5</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Print basic information about the graph</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">print</span>(g)</span></code></pre></div>
-<pre><code>## IGRAPH 1c9415c U--- 5 5 -- Ring graph
-## + attr: name (g/c), mutual (g/l), circular (g/l)
-## + edges from 1c9415c:
-## [1] 1--2 2--3 3--4 4--5 1--5</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">plot</span>(g)</span></code></pre></div>
-<p><img src="igraph_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Create a graph from an adjacency matrix</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">25</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">nrow =</span> <span class="dv">5</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(data) <span class="ot">&lt;-</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>network <span class="ot">&lt;-</span> <span class="fu">graph_from_adjacency_matrix</span>(data)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># Create a graph from an incidence matrix</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">15</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">nrow =</span> <span class="dv">3</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">colnames</span>(data) <span class="ot">&lt;-</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">rownames</span>(data) <span class="ot">&lt;-</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>network <span class="ot">&lt;-</span> <span class="fu">graph_from_incidence_matrix</span>(data)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co"># Create a graph from an edge list</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">source =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;B&quot;</span>),</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="at">target =</span> <span class="fu">c</span>(<span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;F&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;E&quot;</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>network <span class="ot">&lt;-</span> <span class="fu">graph_from_data_frame</span>(<span class="at">d =</span> links, <span class="at">directed =</span> F)</span></code></pre></div>
+<p><a
+class="btn btn-secondary btn-md text-uppercase"
+href = "../257-input-formats-for-network-charts.html"
+>Learn more about how to create a graph object</a
+></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Plot the graph</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">plot</span>(network)</span></code></pre></div>
+<p><img src="igraph_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="key-features" class="section level1">
 <h1>Key features</h1>
@@ -261,26 +274,10 @@ graph</li>
 graph</strong> with 10 vertices and 20 edges</li>
 <li>The resulting graph is visualized using <code>plot(g)</code></li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Create a random graph</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnm</span>(<span class="dv">10</span>, <span class="dv">20</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">plot</span>(g)</span></code></pre></div>
-<p><img src="igraph_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p><br></p>
-</div>
-<div id="graph-analysis" class="section level2">
-<h2>→ Graph Analysis</h2>
-<p><code>igraph</code> provides numerous functions for analyzing graph
-properties.</p>
-<p>Example:</p>
-<ul>
-<li><code>degree(g)</code> calculates the <strong>degree
-centrality</strong> for each vertex in the graph (number of connections
-each vertex has)</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Calculate degree centrality</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>deg <span class="ot">&lt;-</span> <span class="fu">degree</span>(g)</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">print</span>(deg)</span></code></pre></div>
-<pre><code>##  [1] 4 6 5 3 4 4 4 2 5 3</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create a random graph</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_gnm</span>(<span class="dv">10</span>, <span class="dv">20</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">plot</span>(g)</span></code></pre></div>
+<p><img src="igraph_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 </div>
 <div id="community-detection" class="section level2">
@@ -293,9 +290,9 @@ community detection</strong> algorithm to the graph</li>
 <li><code>plot(comm, g)</code> <strong>visualizes the graph</strong>
 with nodes colored by their detected communities</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Detect communities using the Louvain method</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>comm <span class="ot">&lt;-</span> <span class="fu">cluster_louvain</span>(g)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">plot</span>(comm, g)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Detect communities using the Louvain method</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>comm <span class="ot">&lt;-</span> <span class="fu">cluster_louvain</span>(g)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">plot</span>(comm, g)</span></code></pre></div>
 <p><img src="igraph_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 </div>
@@ -310,10 +307,15 @@ layout</strong> for the graph</li>
 <li>The layout is then used in <code>plot(g, layout = layout)</code> to
 visualize the graph</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Use a force-directed layout</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>layout <span class="ot">&lt;-</span> <span class="fu">layout_with_fr</span>(g)</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">plot</span>(g, <span class="at">layout =</span> layout)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Use a force-directed layout</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>layout <span class="ot">&lt;-</span> <span class="fu">layout_with_fr</span>(g)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">plot</span>(g, <span class="at">layout =</span> layout)</span></code></pre></div>
 <p><img src="igraph_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><a
+class="btn btn-secondary btn-md text-uppercase"
+href = "../247-network-chart-layouts.html"
+>Discover more layouts</a
+></p>
 <p><br></p>
 </div>
 <div id="customizing-graph-appearance" class="section level2">
@@ -330,21 +332,26 @@ centrality</strong></li>
 <li>The graph is plotted with <strong>curved edges</strong> and
 <strong>without vertex labels</strong></li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Create a scale-free network</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_pa</span>(<span class="dv">100</span>, <span class="at">power =</span> <span class="dv">1</span>, <span class="at">m =</span> <span class="dv">1</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co"># Customize the graph appearance</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>size <span class="ot">&lt;-</span> <span class="fu">degree</span>(g) <span class="sc">*</span> <span class="dv">2</span> <span class="co"># Vertex size based on degree</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>color <span class="ot">&lt;-</span> <span class="fu">rainbow</span>(<span class="dv">100</span>)[<span class="fu">cut</span>(<span class="fu">degree</span>(g), <span class="at">breaks =</span> <span class="dv">100</span>)] <span class="co"># Vertex color based on degree</span></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="fu">edge_betweenness</span>(g) <span class="sc">*</span> <span class="fl">0.03</span> <span class="co"># Edge width based on betweenness</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co"># Plot the customized graph</span></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="fu">plot</span>(g,</span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="at">vertex.label =</span> <span class="cn">NA</span>, <span class="co"># Remove vertex labels</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="at">edge.curved =</span> <span class="fl">0.2</span>, <span class="co"># Add curve to edges</span></span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu">layout_with_fr</span>(g)</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Create a scale-free network</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_pa</span>(<span class="dv">100</span>, <span class="at">power =</span> <span class="dv">1</span>, <span class="at">m =</span> <span class="dv">1</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Customize the graph appearance</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>size <span class="ot">&lt;-</span> <span class="fu">degree</span>(g) <span class="sc">*</span> <span class="dv">2</span> <span class="co"># Vertex size based on degree</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">V</span>(g)<span class="sc">$</span>color <span class="ot">&lt;-</span> <span class="fu">rainbow</span>(<span class="dv">100</span>)[<span class="fu">cut</span>(<span class="fu">degree</span>(g), <span class="at">breaks =</span> <span class="dv">100</span>)] <span class="co"># Vertex color based on degree</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">E</span>(g)<span class="sc">$</span>width <span class="ot">&lt;-</span> <span class="fu">edge_betweenness</span>(g) <span class="sc">*</span> <span class="fl">0.03</span> <span class="co"># Edge width based on betweenness</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># Plot the customized graph</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="fu">plot</span>(g,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="at">vertex.label =</span> <span class="cn">NA</span>, <span class="co"># Remove vertex labels</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="at">edge.curved =</span> <span class="fl">0.2</span>, <span class="co"># Add curve to edges</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu">layout_with_fr</span>(g)</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>)</span></code></pre></div>
 <p><img src="igraph_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><a
+class="btn btn-secondary btn-md text-uppercase"
+href = "../248-igraph-plotting-parameters.html"
+>Learn more about customizing igraph plots</a
+></p>
 <p><br></p>
 </div>
 <div id="visualizing-weighted-graphs" class="section level2">
@@ -357,24 +364,29 @@ edges</li>
 weights</li>
 <li>Vertices are arranged in a <strong>circular layout</strong></li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Create a weighted graph</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">from =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">to =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">runif</span>(<span class="dv">20</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>)</span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">graph_from_data_frame</span>(edges, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co"># Plot the weighted graph</span></span>
-<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="fu">plot</span>(g,</span>
-<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="at">edge.width =</span> <span class="fu">E</span>(g)<span class="sc">$</span>weight <span class="sc">*</span> <span class="dv">8</span>, <span class="co"># Edge width based on weight</span></span>
-<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  <span class="at">vertex.size =</span> <span class="dv">20</span>,</span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  <span class="at">vertex.color =</span> <span class="st">&quot;lightblue&quot;</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>  <span class="at">vertex.label.color =</span> <span class="st">&quot;black&quot;</span>,</span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  <span class="at">edge.color =</span> <span class="st">&quot;gray50&quot;</span>,</span>
-<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu">layout_in_circle</span>(g)</span>
-<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create a weighted graph</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">from =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">to =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">20</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">runif</span>(<span class="dv">20</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">graph_from_data_frame</span>(edges, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co"># Plot the weighted graph</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="fu">plot</span>(g,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">edge.width =</span> <span class="fu">E</span>(g)<span class="sc">$</span>weight <span class="sc">*</span> <span class="dv">8</span>, <span class="co"># Edge width based on weight</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="at">vertex.size =</span> <span class="dv">20</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="at">vertex.color =</span> <span class="st">&quot;lightblue&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="at">vertex.label.color =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="at">edge.color =</span> <span class="st">&quot;gray50&quot;</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  <span class="at">layout =</span> <span class="fu">layout_in_circle</span>(g)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>)</span></code></pre></div>
 <p><img src="igraph_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><a
+class="btn btn-secondary btn-md text-uppercase"
+href = "../249-igraph-network-map-a-color.html"
+>Learn more about visualizing weighted graphs</a
+></p>
 <p><br></p>
 </div>
 <div id="interactive-graph-visualization" class="section level2">
@@ -388,30 +400,113 @@ weights</li>
 <li>The interactive visualization allows zooming, panning, and node
 selection</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">library</span>(visNetwork)</span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co"># Create a graph</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_pa</span>(<span class="dv">50</span>, <span class="at">power =</span> <span class="dv">1</span>, <span class="at">m =</span> <span class="dv">1</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co"># Prepare node and edge data</span></span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">vcount</span>(g),</span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">label =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">vcount</span>(g),</span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">size =</span> <span class="fu">degree</span>(g) <span class="sc">*</span> <span class="dv">3</span></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>)</span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as_data_frame</span>(g, <span class="at">what =</span> <span class="st">&quot;edges&quot;</span>)</span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co"># Create an interactive visualization</span></span>
-<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>interative_graph <span class="ot">&lt;-</span> <span class="fu">visNetwork</span>(nodes, edges) <span class="sc">%&gt;%</span></span>
-<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>  <span class="fu">visIgraphLayout</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>  <span class="fu">visOptions</span>(<span class="at">highlightNearest =</span> <span class="cn">TRUE</span>, <span class="at">nodesIdSelection =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interative_graph, <span class="st">&quot;../HtmlWidget/interactive-network.html&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(visNetwork)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co"># Create a graph</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sample_pa</span>(<span class="dv">50</span>, <span class="at">power =</span> <span class="dv">1</span>, <span class="at">m =</span> <span class="dv">1</span>, <span class="at">directed =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># Prepare node and edge data</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">vcount</span>(g),</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">label =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">vcount</span>(g),</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="at">size =</span> <span class="fu">degree</span>(g) <span class="sc">*</span> <span class="dv">3</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>edges <span class="ot">&lt;-</span> <span class="fu">as_data_frame</span>(g, <span class="at">what =</span> <span class="st">&quot;edges&quot;</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co"># Create an interactive visualization</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>interative_graph <span class="ot">&lt;-</span> <span class="fu">visNetwork</span>(nodes, edges) <span class="sc">%&gt;%</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="fu">visIgraphLayout</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">visOptions</span>(<span class="at">highlightNearest =</span> <span class="cn">TRUE</span>, <span class="at">nodesIdSelection =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interative_graph, <span class="st">&quot;../HtmlWidget/interactive-network.html&quot;</span>)</span></code></pre></div>
 <center>
 <iframe src="../HtmlWidget/interactive-network.html" height="500" width="100%" style="border:none;">
 </iframe>
 </center>
 <p><br></p>
+</div>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<p><br></p>
+<div id="graph-analysis" class="section level2">
+<h2>→ Graph Analysis</h2>
+<p><code>igraph</code> provides numerous functions for analyzing graph
+properties.</p>
+<p>Example:</p>
+<ul>
+<li><code>degree(g)</code> calculates the <strong>degree
+centrality</strong> for each vertex in the graph (number of connections
+each vertex has)</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Calculate degree centrality</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>deg <span class="ot">&lt;-</span> <span class="fu">degree</span>(g)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">print</span>(deg)</span></code></pre></div>
+<pre><code>##  [1] 8 4 4 3 4 1 1 3 3 2 1 4 5 5 1 2 2 3 2 3 1 2 2 1 1 1 1 1 1 2 2 1 1 3 1 1 1 1
+## [39] 1 1 1 1 2 1 1 1 1 1 1 1</code></pre>
+<p><br></p>
+</div>
+<div id="graph-algorithms" class="section level2">
+<h2>→ Graph Algorithms</h2>
+<p><code>igraph</code> offers a wide range of graph algorithms for
+various tasks.</p>
+<p>Example:</p>
+<ul>
+<li><code>shortest_paths(g, from = 1)</code> calculates the
+<strong>shortest paths</strong> from vertex 1 to all other vertices in
+the graph</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Calculate shortest paths</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>shortest <span class="ot">&lt;-</span> <span class="fu">shortest_paths</span>(g, <span class="at">from =</span> <span class="dv">1</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">print</span>(shortest<span class="sc">$</span>vpath[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>])</span></code></pre></div>
+<pre><code>## [[1]]
+## + 1/50 vertex, from 0e6c005:
+## [1] 1
+## 
+## [[2]]
+## + 2/50 vertices, from 0e6c005:
+## [1] 1 2
+## 
+## [[3]]
+## + 2/50 vertices, from 0e6c005:
+## [1] 1 3
+## 
+## [[4]]
+## + 2/50 vertices, from 0e6c005:
+## [1] 1 4
+## 
+## [[5]]
+## + 3/50 vertices, from 0e6c005:
+## [1] 1 3 5</code></pre>
+<p><br></p>
+</div>
+<div id="community-detection-1" class="section level2">
+<h2>→ Community Detection</h2>
+<p>You can use different community detection algorithms to identify
+groups of vertices in a graph.</p>
+<p>Example:</p>
+<ul>
+<li><code>cluster_edge_betweenness(g)</code> applies the <strong>edge
+betweenness community detection</strong> algorithm to the graph</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Detect communities using edge betweenness</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>comm <span class="ot">&lt;-</span> <span class="fu">cluster_edge_betweenness</span>(g)</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="fu">print</span>(comm)</span></code></pre></div>
+<pre><code>## IGRAPH clustering edge betweenness, groups: 7, mod: 0.73
+## + groups:
+##   $`1`
+##   [1]  1  6  7 31 39 49
+##   
+##   $`2`
+##   [1]  2  8 15 28 38 50
+##   
+##   $`3`
+##   [1]  3 10 35 37
+##   
+##   $`4`
+##   + ... omitted several groups/vertices</code></pre>
+<p><br></p>
+<p><br><br></p>
 </div>
 </div>
 <div id="gallery-of-igraph-examples" class="section level1">
@@ -500,134 +595,6 @@ Learn what are the right input format for an igraph chart
 </div>
 </div>
 <img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/257-input-formats-for-network-charts.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Hierarchical Edge Bundling
-</p>
-<hr>
-<p class="explanation_portfolio">
-Use igraph to create hierarchical edge bundling
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Hierarchical Edge Bundling
-</p>
-<hr>
-<p class="explanation_portfolio">
-Use igraph to create hierarchical edge bundling
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling2.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../309-intro-to-hierarchical-edge-bundling.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Hierarchical Edge Bundling
-</p>
-<hr>
-<p class="explanation_portfolio">
-Use igraph to create hierarchical edge bundling
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/309-intro-to-hierarchical-edge-bundling3.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../310-custom-hierarchical-edge-bundling.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Custom Hierarchical Edge Bundling
-</p>
-<hr>
-<p class="explanation_portfolio">
-Use igraph to customize hierarchical edge bundling
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/310-custom-hierarchical-edge-bundling3.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../313-basic-circle-packing-with-several-levels.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Circle packing
-</p>
-<hr>
-<p class="explanation_portfolio">
-Learn the basics of circle packing
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/313-basic-circle-packing-with-several-levels.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../314-custom-circle-packing-with-several-levels.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Custom circle packing
-</p>
-<hr>
-<p class="explanation_portfolio">
-Customize circle packing charts
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/314-custom-circle-packing-with-several-levels2.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../335-custom-ggraph-dendrogram.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Dendrogram with igraph
-</p>
-<hr>
-<p class="explanation_portfolio">
-Learn how to create a dendrogram with igraph
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/335-custom-ggraph-dendrogram.png>
-</a>
-</div>
-<div class="portfolio-item col-sm-6 col-md-4">
-<a class=portfolio-link href=../339-circular-dendrogram-with-ggraph.html>
-<div class=portfolio-hover>
-<div class=portfolio-hover-content>
-<p>
-Circular dendrograph
-</p>
-<hr>
-<p class="explanation_portfolio">
-Discover how to create a circular dendrogram
-</p>
-</div>
-</div>
-<img alt="" class="img-fluid imgOfPortfolio" src=../img/graph/339-circular-dendrogram-with-ggraph.png>
 </a>
 </div>
 </div>
