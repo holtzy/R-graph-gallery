@@ -25,7 +25,7 @@ editor_options:
 
 ```{r global options, include = FALSE}
 knitr::opts_chunk$set(
-  warning=FALSE, message=FALSE, dev = "ragg_png", res = 500, retina = 1,
+  warning = FALSE, message = FALSE, dev = "ragg_png", res = 500, retina = 1,
   fig.align = "center"
 )
 ```
@@ -103,10 +103,10 @@ theme_update(
   strip.text.y = element_blank(),
   legend.position = "bottom",
   legend.text = element_text(size = 9, color = "grey40"),
-  legend.box.margin = margin(t = 30), 
+  legend.box.margin = margin(t = 30),
   legend.background = element_rect(
-    color = "grey40", 
-    size = .3, 
+    color = "grey40",
+    size = .3,
     fill = "grey95"
   ),
   legend.key.height = unit(.25, "lines"),
@@ -133,7 +133,7 @@ about the data [here](https://github.com/rfordatascience/tidytuesday/blob/master
 Thank you all for making this possible! 
 
 ```{r}
-df_char_vis <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/character_visualization.csv')
+df_char_vis <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-30/character_visualization.csv")
 ```
 <br>
 
@@ -143,13 +143,15 @@ Today's chart is based on the top 5 most popular characters.
 
 ```{r}
 df_best_chars <- tibble(
-    rank = 1:10,
-    char_popular = c("Wolverine", "Magneto", 
-                     "Nightcrawler", "Gambit",
-                     "Storm", "Colossus",
-                     "Phoenix", "Professor X",
-                     "Iceman", "Rogue")
+  rank = 1:10,
+  char_popular = c(
+    "Wolverine", "Magneto",
+    "Nightcrawler", "Gambit",
+    "Storm", "Colossus",
+    "Phoenix", "Professor X",
+    "Iceman", "Rogue"
   )
+)
 ```
 <br>
 
@@ -161,11 +163,11 @@ number of appearences per issue by character, costume, and type of appearence.
 
 
 ```{r}
-df_best_stream <-  df_char_vis %>% 
-  regex_inner_join(df_best_chars, by = c(character = "char_popular")) %>% 
-  group_by(character, char_popular, costume, rank, issue) %>% 
-  summarize_if(is.numeric, sum, na.rm = TRUE) %>% 
-  ungroup() %>% 
+df_best_stream <- df_char_vis %>%
+  regex_inner_join(df_best_chars, by = c(character = "char_popular")) %>%
+  group_by(character, char_popular, costume, rank, issue) %>%
+  summarize_if(is.numeric, sum, na.rm = TRUE) %>%
+  ungroup() %>%
   filter(rank <= 5) %>% # Keep top 5 characters
   filter(issue < 281)
 ```
@@ -201,7 +203,7 @@ contains both the name of the character and the costume (costumed or casual).
 levels <- c("depicted", "speech", "thought", "narrative")
 
 ## factorized data in long format
-df_best_stream_fct <- df_best_stream %>% 
+df_best_stream_fct <- df_best_stream %>%
   bind_rows(df_smooth) %>%
   mutate(
     costume = if_else(costume == "Costume", "costumed", "casual"),
@@ -211,12 +213,12 @@ df_best_stream_fct <- df_best_stream %>%
       glue::glue("{char_popular} ({costume})   ")
     ),
     char_costume = fct_reorder(char_costume, rank)
-  ) %>% 
+  ) %>%
   pivot_longer(
     cols = speech:depicted,
     names_to = "parameter",
     values_to = "value"
-  ) %>% 
+  ) %>%
   mutate(parameter = factor(parameter, levels = levels))
 ```
 <br>
@@ -236,31 +238,31 @@ pal <- c(
 
 # These are going to be labels added to each panel
 labels <- tibble(
-    issue = 78,
-    value = c(-21, -19, -14, -11),
-    parameter = factor(levels, levels = levels),
-    label = c("Depicted", "Speech\nBubbles", "Thought\nBubbles", "Narrative\nStatements")
-  )
+  issue = 78,
+  value = c(-21, -19, -14, -11),
+  parameter = factor(levels, levels = levels),
+  label = c("Depicted", "Speech\nBubbles", "Thought\nBubbles", "Narrative\nStatements")
+)
 
 # These are going to be the text annotations
 # If you wonder about the '**' or the '<sup>' within the text, let me tell you
 # this is just Markdown syntax used by the ggtext library to make custom text
 # annotations very easy!
 texts <- tibble(
-    issue = c(295, 80, 245, 127, 196),
-    value = c(-35, 35, 30, 57, 55),
-    parameter = c("depicted", "depicted", "thought", "speech", "speech"),
-    text = c(
-      '**Gambit** was introduced for the first time in issue #266 called "Gambit: Out of the Frying Pan"— nevertheless, he is the **4<sup>th</sup> most popular X-Men character**!',
-      '**Wolverine is the most popular X-Men** and has a regular presence in the X-Men comics between 1975 and 1991.',
-      '**Storm** is by far the most thoughtful of the five most popular X-Men characters, especially in issues #220, #223 and #265. Storm **ranks 5<sup>th</sup>**.',
-      "**Magneto** was ranked by IGN as the *Greatest Comic Book Villain of All Time*. And even though he only appears from time to time he **ranks 2<sup>nd</sup>**—<br>4 ranks higher than his friend and opponent Professor X!",
-      'The **3<sup>rd</sup> most popular X-men character Nightcrawler** gets injured during the "Mutant Massacre"  and fell into a coma after an attack from Riptide in issue #211.'
-    ),
-    char_popular = c("Gambit", "Wolverine", "Storm", "Magneto", "Nightcrawler"),
-    costume = "costumed",
-    vjust = c(.5, .5, .4, .36, .38)
-  ) %>% 
+  issue = c(295, 80, 245, 127, 196),
+  value = c(-35, 35, 30, 57, 55),
+  parameter = c("depicted", "depicted", "thought", "speech", "speech"),
+  text = c(
+    '**Gambit** was introduced for the first time in issue #266 called "Gambit: Out of the Frying Pan"— nevertheless, he is the **4<sup>th</sup> most popular X-Men character**!',
+    "**Wolverine is the most popular X-Men** and has a regular presence in the X-Men comics between 1975 and 1991.",
+    "**Storm** is by far the most thoughtful of the five most popular X-Men characters, especially in issues #220, #223 and #265. Storm **ranks 5<sup>th</sup>**.",
+    "**Magneto** was ranked by IGN as the *Greatest Comic Book Villain of All Time*. And even though he only appears from time to time he **ranks 2<sup>nd</sup>**—<br>4 ranks higher than his friend and opponent Professor X!",
+    'The **3<sup>rd</sup> most popular X-men character Nightcrawler** gets injured during the "Mutant Massacre"  and fell into a coma after an attack from Riptide in issue #211.'
+  ),
+  char_popular = c("Gambit", "Wolverine", "Storm", "Magneto", "Nightcrawler"),
+  costume = "costumed",
+  vjust = c(.5, .5, .4, .36, .38)
+) %>%
   mutate(
     parameter = factor(parameter, levels = levels),
     char_costume = if_else(
@@ -282,11 +284,11 @@ also sets the color scales and uses `facet_grid()` to obtain one stream per
 type of appearence.
 
 ```{r, fig.width=16, fig.height=13, out.width="95%"}
-g <- df_best_stream_fct %>% 
+g <- df_best_stream_fct %>%
   ggplot(
     aes(
-      issue, value, 
-      color = char_costume, 
+      issue, value,
+      color = char_costume,
       fill = char_costume
     )
   ) +
@@ -311,8 +313,8 @@ g <- df_best_stream_fct %>%
     name = NULL
   ) +
   facet_grid( ## needs facet_grid for space argument
-    parameter ~ ., 
-    scales = "free_y", 
+    parameter ~ .,
+    scales = "free_y",
     space = "free"
   )
 
@@ -333,24 +335,24 @@ that it misses the opportunity to share important information. The next step is
 to add **labels** and  **text** to make this chart more insightful.
 
 ```{r, fig.width=16, fig.height=13, out.width = "95%"}
-g <- g + 
+g <- g +
   geom_vline(
     data = tibble(x = c(97, seq(125, 250, by = 25), 280)),
     aes(xintercept = x),
-    inherit.aes = FALSE, 
-    color = "grey88", 
+    inherit.aes = FALSE,
+    color = "grey88",
     size = .5,
     linetype = "dotted"
   ) +
   annotate(
     "rect",
-    xmin = -Inf, xmax = 78, 
+    xmin = -Inf, xmax = 78,
     ymin = -Inf, ymax = Inf,
     fill = "grey88"
   ) +
   annotate(
     "rect",
-    xmin = 299, xmax = Inf, 
+    xmin = 299, xmax = Inf,
     ymin = -Inf, ymax = Inf,
     fill = "grey88"
   ) +
@@ -371,7 +373,7 @@ g <- g +
   geom_textbox(
     data = texts,
     aes(
-      issue, value, 
+      issue, value,
       label = text,
       color = char_costume,
       color = after_scale(darken(color, .12, space = "HLS")),
@@ -382,20 +384,20 @@ g <- g +
     fill = "grey95",
     maxwidth = unit(7.25, "lines"),
     hjust = .5
-  ) + 
+  ) +
   # Customize labels of the horizontal axis
   scale_x_continuous(
     limits = c(74, NA),
     breaks = c(94, seq(125, 250, by = 25), 280),
     labels = glue::glue("Issue\n#{c(97, seq(125, 250, by = 25), 280)}"),
     position = "top"
-  ) + 
-  scale_y_continuous(expand = c(.03, .03)) + 
+  ) +
+  scale_y_continuous(expand = c(.03, .03)) +
   # This clip="off" is very important. It allows to have annotations anywhere
-  # in the plot, no matter they are not within the extent of 
+  # in the plot, no matter they are not within the extent of
   # the corresponding panel.
   coord_cartesian(clip = "off")
-  
+
 g
 ```
 <br>
@@ -405,10 +407,8 @@ Those annotations are definetely a game changer!
 # Add title
 ***
 
-There's been tremendous progress since the first chart. The last step is to add 
-a very cool title that will make this marvelous even more attractive. The function `draw_image()` 
-from the [`cowplot`](https://wilkelab.org/cowplot/index.html) 
-library makes it really easy to add an image on top of the plot. 
+There's been tremendous progress since the first chart. The last step is to add a very cool title that will make this marvelous even more attractive. The function `draw_image()` from the [cowplot](../package/cowplot.html) library makes it really easy to add an image on top of the plot. 
+
 Ready to finish this up? Let's go!
 
 ```{r, fig.width=16, fig.height=13, out.width = "95%"}
@@ -416,15 +416,15 @@ g <- g +
   labs(
     title = "Appearance of the Five Most Popular X-Men Characters in Chris Claremont's                           Comics",
     caption = "Visualization by Cédric Scherer  •  Data by Claremont Run Project via Malcom Barret  •  Popularity Scores by ranker.com  •  Logo by Comicraft"
-  ) 
+  )
 
-g <- ggdraw(g) + 
+g <- ggdraw(g) +
   # It works with only the path to the file! :)
   draw_image(
-    "img/fromTheWeb/uncannyxmen.png", 
-    x = .84, y = .955, 
-    width = .1, 
-    hjust = .5, 
+    "img/fromTheWeb/uncannyxmen.png",
+    x = .84, y = .955,
+    width = .1,
+    hjust = .5,
     vjust = .5
   )
 g
@@ -436,8 +436,9 @@ it's good to use `ggsave` with the `agg_png` device from the [`ragg`](https://ra
 library.
 
 ```{r}
-ggsave("img/fromTheWeb/streamchart-xmen.png", g, 
-       width = 16, height = 13, device = ragg::agg_png)
+ggsave("img/fromTheWeb/streamchart-xmen.png", g,
+  width = 16, height = 13, device = ragg::agg_png
+)
 ```
 <br>
 
@@ -453,6 +454,6 @@ Thanks again to Cédric for providing this chart example!
 
 
 ```{r, echo=FALSE}
-# Correlation | Ranking | Evolution.. 
+# Correlation | Ranking | Evolution..
 htmltools::includeHTML("htmlChunkRelatedRanking.html")
 ```
