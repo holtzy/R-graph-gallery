@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Vaccination Impact Heatmap with R and
+ggplot2 &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This tutorial explains how to
+create an advanced temporal heatmap with R and ggplot2. We’ll use
+<strong>measles data from US states between 1928 and 2011</strong> as an
+example, highlighting the effect of vaccine introduction in 1963." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Vaccination Impact Heatmap with R
+and ggplot2" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This tutorial explains how
+to create an advanced temporal heatmap with R and ggplot2. We’ll use
+<strong>measles data from US states between 1928 and 2011</strong> as an
+example, highlighting the effect of vaccine introduction in 1963." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/vaccination-heatmap.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Vaccination Impact Heatmap with R and
+ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This tutorial
+explains how to create an advanced temporal <a
+href="heatmap.html">heatmap</a> built with <code>R</code> and <a
+href="ggplot2-package.html">ggplot2</a>. We’ll use measles data from US
+states between 1928 and 2011 as an example, highlighting the effect of
+vaccine introduction in 1963.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="heatmap.html"
+            >Heatmap section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/heatmap.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This chart visualizes <strong>measles cases across US states</strong>
+between 1928-2011 using a <strong>temporal heatmap</strong>. It
+highlights the impact of the 1963 measles vaccine introduction,
+demonstrating through historical public health data how vaccination
+successfully reduced disease incidence across the United States.</p>
+<p>The visualization is based on <strong>historical public health
+records</strong> and clearly demonstrates the effectiveness of
+vaccination programs, providing insights into one of the most successful
+public health interventions in US history.</p>
+<p>This chart was adapted from <a
+href="https://benjaminlmoore.wordpress.com/2015/04/09/recreating-the-vaccination-heatmaps-in-r/">Ben
+Moore’s post</a>. Thanks to him for sharing this insightful chart!</p>
+</div>
+<div id="load-required-libraries" class="section level1">
+<h1>Load required libraries</h1>
+<hr />
+<p>This visualization only requires two R packages: <code>dplyr</code>
+for data preparation, and <code>ggplot2</code> for creating the
+heatmap.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+</div>
+<div id="read-and-prepare-the-data" class="section level1">
+<h1>Read and prepare the data</h1>
+<hr />
+<p>This code reads a CSV file containing measles cases per million
+inhabitants per year and US state. First, it imports the data using
+<code>readr::read_csv()</code>. See how the data is structured from the
+<code>print()</code> output. Then, it creates a new dataset “mdf” where
+<strong>states are converted to factors</strong> and <strong>arranged in
+reverse alphabetical order</strong> - this ordering will determine how
+states are displayed from top to bottom in our final heatmap.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Read the data </span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>measles <span class="ot">=</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;measles_data_1928-2011.csv&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Show the first few rows of the data</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(measles))</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+##    Year State  value
+##   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+## 1  1928 Alaska  NA  
+## 2  1928 Ala.   335. 
+## 3  1928 Ark.   482. 
+## 4  1928 Ariz.  201. 
+## 5  1928 Calif.  69.2
+## 6  1928 Colo.  207.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Prepare the data: rename column and sort states alphabetically</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>mdf <span class="ot">&lt;-</span> measles <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">State =</span> <span class="fu">factor</span>(State, <span class="at">levels =</span> <span class="fu">rev</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(State)))))</span></code></pre></div>
+</div>
+<div id="create-color-palette" class="section level1">
+<h1>Create color palette</h1>
+<hr />
+<p>This code creates a <strong>custom color gradient</strong> for the
+heatmap that will represent different levels of measles cases. It
+combines two color palettes: a spectrum from white through blue, green,
+yellow, and orange (for lower case counts up to 500), followed by an
+orange-to-red gradient (for higher case counts from 500-4000). The
+<code>colorRampPalette()</code> function smoothly interpolates between
+these colors to create 100 total color steps.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;yellow&quot;</span>, <span class="st">&quot;orange&quot;</span>))(<span class="dv">20</span>),  <span class="co"># Full spectrum until 500</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">&quot;orange&quot;</span>, <span class="st">&quot;red&quot;</span>))(<span class="dv">80</span>)  <span class="co"># Orange to red gradient for 500-4000</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="create-advanced-temporal-heatmap" class="section level1">
+<h1>Create advanced temporal heatmap</h1>
+<hr />
+<p>This code generates a comprehensive <strong>temporal heatmap
+visualization</strong> in R using <code>ggplot2</code> to display
+measles cases across US states from 1928 to 2011. It also highlights the
+<strong>year of vaccine introduction</strong>.</p>
+<div id="core-plot-structure" class="section level3">
+<h3>Core Plot Structure:</h3>
+<ul>
+<li>Creates a heatmap using <code>ggplot2</code> with states on y-axis,
+years on x-axis, and case numbers determining color</li>
+<li>Uses <code>geom_tile()</code> to create the rectangular cells with
+white borders</li>
+</ul>
+</div>
+<div id="color-and-scale-settings" class="section level3">
+<h3>Color and Scale Settings:</h3>
+<ul>
+<li>Applies the custom color gradient defined earlier</li>
+<li>Sets color scale limits from 0 to 4,000 cases per million</li>
+<li>Formats legend labels with ‘k’ suffix (0k to 4k)</li>
+</ul>
+</div>
+<div id="timeline-features" class="section level3">
+<h3>Timeline Features:</h3>
+<ul>
+<li>X-axis spans 1928-2012 with decade intervals</li>
+<li>Adds black vertical line at 1963 (vaccine introduction)</li>
+<li>Includes annotation <strong>“Vaccine introduced”</strong> near the
+line</li>
+</ul>
+</div>
+<div id="visual-styling" class="section level3">
+<h3>Visual Styling:</h3>
+<ul>
+<li>Uses <code>theme_minimal()</code> with customized elements</li>
+<li>Removes grid lines and unnecessary aesthetic elements</li>
+<li>Sets horizontal legend at bottom of plot</li>
+<li>Uses Helvetica font family throughout</li>
+<li>Customizes text sizes (smaller for states, larger for years)</li>
+</ul>
+</div>
+<div id="title-and-labels" class="section level3">
+<h3>Title and Labels:</h3>
+<ul>
+<li>Adds main title “Measles cases per million by US state,
+1928-2011”</li>
+<li>Removes x and y-axis labels</li>
+<li>Positions legend title “Cases per million” at top of color bar</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(mdf, <span class="fu">aes</span>(<span class="at">x =</span> Year, <span class="at">y =</span> State, <span class="at">fill =</span> value)) <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">geom_tile</span>(<span class="at">colour =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.5</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>            <span class="at">width =</span> .<span class="dv">9</span>, <span class="at">height =</span> .<span class="dv">9</span>) <span class="sc">+</span> </span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">scale_fill_gradientn</span>(<span class="at">colours =</span> cols,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4000</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">4000</span>, <span class="at">by =</span> <span class="dv">1000</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;0k&quot;</span>, <span class="st">&quot;1k&quot;</span>, <span class="st">&quot;2k&quot;</span>, <span class="st">&quot;3k&quot;</span>, <span class="st">&quot;4k&quot;</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                    <span class="at">na.value =</span> <span class="fu">rgb</span>(<span class="dv">246</span><span class="sc">/</span><span class="dv">255</span>, <span class="dv">246</span><span class="sc">/</span><span class="dv">255</span>, <span class="dv">246</span><span class="sc">/</span><span class="dv">255</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                    <span class="at">guide =</span> <span class="fu">guide_colourbar</span>(<span class="at">ticks =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>                                          <span class="at">nbin =</span> <span class="dv">50</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                                          <span class="at">barheight =</span> .<span class="dv">5</span>, </span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>                                          <span class="at">label =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>                                          <span class="at">barwidth =</span> <span class="dv">10</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>                                          <span class="at">title =</span> <span class="st">&quot;Cases per million&quot;</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>                                          <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>                                          <span class="at">title.hjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="fu">scale_x_continuous</span>(<span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), </span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>                  <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1930</span>, <span class="dv">2010</span>, <span class="at">by =</span> <span class="dv">10</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>                  <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">1928</span>, <span class="dv">2012</span>)) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">1963</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">5</span>, <span class="sc">-</span>.<span class="dv">13</span>),</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>      <span class="at">legend.direction =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;grey20&quot;</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>      <span class="at">plot.margin =</span> grid<span class="sc">::</span><span class="fu">unit</span>(<span class="fu">c</span>(.<span class="dv">5</span>,.<span class="dv">5</span>,<span class="fl">1.5</span>,.<span class="dv">5</span>), <span class="st">&quot;cm&quot;</span>),</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>, <span class="at">family =</span> <span class="st">&quot;Helvetica&quot;</span>, </span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>                                <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="sc">-</span>.<span class="dv">07</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">vjust =</span> <span class="dv">1</span>, </span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>                          <span class="at">family =</span> <span class="st">&quot;Helvetica&quot;</span>),</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>      <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Helvetica&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="fu">ggtitle</span>(<span class="st">&quot;Measles cases per million by US state, 1928-2011&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">label =</span> <span class="st">&quot;Vaccine introduced&quot;</span>, <span class="at">x =</span> <span class="dv">1963</span>, <span class="at">y =</span> <span class="dv">53</span>, </span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>         <span class="at">vjust =</span> <span class="fl">0.9</span>, <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="fu">I</span>(<span class="dv">3</span>), <span class="at">family =</span> <span class="st">&quot;Helvetica&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;&quot;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="vaccination-heatmap_files/figure-html/unnamed-chunk-4-1.png" width="100%" /></p>
+<!-- Close container -->
+</div>
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section
+  class="bg-light"
+  id="portfolio_landing"
+  style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+>
+  <div class="container">
+    <p class="mySeryTitle">Related chart types</p>
+    <hr />
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="scatterplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/ScatterPlot150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Scatter</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="heatmap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/Heatmap150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Heatmap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="correlogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/Correlogram150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Correlogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="bubble-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/BubblePlot150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Bubble</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link" href="connected-scatterplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/ScatterConnected150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Connected scatter</div>
+      </div>
+      <div
+        class="col-md-2 col-sm-4 portfolio-item show column correlation numonly bigdata"
+      >
+        <a class="portfolio-link" href="2d-density-chart.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img
+            class="img-fluid"
+            src="https://www.r-graph-gallery.com/img/section/2dDensity150.png"
+            alt=""
+          />
+        </a>
+        <div class="captionPortfolio">Density 2d</div>
+      </div>
+    </div>
+  </div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
