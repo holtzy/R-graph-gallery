@@ -43,19 +43,17 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>
-      Circular barplot with R and ggplot2 &#8211; the R Graph Gallery
-    </title>
+    <title>Circular barplot with R and
+ggplot2 &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta
-      name="description"
-      content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
-    />
+    <meta name="description" content="This post explains how to build a
+custom circular barlpot in ggplot2. Step by step code snippets with
+explanations are provided. Built with R and the tidyverse." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -64,12 +62,15 @@
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Circular barplot with R and ggplot2" />
-    <meta property="og:image" content="img/overview_RGG.png" />
+    <meta property="og:title" content="Circular barplot with R and
+ggplot2" />
     <meta
-      property="og:description"
-      content="This post explains how to build a custom circular barlpot in ggplot2. Step by step code snippets with explanations are provided. Built with R and the tidyverse."
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
+    <meta property="og:description" content="This post explains how to
+build a custom circular barlpot in ggplot2. Step by step code snippets
+with explanations are provided. Built with R and the tidyverse." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html"
@@ -110,13 +111,6 @@
       });
     </script>
 
-    <div id="modal_subscribe_insertion"></div>
-    <script>
-      $(function () {
-        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
-      });
-    </script>
-
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
@@ -146,14 +140,12 @@
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">
-            A highly customized circular barplot with custom annotations and
-            labels to explore the hiking locations in Washington made with
-            <code>R</code> and <code>ggplot2</code>. This blogpost guides you
-            through a step-by-step construction of a custom circular barplots
-            that includes a variety of custom color scales, labels, annotations,
-            and guides
-          </p>
+          <p style="max-width: 600px; margin-top: 40px">A highly
+customized circular barplot with custom annotations and labels to
+explore the hiking locations in Washington made with <code>R</code> and
+<code>ggplot2</code>. This blogpost guides you through a step-by-step
+construction of a custom circular barplots that includes a variety of
+custom color scales, labels, annotations, and guides</p>
         </center>
         <div style="text-align: center">
           <a
@@ -178,6 +170,7 @@
       });
     </script>
 
+    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -186,453 +179,351 @@
     </style>
 
     <div class="container" style="padding-top: 100px">
-      <div id="about" class="section level1">
-        <h1>About</h1>
-        <hr />
-        <p>
-          This page showcases the work of
-          <a href="https://tobias-stalder.netlify.app/">Tobias Stadler</a>. You
-          can find the original code on Tobias’ GitHub
-          <a
-            href="https://github.com/toebR/Tidy-Tuesday/blob/master/hiking/script.R"
-            >here</a
-          >.
-        </p>
-        <p>
-          Thanks to him for accepting sharing his work here! Thanks also to
-          <a href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split
-          the original code into this step-by-step guide! 🙏🙏
-        </p>
-        <p>As a teaser, here is the plot we’re gonna try building:</p>
-        <center>
-          <img src="img/fromTheWeb/dataviz_hiking.png" style="width: 70%" />
-        </center>
-        <p><br /></p>
-      </div>
-      <div id="load-packages" class="section level1">
-        <h1>Load packages</h1>
-        <hr />
-        <p>
-          As usually, let’s start by loading some libraries. Today’s plot does
-          not depend on too many packages. All we need is just
-          <code>dplyr</code>, <code>ggplot2</code>, and <code>stringr</code> for
-          some string manipulations.
-        </p>
-        <div class="sourceCode" id="cb1">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre>
-        </div>
-        <p><br /></p>
-        <p>
-          Today, the plot is going to be based on the
-          <strong>Bell MT</strong> font. If you are unsure about how to work
-          with custom fonts in <code>R</code>,
-          <a
-            href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2"
-            >this post</a
-          >
-          is for you.
-        </p>
-      </div>
-      <div id="load-and-prepare-the-data" class="section level1">
-        <h1>Load and prepare the data</h1>
-        <hr />
-        <p>
-          This guide shows how to create a beautiful circular barplot to
-          visualize several characteristics of hiking locations in Washington.
-        </p>
-        <p>
-          The data for this post comes from
-          <a href="https://www.wta.org/go-outside/hikes?b_start:int=1"
-            >Washington Trails Association</a
-          >
-          courtesy of the
-          <a
-            href="https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles"
-            >TidyX crew</a
-          >, <a href="https://twitter.com/Ellis_hughes">Ellis Hughes</a> and
-          <a href="https://twitter.com/OSPpatrick">Patrick Ward</a>. This guide
-          uses the dataset released for the
-          <a href="https://github.com/rfordatascience/tidytuesday"
-            >TidyTuesday</a
-          >
-          initiative on the week of 2020-11-24. You can find the original
-          announcement and more information about the data
-          <a
-            href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24"
-            >here</a
-          >. Thank you all for making this possible!
-        </p>
-        <p>Let’s start by loading the dataset:</p>
-        <div class="sourceCode" id="cb2">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hike_data <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(<span class="fu">url</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds&#39;</span>))</span></code></pre>
-        </div>
-        <p><br /></p>
-        <p>
-          The first step is to extract the <strong>region</strong> from the
-          <code>location</code> column. This is given by the text before the
-          <code>"--"</code>.
-        </p>
-        <div class="sourceCode" id="cb3">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>region <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">word</span>(hike_data<span class="sc">$</span>location, <span class="dv">1</span>, <span class="at">sep =</span> <span class="st">&quot; -- &quot;</span>))</span></code></pre>
-        </div>
-        <p><br /></p>
-        <p>
-          A similar approach is used to extract the
-          <strong>number of miles</strong>.
-        </p>
-        <div class="sourceCode" id="cb4">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hike_data<span class="sc">$</span>length_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">sapply</span>(<span class="fu">strsplit</span>(hike_data<span class="sc">$</span>length, <span class="st">&quot; &quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span></code></pre>
-        </div>
-        <p><br /></p>
-        <p>
-          And finally, compute the <strong>cumulative length</strong> and
-          <strong>mean gain</strong> for each region, as well as recording the
-          <strong>number of tracks</strong> per region.
-        </p>
-        <div class="sourceCode" id="cb5">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plot_df <span class="ot">&lt;-</span> hike_data <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_length =</span> <span class="fu">sum</span>(length_num),</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_gain =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(gain)),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mean_gain =</span> <span class="fu">round</span>(mean_gain, <span class="at">digits =</span> <span class="dv">0</span>))</span></code></pre>
-        </div>
-        <p><br /></p>
-      </div>
-      <div id="basic-radar-chart" class="section level1">
-        <h1>Basic radar chart</h1>
-        <hr />
-        <p>
-          Converting a plot from cartesian to circular (polar) coordinates in
-          <code>ggplot2</code> is as easy as adding a
-          <code>coord_polar()</code> call to the plot.
-        </p>
-        <div class="sourceCode" id="cb6">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_df) <span class="sc">+</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make custom panel grid</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">yintercept =</span> y), </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">*</span> <span class="dv">1000</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;lightgrey&quot;</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add bars to represent the cumulative track lengths</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># str_wrap(region, 5) wraps the text so each line has at most 5 characters</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># (but it doesn&#39;t break long words!)</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> sum_length,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> n</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">&quot;dodge2&quot;</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> .<span class="dv">9</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add dots to represent the mean gain</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>),sum_length),</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> mean_gain</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Lollipop shaft for mean gain per region</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="dv">0</span>,</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="dv">3000</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>,</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make it circular!</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>()</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
-        </div>
-        <p>
-          <img
-            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png"
-            width="672"
-          />
-          <br />
-        </p>
-        <p>
-          Not too bad! It’s clear the plot isn’t ready for publication yet. But
-          the take-home message so far must be about how easy it is to convert
-          one regular plot into a circular plot by using
-          <code>coord_polar()</code>. Now, wanna make it better? Let’s do it!
-        </p>
-      </div>
-      <div id="add-annotations-and-legend" class="section level1">
-        <h1>Add annotations and legend</h1>
-        <p>
-          It’s not clear what is represented by the height of the bars in the
-          plot above. There are some vertical tick marks, but they aren’t
-          definitely placed in the right place. And what about the color? What
-          does it mean? Let’s improve this!
-        </p>
-        <div class="sourceCode" id="cb7">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate the bars and the lollipops so the reader understands the scaling</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">11</span>, </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">1300</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;Mean Elevation Gain</span><span class="sc">\n</span><span class="st">[FASL]&quot;</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="sc">-</span><span class="fl">67.5</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">11</span>, </span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">3150</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;Cummulative Length [FT]&quot;</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">23</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Annotate custom scale inside plot</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">1100</span>, </span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;1000&quot;</span>, </span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2100</span>, </span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;2000&quot;</span>, </span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span><span class="dv">3100</span>, </span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;3000&quot;</span>, </span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Scale y axis so bars don&#39;t start in the center</span></span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1500</span>, <span class="dv">3500</span>),</span>
-<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>)</span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># New fill and legend title for number of tracks per region</span></span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Amount of Tracks&quot;</span>,</span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>     <span class="at">colours =</span> <span class="fu">c</span>( <span class="st">&quot;#6C5B7B&quot;</span>,<span class="st">&quot;#C06C84&quot;</span>,<span class="st">&quot;#F67280&quot;</span>,<span class="st">&quot;#F8B195&quot;</span>)</span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make the guide for the fill discrete</span></span>
-<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
-<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_colorsteps</span>(</span>
-<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>      <span class="at">barwidth =</span> <span class="dv">15</span>, <span class="at">barheight =</span> .<span class="dv">5</span>, <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>, <span class="at">title.hjust =</span> .<span class="dv">5</span></span>
-<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove axis ticks and text</span></span>
-<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use gray text for the region names</span></span>
-<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move the legend to the bottom</span></span>
-<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
-<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
-        </div>
-        <p>
-          <img
-            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png"
-            width="672"
-          />
-          <br />
-        </p>
-      </div>
-      <div id="final-chart" class="section level1">
-        <h1>Final chart</h1>
-        <hr />
-        <p>
-          The plot above is much clearer than its previous version. However, it
-          still needs some tweaks to be ready to be published. First of all,
-          default font is replaced with <strong>Bell MT</strong>. It adds a nice
-          touch that makes it look much better. Then, the background is changed
-          to white. The default gray one doesn’t feel quite right for this
-          chart. And finally, we add good labels that make it easier to transmit
-          what this chart is about.
-        </p>
-        <div class="sourceCode" id="cb8">
-          <pre
-            class="sourceCode r"
-          ><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Hiking Locations in Washington&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;</span><span class="sc">\n</span><span class="st">This Visualisation shows the cummulative length of tracks,&quot;</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;the amount of tracks and the mean gain in elevation per location.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;If you are an experienced hiker, you might want to go&quot;</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;to the North Cascades since there are a lot of tracks,&quot;</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;higher elevations and total length to overcome.&quot;</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Data Visualisation by Tobias Stalder</span><span class="sc">\n</span><span class="st">tobias-stalder.netlify.app</span><span class="sc">\n</span><span class="st">Source: TidyX Crew (Ellis Hughes, Patrick Ward)</span><span class="sc">\n</span><span class="st">Link to Data: github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md&quot;</span>) <span class="sc">+</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Customize general theme</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set default color and font family for the text</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span>),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the text in the title, subtitle, and caption</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">25</span>, <span class="at">hjust =</span> <span class="fl">0.05</span>),</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> <span class="fl">0.05</span>),</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">hjust =</span> .<span class="dv">5</span>),</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make the background white and remove extra grid lines</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>),</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>()</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Use `ggsave(&quot;plot.png&quot;, plt,width=9, height=12.6)` to save it as in the output</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>plt</span></code></pre>
-        </div>
-        <p>
-          <img
-            src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png"
-            width="70%"
-            style="display: block; margin: auto"
-          />
-          <br />
-        </p>
-        <p>Simple and beautiful!</p>
-        <!-- Close container -->
-      </div>
-    </div>
-    <!-- ============================ RELATED SECTION ============================ -->
-    <section
-      class="bg-light"
-      id="portfolio_landing"
-      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
-    >
-      <div class="container">
-        <p class="mySeryTitle">Related chart types</p>
-        <hr />
-        <div class="row">
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="barplot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Bar150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Barplot</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="spider-or-radar-chart.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Spider150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Spider / Radar</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="wordcloud.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Wordcloud150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Wordcloud</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="parallel-plot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Parallel1150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Parallel</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="lollipop-plot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Lollipop150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Lollipop</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="circular-barplot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/CircularBarplot150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Circular Barplot</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This page showcases the work of <a
+href="https://tobias-stalder.netlify.app/">Tobias Stadler</a>. You can
+find the original code on Tobias’ GitHub <a
+href="https://github.com/toebR/Tidy-Tuesday/blob/master/hiking/script.R">here</a>.</p>
+<p>Thanks to him for accepting sharing his work here! Thanks also to <a
+href="https://tcapretto.netlify.app/">Tomás Capretto</a> who split the
+original code into this step-by-step guide! 🙏🙏</p>
+<p>As a teaser, here is the plot we’re gonna try building:</p>
+<center>
+<img src="img/fromTheWeb/dataviz_hiking.png" style="width:70.0%" />
+</center>
+<p><br></p>
+</div>
+<div id="load-packages" class="section level1">
+<h1>Load packages</h1>
+<hr />
+<p>As usually, let’s start by loading some libraries. Today’s plot does
+not depend on too many packages. All we need is just <code>dplyr</code>,
+<code>ggplot2</code>, and <code>stringr</code> for some string
+manipulations.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<p><br></p>
+<p>Today, the plot is going to be based on the <strong>Bell MT</strong>
+font. If you are unsure about how to work with custom fonts in
+<code>R</code>, <a
+href="https://www.r-graph-gallery.com/custom-fonts-in-R-and-ggplot2">this
+post</a> is for you.</p>
+</div>
+<div id="load-and-prepare-the-data" class="section level1">
+<h1>Load and prepare the data</h1>
+<hr />
+<p>This guide shows how to create a beautiful circular barplot to
+visualize several characteristics of hiking locations in Washington.</p>
+<p>The data for this post comes from <a
+href="https://www.wta.org/go-outside/hikes?b_start:int=1">Washington
+Trails Association</a> courtesy of the <a
+href="https://github.com/thebioengineer/TidyX/tree/master/TidyTuesday_Explained/035-Rectangles">TidyX
+crew</a>, <a href="https://twitter.com/Ellis_hughes">Ellis Hughes</a>
+and <a href="https://twitter.com/OSPpatrick">Patrick Ward</a>. This
+guide uses the dataset released for the <a
+href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a>
+initiative on the week of 2020-11-24. You can find the original
+announcement and more information about the data <a
+href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-11-24">here</a>.
+Thank you all for making this possible!</p>
+<p>Let’s start by loading the dataset:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>hike_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">url</span>(<span class="st">&#39;https://github.com/rfordatascience/tidytuesday/raw/main/data/2020/2020-11-24/hike_data.rds&#39;</span>))</span></code></pre></div>
+<p><br></p>
+<p>The first step is to extract the <strong>region</strong> from the
+<code>location</code> column. This is given by the text before the
+<code>"--"</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>hike_data<span class="sc">$</span>region <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">word</span>(hike_data<span class="sc">$</span>location, <span class="dv">1</span>, <span class="at">sep =</span> <span class="st">&quot; -- &quot;</span>))</span></code></pre></div>
+<p><br></p>
+<p>A similar approach is used to extract the <strong>number of
+miles</strong>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>hike_data<span class="sc">$</span>length_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">sapply</span>(<span class="fu">strsplit</span>(hike_data<span class="sc">$</span>length, <span class="st">&quot; &quot;</span>), <span class="st">&quot;[[&quot;</span>, <span class="dv">1</span>))</span></code></pre></div>
+<p><br></p>
+<p>And finally, compute the <strong>cumulative length</strong> and
+<strong>mean gain</strong> for each region, as well as recording the
+<strong>number of tracks</strong> per region.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>plot_df <span class="ot">&lt;-</span> hike_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">sum_length =</span> <span class="fu">sum</span>(length_num),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">mean_gain =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(gain)),</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>()</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mean_gain =</span> <span class="fu">round</span>(mean_gain, <span class="at">digits =</span> <span class="dv">0</span>))</span></code></pre></div>
+<p><br></p>
+</div>
+<div id="basic-radar-chart" class="section level1">
+<h1>Basic radar chart</h1>
+<hr />
+<p>Converting a plot from cartesian to circular (polar) coordinates in
+<code>ggplot2</code> is as easy as adding a <code>coord_polar()</code>
+call to the plot.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>plt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_df) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="co"># Make custom panel grid</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">geom_hline</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">yintercept =</span> y), </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">*</span> <span class="dv">1000</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;lightgrey&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="co"># Add bars to represent the cumulative track lengths</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="co"># str_wrap(region, 5) wraps the text so each line has at most 5 characters</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="co"># (but it doesn&#39;t break long words!)</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="fu">geom_col</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>      <span class="at">y =</span> sum_length,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>      <span class="at">fill =</span> n</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    ),</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">&quot;dodge2&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    <span class="at">show.legend =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    <span class="at">alpha =</span> .<span class="dv">9</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  </span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="co"># Add dots to represent the mean gain</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>),sum_length),</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>      <span class="at">y =</span> mean_gain</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>    ),</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>  </span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  <span class="co"># Lollipop shaft for mean gain per region</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>      <span class="at">y =</span> <span class="dv">0</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>      <span class="at">xend =</span> <span class="fu">reorder</span>(<span class="fu">str_wrap</span>(region, <span class="dv">5</span>), sum_length),</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>      <span class="at">yend =</span> <span class="dv">3000</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>    ),</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>,</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>  </span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>  <span class="co"># Make it circular!</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>  <span class="fu">coord_polar</span>()</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>plt</span></code></pre></div>
+<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+<br></p>
+<p>Not too bad! It’s clear the plot isn’t ready for publication yet. But
+the take-home message so far must be about how easy it is to convert one
+regular plot into a circular plot by using <code>coord_polar()</code>.
+Now, wanna make it better? Let’s do it!</p>
+</div>
+<div id="add-annotations-and-legend" class="section level1">
+<h1>Add annotations and legend</h1>
+<p>It’s not clear what is represented by the height of the bars in the
+plot above. There are some vertical tick marks, but they aren’t
+definitely placed in the right place. And what about the color? What
+does it mean? Let’s improve this!</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="co"># Annotate the bars and the lollipops so the reader understands the scaling</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">11</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">1300</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;Mean Elevation Gain</span><span class="sc">\n</span><span class="st">[FASL]&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">angle =</span> <span class="sc">-</span><span class="fl">67.5</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="at">x =</span> <span class="dv">11</span>, </span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">3150</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;Cummulative Length [FT]&quot;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">23</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="co"># Annotate custom scale inside plot</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">1100</span>, </span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;1000&quot;</span>, </span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    <span class="at">y =</span> <span class="dv">2100</span>, </span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;2000&quot;</span>, </span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a>    <span class="at">x =</span> <span class="fl">11.7</span>, </span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>    <span class="at">y =</span><span class="dv">3100</span>, </span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">&quot;3000&quot;</span>, </span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, </span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span></span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a>  <span class="co"># Scale y axis so bars don&#39;t start in the center</span></span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1500</span>, <span class="dv">3500</span>),</span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>, <span class="dv">2000</span>, <span class="dv">3000</span>)</span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a>  <span class="co"># New fill and legend title for number of tracks per region</span></span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a>    <span class="st">&quot;Amount of Tracks&quot;</span>,</span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a>     <span class="at">colours =</span> <span class="fu">c</span>( <span class="st">&quot;#6C5B7B&quot;</span>,<span class="st">&quot;#C06C84&quot;</span>,<span class="st">&quot;#F67280&quot;</span>,<span class="st">&quot;#F8B195&quot;</span>)</span>
+<span id="cb7-58"><a href="#cb7-58" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-59"><a href="#cb7-59" tabindex="-1"></a>  <span class="co"># Make the guide for the fill discrete</span></span>
+<span id="cb7-60"><a href="#cb7-60" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb7-61"><a href="#cb7-61" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_colorsteps</span>(</span>
+<span id="cb7-62"><a href="#cb7-62" tabindex="-1"></a>      <span class="at">barwidth =</span> <span class="dv">15</span>, <span class="at">barheight =</span> .<span class="dv">5</span>, <span class="at">title.position =</span> <span class="st">&quot;top&quot;</span>, <span class="at">title.hjust =</span> .<span class="dv">5</span></span>
+<span id="cb7-63"><a href="#cb7-63" tabindex="-1"></a>    )</span>
+<span id="cb7-64"><a href="#cb7-64" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-65"><a href="#cb7-65" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-66"><a href="#cb7-66" tabindex="-1"></a>    <span class="co"># Remove axis ticks and text</span></span>
+<span id="cb7-67"><a href="#cb7-67" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-68"><a href="#cb7-68" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-69"><a href="#cb7-69" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-70"><a href="#cb7-70" tabindex="-1"></a>    <span class="co"># Use gray text for the region names</span></span>
+<span id="cb7-71"><a href="#cb7-71" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb7-72"><a href="#cb7-72" tabindex="-1"></a>    <span class="co"># Move the legend to the bottom</span></span>
+<span id="cb7-73"><a href="#cb7-73" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb7-74"><a href="#cb7-74" tabindex="-1"></a>  )</span>
+<span id="cb7-75"><a href="#cb7-75" tabindex="-1"></a></span>
+<span id="cb7-76"><a href="#cb7-76" tabindex="-1"></a>plt</span></code></pre></div>
+<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<br></p>
+</div>
+<div id="final-chart" class="section level1">
+<h1>Final chart</h1>
+<hr />
+<p>The plot above is much clearer than its previous version. However, it
+still needs some tweaks to be ready to be published. First of all,
+default font is replaced with <strong>Bell MT</strong>. It adds a nice
+touch that makes it look much better. Then, the background is changed to
+white. The default gray one doesn’t feel quite right for this chart. And
+finally, we add good labels that make it easier to transmit what this
+chart is about.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>plt <span class="ot">&lt;-</span> plt <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="co"># Add labels</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Hiking Locations in Washington&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>      <span class="st">&quot;</span><span class="sc">\n</span><span class="st">This Visualisation shows the cummulative length of tracks,&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>      <span class="st">&quot;the amount of tracks and the mean gain in elevation per location.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      <span class="st">&quot;If you are an experienced hiker, you might want to go&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>      <span class="st">&quot;to the North Cascades since there are a lot of tracks,&quot;</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>      <span class="st">&quot;higher elevations and total length to overcome.&quot;</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>      <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  ),</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">Data Visualisation by Tobias Stalder</span><span class="sc">\n</span><span class="st">tobias-stalder.netlify.app</span><span class="sc">\n</span><span class="st">Source: TidyX Crew (Ellis Hughes, Patrick Ward)</span><span class="sc">\n</span><span class="st">Link to Data: github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="co"># Customize general theme</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    </span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>    <span class="co"># Set default color and font family for the text</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;gray12&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Bell MT&quot;</span>),</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>    </span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>    <span class="co"># Customize the text in the title, subtitle, and caption</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">25</span>, <span class="at">hjust =</span> <span class="fl">0.05</span>),</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> <span class="fl">0.05</span>),</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">hjust =</span> .<span class="dv">5</span>),</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>    </span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>    <span class="co"># Make the background white and remove extra grid lines</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>),</span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>    <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  )</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co"># Use `ggsave(&quot;plot.png&quot;, plt,width=9, height=12.6)` to save it as in the output</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>plt</span></code></pre></div>
+<p><img src="web-circular-barplot-with-R-and-ggplot2_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" />
+<br></p>
+<p>Simple and beautiful!</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
 
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section> 
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -751,18 +642,18 @@
     </footer>
 
     <script>
+
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $("tr.header")
-          .parent("thead")
-          .parent("table")
-          .addClass("table table-condensed");
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
-    </script>
 
+          </script>
+
+    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

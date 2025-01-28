@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Visualizing European Refugee Flows with a Sankey Bump Chart
+in R &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post explains how to create a
+<strong>Sankey bump chart</strong> in R to visualize refugee flows to
+Europe from different countries of origin between 2010-2022 using
+ggplot2 and ggsankey." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Visualizing European Refugee
+Flows with a Sankey Bump Chart in R" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This post explains how to
+create a <strong>Sankey bump chart</strong> in R to visualize refugee
+flows to Europe from different countries of origin between 2010-2022
+using ggplot2 and ggsankey." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-sankey-diagram-with-highlight.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Visualizing European Refugee Flows with a Sankey
+Bump Chart in R</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to create a <strong>Sankey bump chart</strong> in R to
+visualize refugee flows to Europe from different countries of origin
+between 2010-2022 using <a href="package/ggplot2.html">ggplot2</a> and
+<a href="package/ggsankey.html">ggsankey</a>. The chart
+<strong>highlights major refugee movements</strong> over time and adds
+annotations to show refugee counts for significant periods.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="package/ggsankey.html"
+            >Sankey bump chart</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/sankey.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This chart visualizes <strong>refugee flows into European
+countries</strong> between 2010-2022 using a <strong>Sankey bump
+chart</strong>. It highlights the major countries of origin (including
+Syria, Ukraine, and Afghanistan) and shows how displacement patterns
+have evolved over this period.</p>
+<p>The visualization is based on UNHCR refugee data and focuses on the
+main refugee movements into Europe, providing insights into the changing
+dynamics of forced displacement and humanitarian crises.</p>
+<p>It has been created by <a href="https://karaman.is/">Georgios
+Karamanis</a>. Thanks to him for sharing this insightful chart!</p>
+</div>
+<div id="load-required-libraries" class="section level1">
+<h1>Load required libraries</h1>
+<hr />
+<p>This visualization requires several R packages, including:
+<code>tidyverse</code> for data manipulation and visualization,
+<code>ggsankey</code> for creating the Sankey bump chart,
+<code>ggh4x</code> for extended ggplot2 features, and <code>sf</code>
+for handling spatial data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggsankey)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggh4x)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div>
+</div>
+<div id="load-and-prepare-the-data" class="section level1">
+<h1>Load and prepare the data</h1>
+<hr />
+<p>This section imports <strong>refugee population data</strong> from
+the <a
+href="https://github.com/rfordatascience/tidytuesday">TidyTuesday</a>
+GitHub repository and retrieves <strong>European geographical
+boundaries</strong> from the naturalearth dataset, which we’ll use to
+identify refugee-hosting countries in Europe.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Read the refugee population data from GitHub</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>population <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-08-22/population.csv&#39;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Get European countries from the naturalearth dataset</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>eu <span class="ot">&lt;-</span> rnaturalearthdata<span class="sc">::</span>countries110 <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">filter</span>(continent <span class="sc">==</span> <span class="st">&quot;Europe&quot;</span>)</span></code></pre></div>
+</div>
+<div id="process-refugee-data-for-european-countries"
+class="section level1">
+<h1>Process refugee data for European countries</h1>
+<hr />
+<p>This code <strong>cleans and aggregates</strong> the refugee data by
+standardizing country names (particularly for Syria and Serbia/Kosovo),
+filtering for refugees hosted in European countries, and calculating
+yearly totals for each country of origin. It also identifies the top
+refugee-sending country for each year.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>ref_eu_year <span class="ot">&lt;-</span> population <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="co"># Clean up country names</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">coo_name =</span> <span class="fu">case_when</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>      <span class="fu">str_detect</span>(coo_name, <span class="st">&quot;Syria&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Syria&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>      <span class="fu">str_detect</span>(coo_name, <span class="st">&quot;Serbia&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Serbia and Kosovo&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> coo_name</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    )</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="co"># Filter for European countries and calculate yearly totals</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">filter</span>(coa_iso <span class="sc">%in%</span> eu<span class="sc">$</span>sov_a3) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">group_by</span>(year, coo_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="at">total =</span> <span class="fu">sum</span>(refugees)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">top_year =</span> total <span class="sc">==</span> <span class="fu">max</span>(total)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
+</div>
+<div id="identify-regions-with-significant-refugee-populations"
+class="section level1">
+<h1>Identify regions with significant refugee populations</h1>
+<hr />
+<p>This code identifies the <strong>primary countries of origin</strong>
+by summing total refugee counts across all years and filtering for
+countries that have sent at least 100,000 refugees to European countries
+during the study period.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ref_top <span class="ot">&lt;-</span> ref_eu_year <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">group_by</span>(coo_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total =</span> <span class="fu">sum</span>(total)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>total) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">filter</span>(total <span class="sc">&gt;=</span> <span class="fl">1e5</span>)</span></code></pre></div>
+</div>
+<div id="create-annotation-data" class="section level1">
+<h1>Create annotation data</h1>
+<hr />
+<p>This code <strong>creates a data frame for chart annotations</strong>
+that will highlight major refugee movements to Europe. The code:</p>
+<ul>
+<li>Identifies five key refugee events from Serbia/Kosovo, Iraq, Syria,
+and Ukraine</li>
+<li>Sets x and y coordinates for positioning each annotation on the
+plot</li>
+<li>Defines time periods for each event (single year or year
+ranges)</li>
+<li>Calculates total refugee numbers for each specified period</li>
+<li>Formats annotation labels to include:
+<ul>
+<li>Country name in bold</li>
+<li>Time period (single year or range)</li>
+<li>Total refugee count with appropriate scaling</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>annot <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="sc">~</span>country, <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>yr1, <span class="sc">~</span>yr2,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="st">&quot;Serbia and Kosovo&quot;</span>, <span class="dv">2011</span>, <span class="fl">1.5e6</span>, <span class="dv">2010</span>, <span class="dv">2012</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="st">&quot;Iraq&quot;</span>, <span class="dv">2013</span>, <span class="fl">1.3e6</span>, <span class="dv">2013</span>, <span class="dv">2013</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="st">&quot;Ukraine&quot;</span>, <span class="fl">2014.5</span>, <span class="fl">1.8e6</span>, <span class="dv">2014</span>, <span class="dv">2015</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="st">&quot;Syria&quot;</span>, <span class="dv">2018</span>, <span class="fl">2.6e6</span>, <span class="dv">2016</span>, <span class="dv">2021</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="st">&quot;Ukraine&quot;</span>, <span class="fl">2020.7</span>, <span class="fl">5e6</span>, <span class="dv">2022</span>, <span class="dv">2022</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">tot =</span> <span class="fu">sum</span>(<span class="fu">subset</span>(ref_eu_year, coo_name <span class="sc">==</span> country <span class="sc">&amp;</span> <span class="fu">between</span>(year, yr1, yr2))[, <span class="st">&quot;total&quot;</span>]),</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">&quot;**&quot;</span>, country, <span class="st">&quot;**&quot;</span>, </span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>                  <span class="fu">if_else</span>(yr1 <span class="sc">!=</span> yr2, </span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>                         <span class="fu">paste0</span>(<span class="st">&quot;&lt;br&gt;&quot;</span>, yr1, <span class="st">&quot;-&quot;</span>, yr2), </span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>                         <span class="fu">paste0</span>(<span class="st">&quot;&lt;br&gt;&quot;</span>, yr2)), </span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>                  <span class="st">&quot;&lt;br&gt;&quot;</span>, <span class="st">&quot;**&quot;</span>, </span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>                  scales<span class="sc">::</span><span class="fu">number</span>(tot, <span class="at">accuracy =</span> <span class="fl">0.1</span>, </span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>                               <span class="at">scale_cut =</span> scales<span class="sc">::</span><span class="fu">cut_short_scale</span>()), </span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>                  <span class="st">&quot;**&quot;</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
+</div>
+<div id="set-up-fonts" class="section level1">
+<h1>Set up fonts</h1>
+<hr />
+<p>This code sets up the <strong>font choices</strong> for the
+visualization:</p>
+<ul>
+<li>f1: “Outfit” - used for primary text elements</li>
+<li>f2: “Newsreader Display” - used for display or header text</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="st">&quot;Outfit&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="st">&quot;Newsreader Display&quot;</span></span></code></pre></div>
+</div>
+<div id="create-the-visualization" class="section level1">
+<h1>Create the visualization</h1>
+<hr />
+<p>The code creates a <strong>professional refugee flow
+visualization</strong> with these key components:</p>
+<div id="data-preparation-and-base-plot" class="section level2">
+<h2>Data Preparation and Base Plot</h2>
+<ul>
+<li>Filters data to include only top refugee-sending countries</li>
+<li>Initializes a ggplot object with this filtered data</li>
+</ul>
+<p><br></p>
+</div>
+<div id="visualization-layers" class="section level2">
+<h2>Visualization Layers</h2>
+<p><strong>1. Main Flow Layer</strong></p>
+<ul>
+<li>Uses <code>geom_sankey_bump</code> to create a Sankey Bump
+Diagram</li>
+<li>Highlights specific countries from annotation data</li>
+<li>Sets flow transparency (alpha = 0.9) and spacing (space = 1e4)</li>
+</ul>
+<p><strong>2. Annotation Layers</strong></p>
+<ul>
+<li>Adds rich text labels for key events using
+<code>geom_richtext</code></li>
+<li>Places totals for 2010-2022 with an arrow indicator</li>
+<li>Adds top 5 country totals with specific positioning</li>
+<li>Labels Afghanistan and Eritrea in white text</li>
+</ul>
+<p><strong>3. Title Elements</strong></p>
+<ul>
+<li>Main title in Newsreader Display font</li>
+<li>Descriptive subtitle with wrapped text</li>
+<li>Source citation at bottom</li>
+</ul>
+<p><strong>4. Styling and Scales</strong></p>
+<ul>
+<li>Custom color scheme: Ukraine - #0057B7 (blue); Syria - #CE1126
+(red); Iraq/others - Custom colors</li>
+<li>X-axis showing 2010-2022 in 2-year intervals</li>
+<li>Size scale for text (4-6 range)</li>
+</ul>
+<p><strong>5. Theme Customization</strong></p>
+<ul>
+<li>Minimal theme base with <code>theme_minimal</code></li>
+<li>White background (#FFFFFE)</li>
+<li>Removed grid lines and y-axis</li>
+<li>Custom margins and text styling</li>
+<li>Hidden legend</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> ref_eu_year <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="co"># Keep only top countries</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">filter</span>(coo_name <span class="sc">%in%</span> ref_top<span class="sc">$</span>coo_name) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="co"># Alluvial, highlight some top countries</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">geom_sankey_bump</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">node =</span> coo_name, <span class="at">fill =</span> <span class="fu">if_else</span>(coo_name <span class="sc">%in%</span> annot<span class="sc">$</span>country, coo_name, <span class="cn">NA</span>), <span class="at">value =</span> total, <span class="at">color =</span> <span class="fu">after_scale</span>(colorspace<span class="sc">::</span><span class="fu">lighten</span>(fill, <span class="fl">0.4</span>))), <span class="at">linewidth =</span> <span class="fl">0.3</span>, <span class="at">type =</span> <span class="st">&quot;alluvial&quot;</span>, <span class="at">space =</span> <span class="fl">1e4</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="co"># Labels for top countries by year(s)</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  ggtext<span class="sc">::</span><span class="fu">geom_richtext</span>(<span class="at">data =</span> annot, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label, <span class="at">color =</span> country, <span class="at">size =</span> tot), <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">family =</span> f1, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">label.color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="co"># Sums of the top 5 countries for 2010-2022</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fl">2022.2</span>, <span class="at">y =</span> <span class="fl">7.3e6</span>, <span class="at">label =</span> <span class="st">&quot;Totals for</span><span class="sc">\n</span><span class="st">2010-2022</span><span class="sc">\n</span><span class="st">↓&quot;</span>, <span class="at">family =</span> f1, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;grey30&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> ref_top <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">&lt;=</span> <span class="dv">5</span>), <span class="fu">aes</span>(<span class="at">x =</span> <span class="fl">2022.2</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="fl">5e6</span>, <span class="fl">1.9e6</span>, <span class="fl">1.25e6</span>, <span class="fl">1e6</span>, <span class="fl">0.8e6</span>), <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">number</span>(total, <span class="at">accuracy =</span> <span class="fl">0.1</span>, <span class="at">scale_cut =</span> scales<span class="sc">::</span><span class="fu">cut_short_scale</span>())), <span class="at">family =</span> f1, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="fu">c</span>(<span class="st">&quot;#0057B7&quot;</span>, <span class="st">&quot;#CE1126&quot;</span>, <span class="st">&quot;grey10&quot;</span>, <span class="st">&quot;#017b3d&quot;</span>, <span class="st">&quot;grey10&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="co"># Labels for two countries</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">2020</span>, <span class="fl">2020.5</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="fl">1.28e6</span>, <span class="fl">0.85e6</span>), <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;Afghanistan&quot;</span>, <span class="st">&quot;Eritrea&quot;</span>), <span class="at">color =</span> <span class="st">&quot;grey99&quot;</span>, <span class="at">family =</span> f1, <span class="at">size =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="fl">3.2</span>)) <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="co"># Title and subtitle</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">2010</span>, <span class="at">y =</span> <span class="fl">7.2e6</span>, <span class="at">label =</span> <span class="st">&quot;Where do the 22 million refugees in Europe come from?&quot;</span>, <span class="at">size =</span> <span class="dv">8</span>, <span class="at">family =</span> f2, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;#181716&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="dv">2010</span>, <span class="at">y =</span> <span class="fl">6.8e6</span>, <span class="at">label =</span> <span class="fu">str_wrap</span>(<span class="st">&quot;The chart displays rankings and the number of refugees from each region from 2010 to 2022. Top-ranked regions during different periods are highlighted. Only regions with a total of at least 100 000 refugees for the period 2010-2022 are included.&quot;</span>, <span class="dv">78</span>), <span class="at">size =</span> <span class="fl">5.5</span>, <span class="at">family =</span> f1, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">&quot;#393433&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="co"># Scales, coord, theme</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2010</span>, <span class="dv">2022</span>, <span class="dv">2</span>), <span class="at">guide =</span> <span class="st">&quot;axis_minor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#017b3d&quot;</span>, <span class="st">&quot;#0C4077&quot;</span>, <span class="st">&quot;#CE1126&quot;</span>, <span class="st">&quot;#0057B7&quot;</span>), <span class="at">na.value =</span> <span class="st">&quot;grey60&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#017b3d&quot;</span>, <span class="st">&quot;#0C4077&quot;</span>, <span class="st">&quot;#CE1126&quot;</span>, <span class="st">&quot;#0057B7&quot;</span>), <span class="at">na.value =</span> <span class="st">&quot;grey60&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  <span class="fu">scale_size_continuous</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>)) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">&quot;off&quot;</span>, <span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">&quot;Souce: UNHCR Refugee Population Statistics Database · Graphics: Georgios Karamanis&quot;</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_family =</span> f1) <span class="sc">+</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;#FFFFFE&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="at">family =</span> f1, <span class="at">color =</span> <span class="st">&quot;#393433&quot;</span>),</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>    <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">&quot;grey70&quot;</span>),</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    <span class="at">ggh4x.axis.ticks.length.minor =</span> <span class="fu">rel</span>(<span class="dv">1</span>),</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">20</span>, <span class="dv">75</span>, <span class="dv">10</span>, <span class="dv">35</span>),</span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>  )</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a><span class="fu">ggsave</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;refugee_flows.png&quot;</span>), p, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">8</span>, <span class="at">dpi =</span> <span class="dv">320</span>, <span class="at">bg =</span> <span class="st">&quot;#FFFFFE&quot;</span>)</span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;refugee_flows.png&quot;</span>))</span></code></pre></div>
+<p><img src="refugee_flows.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>Learning more about <a href="sankey-diagram.html">Sankey
+diagrams</a></li>
+<li>How to create <a
+href="323-sankey-diagram-with-the-networkd3-library.html">an interactive
+sankey diagram</a></li>
+<li>Apply <a href="package/ggthemes.html">a theme to your
+charts</a></li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="chord-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Chord150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Chord diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="network.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Network150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Network</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="sankey-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Sankey150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Sankey</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="https://www.data-to-viz.com/graph/arc.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Arc150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Arc diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hierarchical-edge-bundling.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bundle150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Edge bundling</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

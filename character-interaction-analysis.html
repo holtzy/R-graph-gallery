@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Character Interaction
+Analysis &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post describes how to build
+an advanced faceted chord diagram using the circlize package, with each
+plot showing connections between factors." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Character Interaction
+Analysis" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This post describes how to
+build an advanced faceted chord diagram using the circlize package, with
+each plot showing connections between factors." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/character-interaction-analysis.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Character Interaction Analysis</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+describes how to build an advanced faceted <a
+href="chord-diagram.html">chord diagram</a> using the <a
+href="package/circlize.html">circlize</a> package, with each plot
+showing connections between factors.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="chord-diagram.html"
+            >Chord section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/chord.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 50px">
+<p>The <a href="package/circlize.html">circlize</a> package allows to
+create chord diagrams with R. It accepts two types of input formats:
+either a matrix showing the strength of connections between pairs of
+nodes, or a data frame listing the relationships.</p>
+<p>The <code>chordDiagram()</code> function from circlize creates the
+visualization with entities arranged in a circle, connected by ribbons
+whose width represents the strength of their relationship. The function
+offers extensive customization options for colors, transparency, and
+other visual properties. Find a full documentation <a
+href="https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html">here</a>.</p>
+<p><u>Note</u>: The <a href="package/circlize.html">circlize</a> package
+is a project by <a href="https://github.com/jokergoo">Zuguang Gu</a>.
+Here, we will use a matrix where each cell represents how many times one
+character mentions another character in The Office. This example comes
+from <a
+href="https://github.com/bydata/30DayChartChallenge/blob/main/2023/17/17-network-the-office-mentions.R">Ansgar
+Wolsing</a>.</p>
+<div id="data-preparation" class="section level1">
+<h1>Data Preparation:</h1>
+<div id="processing-character-mentions-from-the-office"
+class="section level2">
+<h2>Processing Character Mentions from The Office</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)      <span class="co"># Data manipulation and visualization</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggtext)         <span class="co"># Text formatting in ggplot2</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidytext)       <span class="co"># Text mining tools</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(here)           <span class="co"># File path management</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(circlize)       <span class="co"># Circular visualization</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(schrute)        <span class="co"># The Office dataset</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Set base path for output files</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>base_path <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">&quot;faceted-chord-diagram&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># Clean and standardize character names in the dataset</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>theoffice <span class="ot">&lt;-</span> theoffice <span class="sc">%&gt;%</span> </span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="at">character =</span> <span class="fu">str_remove_all</span>(character, <span class="st">&quot;[</span><span class="sc">\&quot;</span><span class="st">:]&quot;</span>),      <span class="co"># Remove quotes and colons</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="at">character =</span> <span class="fu">str_remove_all</span>(character, <span class="st">&quot;</span><span class="sc">\\\&quot;</span><span class="st">&quot;</span>),       <span class="co"># Remove escaped quotes</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    <span class="at">character =</span> <span class="fu">case_match</span>(</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>      character,</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>      <span class="st">&quot;(Pam&#39;s mom) Heleen&quot;</span> <span class="sc">~</span> <span class="st">&quot;Pam&#39;s mom&quot;</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>      <span class="st">&quot;AJ&quot;</span> <span class="sc">~</span> <span class="st">&quot;A.J.&quot;</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>      <span class="st">&quot;abe&quot;</span> <span class="sc">~</span> <span class="st">&quot;Gabe&quot;</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>      <span class="at">.default =</span> character</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>    )) </span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co"># Get top 10 characters by number of lines</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>top_character_names <span class="ot">&lt;-</span> theoffice <span class="sc">%&gt;%</span> </span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>  <span class="fu">count</span>(character, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> n, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="sc">-</span>n) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  <span class="fu">pull</span>(character)</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co"># Create dataset of character mentions</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>theoffice_mentions <span class="ot">&lt;-</span> </span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>  theoffice <span class="sc">%&gt;%</span> </span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="fu">filter</span>(character <span class="sc">%in%</span> top_character_names) <span class="sc">%&gt;%</span>         <span class="co"># Keep only top 10 characters</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text, <span class="at">token =</span> <span class="st">&quot;words&quot;</span>, <span class="at">to_lower =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span>  <span class="co"># Split text into words</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">%in%</span> top_character_names) <span class="sc">%&gt;%</span>             <span class="co"># Keep only mentions of top characters</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  <span class="co"># Convert characters to ordered factors</span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>    <span class="at">character =</span> <span class="fu">factor</span>(character, <span class="at">levels =</span> top_character_names),</span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>    <span class="at">character_mentioned =</span> <span class="fu">factor</span>(word, <span class="at">levels =</span> top_character_names)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>  <span class="fu">select</span>(index, season, episode, character, character_mentioned)</span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="co"># Aggregate mentions and create complete matrix</span></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>theoffice_mentions_agg <span class="ot">&lt;-</span> theoffice_mentions <span class="sc">%&gt;%</span> </span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  <span class="fu">group_by</span>(character, character_mentioned) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a>    <span class="at">total_mentions =</span> <span class="fu">n</span>(),                               <span class="co"># Count total mentions</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>    <span class="at">mentions_lines =</span> <span class="fu">n_distinct</span>(index),                 <span class="co"># Count unique lines with mentions</span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  <span class="co"># Ensure all character combinations exist (including zeros)</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>  <span class="fu">complete</span>(character, character_mentioned, <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">total_mentions =</span> <span class="dv">0</span>, <span class="at">mentions_lines =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>  <span class="fu">arrange</span>(character, character_mentioned)</span></code></pre></div>
+</div>
+</div>
+<div id="creating-the-basic-chord-diagram" class="section level1">
+<h1>Creating the Basic Chord Diagram</h1>
+<p>This code creates our first chord diagram showing character
+interactions in The Office. We first convert our aggregated data into a
+matrix format required by the <code>chordDiagram()</code> function, then
+set up a custom color palette. The diagram is rendered using
+<code>ragg</code> for high-quality output, with carefully chosen visual
+parameters like transparency and border width to ensure readability.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create a square matrix from mentions data, with character names as row and column names</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(theoffice_mentions_agg<span class="sc">$</span>total_mentions, <span class="at">ncol =</span> <span class="fu">length</span>(top_character_names))</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">rownames</span>(mat) <span class="ot">&lt;-</span> top_character_names</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">colnames</span>(mat) <span class="ot">&lt;-</span> top_character_names</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Define color palette for characters and background</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>pal_office <span class="ot">&lt;-</span> </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;#FBA93A&quot;</span>, <span class="st">&quot;#cc2d36&quot;</span>, <span class="st">&quot;#93BFE5&quot;</span>, <span class="st">&quot;#D8ACD8&quot;</span>, <span class="st">&quot;#f0813c&quot;</span>, <span class="st">&quot;#F0F4EC&quot;</span>, <span class="st">&quot;#2AA3A6&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="st">&quot;#4BD9EF&quot;</span>, <span class="st">&quot;#4bad6d&quot;</span>, <span class="st">&quot;#5D77AA&quot;</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>bg_color <span class="ot">&lt;-</span> colorspace<span class="sc">::</span><span class="fu">darken</span>(<span class="st">&quot;#435774&quot;</span>, <span class="fl">0.2</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># Create and save the chord diagram</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>ragg<span class="sc">::</span><span class="fu">agg_png</span>(<span class="fu">here</span>(base_path, <span class="st">&quot;17-network-the-office-mentions.png&quot;</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>              <span class="at">res =</span> <span class="dv">500</span>, <span class="at">width =</span> <span class="dv">8</span>, <span class="at">height =</span> <span class="dv">8</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">bg =</span> bg_color)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="fu">par</span>(</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">&quot;Outfit&quot;</span>, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;white&quot;</span>, <span class="co"># font family, size, color</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="at">bg =</span> bg_color, </span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="at">mai =</span> <span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>) <span class="co"># plot margin in inches</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>) </span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="fu">chordDiagram</span>(mat, <span class="at">transparency =</span> <span class="fl">0.3</span>, </span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>             <span class="at">grid.col =</span> pal_office[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>], <span class="co"># assign colors to each character</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>             <span class="at">link.border =</span> <span class="st">&quot;white&quot;</span>, <span class="at">link.lwd =</span> <span class="fl">0.2</span>, <span class="co"># add thin white borders to connections</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>             <span class="at">annotationTrack =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;grid&quot;</span>), <span class="co"># show only name and grid tracks (excluding axis)</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>             <span class="at">annotationTrackHeight =</span> <span class="fu">mm_h</span>(<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>)),</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>             <span class="at">link.largest.ontop =</span> <span class="cn">TRUE</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>)</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="fu">title</span>(</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">&quot;Who speaks about whom?&quot;</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  <span class="at">sub =</span> <span class="st">&quot;top 10 characters in The Office</span><span class="sc">\n</span><span class="st">Source: {schrute} R package. Visualisation: Ansgar Wolsing&quot;</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  <span class="at">col.main =</span> <span class="st">&quot;white&quot;</span>, <span class="at">cex.main =</span> <span class="fl">1.3</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dev.off</span>())</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co"># Display the saved plot in R Markdown</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">here</span>(base_path,<span class="st">&quot;17-network-the-office-mentions.png&quot;</span>))</span></code></pre></div>
+<p><img src="faceted-chord-diagram/17-network-the-office-mentions.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="creating-individual-character-focused-diagrams"
+class="section level1">
+<h1>Creating Individual Character-Focused Diagrams</h1>
+<p>Here we create a custom function to generate individual chord
+diagrams, each highlighting a specific character’s interactions. The
+function applies unique coloring to emphasize the focal character while
+de-emphasizing others. We then use this function in a loop to create a
+3x3 facet of diagrams, one for each of the top 9 characters, offering a
+detailed view of each character’s mention patterns.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Define function to create individual chord diagrams for each character</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>plot_chordDiagram <span class="ot">&lt;-</span> <span class="cf">function</span>(name, rank, <span class="at">color =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="co"># Set up colors for current character&#39;s diagram</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  row_colors <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;#EEEEEE33&quot;</span>, <span class="dv">10</span>)     <span class="co"># Default transparent gray for all rows</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">stopifnot</span>(rank <span class="sc">&lt;=</span> <span class="fu">length</span>(pal_office))   <span class="co"># Ensure rank is valid</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  row_colors[rank] <span class="ot">&lt;-</span> pal_office[rank]    <span class="co"># Highlight current character&#39;s row</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="co"># Set up grid colors</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  grid_colors <span class="ot">&lt;-</span> <span class="fu">alpha</span>(pal_office, <span class="fl">0.2</span>)   <span class="co"># Set base transparency for all segments</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="fu">stopifnot</span>(rank <span class="sc">&lt;=</span> <span class="fu">length</span>(pal_office))   <span class="co"># Ensure rank is valid</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  grid_colors[rank] <span class="ot">&lt;-</span> pal_office[rank]   <span class="co"># Highlight current character&#39;s segment</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  </span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="co"># Create chord diagram</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="fu">chordDiagram</span>(mat,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>             <span class="at">grid.col =</span> grid_colors,      <span class="co"># Assign segment colors</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>             <span class="co"># Optional: Add thin white borders around connections</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>             <span class="co"># link.border = &quot;white&quot;, </span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>             <span class="co"># link.lwd = 0.1,</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>             <span class="at">annotationTrack =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;grid&quot;</span>), <span class="co"># show only name and grid tracks (excluding axis)</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>             <span class="at">annotationTrackHeight =</span> <span class="fu">mm_h</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)),</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>             <span class="at">link.largest.ontop =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>             <span class="at">row.col =</span> row_colors         <span class="co"># Assign row colors</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>  )</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="fu">title</span>(<span class="at">main =</span> name, <span class="at">col.main =</span> <span class="st">&quot;white&quot;</span>, <span class="at">cex.main =</span> <span class="fl">1.3</span>)  <span class="co"># Add character name as title</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>}</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co"># Set up output file for faceted plot</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>filepath_facets_chart <span class="ot">&lt;-</span> <span class="fu">here</span>(base_path, <span class="st">&quot;17-network-the-office-mentions-facets.png&quot;</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>ragg<span class="sc">::</span><span class="fu">agg_png</span>(filepath_facets_chart,</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>              <span class="at">res =</span> <span class="dv">500</span>, <span class="at">width =</span> <span class="dv">10</span>, <span class="at">height =</span> <span class="dv">10</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">bg =</span> bg_color)</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co"># Set up 3x3 plot grid with formatting parameters</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="fu">par</span>(</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>  <span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>),                       <span class="co"># Arrange plots in 3x3 grid</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  <span class="at">family =</span> <span class="st">&quot;Outfit&quot;</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> <span class="st">&quot;white&quot;</span>, <span class="co"># Font family, size, color</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>  <span class="at">bg =</span> bg_color, </span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>  <span class="at">mai =</span> <span class="fu">rep</span>(<span class="fl">0.5</span>, <span class="dv">4</span>)                      <span class="co"># Set uniform margins</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>) </span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co"># Create individual chord diagrams for first 9 characters</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>  <span class="fu">plot_chordDiagram</span>(top_character_names[i], i)  </span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>}</span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a><span class="co"># Save the plot</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dev.off</span>())</span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co"># Display the saved plot in R Markdown</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">here</span>(base_path,<span class="st">&quot;17-network-the-office-mentions-facets.png&quot;</span>))</span></code></pre></div>
+<p><img src="faceted-chord-diagram/17-network-the-office-mentions-facets.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="adding-title-and-annotations-to-the-final-visualization"
+class="section level1">
+<h1>Adding Title and Annotations to the Final Visualization</h1>
+<p>This final code block uses the <a
+href="https://cran.r-project.org/web/packages/magick/vignettes/intro.html">magick</a>
+package to add professional finishing touches to our visualization. We
+extend the canvas to accommodate text elements, then add a main title,
+an explanatory subtitle, and source information. The annotations are
+carefully positioned and styled using appropriate fonts and sizes to
+create a polished graphic.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load magick package for image manipulation</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(magick)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Read the generated chart</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>img_chart <span class="ot">&lt;-</span> <span class="fu">image_read</span>(filepath_facets_chart) </span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>img_chart_info <span class="ot">&lt;-</span> <span class="fu">image_info</span>(img_chart)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Calculate new dimensions to add space for titles (11% taller)</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>img_new_geometry <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;%sx%s&quot;</span>, img_chart_info<span class="sc">$</span>height, <span class="fl">1.11</span> <span class="sc">*</span> img_chart_info<span class="sc">$</span>height)</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># Add text elements to the chart</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>img_chart <span class="sc">%&gt;%</span> </span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="co"># Extend canvas vertically while maintaining aspect ratio</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="fu">image_extent</span>(img_new_geometry, <span class="at">gravity =</span> <span class="st">&quot;south&quot;</span>, <span class="at">color =</span> bg_color) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  </span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="co"># Add main title at the top</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="fu">image_annotate</span>(<span class="st">&quot;Who speaks about whom in The Office&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>                 <span class="at">gravity =</span> <span class="st">&quot;north&quot;</span>, <span class="at">size =</span> <span class="dv">200</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, </span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>                 <span class="at">font =</span> <span class="st">&quot;American Typewriter&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  </span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="co"># Add explanatory subtitle below main title</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">image_annotate</span>(<span class="st">&quot;The width of the connecting lines indicates how often a character</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="st">  mentions another character&#39;s name&quot;</span>,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>                 <span class="at">location =</span> <span class="st">&quot;+0+250&quot;</span>,     <span class="co"># Position 250 pixels from top</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>                 <span class="at">gravity =</span> <span class="st">&quot;north&quot;</span>, <span class="at">size =</span> <span class="dv">100</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, </span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>                 <span class="at">font =</span> <span class="st">&quot;Outfit&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  </span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>  <span class="co"># Add source attribution at bottom</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>  <span class="fu">image_annotate</span>(<span class="st">&quot;Source: {schrute} R package. Visualisation: Ansgar Wolsing&quot;</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>                 <span class="at">location =</span> <span class="st">&quot;+0+50&quot;</span>,      <span class="co"># Position 50 pixels from bottom</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>                 <span class="at">gravity =</span> <span class="st">&quot;south&quot;</span>, <span class="at">size =</span> <span class="dv">80</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">font =</span> <span class="st">&quot;Outfit&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>  </span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  <span class="co"># Save final image</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>  <span class="fu">image_write</span>(<span class="fu">here</span>(base_path, <span class="st">&quot;17-network-who-speaks-office.png&quot;</span>))</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co"># Display the final image in R Markdown</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="fu">here</span>(base_path,<span class="st">&quot;17-network-who-speaks-office.png&quot;</span>))</span></code></pre></div>
+<p><img src="faceted-chord-diagram/17-network-who-speaks-office.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="chord-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Chord150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Chord diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="network.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Network150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Network</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="sankey-diagram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Sankey150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Sankey</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="https://www.data-to-viz.com/graph/arc.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Arc150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Arc diagram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hierarchical-edge-bundling.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bundle150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Edge bundling</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2018</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

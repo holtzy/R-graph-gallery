@@ -1,0 +1,248 @@
+---
+title: "Character Interaction Analysis"
+descriptionMeta: "This post describes how to build an advanced faceted chord diagram using the circlize package, with each plot showing connections between factors."
+descriptionTop: "This post describes how to build an advanced faceted [chord diagram](chord-diagram.html) using the [circlize](package/circlize.html) package, with each plot showing connections between factors."
+sectionText: "Chord section"
+sectionLink: "chord-diagram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/chord.html"
+url: "character-interaction-analysis"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+<div class="container" style="padding-top: 50px">
+
+The [circlize](package/circlize.html) package allows to create chord diagrams with R. It accepts two types of input formats: either a matrix showing the strength of connections between pairs of nodes, or a data frame listing the relationships.
+
+The `chordDiagram()` function from circlize creates the visualization with entities arranged in a circle, connected by ribbons whose width represents the strength of their relationship. The function offers extensive customization options for colors, transparency, and other visual properties. Find a full documentation [here](https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html).
+
+<u>Note</u>: The [circlize](package/circlize.html) package is a project by [Zuguang Gu](https://github.com/jokergoo). Here, we will use a matrix where each cell represents how many times one character mentions another character in The Office. This example comes from  [Ansgar Wolsing](https://github.com/bydata/30DayChartChallenge/blob/main/2023/17/17-network-the-office-mentions.R).
+
+# Data Preparation: 
+## Processing Character Mentions from The Office
+
+```{r, fig.align='center', out.width="100%"}
+# Load required packages
+library(tidyverse)      # Data manipulation and visualization
+library(ggtext)         # Text formatting in ggplot2
+library(tidytext)       # Text mining tools
+library(here)           # File path management
+library(circlize)       # Circular visualization
+library(schrute)        # The Office dataset
+
+# Set base path for output files
+base_path <- here("faceted-chord-diagram")
+
+# Clean and standardize character names in the dataset
+theoffice <- theoffice %>% 
+  mutate(
+    character = str_remove_all(character, "[\":]"),      # Remove quotes and colons
+    character = str_remove_all(character, "\\\""),       # Remove escaped quotes
+    character = case_match(
+      character,
+      "(Pam's mom) Heleen" ~ "Pam's mom",
+      "AJ" ~ "A.J.",
+      "abe" ~ "Gabe",
+      .default = character
+    )) 
+
+# Get top 10 characters by number of lines
+top_character_names <- theoffice %>% 
+  count(character, sort = TRUE) %>% 
+  slice_max(order_by = n, n = 10) %>% 
+  arrange(-n) %>% 
+  pull(character)
+
+# Create dataset of character mentions
+theoffice_mentions <- 
+  theoffice %>% 
+  filter(character %in% top_character_names) %>%         # Keep only top 10 characters
+  unnest_tokens(word, text, token = "words", to_lower = FALSE) %>%  # Split text into words
+  filter(word %in% top_character_names) %>%             # Keep only mentions of top characters
+  # Convert characters to ordered factors
+  mutate(
+    character = factor(character, levels = top_character_names),
+    character_mentioned = factor(word, levels = top_character_names)) %>% 
+  select(index, season, episode, character, character_mentioned)
+
+# Aggregate mentions and create complete matrix
+theoffice_mentions_agg <- theoffice_mentions %>% 
+  group_by(character, character_mentioned) %>% 
+  summarize(
+    total_mentions = n(),                               # Count total mentions
+    mentions_lines = n_distinct(index),                 # Count unique lines with mentions
+    .groups = "drop"
+  ) %>% 
+  # Ensure all character combinations exist (including zeros)
+  complete(character, character_mentioned, fill = list(total_mentions = 0, mentions_lines = 0)) %>% 
+  arrange(character, character_mentioned)
+```
+
+# Creating the Basic Chord Diagram 
+
+This code creates our first chord diagram showing character interactions in The Office. We first convert our aggregated data into a matrix format required by the `chordDiagram()` function, then set up a custom color palette. The diagram is rendered using `ragg` for high-quality output, with carefully chosen visual parameters like transparency and border width to ensure readability.
+
+```{r, fig.align='center', out.width="100%"}
+# Create a square matrix from mentions data, with character names as row and column names
+mat <- matrix(theoffice_mentions_agg$total_mentions, ncol = length(top_character_names))
+rownames(mat) <- top_character_names
+colnames(mat) <- top_character_names
+
+# Define color palette for characters and background
+pal_office <- 
+  c("#FBA93A", "#cc2d36", "#93BFE5", "#D8ACD8", "#f0813c", "#F0F4EC", "#2AA3A6",
+    "#4BD9EF", "#4bad6d", "#5D77AA")
+bg_color <- colorspace::darken("#435774", 0.2)
+
+
+# Create and save the chord diagram
+ragg::agg_png(here(base_path, "17-network-the-office-mentions.png"),
+              res = 500, width = 8, height = 8, units = "in", bg = bg_color)
+par(
+  family = "Outfit", cex = 2, col = "white", # font family, size, color
+  bg = bg_color, 
+  mai = rep(0.5, 4) # plot margin in inches
+) 
+chordDiagram(mat, transparency = 0.3, 
+             grid.col = pal_office[1:10], # assign colors to each character
+             link.border = "white", link.lwd = 0.2, # add thin white borders to connections
+             annotationTrack = c("name", "grid"), # show only name and grid tracks (excluding axis)
+             annotationTrackHeight = mm_h(c(3, 5)),
+             link.largest.ontop = TRUE
+)
+title(
+  main = "Who speaks about whom?",
+  sub = "top 10 characters in The Office\nSource: {schrute} R package. Visualisation: Ansgar Wolsing",
+  col.main = "white", cex.main = 1.3)
+invisible(dev.off())
+
+# Display the saved plot in R Markdown
+knitr::include_graphics(here(base_path,"17-network-the-office-mentions.png"))
+```
+
+# Creating Individual Character-Focused Diagrams
+
+Here we create a custom function to generate individual chord diagrams, each highlighting a specific character's interactions. The function applies unique coloring to emphasize the focal character while de-emphasizing others. We then use this function in a loop to create a 3x3 facet of diagrams, one for each of the top 9 characters, offering a detailed view of each character's mention patterns.
+
+```{r, fig.align='center', out.width="100%"}
+# Define function to create individual chord diagrams for each character
+plot_chordDiagram <- function(name, rank, color = NULL) {
+  # Set up colors for current character's diagram
+  row_colors <- rep("#EEEEEE33", 10)     # Default transparent gray for all rows
+  stopifnot(rank <= length(pal_office))   # Ensure rank is valid
+  row_colors[rank] <- pal_office[rank]    # Highlight current character's row
+  
+  # Set up grid colors
+  grid_colors <- alpha(pal_office, 0.2)   # Set base transparency for all segments
+  stopifnot(rank <= length(pal_office))   # Ensure rank is valid
+  grid_colors[rank] <- pal_office[rank]   # Highlight current character's segment
+  
+  # Create chord diagram
+  chordDiagram(mat,
+             grid.col = grid_colors,      # Assign segment colors
+             # Optional: Add thin white borders around connections
+             # link.border = "white", 
+             # link.lwd = 0.1,
+             annotationTrack = c("name", "grid"), # show only name and grid tracks (excluding axis)
+             annotationTrackHeight = mm_h(c(2, 2)),
+             link.largest.ontop = TRUE,
+             row.col = row_colors         # Assign row colors
+  )
+  title(main = name, col.main = "white", cex.main = 1.3)  # Add character name as title
+}
+
+# Set up output file for faceted plot
+filepath_facets_chart <- here(base_path, "17-network-the-office-mentions-facets.png")
+ragg::agg_png(filepath_facets_chart,
+              res = 500, width = 10, height = 10, units = "in", bg = bg_color)
+
+# Set up 3x3 plot grid with formatting parameters
+par(
+  mfrow = c(3, 3),                       # Arrange plots in 3x3 grid
+  family = "Outfit", cex = 0.8, col = "white", # Font family, size, color
+  bg = bg_color, 
+  mai = rep(0.5, 4)                      # Set uniform margins
+) 
+
+# Create individual chord diagrams for first 9 characters
+for (i in 1:9) {
+  plot_chordDiagram(top_character_names[i], i)  
+}
+
+# Save the plot
+invisible(dev.off())
+
+# Display the saved plot in R Markdown
+knitr::include_graphics(here(base_path,"17-network-the-office-mentions-facets.png"))
+```
+
+# Adding Title and Annotations to the Final Visualization
+
+This final code block uses the [magick](https://cran.r-project.org/web/packages/magick/vignettes/intro.html) package to add professional finishing touches to our visualization. We extend the canvas to accommodate text elements, then add a main title, an explanatory subtitle, and source information. The annotations are carefully positioned and styled using appropriate fonts and sizes to create a polished graphic.
+
+```{r, fig.align='center', out.width="100%"}
+# Load magick package for image manipulation
+library(magick)
+
+# Read the generated chart
+img_chart <- image_read(filepath_facets_chart) 
+img_chart_info <- image_info(img_chart)
+
+# Calculate new dimensions to add space for titles (11% taller)
+img_new_geometry <- sprintf("%sx%s", img_chart_info$height, 1.11 * img_chart_info$height)
+
+# Add text elements to the chart
+img_chart %>% 
+  # Extend canvas vertically while maintaining aspect ratio
+  image_extent(img_new_geometry, gravity = "south", color = bg_color) %>% 
+  
+  # Add main title at the top
+  image_annotate("Who speaks about whom in The Office",
+                 gravity = "north", size = 200, color = "white", 
+                 font = "American Typewriter") %>% 
+  
+  # Add explanatory subtitle below main title
+  image_annotate("The width of the connecting lines indicates how often a character
+  mentions another character's name",
+                 location = "+0+250",     # Position 250 pixels from top
+                 gravity = "north", size = 100, color = "white", 
+                 font = "Outfit") %>% 
+  
+  # Add source attribution at bottom
+  image_annotate("Source: {schrute} R package. Visualisation: Ansgar Wolsing",
+                 location = "+0+50",      # Position 50 pixels from bottom
+                 gravity = "south", size = 80, color = "white", font = "Outfit") %>% 
+  
+  # Save final image
+  image_write(here(base_path, "17-network-who-speaks-office.png"))
+
+# Display the final image in R Markdown
+knitr::include_graphics(here(base_path,"17-network-who-speaks-office.png"))
+```
+
+
+
+
+
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedFlow.html")
+```
