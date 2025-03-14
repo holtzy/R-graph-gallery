@@ -1,0 +1,209 @@
+---
+title: "topr"
+descriptionMeta: "This post describes how to use the topr package for viewing and annotating genetic association results."
+descriptionTop: "A package for viewing and annotating genetic association data"
+sectionText: "topr section"
+sectionLink: "topr-package.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/web-topr-package.html"
+url: "blog-post-template"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+
+<div class="container">
+
+# About
+***
+
+<div class = "row">
+
+<div class = "col-md-8  col-sm-12 align-self-center">
+
+*topr* is a collection of plotting functions for visualizing and exploring genetic association results. Association results from multiple phenotypes can be viewed simultaneously, over the entire genome (Manhattan plot) or in the more detailed regional view.
+
+*topr* utilises the <code>ggplot2</code> and <code>ggrepel</code> R graphics libraries for plotting.
+
+For more details, see the *topr* [github page](https://github.com/totajuliusd/topr) and the *topr*  [publication](https://doi.org/10.1186/s12859-023-05301-4).
+
+</div>
+
+<div class = "col-md-4  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+# The plot on the right. Code will appear below
+library(hexSticker)
+library(topr)
+library(ggplot2)
+pp <- manhattan(list(CD_UKBB, UC_UKBB),color=c("darkblue", "#6285A5"), sign_thresh = NULL, size=0.1, show_legend = F, ntop=1) + theme_void() + theme_transparent()
+s <- sticker(pp, package="topr", p_size=23, s_x=1, s_y=0.86, s_width=1.4, s_height=1,
+              h_fill="white", h_color="darkblue", p_color="darkblue")
+
+plot(s)
+```
+</div>
+</div>
+
+# Libraries
+***
+The *topr* package can be installed from CRAN using <code>install.packages("topr")</code>.
+
+After installing the package it can be loaded as follows:
+
+```{r}
+library(topr)
+```
+
+
+# Dataset
+***
+
+*topr* comes with three inbuilt genetic association datasets (<code>CD_UKBB, CD_FINNGEN</code> and <code>UC_UKBB</code>). These datasets were originally retrieved from the UK biobank and FinnGen, and are association results (GWAS summary statistics) on Crohn's disease (CD) and Ulcerative colitis (UC).
+
+Input datasets must include least three columns (<code>CHROM, POS</code> and <code>P</code>), where naming of the columns is flexible (i.e the chr label can be either chr or chrom and is case insensitive). For more details, see [topr input datasets](https://totajuliusd.github.io/topr/articles/input_datasets.html).
+
+
+# Basic usage
+***
+*topr's* three main plotting functions are <code>manhattan()</code>, <code>regionplot()</code> and <code>locuszoom()</code>.
+
+
+## manhattan
+***
+Create a Manhattan plot using the <code>CD_UKBB</code> dataset
+
+
+```{r fig.height=3.5, fig.width=8.5}
+manhattan(CD_UKBB)
+```
+
+
+Annotate the top variants (with p-values below 5e-9) with their nearest gene:
+
+```{r fig.height=3.5, fig.width=8.5}
+manhattan(CD_UKBB, 
+          annotate=5e-9)
+```
+
+Show multiple datasets on the same plot using two y-axes and specify how many datasets to show on the ‘top’ and on the ‘bottom’ with the <code>ntop</code> argument.
+
+```{r fig.height=5.5, fig.width=8.5}
+manhattan(list(CD_UKBB, CD_FINNGEN), 
+          legend_labels = c("UKBB", "FinnGen"), 
+          annotate=1e-12, ntop=1)
+```
+
+
+See [manhattan](https://totajuliusd.github.io/topr_manual/manhattan.html) for more detailed examples of how to use the manhattan plot function.
+
+<br>
+
+### Highlight SNPs of interest
+
+Extract snps within a specific region and show them in red on the plot. Only annotate the snpsOfInterest.
+
+```{r}
+snpsOfInterest <- get_snps_within_region(CD_UKBB, region="chr1:67038906-67359979")
+```
+
+
+```{r fig.height=4, fig.width=8.5}
+manhattan(list(CD_UKBB, snpsOfInterest), color=c("darkblue","red"), 
+          legend_labels=c("CD UKBB","SNPs of interest"), 
+          annotate=c(1e-100, 1e-09), 
+          label_color="black", 
+          nudge_y=2,
+          verbose=FALSE)
+```
+
+See [how-to-color-specific-peaks-on-the-manhattan-plot](https://github.com/totajuliusd/topr?tab=readme-ov-file#how-to-color-specific-peaks-on-the-manhattan-plot)
+for more details.
+
+<br>
+
+
+### Use topr with other species
+
+By default topr uses the human genome assembly for annotation, it can be used with different gene annotations as long as they are provided by the user in a specific format, see [How to use topr with other species than human](https://github.com/totajuliusd/topr?tab=readme-ov-file#how-to-use-topr-with-other-species-than-human).
+
+<br>
+
+
+## regionplot
+***
+
+Displays association results for smaller genetic regions defined by the gene name:
+
+```{r fig.height=5, fig.width=9}
+regionplot(CD_UKBB, 
+           gene="IL23R", 
+           annotate=5e-9, 
+           scale=0.9)
+```
+
+Annotate the variants with vline with reduced region size for denser labelling of top snps. 
+
+```{r fig.height=5, fig.width=9}
+regionplot(CD_UKBB, gene="IL23R",
+           annotate_with_vline=5e-9, 
+           region_size=100000, 
+           scale=0.9, )
+```
+
+<br>
+
+
+## locuszoom 
+***
+
+View the correlation pattern between the variants within the region in a locuszoom like plot.
+ 
+Note that the variant correlation (<code>R2</code>) has to be **pre-calculated** and included in the input dataset.  If the dataset does not contain pre-calculated correlation values, they can be retrieved using the <code>LDproxy</code> package as described [here](https://github.com/totajuliusd/topr?tab=readme-ov-file#locuszoom-example)
+
+```{r fig.height=5, fig.width=9}
+locuszoom(R2_CD_UKBB, scale=0.9)
+```
+
+<br>
+
+## manhattanExtra
+***
+
+Contribution from Kyle Scott [kscott-1](https://github.com/kscott-1)
+
+Create a Manhattan plot highlighting genome-wide significant and suggestive loci using the manhattanExtra function.
+
+
+```{r fig.height=4.5, fig.width=8.5}
+manhattanExtra(UC_UKBB, 
+               flank_size = 1e6, 
+               region_size=1e7,
+               scale=0.8)
+```
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+# This add some images at the end of the blogpost with related chart types
+# You can choose: Map, Correlation, Flow, Other, Ranking, Evolution, PartOfWhole, Distribution
+# htmltools::includeHTML("htmlChunkRelatedMap.html")
+```
