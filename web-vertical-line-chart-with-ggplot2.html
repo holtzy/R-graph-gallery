@@ -43,18 +43,20 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Vertical linechart with
-ggplot2 &#8211; the R Graph Gallery</title>
+    <title>Vertical linechart with ggplot2 &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to create a
+    <meta
+      name="description"
+      content="This post explains how to create a
 beautiful vertical line chart combined with nice customized legend made
 with ggplot2. It shows the party advantage in the U.S. House of
-Representatives from 1976 to the present." />
+Representatives from 1976 to the present."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -63,16 +65,22 @@ Representatives from 1976 to the present." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Vertical linechart with
-ggplot2" />
+    <meta
+      property="og:title"
+      content="Vertical linechart with
+ggplot2"
+    />
     <meta
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post explains how to
+    <meta
+      property="og:description"
+      content="This post explains how to
 create a beautiful vertical line chart combined with nice customized
 legend made with ggplot2. It shows the party advantage in the U.S. House
-of Representatives from 1976 to the present." />
+of Representatives from 1976 to the present."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/web-vertical-line-chart-with-ggplot2.html"
@@ -142,11 +150,13 @@ of Representatives from 1976 to the present." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to create a beautiful vertical <a
-href="line-plot.html">line chart</a> with <a
-href="ggplot2-package.html">ggplot2</a>. It shows the party advantage in
-the U.S. House of Representatives from 1976 to the present.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to create a beautiful vertical
+            <a href="line-plot.html">line chart</a> with
+            <a href="ggplot2-package.html">ggplot2</a>. It shows the party
+            advantage in the U.S. House of Representatives from 1976 to the
+            present.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -171,7 +181,6 @@ the U.S. House of Representatives from 1976 to the present.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -180,34 +189,48 @@ the U.S. House of Representatives from 1976 to the present.</p>
     </style>
 
     <div class="container">
-<div id="about" class="section level1">
-<h1>About</h1>
-<hr />
-<p>This chart uses a vertical line chart to show the party advantage in
-the U.S. House of Representatives from 1976 to the present. The chart is
-inspired by a graphic from FiveThirtyEight and has been created by <a
-href="https://aman.bh/">Aman Bhargava</a>.</p>
-<p>Thanks to him for sharing its work!</p>
-</div>
-<div id="libraries" class="section level1">
-<h1>Libraries</h1>
-<hr />
-<p>First we start by loading the necessary libraries.</p>
-<p><em>Note: Install <code>urbnmapr</code> with
-<code>devtools::install_github("UrbanInstitute/urbnmapr")</code> since
-it’s not on CRAN.</em></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+      <div id="about" class="section level1">
+        <h1>About</h1>
+        <hr />
+        <p>
+          This chart uses a vertical line chart to show the party advantage in
+          the U.S. House of Representatives from 1976 to the present. The chart
+          is inspired by a graphic from FiveThirtyEight and has been created by
+          <a href="https://aman.bh/">Aman Bhargava</a>.
+        </p>
+        <p>Thanks to him for sharing its work!</p>
+      </div>
+      <div id="libraries" class="section level1">
+        <h1>Libraries</h1>
+        <hr />
+        <p>First we start by loading the necessary libraries.</p>
+        <p>
+          <em
+            >Note: Install <code>urbnmapr</code> with
+            <code>devtools::install_github("UrbanInstitute/urbnmapr")</code>
+            since it’s not on CRAN.</em
+          >
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidytuesdayR)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(urbnmapr)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre></div>
-</div>
-<div id="dataset" class="section level1">
-<h1>Dataset</h1>
-<hr />
-<p>The main dataset is retrieved from the TidyTuesday GitHub
-repository.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-11-07/house.csv&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code></pre>
+        </div>
+      </div>
+      <div id="dataset" class="section level1">
+        <h1>Dataset</h1>
+        <hr />
+        <p>
+          The main dataset is retrieved from the TidyTuesday GitHub repository.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-11-07/house.csv&quot;</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/DATA/democrats-and-republicans.csv?raw=true&quot;</span></span>
@@ -216,23 +239,32 @@ repository.</p>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/DATA/US-presidents.csv?raw=true&quot;</span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="st">&quot;DATA/US-presidents.csv&quot;</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>presidents_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span></code></pre></div>
-</div>
-<div id="creating-the-right-chart" class="section level1">
-<h1>Creating the right chart</h1>
-<hr />
-<ul>
-<li>Use <code>ggplot()</code> to create the base plot</li>
-<li>Add <strong>segments</strong> representing each president’s term,
-colored by party</li>
-<li>Add <strong>text labels</strong> for each president’s name</li>
-<li>Customize the <strong>theme</strong> to remove unnecessary
-elements</li>
-<li>Set up the y-axis scale to <strong>align</strong> with the main
-chart</li>
-<li>Use <code>coord_flip()</code> to make the chart vertical</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>right_chart <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>presidents_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(path)</span></code></pre>
+        </div>
+      </div>
+      <div id="creating-the-right-chart" class="section level1">
+        <h1>Creating the right chart</h1>
+        <hr />
+        <ul>
+          <li>Use <code>ggplot()</code> to create the base plot</li>
+          <li>
+            Add <strong>segments</strong> representing each president’s term,
+            colored by party
+          </li>
+          <li>Add <strong>text labels</strong> for each president’s name</li>
+          <li>
+            Customize the <strong>theme</strong> to remove unnecessary elements
+          </li>
+          <li>
+            Set up the y-axis scale to <strong>align</strong> with the main
+            chart
+          </li>
+          <li>Use <code>coord_flip()</code> to make the chart vertical</li>
+        </ul>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>right_chart <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>   <span class="fu">geom_segment</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>      <span class="at">data =</span> presidents_df,</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
@@ -267,27 +299,47 @@ chart</li>
 <span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>   <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">0</span>, <span class="at">r =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">0</span>, <span class="at">l =</span> <span class="dv">0</span>, <span class="st">&quot;points&quot;</span>)) <span class="sc">+</span></span>
 <span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>   <span class="fu">coord_flip</span>()</span>
 <span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>right_chart</span></code></pre></div>
-<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="creating-the-left-chart" class="section level1">
-<h1>Creating the left chart</h1>
-<hr />
-<ul>
-<li>Use <strong>ggplot</strong> to create the base plot with year on the
-y-axis and advantage on the x-axis</li>
-<li>Add a <strong>line</strong> geom to show the trend over time</li>
-<li>Add a <strong>horizontal line</strong> at <code>y=0</code> to
-separate Democrat and Republican advantage</li>
-<li>Add points to highlight non-zero advantage values</li>
-<li>Customize the <strong>theme</strong>, colors, and labels to match
-the desired style</li>
-<li>Set up the scales for x and y axes, including custom breaks and
-labels</li>
-<li>Add title, subtitle, and caption to provide <strong>context</strong>
-for the chart</li>
-</ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>left_chart <span class="ot">&lt;-</span> advantage_df <span class="sc">%&gt;%</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>right_chart</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-3-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div id="creating-the-left-chart" class="section level1">
+        <h1>Creating the left chart</h1>
+        <hr />
+        <ul>
+          <li>
+            Use <strong>ggplot</strong> to create the base plot with year on the
+            y-axis and advantage on the x-axis
+          </li>
+          <li>Add a <strong>line</strong> geom to show the trend over time</li>
+          <li>
+            Add a <strong>horizontal line</strong> at <code>y=0</code> to
+            separate Democrat and Republican advantage
+          </li>
+          <li>Add points to highlight non-zero advantage values</li>
+          <li>
+            Customize the <strong>theme</strong>, colors, and labels to match
+            the desired style
+          </li>
+          <li>
+            Set up the scales for x and y axes, including custom breaks and
+            labels
+          </li>
+          <li>
+            Add title, subtitle, and caption to provide
+            <strong>context</strong> for the chart
+          </li>
+        </ul>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>left_chart <span class="ot">&lt;-</span> advantage_df <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>      <span class="at">x =</span> year,</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>      <span class="at">y =</span> advantage,</span>
@@ -369,105 +421,138 @@ for the chart</li>
 <span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">&quot;Source: MIT Election Data and Science Lab, tidytuesday project </span><span class="sc">\n</span><span class="st">ggplot re-creation of an original graphic by FiveThirtyEight</span><span class="sc">\n\n</span><span class="st">Graphic: Aman Bhargava | Twitter: @thedivtagguy | 🔗 aman.bh&quot;</span></span>
 <span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>   )</span>
 <span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a></span>
-<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>left_chart</span></code></pre></div>
-<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="combine-the-charts-with-patchwork" class="section level1">
-<h1>Combine the charts with <a
-href="package/patchwork.html">patchwork</a></h1>
-<hr />
-<ul>
-<li>Use the <a href="package/patchwork.html">patchwork</a> library to
-combine the two charts</li>
-<li>Adjust the relative widths of the charts using
-<code>plot_layout()</code></li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>left_chart <span class="sc">+</span> right_chart <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">1</span>))</span></code></pre></div>
-<p><img src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="going-further" class="section level1">
-<h1>Going further</h1>
-<hr />
-<p>You might be interested in:</p>
-<ul>
-<li>Learning more about <a href="line-plot.html">line charts</a></li>
-<li>Use a bump chart to <a
-href="web-bump-plot-with-highlights.html">highlight changes over
-time</a></li>
-<li>Use a waffle chart to <a
-href="web-waffle-for-time-evolution.html">highlight changes over
-time</a></li>
-</ul>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-  <div class="container">
-
-    <p class="mySeryTitle">Related chart types</p>
-    <hr>
-    <div class="row">
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="line-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Line150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Line plot</div>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a>left_chart</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-4-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
       </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="area-chart.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Area150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Area</div>
+      <div id="combine-the-charts-with-patchwork" class="section level1">
+        <h1>
+          Combine the charts with <a href="package/patchwork.html">patchwork</a>
+        </h1>
+        <hr />
+        <ul>
+          <li>
+            Use the <a href="package/patchwork.html">patchwork</a> library to
+            combine the two charts
+          </li>
+          <li>
+            Adjust the relative widths of the charts using
+            <code>plot_layout()</code>
+          </li>
+        </ul>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>left_chart <span class="sc">+</span> right_chart <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">widths =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">1</span>))</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="web-vertical-line-chart-with-ggplot2_files/figure-html/unnamed-chunk-5-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
       </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="stacked-area-graph.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/StackedArea150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Stacked area</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="streamgraph.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Stream150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Streamchart</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="time-series.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Time150.gif" alt="">
-        </a>
-        <div class="captionPortfolio">Time Series</div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>You might be interested in:</p>
+        <ul>
+          <li>Learning more about <a href="line-plot.html">line charts</a></li>
+          <li>
+            Use a bump chart to
+            <a href="web-bump-plot-with-highlights.html"
+              >highlight changes over time</a
+            >
+          </li>
+          <li>
+            Use a waffle chart to
+            <a href="web-waffle-for-time-evolution.html"
+              >highlight changes over time</a
+            >
+          </li>
+        </ul>
+        <!-- Close container -->
       </div>
     </div>
-
-  </div>
-</section> 
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="line-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Line150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Line plot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="area-chart.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Area150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Area</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="stacked-area-graph.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/StackedArea150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Stacked area</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="streamgraph.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Stream150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Streamchart</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="time-series.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Time150.gif" alt="" />
+            </a>
+            <div class="captionPortfolio">Time Series</div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -549,7 +634,7 @@ time</a></li>
         <div class="row">
           <div class="col-md-4">
             <span class="copyright"
-              >Copyright &copy; the R graph gallery 2018</span
+              >Copyright &copy; the R graph gallery 2025</span
             >
           </div>
           <div class="col-md-4">
@@ -586,18 +671,18 @@ time</a></li>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

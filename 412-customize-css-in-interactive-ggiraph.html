@@ -50,9 +50,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explains how to use the
+    <meta
+      name="description"
+      content="This post explains how to use the
 ggiraph package to create interactive graph and how to customize it with
-additional CSS. It provides reproducible code and explanations." />
+additional CSS. It provides reproducible code and explanations."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -66,10 +69,13 @@ additional CSS. It provides reproducible code and explanations." />
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post explains how to
+    <meta
+      property="og:description"
+      content="This post explains how to
 use the ggiraph package to create interactive graph and how to customize
 it with additional CSS. It provides reproducible code and
-explanations." />
+explanations."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/412-customize-css-in-interactive-ggiraph.html"
@@ -139,12 +145,14 @@ explanations." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explains how to use the <a href="package/ggiraph.html">ggiraph</a>
-package to create <strong>interactive graph</strong> and how to
-customize it with additional CSS, with reproducible code and
-explanations.<br><br>For an introduction to <code>ggiraph</code>, check
-the <a href="package/ggiraph.html">dedicated post</a></p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explains how to use the
+            <a href="package/ggiraph.html">ggiraph</a> package to create
+            <strong>interactive graph</strong> and how to customize it with
+            additional CSS, with reproducible code and explanations.<br /><br />For
+            an introduction to <code>ggiraph</code>, check the
+            <a href="package/ggiraph.html">dedicated post</a>
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -169,7 +177,6 @@ the <a href="package/ggiraph.html">dedicated post</a></p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -178,14 +185,22 @@ the <a href="package/ggiraph.html">dedicated post</a></p>
     </style>
 
     <div class="container">
-<div id="libraries-and-dataset" class="section level1">
-<h1>Libraries and dataset</h1>
-<hr />
-<p>First we need to load the <a href="package/ggiraph.html">ggiraph</a>
-and <a href="ggplot2-package.html">ggplot2</a> libraries.</p>
-<p>The input dataset is about <strong>consumer confidence</strong> in 9
-different countries at differente dates:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># library</span></span>
+      <div id="libraries-and-dataset" class="section level1">
+        <h1>Libraries and dataset</h1>
+        <hr />
+        <p>
+          First we need to load the
+          <a href="package/ggiraph.html">ggiraph</a> and
+          <a href="ggplot2-package.html">ggplot2</a> libraries.
+        </p>
+        <p>
+          The input dataset is about <strong>consumer confidence</strong> in 9
+          different countries at differente dates:
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># library</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggiraph)</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
@@ -196,24 +211,33 @@ different countries at differente dates:</p>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Time) <span class="sc">%&gt;%</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>date, <span class="at">names_to =</span> <span class="st">&quot;country&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">as.factor</span>(country))</span></code></pre></div>
-</div>
-<div id="simple-line-chart-with-ggiraph" class="section level1">
-<h1>Simple line chart with ggiraph</h1>
-<hr />
-<p>The <code>ggiraph</code> package in R is an extension of the <a
-href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
-package, designed to simplify the process of <strong>creating
-interactive charts</strong>.</p>
-<p>It offers a set of function to <strong>add interactivity</strong>
-such as <code>geom_point_interactive()</code> for an interactive version
-of <code>geom_point()</code>, <code>geom_sf_interactive()</code> for an
-interactive version of <code>geom_sf()</code> etc.</p>
-<p>Let’s start with a <strong>simple interactive version</strong> of
-this line chart. It uses the <code>geom_line_interactive()</code>
-function to replace the <code>geom_line()</code> one and make it
-interactive.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">as.factor</span>(country))</span></code></pre>
+        </div>
+      </div>
+      <div id="simple-line-chart-with-ggiraph" class="section level1">
+        <h1>Simple line chart with ggiraph</h1>
+        <hr />
+        <p>
+          The <code>ggiraph</code> package in R is an extension of the
+          <a href="https://r-graph-gallery.com/ggplot2-package.html">ggplot2</a>
+          package, designed to simplify the process of
+          <strong>creating interactive charts</strong>.
+        </p>
+        <p>
+          It offers a set of function to <strong>add interactivity</strong> such
+          as <code>geom_point_interactive()</code> for an interactive version of
+          <code>geom_point()</code>, <code>geom_sf_interactive()</code> for an
+          interactive version of <code>geom_sf()</code> etc.
+        </p>
+        <p>
+          Let’s start with a <strong>simple interactive version</strong> of this
+          line chart. It uses the <code>geom_line_interactive()</code> function
+          to replace the <code>geom_line()</code> one and make it interactive.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">x =</span> date,</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">y =</span> value,</span>
@@ -225,29 +249,48 @@ interactive.</p>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>interactive_plot <span class="ot">&lt;-</span> <span class="fu">girafe</span>(<span class="at">ggobj =</span> plot)</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-1.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/geom-line-interactive-1.html" height="650" width="850" style="border:none;">
-</iframe>
-</div>
-<div id="change-css" class="section level1">
-<h1>Change CSS</h1>
-<hr />
-<p>Although <code>CSS</code> is primarily used for styling <strong>web
-pages</strong>, it can also be relevant in customizing visuals in
-<strong>R</strong>, especially when dealing with web-based outputs like
-interactive charts or Shiny applications.</p>
-<p><code>CSS</code> code has the following structure: a property named
-(such as <code>font-size</code>), a colon (<code>:</code>), and the
-value of that property (such as <code>14px</code>). Each element is then
-separated by a <code>;</code>.</p>
-<p>The easiest way to add <code>CSS</code> in <a
-href="package/ggiraph.html">ggiraph</a> is to use the
-<code>girafe_options()</code> function.</p>
-<p>Then we use
-<code>opts_hover(css = "fill:#ffe7a6;stroke:black;cursor:pointer;")</code>
-to <strong>fill the lines</strong> on hover with a given color and
-change the color of the lines to black.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-1.html&quot;</span>)</span></code></pre>
+        </div>
+        <iframe
+          src="HtmlWidget/geom-line-interactive-1.html"
+          height="650"
+          width="850"
+          style="border: none"
+        >
+        </iframe>
+      </div>
+      <div id="change-css" class="section level1">
+        <h1>Change CSS</h1>
+        <hr />
+        <p>
+          Although <code>CSS</code> is primarily used for styling
+          <strong>web pages</strong>, it can also be relevant in customizing
+          visuals in <strong>R</strong>, especially when dealing with web-based
+          outputs like interactive charts or Shiny applications.
+        </p>
+        <p>
+          <code>CSS</code> code has the following structure: a property named
+          (such as <code>font-size</code>), a colon (<code>:</code>), and the
+          value of that property (such as <code>14px</code>). Each element is
+          then separated by a <code>;</code>.
+        </p>
+        <p>
+          The easiest way to add <code>CSS</code> in
+          <a href="package/ggiraph.html">ggiraph</a> is to use the
+          <code>girafe_options()</code> function.
+        </p>
+        <p>
+          Then we use
+          <code
+            >opts_hover(css = "fill:#ffe7a6;stroke:black;cursor:pointer;")</code
+          >
+          to <strong>fill the lines</strong> on hover with a given color and
+          change the color of the lines to black.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">x =</span> date,</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">y =</span> value,</span>
@@ -266,33 +309,55 @@ change the color of the lines to black.</p>
 <span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">opts_selection</span>(<span class="at">type =</span> <span class="st">&quot;single&quot;</span>, <span class="at">css =</span> <span class="st">&quot;fill:red;stroke:black;&quot;</span>),</span>
 <span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>)</span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-2.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/geom-line-interactive-2.html" height="650" width="850" style="border:none;">
-</iframe>
-</div>
-<div id="highlight-a-specific-line" class="section level1">
-<h1>Highlight a specific line</h1>
-<hr />
-<p>When displaying multiple lines in a single chart, it’s easy to end up
-with a cluttered <a
-href="https://www.data-to-viz.com/caveat/spaghetti.html">spaghetti
-chart</a>. One effective way to enhance readability is by implementing a
-hover effect that elegantly <strong>fades out</strong> non-hovered lines
-while highlighting the selected line.</p>
-<p>This can be achieved using CSS with the following properties:</p>
-<ol style="list-style-type: decimal">
-<li><code>stroke</code>: Change the color of the hovered line (e.g.,
-<code>stroke: #69B3A2;</code>)</li>
-<li><code>stroke-width</code>: Increase the width of the hovered line
-for emphasis</li>
-<li><code>transition</code>: Add a smooth transition effect (e.g.,
-<code>transition: all 0.3s ease;</code>)</li>
-<li><code>opacity</code>: Reduce the opacity of non-hovered lines (e.g.,
-<code>opacity: 0.5;</code>)</li>
-<li><code>filter</code>: Apply a grayscale effect to non-hovered lines
-(e.g., <code>filter: grayscale(90%);</code>)</li>
-</ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes) <span class="co"># for the `theme_ipsum()`</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-2.html&quot;</span>)</span></code></pre>
+        </div>
+        <iframe
+          src="HtmlWidget/geom-line-interactive-2.html"
+          height="650"
+          width="850"
+          style="border: none"
+        >
+        </iframe>
+      </div>
+      <div id="highlight-a-specific-line" class="section level1">
+        <h1>Highlight a specific line</h1>
+        <hr />
+        <p>
+          When displaying multiple lines in a single chart, it’s easy to end up
+          with a cluttered
+          <a href="https://www.data-to-viz.com/caveat/spaghetti.html"
+            >spaghetti chart</a
+          >. One effective way to enhance readability is by implementing a hover
+          effect that elegantly <strong>fades out</strong> non-hovered lines
+          while highlighting the selected line.
+        </p>
+        <p>This can be achieved using CSS with the following properties:</p>
+        <ol style="list-style-type: decimal">
+          <li>
+            <code>stroke</code>: Change the color of the hovered line (e.g.,
+            <code>stroke: #69B3A2;</code>)
+          </li>
+          <li>
+            <code>stroke-width</code>: Increase the width of the hovered line
+            for emphasis
+          </li>
+          <li>
+            <code>transition</code>: Add a smooth transition effect (e.g.,
+            <code>transition: all 0.3s ease;</code>)
+          </li>
+          <li>
+            <code>opacity</code>: Reduce the opacity of non-hovered lines (e.g.,
+            <code>opacity: 0.5;</code>)
+          </li>
+          <li>
+            <code>filter</code>: Apply a grayscale effect to non-hovered lines
+            (e.g., <code>filter: grayscale(90%);</code>)
+          </li>
+        </ol>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(hrbrthemes) <span class="co"># for the `theme_ipsum()`</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(</span>
@@ -313,14 +378,23 @@ for emphasis</li>
 <span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="fu">opts_hover_inv</span>(<span class="st">&quot;opacity:0.5;filter:saturate(10%);&quot;</span>),</span>
 <span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>)</span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-3.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/geom-line-interactive-3.html" height="650" width="850" style="border:none;">
-</iframe>
-</div>
-<div id="more-advanced-usage" class="section level1">
-<h1>More advanced usage</h1>
-<hr />
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-3.html&quot;</span>)</span></code></pre>
+        </div>
+        <iframe
+          src="HtmlWidget/geom-line-interactive-3.html"
+          height="650"
+          width="850"
+          style="border: none"
+        >
+        </iframe>
+      </div>
+      <div id="more-advanced-usage" class="section level1">
+        <h1>More advanced usage</h1>
+        <hr />
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="at">x =</span> date,</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">y =</span> value,</span>
@@ -348,44 +422,74 @@ for emphasis</li>
 <span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>  <span class="fu">opts_hover</span>(<span class="at">css =</span> hover_css),</span>
 <span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>  <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>)</span>
-<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-4.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/geom-line-interactive-4.html" height="650" width="850" style="border:none;">
-</iframe>
-</div>
-<div id="combine-css-with-other-ggiraph-features"
-class="section level1">
-<h1>Combine CSS with other ggiraph features</h1>
-<hr />
-<p>Since <code>CSS</code> provides an infinite number of possibilities,
-you can use it to create very original charts!</p>
-<p>Hover CSS:</p>
-<ul>
-<li><code>stroke: black;</code>: Sets the outline color of the hovered
-element to black.</li>
-<li><code>stroke-width: 1px;</code>: Sets the width of the outline to 1
-pixel.</li>
-<li><code>r: 8px;</code>: Sets the radius of circular elements (like
-points) to 8 pixels, making them larger on hover.</li>
-<li><code>transition: all 0.3s ease;</code>: Applies a smooth transition
-effect for all property changes, lasting 0.3 seconds.</li>
-</ul>
-<p>Tooltip CSS:</p>
-<ul>
-<li><code>background-color: #2C3E50;</code>: Sets a dark blue background
-for the tooltip.</li>
-<li><code>color: #ECF0F1;</code>: Sets the text color to a light
-gray.</li>
-<li><code>padding: 10px;</code>: Adds 10 pixels of space inside the
-tooltip around its content.</li>
-<li><code>border-radius: 5px;</code>: Rounds the corners of the
-tooltip.</li>
-<li><code>font-family: 'Arial', sans-serif;</code>: Sets the font to
-Arial or a sans-serif fallback.</li>
-<li><code>font-size: 14px;</code>: Sets the text size to 14 pixels.</li>
-<li><code>box-shadow: 0px 0px 10px rgba(0,0,0,0.5);</code>: Adds a
-subtle shadow effect to the tooltip.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-4.html&quot;</span>)</span></code></pre>
+        </div>
+        <iframe
+          src="HtmlWidget/geom-line-interactive-4.html"
+          height="650"
+          width="850"
+          style="border: none"
+        >
+        </iframe>
+      </div>
+      <div id="combine-css-with-other-ggiraph-features" class="section level1">
+        <h1>Combine CSS with other ggiraph features</h1>
+        <hr />
+        <p>
+          Since <code>CSS</code> provides an infinite number of possibilities,
+          you can use it to create very original charts!
+        </p>
+        <p>Hover CSS:</p>
+        <ul>
+          <li>
+            <code>stroke: black;</code>: Sets the outline color of the hovered
+            element to black.
+          </li>
+          <li>
+            <code>stroke-width: 1px;</code>: Sets the width of the outline to 1
+            pixel.
+          </li>
+          <li>
+            <code>r: 8px;</code>: Sets the radius of circular elements (like
+            points) to 8 pixels, making them larger on hover.
+          </li>
+          <li>
+            <code>transition: all 0.3s ease;</code>: Applies a smooth transition
+            effect for all property changes, lasting 0.3 seconds.
+          </li>
+        </ul>
+        <p>Tooltip CSS:</p>
+        <ul>
+          <li>
+            <code>background-color: #2C3E50;</code>: Sets a dark blue background
+            for the tooltip.
+          </li>
+          <li>
+            <code>color: #ECF0F1;</code>: Sets the text color to a light gray.
+          </li>
+          <li>
+            <code>padding: 10px;</code>: Adds 10 pixels of space inside the
+            tooltip around its content.
+          </li>
+          <li>
+            <code>border-radius: 5px;</code>: Rounds the corners of the tooltip.
+          </li>
+          <li>
+            <code>font-family: 'Arial', sans-serif;</code>: Sets the font to
+            Arial or a sans-serif fallback.
+          </li>
+          <li>
+            <code>font-size: 14px;</code>: Sets the text size to 14 pixels.
+          </li>
+          <li>
+            <code>box-shadow: 0px 0px 10px rgba(0,0,0,0.5);</code>: Adds a
+            subtle shadow effect to the tooltip.
+          </li>
+        </ul>
+        <div class="sourceCode" id="cb6">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">x =</span> date,</span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">y =</span> value,</span>
@@ -443,103 +547,129 @@ subtle shadow effect to the tooltip.</li>
 <span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>  <span class="fu">opts_toolbar</span>(<span class="at">saveaspng =</span> <span class="cn">TRUE</span>, <span class="at">position =</span> <span class="st">&quot;topright&quot;</span>, <span class="at">pngname =</span> <span class="st">&quot;country_data_plot&quot;</span>),</span>
 <span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>  <span class="fu">opts_sizing</span>(<span class="at">rescale =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>)</span>
-<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-5.html&quot;</span>)</span></code></pre></div>
-<iframe src="HtmlWidget/geom-line-interactive-5.html" height="750" width="890" style="border:none;">
-</iframe>
-</div>
-<div id="going-further" class="section level1">
-<h1>Going further</h1>
-<hr />
-<p>You might be interested in:</p>
-<ul>
-<li>learn how <a href="413-use-javascript-in-ggiraph.html">integrate
-JavaScript in ggiraph charts</a></li>
-<li>discover all <a href="package/ggiraph.html">ggiraph
-features</a></li>
-<li>browse the <a href="interactive-charts.html">interactive chart
-section</a></li>
-</ul>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-  <div class="container">
-
-    <p class="mySeryTitle">Related chart types</p>
-    <hr>
-    <div class="row">
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="stacked-barplot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">save_html</span>(interactive_plot, <span class="st">&quot;HtmlWidget/geom-line-interactive-5.html&quot;</span>)</span></code></pre>
+        </div>
+        <iframe
+          src="HtmlWidget/geom-line-interactive-5.html"
+          height="750"
+          width="890"
+          style="border: none"
+        >
+        </iframe>
       </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="treemap.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Tree150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Treemap</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="doughnut-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Doughnut</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="pie-plot.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Pie150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Pie chart</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="dendrogram.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Dendrogram</div>
-      </div>
-      <div class="col-md-2 col-sm-4 portfolio-item">
-        <a class="portfolio-link"  href="circle-packing.html">
-          <div class="portfolio-hover">
-            <div class="portfolio-hover-content">
-              <i class="fa fa-plus fa-3x"></i>
-            </div>
-          </div>
-          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
-        </a>
-        <div class="captionPortfolio">Circular packing</div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>You might be interested in:</p>
+        <ul>
+          <li>
+            learn how
+            <a href="413-use-javascript-in-ggiraph.html"
+              >integrate JavaScript in ggiraph charts</a
+            >
+          </li>
+          <li>
+            discover all <a href="package/ggiraph.html">ggiraph features</a>
+          </li>
+          <li>
+            browse the
+            <a href="interactive-charts.html">interactive chart section</a>
+          </li>
+        </ul>
+        <!-- Close container -->
       </div>
     </div>
-
-  </div>
-</section> 
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="stacked-barplot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/GroupedRed150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Grouped and Stacked barplot</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="treemap.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Tree150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Treemap</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="doughnut-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Doughnut150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Doughnut</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="pie-plot.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Pie150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Pie chart</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="dendrogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Dendrogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Dendrogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="circle-packing.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/CircularPacking150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Circular packing</div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -621,7 +751,7 @@ section</a></li>
         <div class="row">
           <div class="col-md-4">
             <span class="copyright"
-              >Copyright &copy; the R graph gallery 2018</span
+              >Copyright &copy; the R graph gallery 2025</span
             >
           </div>
           <div class="col-md-4">
@@ -658,18 +788,18 @@ section</a></li>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

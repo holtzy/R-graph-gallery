@@ -43,18 +43,20 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Advanced Techniques with
-tmap &#8211; the R Graph Gallery</title>
+    <title>Advanced Techniques with tmap &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post explores advanced
+    <meta
+      name="description"
+      content="This post explores advanced
 techniques for creating thematic maps using the tmap package in R. It
 covers complex usages with clear code explanations and reproducible
-examples." />
+examples."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -68,10 +70,13 @@ examples." />
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post explores advanced
+    <meta
+      property="og:description"
+      content="This post explores advanced
 techniques for creating thematic maps using the tmap package in R. It
 covers complex usages with clear code explanations and reproducible
-examples." />
+examples."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/417-advanced-tmap-techniques.html"
@@ -141,14 +146,17 @@ examples." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-explores <strong>advanced techniques</strong> for creating <a
-href="https://www.r-graph-gallery.com/choropleth-map.html">thematic
-maps</a> using the <a href="package/tmap.html">tmap</a> package in R. It
-covers complex usages with clear code explanations and reproducible
-examples.<br><br>For an introduction to <a
-href="package/tmap.html">tmap</a>, check <a
-href="416-introduction-to-tmap.html">this post</a>.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post explores <strong>advanced techniques</strong> for creating
+            <a href="https://www.r-graph-gallery.com/choropleth-map.html"
+              >thematic maps</a
+            >
+            using the <a href="package/tmap.html">tmap</a> package in R. It
+            covers complex usages with clear code explanations and reproducible
+            examples.<br /><br />For an introduction to
+            <a href="package/tmap.html">tmap</a>, check
+            <a href="416-introduction-to-tmap.html">this post</a>.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -173,7 +181,6 @@ href="416-introduction-to-tmap.html">this post</a>.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -182,14 +189,19 @@ href="416-introduction-to-tmap.html">this post</a>.</p>
     </style>
 
     <div class="container">
-<div id="libraries-and-dataset" class="section level1">
-<h1>Libraries and dataset</h1>
-<hr />
-<p>We’ll use the <a href="package/tmap.html">tmap</a> package along with
-<code>sf</code> for some spatial data manipulation. We’ll continue using
-the <code>World</code> dataset, but we’ll also create some point
-data.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+      <div id="libraries-and-dataset" class="section level1">
+        <h1>Libraries and dataset</h1>
+        <hr />
+        <p>
+          We’ll use the <a href="package/tmap.html">tmap</a> package along with
+          <code>sf</code> for some spatial data manipulation. We’ll continue
+          using the <code>World</code> dataset, but we’ll also create some point
+          data.
+        </p>
+        <div class="sourceCode" id="cb1">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;World&quot;</span>)</span>
@@ -201,62 +213,108 @@ data.</p>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">lon =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">74.006</span>, <span class="sc">-</span><span class="fl">0.1276</span>, <span class="fl">139.6503</span>, <span class="fl">151.2093</span>, <span class="sc">-</span><span class="fl">43.1729</span>),</span>
 <span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fu">c</span>(<span class="fl">40.7128</span>, <span class="fl">51.5074</span>, <span class="fl">35.6762</span>, <span class="sc">-</span><span class="fl">33.8688</span>, <span class="sc">-</span><span class="fl">22.9068</span>),</span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">pop =</span> <span class="fu">round</span>(<span class="fu">runif</span>(<span class="dv">5</span>, <span class="fl">5e6</span>, <span class="fl">20e6</span>))</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>), <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span></code></pre></div>
-</div>
-<div id="faceting-with-tmap" class="section level1">
-<h1>Faceting with <a href="package/tmap.html">tmap</a></h1>
-<hr />
-<p>Faceting allows us to create small multiples based on a categorical
-variable.</p>
-<p>This creates a separate <strong>map for each continent</strong>,
-allowing easy comparison of GDP per capita across different regions.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>), <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span></code></pre>
+        </div>
+      </div>
+      <div id="faceting-with-tmap" class="section level1">
+        <h1>Faceting with <a href="package/tmap.html">tmap</a></h1>
+        <hr />
+        <p>
+          Faceting allows us to create small multiples based on a categorical
+          variable.
+        </p>
+        <p>
+          This creates a separate <strong>map for each continent</strong>,
+          allowing easy comparison of GDP per capita across different regions.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;gdp_cap_est&quot;</span>, <span class="at">style =</span> <span class="st">&quot;quantile&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">tm_facets</span>(<span class="at">by =</span> <span class="st">&quot;continent&quot;</span>) <span class="sc">+</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p><img src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="combining-different-geometries" class="section level1">
-<h1>Combining Different Geometries</h1>
-<hr />
-<p>We can combine different types of geometries in a single map.</p>
-<p>This map shows <strong>countries colored by income group</strong> and
-<strong>cities</strong> represented by bubbles sized according to
-population.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-2-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div id="combining-different-geometries" class="section level1">
+        <h1>Combining Different Geometries</h1>
+        <hr />
+        <p>We can combine different types of geometries in a single map.</p>
+        <p>
+          This map shows <strong>countries colored by income group</strong> and
+          <strong>cities</strong> represented by bubbles sized according to
+          population.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;income_grp&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;YlOrRd&quot;</span>) <span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">tm_shape</span>(cities) <span class="sc">+</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">tm_bubbles</span>(<span class="at">size =</span> <span class="st">&quot;pop&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">scale =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">tm_text</span>(<span class="st">&quot;name&quot;</span>, <span class="at">size =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.outside =</span> <span class="cn">TRUE</span>, <span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p><img src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="custom-projections" class="section level1">
-<h1>Custom Projections</h1>
-<hr />
-<p><a href="package/tmap.html">tmap</a> allows us to easily change map
-projections.</p>
-<p>The <code>projection</code> argument in <code>tm_shape()</code>
-allows us to <strong>specify any projection</strong> supported by the
-PROJ library. Let’s create a map using the <strong>Robinson</strong>
-projection:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World, <span class="at">projection =</span> <span class="st">&quot;+proj=robin&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.outside =</span> <span class="cn">TRUE</span>, <span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-3-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div id="custom-projections" class="section level1">
+        <h1>Custom Projections</h1>
+        <hr />
+        <p>
+          <a href="package/tmap.html">tmap</a> allows us to easily change map
+          projections.
+        </p>
+        <p>
+          The <code>projection</code> argument in <code>tm_shape()</code> allows
+          us to <strong>specify any projection</strong> supported by the PROJ
+          library. Let’s create a map using the
+          <strong>Robinson</strong> projection:
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World, <span class="at">projection =</span> <span class="st">&quot;+proj=robin&quot;</span>) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;pop_est&quot;</span>, <span class="at">style =</span> <span class="st">&quot;quantile&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;-viridis&quot;</span>) <span class="sc">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">legend.outside =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;World Population (Robinson Projection)&quot;</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">frame =</span> <span class="cn">FALSE</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  )</span></code></pre></div>
-<p><img src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="advanced-layout-customization" class="section level1">
-<h1>Advanced Layout Customization</h1>
-<hr />
-<p>We can extensively customize the layout of our maps.</p>
-<p>This example demonstrates how to customize the
-<strong>title</strong>, <strong>legend</strong>, and add elements like a
-<strong>compass</strong> and <strong>scale bar</strong>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  )</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-4-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div id="advanced-layout-customization" class="section level1">
+        <h1>Advanced Layout Customization</h1>
+        <hr />
+        <p>We can extensively customize the layout of our maps.</p>
+        <p>
+          This example demonstrates how to customize the <strong>title</strong>,
+          <strong>legend</strong>, and add elements like a
+          <strong>compass</strong> and <strong>scale bar</strong>.
+        </p>
+        <div class="sourceCode" id="cb5">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">tm_shape</span>(World) <span class="sc">+</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">&quot;gdp_cap_est&quot;</span>, <span class="at">palette =</span> <span class="st">&quot;RdYlBu&quot;</span>, <span class="at">style =</span> <span class="st">&quot;pretty&quot;</span>, <span class="at">title =</span> <span class="st">&quot;GDP per Capita&quot;</span>) <span class="sc">+</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Global GDP per Capita&quot;</span>,</span>
@@ -268,100 +326,131 @@ projection:</p>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="at">frame =</span> <span class="cn">FALSE</span></span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;top&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;bottom&quot;</span>))</span></code></pre></div>
-<p><img src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="going-further" class="section level1">
-<h1>Going further</h1>
-<hr />
-<p>You might be interested in</p>
-<ul>
-<li>this <a href="416-introduction-to-tmap.html">introduction to
-tmap</a></li>
-<li><a href="package/tmap.html">learning more about the tmap
-package</a></li>
-</ul>
-<!-- Close container -->
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">position =</span> <span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;bottom&quot;</span>))</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="417-advanced-tmap-usage_files/figure-html/unnamed-chunk-5-1.png"
+            width="672"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div id="going-further" class="section level1">
+        <h1>Going further</h1>
+        <hr />
+        <p>You might be interested in</p>
+        <ul>
+          <li>
+            this
+            <a href="416-introduction-to-tmap.html">introduction to tmap</a>
+          </li>
+          <li>
+            <a href="package/tmap.html">learning more about the tmap package</a>
+          </li>
+        </ul>
+        <!-- Close container -->
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Map150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="choropleth-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Choropleth150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Choropleth</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hexbin-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/MapHexbin150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Hexbin map</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="cartogram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/Cartogram150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Cartogram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="connection-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/ConnectedMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Connection</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="bubble-map.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img
+                class="img-fluid"
+                src="img/section/BubbleMap150.png"
+                alt=""
+              />
+            </a>
+            <div class="captionPortfolio">Bubble map</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Map150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="choropleth-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Choropleth</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hexbin-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Hexbin map</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="cartogram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Cartogram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="connection-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Connection</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="bubble-map.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Bubble map</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -443,7 +532,7 @@ package</a></li>
         <div class="row">
           <div class="col-md-4">
             <span class="copyright"
-              >Copyright &copy; the R graph gallery 2018</span
+              >Copyright &copy; the R graph gallery 2025</span
             >
           </div>
           <div class="col-md-4">
@@ -480,18 +569,18 @@ package</a></li>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->

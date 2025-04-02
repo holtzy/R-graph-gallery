@@ -43,17 +43,19 @@
     <!-- Google Analytics + OutboundLink + Google Adsense -->
 
     <meta charset="utf-8" />
-    <title>Character Interaction
-Analysis &#8211; the R Graph Gallery</title>
+    <title>Character Interaction Analysis &#8211; the R Graph Gallery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="This post describes how to build
+    <meta
+      name="description"
+      content="This post describes how to build
 an advanced faceted chord diagram using the circlize package, with each
-plot showing connections between factors." />
+plot showing connections between factors."
+    />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -62,15 +64,21 @@ plot showing connections between factors." />
     <link rel="icon" href="img/logo/R_single_small.png" />
 
     <!-- Control appearance when shared by social media -->
-    <meta property="og:title" content="Character Interaction
-Analysis" />
+    <meta
+      property="og:title"
+      content="Character Interaction
+Analysis"
+    />
     <meta
       property="og:image"
       content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
-    <meta property="og:description" content="This post describes how to
+    <meta
+      property="og:description"
+      content="This post describes how to
 build an advanced faceted chord diagram using the circlize package, with
-each plot showing connections between factors." />
+each plot showing connections between factors."
+    />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/character-interaction-analysis.html"
@@ -140,11 +148,12 @@ each plot showing connections between factors." />
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">This post
-describes how to build an advanced faceted <a
-href="chord-diagram.html">chord diagram</a> using the <a
-href="package/circlize.html">circlize</a> package, with each plot
-showing connections between factors.</p>
+          <p style="max-width: 600px; margin-top: 40px">
+            This post describes how to build an advanced faceted
+            <a href="chord-diagram.html">chord diagram</a> using the
+            <a href="package/circlize.html">circlize</a> package, with each plot
+            showing connections between factors.
+          </p>
         </center>
         <div style="text-align: center">
           <a
@@ -169,7 +178,6 @@ showing connections between factors.</p>
       });
     </script>
 
-    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -178,29 +186,45 @@ showing connections between factors.</p>
     </style>
 
     <div class="container" style="padding-top: 50px">
-<p>The <a href="package/circlize.html">circlize</a> package allows to
-create chord diagrams with R. It accepts two types of input formats:
-either a matrix showing the strength of connections between pairs of
-nodes, or a data frame listing the relationships.</p>
-<p>The <code>chordDiagram()</code> function from circlize creates the
-visualization with entities arranged in a circle, connected by ribbons
-whose width represents the strength of their relationship. The function
-offers extensive customization options for colors, transparency, and
-other visual properties. Find a full documentation <a
-href="https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html">here</a>.</p>
-<p><u>Note</u>: The <a href="package/circlize.html">circlize</a> package
-is a project by <a href="https://github.com/jokergoo">Zuguang Gu</a>.
-Here, we will use a matrix where each cell represents how many times one
-character mentions another character in The Office. This example comes
-from <a
-href="https://github.com/bydata/30DayChartChallenge/blob/main/2023/17/17-network-the-office-mentions.R">Ansgar
-Wolsing</a>.</p>
-<div id="data-preparation" class="section level1">
-<h1>Data Preparation:</h1>
-<div id="processing-character-mentions-from-the-office"
-class="section level2">
-<h2>Processing Character Mentions from The Office</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load required packages</span></span>
+      <p>
+        The <a href="package/circlize.html">circlize</a> package allows to
+        create chord diagrams with R. It accepts two types of input formats:
+        either a matrix showing the strength of connections between pairs of
+        nodes, or a data frame listing the relationships.
+      </p>
+      <p>
+        The <code>chordDiagram()</code> function from circlize creates the
+        visualization with entities arranged in a circle, connected by ribbons
+        whose width represents the strength of their relationship. The function
+        offers extensive customization options for colors, transparency, and
+        other visual properties. Find a full documentation
+        <a
+          href="https://jokergoo.github.io/circlize_book/book/the-chorddiagram-function.html"
+          >here</a
+        >.
+      </p>
+      <p>
+        <u>Note</u>: The <a href="package/circlize.html">circlize</a> package is
+        a project by <a href="https://github.com/jokergoo">Zuguang Gu</a>. Here,
+        we will use a matrix where each cell represents how many times one
+        character mentions another character in The Office. This example comes
+        from
+        <a
+          href="https://github.com/bydata/30DayChartChallenge/blob/main/2023/17/17-network-the-office-mentions.R"
+          >Ansgar Wolsing</a
+        >.
+      </p>
+      <div id="data-preparation" class="section level1">
+        <h1>Data Preparation:</h1>
+        <div
+          id="processing-character-mentions-from-the-office"
+          class="section level2"
+        >
+          <h2>Processing Character Mentions from The Office</h2>
+          <div class="sourceCode" id="cb1">
+            <pre
+              class="sourceCode r"
+            ><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load required packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(tidyverse)      <span class="co"># Data manipulation and visualization</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(ggtext)         <span class="co"># Text formatting in ggplot2</span></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidytext)       <span class="co"># Text mining tools</span></span>
@@ -253,18 +277,25 @@ class="section level2">
 <span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
 <span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  <span class="co"># Ensure all character combinations exist (including zeros)</span></span>
 <span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>  <span class="fu">complete</span>(character, character_mentioned, <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">total_mentions =</span> <span class="dv">0</span>, <span class="at">mentions_lines =</span> <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>  <span class="fu">arrange</span>(character, character_mentioned)</span></code></pre></div>
-</div>
-</div>
-<div id="creating-the-basic-chord-diagram" class="section level1">
-<h1>Creating the Basic Chord Diagram</h1>
-<p>This code creates our first chord diagram showing character
-interactions in The Office. We first convert our aggregated data into a
-matrix format required by the <code>chordDiagram()</code> function, then
-set up a custom color palette. The diagram is rendered using
-<code>ragg</code> for high-quality output, with carefully chosen visual
-parameters like transparency and border width to ensure readability.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create a square matrix from mentions data, with character names as row and column names</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>  <span class="fu">arrange</span>(character, character_mentioned)</span></code></pre>
+          </div>
+        </div>
+      </div>
+      <div id="creating-the-basic-chord-diagram" class="section level1">
+        <h1>Creating the Basic Chord Diagram</h1>
+        <p>
+          This code creates our first chord diagram showing character
+          interactions in The Office. We first convert our aggregated data into
+          a matrix format required by the <code>chordDiagram()</code> function,
+          then set up a custom color palette. The diagram is rendered using
+          <code>ragg</code> for high-quality output, with carefully chosen
+          visual parameters like transparency and border width to ensure
+          readability.
+        </p>
+        <div class="sourceCode" id="cb2">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create a square matrix from mentions data, with character names as row and column names</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(theoffice_mentions_agg<span class="sc">$</span>total_mentions, <span class="at">ncol =</span> <span class="fu">length</span>(top_character_names))</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">rownames</span>(mat) <span class="ot">&lt;-</span> top_character_names</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">colnames</span>(mat) <span class="ot">&lt;-</span> top_character_names</span>
@@ -298,19 +329,33 @@ parameters like transparency and border width to ensure readability.</p>
 <span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dev.off</span>())</span>
 <span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
 <span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co"># Display the saved plot in R Markdown</span></span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions.png?raw=true&quot;</span>)</span></code></pre></div>
-<p><img src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions.png?raw=true" width="100%" style="display: block; margin: auto;" /></p>
-</div>
-<div id="creating-individual-character-focused-diagrams"
-class="section level1">
-<h1>Creating Individual Character-Focused Diagrams</h1>
-<p>Here we create a custom function to generate individual chord
-diagrams, each highlighting a specific character’s interactions. The
-function applies unique coloring to emphasize the focal character while
-de-emphasizing others. We then use this function in a loop to create a
-3x3 facet of diagrams, one for each of the top 9 characters, offering a
-detailed view of each character’s mention patterns.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Define function to create individual chord diagrams for each character</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions.png?raw=true&quot;</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions.png?raw=true"
+            width="100%"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div
+        id="creating-individual-character-focused-diagrams"
+        class="section level1"
+      >
+        <h1>Creating Individual Character-Focused Diagrams</h1>
+        <p>
+          Here we create a custom function to generate individual chord
+          diagrams, each highlighting a specific character’s interactions. The
+          function applies unique coloring to emphasize the focal character
+          while de-emphasizing others. We then use this function in a loop to
+          create a 3x3 facet of diagrams, one for each of the top 9 characters,
+          offering a detailed view of each character’s mention patterns.
+        </p>
+        <div class="sourceCode" id="cb3">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Define function to create individual chord diagrams for each character</span></span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>plot_chordDiagram <span class="ot">&lt;-</span> <span class="cf">function</span>(name, rank, <span class="at">color =</span> <span class="cn">NULL</span>) {</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="co"># Set up colors for current character&#39;s diagram</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  row_colors <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;#EEEEEE33&quot;</span>, <span class="dv">10</span>)     <span class="co"># Default transparent gray for all rows</span></span>
@@ -358,20 +403,37 @@ detailed view of each character’s mention patterns.</p>
 <span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dev.off</span>())</span>
 <span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a></span>
 <span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a><span class="co"># Display the saved plot in R Markdown</span></span>
-<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions-facets.png?raw=true&quot;</span>)</span></code></pre></div>
-<p><img src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions-facets.png?raw=true" width="100%" style="display: block; margin: auto;" /></p>
-</div>
-<div id="adding-title-and-annotations-to-the-final-visualization"
-class="section level1">
-<h1>Adding Title and Annotations to the Final Visualization</h1>
-<p>This final code block uses the <a
-href="https://cran.r-project.org/web/packages/magick/vignettes/intro.html">magick</a>
-package to add professional finishing touches to our visualization. We
-extend the canvas to accommodate text elements, then add a main title,
-an explanatory subtitle, and source information. The annotations are
-carefully positioned and styled using appropriate fonts and sizes to
-create a polished graphic.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load magick package for image manipulation</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions-facets.png?raw=true&quot;</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-the-office-mentions-facets.png?raw=true"
+            width="100%"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+      <div
+        id="adding-title-and-annotations-to-the-final-visualization"
+        class="section level1"
+      >
+        <h1>Adding Title and Annotations to the Final Visualization</h1>
+        <p>
+          This final code block uses the
+          <a
+            href="https://cran.r-project.org/web/packages/magick/vignettes/intro.html"
+            >magick</a
+          >
+          package to add professional finishing touches to our visualization. We
+          extend the canvas to accommodate text elements, then add a main title,
+          an explanatory subtitle, and source information. The annotations are
+          carefully positioned and styled using appropriate fonts and sizes to
+          create a polished graphic.
+        </p>
+        <div class="sourceCode" id="cb4">
+          <pre
+            class="sourceCode r"
+          ><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load magick package for image manipulation</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(magick)</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Read the generated chart</span></span>
@@ -407,77 +469,88 @@ create a polished graphic.</p>
 <span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>  <span class="fu">image_write</span>(<span class="fu">here</span>(base_path, <span class="st">&quot;17-network-who-speaks-office.png&quot;</span>))</span>
 <span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a></span>
 <span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co"># Display the final image in R Markdown</span></span>
-<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-who-speaks-office.png?raw=true&quot;</span>)</span></code></pre></div>
-<p><img src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-who-speaks-office.png?raw=true" width="100%" style="display: block; margin: auto;" /></p>
-</div>
-</div>
-<!-- ============================ RELATED SECTION ============================ -->
-<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
-
-<div class="container">
-
-  <p class="mySeryTitle">Related chart types</p>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="chord-diagram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-who-speaks-office.png?raw=true&quot;</span>)</span></code></pre>
+        </div>
+        <p>
+          <img
+            src="https://github.com/holtzy/R-graph-gallery/blob/master/character-interaction-analysis/17-network-who-speaks-office.png?raw=true"
+            width="100%"
+            style="display: block; margin: auto"
+          />
+        </p>
+      </div>
+    </div>
+    <!-- ============================ RELATED SECTION ============================ -->
+    <section
+      class="bg-light"
+      id="portfolio_landing"
+      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
+    >
+      <div class="container">
+        <p class="mySeryTitle">Related chart types</p>
+        <hr />
+        <div class="row">
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="chord-diagram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Chord150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Chord diagram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="network.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Network150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Network</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="sankey-diagram.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Sankey150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Sankey</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a
+              class="portfolio-link"
+              href="https://www.data-to-viz.com/graph/arc.html"
+            >
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Arc150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Arc diagram</div>
+          </div>
+          <div class="col-md-2 col-sm-4 portfolio-item">
+            <a class="portfolio-link" href="hierarchical-edge-bundling.html">
+              <div class="portfolio-hover">
+                <div class="portfolio-hover-content">
+                  <i class="fa fa-plus fa-3x"></i>
+                </div>
+              </div>
+              <img class="img-fluid" src="img/section/Bundle150.png" alt="" />
+            </a>
+            <div class="captionPortfolio">Edge bundling</div>
           </div>
         </div>
-        <img class="img-fluid" src="img/section/Chord150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Chord diagram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="network.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Network150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Network</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="sankey-diagram.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Sankey150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Sankey</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="https://www.data-to-viz.com/graph/arc.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Arc150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Arc diagram</div>
-    </div>
-    <div class="col-md-2 col-sm-4 portfolio-item">
-      <a class="portfolio-link"  href="hierarchical-edge-bundling.html">
-        <div class="portfolio-hover">
-          <div class="portfolio-hover-content">
-            <i class="fa fa-plus fa-3x"></i>
-          </div>
-        </div>
-        <img class="img-fluid" src="img/section/Bundle150.png" alt="">
-      </a>
-      <div class="captionPortfolio">Edge bundling</div>
-    </div>
-  </div>
-
-</div>
-</section> 
+      </div>
+    </section>
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -559,7 +632,7 @@ create a polished graphic.</p>
         <div class="row">
           <div class="col-md-4">
             <span class="copyright"
-              >Copyright &copy; the R graph gallery 2018</span
+              >Copyright &copy; the R graph gallery 2025</span
             >
           </div>
           <div class="col-md-4">
@@ -596,18 +669,18 @@ create a polished graphic.</p>
     </footer>
 
     <script>
-
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+        $("tr.header")
+          .parent("thead")
+          .parent("table")
+          .addClass("table table-condensed");
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
+    </script>
 
-          </script>
-
-    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
