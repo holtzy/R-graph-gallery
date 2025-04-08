@@ -145,7 +145,7 @@ ggplot(data, aes(x="", y=value, fill=group)) +
 
 <div class = "col-md-6  col-sm-12 align-self-center">
 
-The tricky part is to compute the y position of labels using this weird `coord_polar` transformation.
+Since ggplot2 v2.2.0, the position of labels can easily be set with `position_stack()`.
 
 
 </div>
@@ -156,7 +156,6 @@ The tricky part is to compute the y position of labels using this weird `coord_p
 ```{r thecode3, echo=FALSE, out.width = "100%", fig.height=7}
 # Load ggplot2
 library(ggplot2)
-library(dplyr)
 
 # Create Data
 data <- data.frame(
@@ -164,20 +163,14 @@ data <- data.frame(
   value=c(13,7,9,21,2)
 )
 
-# Compute the position of labels
-data <- data %>% 
-  arrange(desc(group)) %>%
-  mutate(prop = value / sum(data$value) *100) %>%
-  mutate(ypos = cumsum(prop)- 0.5*prop )
-
 # Basic piechart
-ggplot(data, aes(x="", y=prop, fill=group)) +
+ggplot(data, aes(x="", y=value, fill=group)) +
   geom_bar(stat="identity", width=1, color="white") +
   coord_polar("y", start=0) +
-  theme_void() + 
-  theme(legend.position="none") +
   
-  geom_text(aes(y = ypos, label = group), color = "white", size=6) +
+  theme_void() + # remove background, grid, numeric labels
+
+  geom_text(aes(label = group), position = position_stack(vjust = 0.5)) +
   scale_fill_brewer(palette="Set1")
   
 ```
