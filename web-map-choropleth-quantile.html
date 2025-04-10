@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Choropleth map with
+quantiles. &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This guide shows how to create a
+choropleth map in R, using quantiles to define the color scale." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Choropleth map with
+quantiles." />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This guide shows how to
+create a choropleth map in R, using quantiles to define the color
+scale." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-map-choropleth-quantile.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Choropleth map with quantiles.</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This guide shows
+how to create a <a
+href="https://www.r-graph-gallery.com/choropleth-map.html">choropleth
+map</a> in R, using quantiles to define the color scale. It also
+provides code to build a highly customized legend that represents this
+color scale.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="choropleth.html"
+            >Choropleth section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/choropleth-map.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="two-types-of-color-scale" class="section level1">
+<h1>0. Two types of color scale</h1>
+<hr />
+<p>There are two main ways of creating univariate choropleth colour
+gradients: classes of <strong>equal size</strong> or classes with the
+<strong>same number of entities</strong> (equal quantiles). In both
+cases, it may be worth modifying the legend so that this choice is
+clearly represented on the map.</p>
+<p>The case of equal classes has already been covered in <a
+href="https://r-graph-gallery.com/web-choropleth-barchart-map.html">this
+tutorial</a> by Vinicius Oike Reginatto, who shows how to use a
+histogram to represent the number of entities per class.</p>
+<p>Here we will see how to create <strong>a specific legend for maps
+with the same number of entities per class</strong>. We are going to do
+this in three stages: create the map, create the legend and then
+assemble the two.</p>
+<p>This tutorial has been written by <a
+href="https://www.linkedin.com/in/benjamin-nowak-561296352/">Benjamin
+Nowak</a>. Thanks to him for sharing his work! 🙏</p>
+<p>This is what we’re going to build:</p>
+<div style="text-align: center;">
+<p><img src="img/graph/web-map-choropleth-quantile.png" alt="Choropleth map with R" style="width: 100%; max-width: 500px; height: auto;"></p>
+</div>
+</div>
+<div id="load-data" class="section level1">
+<h1>1. Load data</h1>
+<hr />
+<p>First, we will load the packages required for this tutorial:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(patchwork)   <span class="co"># To assemble plots</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(scico)       <span class="co"># For color gradients</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(sf)          <span class="co"># To handle vector map objects</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)   <span class="co"># For everything else ;)</span></span></code></pre></div>
+<p>We may then load the data as shown below:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>map<span class="ot">&lt;-</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/TidyTuesday/raw/refs/heads/main/map/price_map_france.gpkg&#39;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># This map is only for department borders</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>fr<span class="ot">&lt;-</span>sf<span class="sc">::</span><span class="fu">read_sf</span>(<span class="st">&#39;https://github.com/BjnNowak/lego_map/raw/main/data/france_sport.gpkg&#39;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Take a look at first lines</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">head</span>(map)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["name"],"name":[2],"type":["chr"],"align":["left"]},{"label":["price_ha"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["geom"],"name":[4],"type":["s_MULTIP"],"align":["right"]}],"data":[{"1":"ra1","2":"Bresse","3":"3020","4":"<s_MULTIP>"},{"1":"ra10","2":"Montagne et Combraille bourbonnaise","3":"3440","4":"<s_MULTIP>"},{"1":"ra100","2":"Entre Madrie et Lyons","3":"10800","4":"<s_MULTIP>"},{"1":"ra101","2":"Plateau d'Evreux Saint-André","3":"7970","4":"<s_MULTIP>"},{"1":"ra102","2":"Vexin normand, Vexin bossu","3":"8240","4":"<s_MULTIP>"},{"1":"ra103","2":"Beauce","3":"9770","4":"<s_MULTIP>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>The main map gives the price of farming land (in euros per ha) for
+each agricultural region. Borders of the region came from a file created
+by <a href="https://github.com/PierreNansot/pra-shapefiles">Pierre
+Nansot</a>. I have then extracted the price of farming land from this
+website, <a
+href="https://www.le-prix-des-terres.fr/">le-prix-des-terres.fr</a>.</p>
+</div>
+<div id="make-map" class="section level1">
+<h1>2. Make map</h1>
+<hr />
+<p>Before making the map, we will extract the percentiles, and then
+create a specific class for each percentile:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Extract percentiles</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>bks<span class="ot">&lt;-</span><span class="fu">quantile</span>(map<span class="sc">$</span>price_ha,<span class="at">na.rm=</span><span class="cn">TRUE</span>,<span class="at">probs=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="fl">0.1</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Add classes based on price of land for each region </span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>map_cl<span class="ot">&lt;-</span>map<span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cl=</span><span class="fu">case_when</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">2</span>]<span class="sc">~</span><span class="st">&quot;A&quot;</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">3</span>]<span class="sc">~</span><span class="st">&quot;B&quot;</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">4</span>]<span class="sc">~</span><span class="st">&quot;C&quot;</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">5</span>]<span class="sc">~</span><span class="st">&quot;D&quot;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">6</span>]<span class="sc">~</span><span class="st">&quot;E&quot;</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">7</span>]<span class="sc">~</span><span class="st">&quot;F&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">8</span>]<span class="sc">~</span><span class="st">&quot;G&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">9</span>]<span class="sc">~</span><span class="st">&quot;H&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    price_ha<span class="sc">&lt;</span>bks[<span class="dv">10</span>]<span class="sc">~</span><span class="st">&quot;I&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    price_ha<span class="sc">&lt;=</span>bks[<span class="dv">11</span>]<span class="sc">~</span><span class="st">&quot;J&quot;</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="cn">TRUE</span><span class="sc">~</span><span class="cn">NA</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  ))</span></code></pre></div>
+<p>We may then create the color palette, using the <a
+href="https://github.com/thomasp85/scico">{scico}</a> package from Fabio
+Crameri and Thomas Lin Pedersen.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create color palette</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>pl<span class="ot">&lt;-</span><span class="fu">rev</span>(<span class="fu">scico</span>(<span class="dv">10</span>, <span class="at">palette =</span> <span class="st">&#39;bam&#39;</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Set color for each class</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>pal<span class="ot">&lt;-</span><span class="fu">c</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="st">&quot;A&quot;</span><span class="ot">=</span>pl[<span class="dv">1</span>],</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="st">&quot;B&quot;</span><span class="ot">=</span>pl[<span class="dv">2</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="st">&quot;C&quot;</span><span class="ot">=</span>pl[<span class="dv">3</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="st">&quot;D&quot;</span><span class="ot">=</span>pl[<span class="dv">4</span>],</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="st">&quot;E&quot;</span><span class="ot">=</span>pl[<span class="dv">5</span>],</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="st">&quot;F&quot;</span><span class="ot">=</span>pl[<span class="dv">6</span>],</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="st">&quot;G&quot;</span><span class="ot">=</span>pl[<span class="dv">7</span>],</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="st">&quot;H&quot;</span><span class="ot">=</span>pl[<span class="dv">8</span>],</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="st">&quot;I&quot;</span><span class="ot">=</span>pl[<span class="dv">9</span>],</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="st">&quot;J&quot;</span><span class="ot">=</span>pl[<span class="dv">10</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co"># Color for na values</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>na_col<span class="ot">&lt;-</span><span class="st">&#39;grey50&#39;</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co"># Color for department borders </span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>col_border<span class="ot">&lt;-</span><span class="st">&#39;#437C90&#39;</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co"># Create custom theme</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>custom_theme<span class="ot">&lt;-</span><span class="fu">theme_void</span>()<span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">&quot;#202020&quot;</span>,<span class="at">color=</span><span class="cn">NA</span>))</span></code></pre></div>
+<p>We are now ready to make the map:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Make map</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>mp<span class="ot">&lt;-</span><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    map_cl,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">fill=</span>cl,<span class="at">color=</span>cl,<span class="at">geometry=</span>geom),</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    fr,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">geometry=</span>geom),</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="at">fill=</span><span class="cn">NA</span>,<span class="at">color=</span>col_border,<span class="at">linewidth=</span><span class="fl">0.15</span>,<span class="at">alpha=</span><span class="dv">1</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>pal,<span class="at">na.value=</span>na_col)<span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>pal,<span class="at">na.value=</span>na_col)<span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="st">&#39;none&#39;</span>,<span class="at">color=</span><span class="st">&quot;none&quot;</span>)<span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  custom_theme</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>mp</span></code></pre></div>
+<p><img src="web-map-choropleth-quantile_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+</div>
+<div id="make-legend" class="section level1">
+<h1>3. Make legend</h1>
+<hr />
+<p>To make the legend, we will create a tibble with the min and max
+coordinates of each quantile of our variable of interest. We may then
+use <em>geom_rect()</em> to plot these quantiles in a <em>ggplot()</em>
+object.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Set min value at 0 for color palette</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>bks[<span class="dv">1</span>]<span class="ot">=</span><span class="dv">0</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>tib<span class="ot">&lt;-</span><span class="fu">tibble</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">end=</span>bks</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    <span class="at">start=</span><span class="fu">lag</span>(bks, <span class="dv">1</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">cl=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&#39;F&#39;</span>,<span class="st">&#39;G&#39;</span>,<span class="st">&#39;H&#39;</span>,<span class="st">&#39;I&#39;</span>,<span class="st">&#39;J&#39;</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="co"># Remove first row</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">11</span>)</span></code></pre></div>
+<p>We are now ready to plot the color gradient. In addition of the
+quantiles, we will also plot the points to show the distribution of the
+region, using <em>geom_jitter()</em> to add some noise on the
+y-axis.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>lg<span class="ot">&lt;-</span><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="co"># Add color gradient</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="do">####################</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">geom_rect</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">data=</span>tib,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">xmin=</span>start,<span class="at">xmax=</span>end,<span class="at">ymin=</span><span class="dv">0</span>,<span class="at">ymax=</span><span class="dv">1</span>,<span class="at">fill=</span>cl)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="co"># Add labels</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">data=</span>tib<span class="sc">%&gt;%</span><span class="fu">slice</span>(<span class="fu">c</span>(<span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>,<span class="dv">2</span>))),</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>start,<span class="at">y=</span><span class="fl">1.1</span>,<span class="at">label=</span>start),</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">angle=</span><span class="dv">45</span>,<span class="at">hjust=</span><span class="dv">0</span>,<span class="at">vjust=</span><span class="dv">0</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    <span class="at">color=</span><span class="st">&quot;white&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="co"># Add points to show distribution</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="do">#################################</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="co"># Create one box behind points</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>    <span class="at">geom=</span><span class="st">&quot;rect&quot;</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    <span class="at">xmin=</span><span class="dv">0</span>,<span class="at">xmax=</span><span class="fu">max</span>(bks),<span class="at">ymin=</span><span class="sc">-</span><span class="fl">1.25</span>,<span class="at">ymax=</span><span class="sc">-</span><span class="fl">0.25</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">fill=</span><span class="cn">NA</span>,<span class="at">color=</span><span class="st">&quot;dimgrey&quot;</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">data=</span>map_cl<span class="sc">%&gt;%</span><span class="fu">st_drop_geometry</span>(),</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>    <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>price_ha,<span class="at">y=</span><span class="sc">-</span><span class="fl">0.75</span>,<span class="at">fill=</span>cl,<span class="at">color=</span>cl),</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    <span class="at">pch=</span><span class="dv">21</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="co"># Control jitter amplitude</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">width=</span><span class="dv">0</span>,<span class="at">height=</span><span class="fl">0.5</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>,<span class="fl">1.5</span>))<span class="sc">+</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values=</span>pal,<span class="at">na.value=</span>na_col)<span class="sc">+</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span>pal,<span class="at">na.value=</span>na_col)<span class="sc">+</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill=</span><span class="st">&#39;none&#39;</span>,<span class="at">color=</span><span class="st">&#39;none&#39;</span>)<span class="sc">+</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>  custom_theme</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>lg</span></code></pre></div>
+<p><img src="web-map-choropleth-quantile_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+</div>
+<div id="assemble-plots" class="section level1">
+<h1>4. Assemble plots</h1>
+<hr />
+<p>We may then use patchwork to assemble both plots</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Define layout</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>layout <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">area</span>(<span class="at">t =</span> <span class="dv">0</span>, <span class="at">l =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">10</span>, <span class="at">r =</span> <span class="dv">10</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="fu">area</span>(<span class="at">t =</span> <span class="dv">11</span>, <span class="at">l =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">13</span>, <span class="at">r =</span> <span class="dv">10</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>mp <span class="sc">+</span> lg <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">design =</span> layout)<span class="sc">+</span> </span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&#39;The price of land&#39;</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&#39;The map below show the price of agricultural land, in euros per hectare.&#39;</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  )<span class="sc">&amp;</span> </span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">&quot;#202020&quot;</span>,<span class="at">color=</span><span class="cn">NA</span>),</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="st">&#39;mono&#39;</span>,<span class="at">hjust=</span><span class="fl">0.5</span>,<span class="at">color=</span><span class="st">&quot;white&quot;</span>),</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>,<span class="at">face=</span><span class="st">&#39;bold&#39;</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img src="web-map-choropleth-quantile_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
+</div>
+<div id="source" class="section level1">
+<h1>Source</h1>
+<hr />
+<p><strong>Data</strong> <a
+href="https://www.le-prix-des-terres.fr/">le-prix-des-terres.fr</a>
+<!-- Close container --></p>
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Map150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="choropleth-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Choropleth150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Choropleth</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="hexbin-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/MapHexbin150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Hexbin map</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="cartogram.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Cartogram150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Cartogram</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="connection-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/ConnectedMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Connection</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item">
+      <a class="portfolio-link"  href="bubble-map.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/BubbleMap150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Bubble map</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2025</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
