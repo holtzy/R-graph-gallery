@@ -50,10 +50,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta
-      name="description"
-      content="How to build a pie chart with ggplot2 to visualize the proportion of a set of groups. Several examples with reproducible code provided."
-    />
+    <meta name="description" content="How to build a pie chart with
+ggplot2 to visualize the proportion of a set of groups. Several examples
+with reproducible code provided." />
     <meta
       name="keywords"
       content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
@@ -63,11 +62,13 @@
 
     <!-- Control appearance when shared by social media -->
     <meta property="og:title" content="ggplot2 Piechart" />
-    <meta property="og:image" content="img/overview_RGG.png" />
     <meta
-      property="og:description"
-      content="How to build a pie chart with ggplot2 to visualize the proportion of a set of groups. Several examples with reproducible code provided."
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
     />
+    <meta property="og:description" content="How to build a pie chart
+with ggplot2 to visualize the proportion of a set of groups. Several
+examples with reproducible code provided." />
     <meta
       property="og:url"
       content="https://www.r-graph-gallery.com/piechart-ggplot2.html"
@@ -108,13 +109,6 @@
       });
     </script>
 
-    <div id="modal_subscribe_insertion"></div>
-    <script>
-      $(function () {
-        $("#modal_subscribe_insertion").load("html_chunk/subscribe_modal.html");
-      });
-    </script>
-
     <!-- Header = Title in big + social media Icon + quick description -->
     <header class="masthead" style="padding-bottom: 30px">
       <div class="textlanding">
@@ -144,11 +138,10 @@
           </li>
         </ul>
         <center>
-          <p style="max-width: 600px; margin-top: 40px">
-            A <a href="pie-plot.html">pie chart</a> is a circle divided into
-            sectors that each represent a proportion of the whole. This page
-            explains how to build one with the <code>ggplot2</code> package.
-          </p>
+          <p style="max-width: 600px; margin-top: 40px">A <a
+href="pie-plot.html">pie chart</a> is a circle divided into sectors that
+each represent a proportion of the whole. This page explains how to
+build one with the <code>ggplot2</code> package.</p>
         </center>
         <div style="text-align: center">
           <a
@@ -173,6 +166,7 @@
       });
     </script>
 
+    
     <!-- STYLE for chart pages but not the rest of tthe website -->
     <style>
       img {
@@ -181,239 +175,184 @@
     </style>
 
     <div class="container" style="padding-top: 100px">
-      <h1 id="most-basic-pie-chart">Most basic pie chart</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            <code>ggplot2</code> does not offer any specific geom to build
-            piecharts. The trick is the following:
-          </p>
-          <ul>
-            <li>
-              input data frame has 2 columns: the group names (<code
-                >group</code
-              >
-              here) and its value (<code>value</code> here)
-            </li>
-            <li>
-              build a stacked barchart with one bar only using the
-              <code>geom_bar()</code> function.
-            </li>
-            <li>Make it circular with <code>coord_polar()</code></li>
-          </ul>
-          <p>
-            The result is far from optimal yet, keep reading for improvements.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="piechart-ggplot2_files/figure-html/thecode-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb1">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Load ggplot2</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Create Data</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co"># Basic piechart</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>)</a></code></pre>
-      </div>
-      <h1 id="improve-appearance">Improve appearance</h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>Previous version looks pretty bad. We need to:</p>
-          <ul>
-            <li>remove useless numeric labels</li>
-            <li>remove grid and grey background</li>
-          </ul>
-          <p>It’s better now, just need to add labels directly on chart.</p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="piechart-ggplot2_files/figure-html/thecode2-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb2">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Load ggplot2</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Create Data</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># Basic piechart</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>value, <span class="dt">fill=</span>group)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="st">  </span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="st">  </span><span class="kw">theme_void</span>() <span class="co"># remove background, grid, numeric labels</span></a></code></pre>
-      </div>
-      <h1 id="adding-labels-with-geom_text">
-        Adding labels with <code>geom_text()</code>
-      </h1>
-      <hr />
-      <div class="row">
-        <div class="col-md-6 col-sm-12 align-self-center">
-          <p>
-            The tricky part is to compute the y position of labels using this
-            weird <code>coord_polar</code> transformation.
-          </p>
-        </div>
-        <div class="col-md-6 col-sm-12">
-          <p>
-            <img
-              src="piechart-ggplot2_files/figure-html/thecode3-1.png"
-              width="100%"
-            />
-          </p>
-        </div>
-      </div>
-      <div class="sourceCode" id="cb3">
-        <pre
-          class="sourceCode r"
-        ><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Load ggplot2</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># Create Data</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">  <span class="dt">group=</span>LETTERS[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>],</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">  <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">)</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co"># Compute the position of labels</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12">data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(group)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">prop =</span> value <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(data<span class="op">$</span>value) <span class="op">*</span><span class="dv">100</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ypos =</span> <span class="kw">cumsum</span>(prop)<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span>prop )</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co"># Basic piechart</span></a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x=</span><span class="st">&quot;&quot;</span>, <span class="dt">y=</span>prop, <span class="dt">fill=</span>group)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="dt">width=</span><span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="st">  </span><span class="kw">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">start=</span><span class="dv">0</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="st">  </span><span class="kw">theme_void</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-22" data-line-number="22"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;none&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-23" data-line-number="23"><span class="st">  </span></a>
-<a class="sourceLine" id="cb3-24" data-line-number="24"><span class="st">  </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ypos, <span class="dt">label =</span> group), <span class="dt">color =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">size=</span><span class="dv">6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-25" data-line-number="25"><span class="st">  </span><span class="kw">scale_fill_brewer</span>(<span class="dt">palette=</span><span class="st">&quot;Set1&quot;</span>)</a></code></pre>
-      </div>
-      <!-- Close container -->
-    </div>
-    <!-- ============================ RELATED SECTION ============================ -->
-    <section
-      class="bg-light"
-      id="portfolio_landing"
-      style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px"
-    >
-      <div class="container">
-        <p class="mySeryTitle">Related chart types</p>
-        <hr />
-        <div class="row">
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="stacked-barplot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/GroupedRed150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Grouped and Stacked barplot</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="treemap.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Tree150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Treemap</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="doughnut-plot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Doughnut150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Doughnut</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="pie-plot.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img class="img-fluid" src="img/section/Pie150.png" alt="" />
-            </a>
-            <div class="captionPortfolio">Pie chart</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="dendrogram.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/Dendrogram150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Dendrogram</div>
-          </div>
-          <div class="col-md-2 col-sm-4 portfolio-item">
-            <a class="portfolio-link" href="circle-packing.html">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content">
-                  <i class="fa fa-plus fa-3x"></i>
-                </div>
-              </div>
-              <img
-                class="img-fluid"
-                src="img/section/CircularPacking150.png"
-                alt=""
-              />
-            </a>
-            <div class="captionPortfolio">Circular packing</div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div id="most-basic-pie-chart" class="section level1">
+<h1>Most basic pie chart</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p><code>ggplot2</code> does not offer any specific geom to build
+piecharts. The trick is the following:</p>
+<ul>
+<li>input data frame has 2 columns: the group names (<code>group</code>
+here) and its value (<code>value</code> here)</li>
+<li>build a stacked barchart with one bar only using the
+<code>geom_bar()</code> function.</li>
+<li>Make it circular with <code>coord_polar()</code></li>
+</ul>
+<p>The result is far from optimal yet, keep reading for
+improvements.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="piechart-ggplot2_files/figure-html/thecode-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load ggplot2</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Create Data</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">group=</span>LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># Basic piechart</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span><span class="st">&quot;&quot;</span>, <span class="at">y=</span>value, <span class="at">fill=</span>group)) <span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">width=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="at">start=</span><span class="dv">0</span>)</span></code></pre></div>
+</div>
+<div id="improve-appearance" class="section level1">
+<h1>Improve appearance</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Previous version looks pretty bad. We need to:</p>
+<ul>
+<li>remove useless numeric labels</li>
+<li>remove grid and grey background</li>
+</ul>
+<p>It’s better now, just need to add labels directly on chart.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="piechart-ggplot2_files/figure-html/thecode2-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Load ggplot2</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Create Data</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">group=</span>LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Basic piechart</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span><span class="st">&quot;&quot;</span>, <span class="at">y=</span>value, <span class="at">fill=</span>group)) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">width=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="at">start=</span><span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="co"># remove background, grid, numeric labels</span></span></code></pre></div>
+</div>
+<div id="adding-labels-with-geom_text" class="section level1">
+<h1>Adding labels with <code>geom_text()</code></h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Since ggplot2 v2.2.0, the position of labels can easily be set with
+<code>position_stack()</code>.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="piechart-ggplot2_files/figure-html/thecode3-1.png" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Load ggplot2</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Create Data</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">group=</span>LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">value=</span><span class="fu">c</span>(<span class="dv">13</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">21</span>,<span class="dv">2</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Basic piechart</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span><span class="st">&quot;&quot;</span>, <span class="at">y=</span>value, <span class="at">fill=</span>group)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">width=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">&quot;y&quot;</span>, <span class="at">start=</span><span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  </span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span> <span class="co"># remove background, grid, numeric labels</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> group), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">&quot;Set1&quot;</span>)</span></code></pre></div>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
 
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-barplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="treemap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Tree150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Treemap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="doughnut-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Doughnut</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="pie-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Pie150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Pie chart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="dendrogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Dendrogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="circle-packing.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Circular packing</div>
+      </div>
+    </div>
+
+  </div>
+</section> 
     <!-- ============================ CONTACT SECTION ============================ -->
     <section
       id="contact"
@@ -532,18 +471,18 @@
     </footer>
 
     <script>
+
       // add bootstrap table styles to pandoc tables
       function bootstrapStylePandocTables() {
-        $("tr.header")
-          .parent("thead")
-          .parent("table")
-          .addClass("table table-condensed");
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
       }
       $(document).ready(function () {
         bootstrapStylePandocTables();
       });
-    </script>
 
+          </script>
+
+    
     <!-- ============================ JAVASCRIPT SECTION ============================ -->
 
     <!-- Bootstrap core JavaScript -->
