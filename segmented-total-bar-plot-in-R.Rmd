@@ -1,0 +1,95 @@
+---
+title: "Create a segmented total bar plot in R"
+descriptionMeta: "This post explains how to draw a segmented total bar plot, a fancy alternative to the stacked bar plot, with R and ggplot2, using the ggsegmentedtotalbar package. It provides several reproducible examples with explanation and R code."
+descriptionTop: "This post explains how to draw a segmented total bar plot, a fancy alternative to the stacked bar plot, with R and ggplot2, using the ggsegmentedtotalbar package.  It starts with the most basic example and describes a few possible customizations."
+---
+
+It is the first ggplot2-based R package to create the segmented total bar plot in R. 
+
+## Installation
+
+You can install the development version of ggsegmentedtotalbar like so:
+
+``` r
+devtools::install_github("https://github.com/ozancanozdemir/ggsegmentedtotalbar")
+```
+
+It is on its way to CRAN! 
+
+## Details 
+Kevin Flerlage, who is a data visualization specialist, suggested a great alternative to stacked bar plot on [his blog](https://www.flerlagetwins.com/2025/04/the-best-alternative-to-stacked-bar.html). He called this new alternative "segmented total bar plot". This R package `ggsegmentedtotalbar` implements this idea. The package is built on top of the `ggplot2` package, which is a popular data visualisation package in R. The `ggsegmentedtotalbar` function creates a segmented total bar plot with custom annotations (boxes) added for each group. The height of each box is determined by the `Total` value associated with each group.
+
+The core thing behind usage of [`ggsegmentedtotalbar`](https://github.com/ozancanozdemir/ggsegmentedtotalbar/tree/main) is to create a data frame with the following columns:
+  
+- `group`: A string representing the name of the grouping variable.
+- `segment`: A string representing the name of the segmenting variable.
+- `value`: A string representing the name of the value variable (used for the height of bars).
+- `total`: A string representing the name of the total variable (used for determining the box height for each group).
+
+The good thing is that your data frame does not have to have the same column names. However, you need to specify the names of the columns in the data frame when calling the `ggsegmentedtotalbar` function correctly.
+
+The function `ggsegmentedtotalbar` takes a data frame and the names of the columns as arguments. It creates a bar plot based on grouped data with annotations (boxes) added for each group. The height of each box is determined by the `Total` value associated with each group.
+
+```{r example}
+# Example data frame
+df_ex <- data.frame(
+  group = c("A", "A","A","B", "B","B","C","C","C","D","D","D"),
+  segment = c("X","Y","Z", "X","Y","Z", "X","Y","Z","X","Y","Z"),
+  value = c(10, 20, 30, 40,50,60, 70,80,90, 100, 110, 120),
+  total = c(60,60,60, 150,150,150, 240,240,240, 360,360,360)
+)
+df_ex                                                               
+```
+
+
+```{r example1}
+# Create the segmented total bar plot
+p <- ggsegmentedtotalbar(df_ex, "group", "segment", "value", "total")
+# Print the plot
+print(p)
+```
+
+The function also provides three parameters that you can use to customize the plot:
+  
+- `alpha`: A numeric value (between 0 and 1) controlling the transparency of the background boxes. Default is 0.3.
+- `color`: A string specifying the color of the background boxes. Default is "lightgrey".
+- `label`: Logical. If `TRUE`, adds labels showing total values above the boxes and value labels on each segment. Default is `FALSE`.
+
+```{r example2}
+# Create the segmented total bar plot with labels
+p <- ggsegmentedtotalbar(df_ex, "group", "segment", "value", "total",
+                         label = TRUE, label_size = 4, label_color = "black")
+# Print the plot
+print(p)
+```
+
+```{r example3}
+# Create the segmented total bar plot with labels and different total box. 
+p <- ggsegmentedtotalbar(df_ex, "group", "segment", "value", "total",
+                         label = TRUE, label_size = 4, label_color = "black",
+                         alpha = 0.2, color = "steelblue")
+# Print the plot
+print(p)
+```
+
+Apart from these parameters, you can also customize your plot by utilizing ```ggplot2``` related functions. Here is another example. 
+
+```{r example4}
+# Create the segmented total bar plot with labels and different total box.
+p <- ggsegmentedtotalbar(df_ex, "group", "segment", "value", "total",
+                         label = TRUE, label_size = 4, label_color = "black",
+                         alpha = 0.2, color = "steelblue") +
+  ggplot2::labs(title = "Segmented Total Bar Plot with Custom Annotations",
+                x = "Group", y= "Value") +
+  ggplot2::theme_test() +
+  ggplot2::theme(
+    plot.title = ggplot2::element_text(hjust = 0.5),
+    axis.text.x = ggplot2::element_text(face= "bold", hjust = 1),
+    axis.text.y = ggplot2::element_text(face= "bold", hjust = 1),
+    legend.position = "top",
+    legend.title = ggplot2::element_blank(),
+  )
+
+# Print the plot
+print(p)
+```
