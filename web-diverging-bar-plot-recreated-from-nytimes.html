@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Diverging Barplot with R and
+ggplot2 &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="How to build a diverging barplot
+by recreating the chart from NY Times using R." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Diverging Barplot with R and
+ggplot2" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="How to build a diverging
+barplot by recreating the chart from NY Times using R." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-diverging-bar-plot-recreated-from-nytimes.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Diverging Barplot with R and ggplot2</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">A <a
+href="https://data-to-viz.com/graph/barplot.html">barplot</a> is used to
+display the relationship between a <strong>numeric</strong> and a
+<strong>categorical</strong> variable. Diverging barplot displays both
+the <strong>positive</strong> and <strong>negative</strong> values that
+are diverging from a central axis. <br><br>This post explains how to
+make a diverging barplot by recreating a chart from the NY Times using
+<code>R</code> and <code>ggplot2</code>.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="barplot.html"
+            >Barchart section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/barplot.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>This is the written version of a <a
+href="https://youtu.be/HDCJIkY2ihI">YouTube Tutorial</a> created by <a
+href="https://spencerschien.info/">Spencer Schien</a>. The tutorial
+recreates a chart found in <a
+href="https://www.nytimes.com/interactive/2025/06/12/upshot/gop-megabill-distribution-poor-rich.html">this
+NY Times article</a> using R.</p>
+<p>Special thanks to Spencer for creating this amazing tutorial!
+🙏🙏</p>
+<p>To follow similar content from Spencer, subscribe to his <a
+href="https://www.youtube.com/channel/UCEqcDzH-AFuYH7jqu9B0ACg">YouTube
+channel</a>.</p>
+<p>As a teaser, this is the plot we will be creating:</p>
+<center>
+<img src="https://raw.githubusercontent.com/Pecners/make_that_chart/refs/heads/main/nyt_bbb_impact/imgs/big_bill_household_impact_graph.png" style="max-width:90%">
+</center>
+</div>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<hr />
+<p>We will use multiple packages from the <code>tidyverse</code>, plus
+the <code>scales</code> and <code>glue</code> packages. I’ve also
+included the <code>showtext</code> package, which can optionally be used
+to load the fonts we will use.</p>
+<p><em>Remember that you can install those packages by running
+<code>install.packages("package_name")</code> in your R
+console.</em></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(showtext) <span class="co"># optional: for custom fonts</span></span></code></pre></div>
+<p><br></p>
+</div>
+<div id="load-packages" class="section level1">
+<h1>Load Packages</h1>
+<hr />
+<p>Since we are just recreating a chart, we don’t need the underlying
+data. Every observation is labeled in the original, so we can create our
+own dataframe of the data we need for plotting.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Create a vector of our grouping variable.</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># This will be the x axis values</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>household_group <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>      <span class="st">&quot;Bottom</span><span class="sc">\n</span><span class="st">10%&quot;</span>, </span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>      <span class="st">&quot;10th-</span><span class="sc">\n</span><span class="st">20th&quot;</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>      <span class="st">&quot;20th-</span><span class="sc">\n</span><span class="st">30th&quot;</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>      <span class="st">&quot;30th-</span><span class="sc">\n</span><span class="st">40th&quot;</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>      <span class="st">&quot;40th-</span><span class="sc">\n</span><span class="st">50th&quot;</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>      <span class="st">&quot;50th-</span><span class="sc">\n</span><span class="st">60th&quot;</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>      <span class="st">&quot;60th-</span><span class="sc">\n</span><span class="st">70th&quot;</span>, </span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>      <span class="st">&quot;70th-</span><span class="sc">\n</span><span class="st">80th&quot;</span>, </span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>      <span class="st">&quot;80th-</span><span class="sc">\n</span><span class="st">90th&quot;</span>, </span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>      <span class="st">&quot;Top</span><span class="sc">\n</span><span class="st">10%&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    )</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co"># Turn it into a factor so that it orders correctly.</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># Otherwise ggplot will go in alpha order.</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>household_group <span class="ot">=</span> <span class="fu">factor</span>(</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  household_group,</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="at">levels =</span> household_group</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>)</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co"># Create a vector for the values, our y variable.</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>est_change <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="sc">-</span>.<span class="dv">039</span>,</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="sc">-</span>.<span class="dv">012</span>,</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  <span class="sc">-</span>.<span class="dv">004</span>,</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  .<span class="dv">001</span>,</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  .<span class="dv">005</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  .<span class="dv">008</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  .<span class="dv">011</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  .<span class="dv">013</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  .<span class="dv">015</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  .<span class="dv">023</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>)</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co"># Put it together in a dataframe.</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  household_group,</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>  est_change</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="get-the-chart-colors" class="section level1">
+<h1>Get the Chart Colors</h1>
+<hr />
+<p>Now we need to identify the exact colors from the original. For this
+chart, we can find the colors by <a
+href="https://developer.chrome.com/docs/devtools/inspect-mode">inspecting
+the page</a> and selecting the colored elements to see the assigned hex
+codes.</p>
+<p>I’ve already done this, and the colors are below.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Colors from the original chart</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>chart_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#d35400&quot;</span>, <span class="st">&quot;#58a497&quot;</span>)</span></code></pre></div>
+<p><br></p>
+</div>
+<div id="get-the-font" class="section level1">
+<h1>Get the Font</h1>
+<hr />
+<p>The NY Times uses its own custom fonts, but we can approximate them
+using freely available fonts. I have done the legwork to find a font–<a
+href="https://fonts.google.com/specimen/Libre+Franklin">Libre
+Franklin</a>, freely available on Google Fonts.</p>
+<p>You can either download the font and added it to your system fonts,
+or you can use the <code>showtext</code> package in R to do so.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># load the font and make it available to ggplot</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Libre Franklin&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span></code></pre></div>
+<p><br></p>
+</div>
+<div id="create-the-plot" class="section level1">
+<h1>Create the Plot</h1>
+<hr />
+<p>This chart is a simple bar chart. What might trip some R users up is
+the very minimal theme and the text labels because this chart employs
+methods that are far from the <code>ggplot</code> defaults.</p>
+<p>Instead of using normal axis labels, we can apply a text geom that
+serves as those labels. We will also strip away much of the other theme
+elements to leave the plot looking very crisp.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>d <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    household_group, <span class="co"># x axis</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    est_change, <span class="co"># y axis</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="co">#  Values &lt; zero use orange fill, values &gt; 0 use green</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">ifelse</span>(est_change <span class="sc">&gt;</span> <span class="dv">0</span>, chart_cols[<span class="dv">2</span>], chart_cols[<span class="dv">1</span>]),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="co"># Same for color, which we will need for text geoms</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">ifelse</span>(est_change <span class="sc">&gt;</span> <span class="dv">0</span>, chart_cols[<span class="dv">2</span>], chart_cols[<span class="dv">1</span>])</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    )) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="co"># create the bars</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="co"># this hline mimics an x axis</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="co"># create the y axis labels above the bars</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="co"># format labels as percentages</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">label_percent</span>(.<span class="dv">1</span>)(est_change),</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="co"># adjust labels either above or below the bar</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="fu">ifelse</span>(est_change <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="fl">1.5</span>, <span class="sc">-</span>.<span class="dv">5</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    ),</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="co"># change font (changing font in `theme()` won&#39;t change it here)</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Libre Franklin&quot;</span>, </span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>    <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>    <span class="co"># this will serve as x axis labels</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>    <span class="at">label =</span> household_group,</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>    <span class="co"># position them either just below or above x axis</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">ifelse</span>(est_change <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="sc">-</span>.<span class="dv">005</span>, .<span class="dv">005</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>    ),</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>    <span class="co"># adjust font settings</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;grey50&quot;</span>, </span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>    <span class="at">lineheight =</span> <span class="dv">1</span>,</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;Libre Franklin&quot;</span>, </span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span> </span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>  <span class="co"># this tells ggplot to use the values of the colors we are </span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>  <span class="co"># assigning above, otherwise it will use defaults</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>  <span class="fu">scale_fill_identity</span>() <span class="sc">+</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>  <span class="fu">scale_color_identity</span>() <span class="sc">+</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>  <span class="co"># this keeps ggplot from clipping text that overflows the plot</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">&quot;off&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>  <span class="co"># remove all theme elements to start</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>  <span class="fu">theme</span>( </span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    <span class="co"># Set font family, size, color</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Libre Franklin&quot;</span>),</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;plain&quot;</span>, <span class="at">color =</span> <span class="st">&quot;grey30&quot;</span>),</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>    <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;plain&quot;</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">10</span>,</span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>                                <span class="at">lineheight =</span> <span class="fl">1.1</span>, <span class="at">color =</span> <span class="st">&quot;grey30&quot;</span>,</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>                                <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t =</span> <span class="dv">20</span>, <span class="at">b =</span> <span class="dv">5</span>))</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>  <span class="co"># add title, subtitle, and caption</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;How the Bill Would Affect Households at Different Income Ranks&quot;</span>,</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Estimated annual average change in resources between 2026-34&quot;</span>,</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>       <span class="at">caption =</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>        <span class="st">&quot;Note: Estimated annual average effect of the House&quot;</span>,</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>        <span class="st">&quot;version of the One Big Beautiful Bill Act on after-tax &quot;</span>,</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>        <span class="st">&quot;income. Groups are based on income adjusted for household size.  •  &quot;</span>,</span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>        <span class="st">&quot;Source: Congressional Budget Office&quot;</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>      ) <span class="sc">|&gt;</span> <span class="fu">str_wrap</span>(<span class="dv">110</span>)</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>    )</span></code></pre></div>
+<p><img src="web-diverging-bar-plot-recreated-from-nytimes_files/figure-html/make_the_chart-1.png" width="672" /></p>
+<p><br></p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>You might be interested in:</p>
+<ul>
+<li>this <a
+href="https://r-graph-gallery.com/web-horizontal-barplot-with-labels-the-economist.html">horizontal
+barplot</a> showcasing the work by the data visualization team at The
+Economist.</li>
+<li>how to create a <a
+href="https://r-graph-gallery.com/web-circular-barplot-with-R-and-ggplot2.html">circular
+barplot</a> with several features per group.</li>
+<li>how to add <a
+href="https://r-graph-gallery.com/368-black-and-white-barchart.html">textures
+into the bars with ggpattern</a></li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2025</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
