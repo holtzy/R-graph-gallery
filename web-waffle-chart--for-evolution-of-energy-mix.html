@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Waffle chart for evolution of energy
+mix &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="This post, inspired by the
+previous post about waffle chart, explores the evolution of energy mix
+in France. This tutorial uses <code>waffle</code> package and
+ggplot2with a step-by-step explanation of each code." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Waffle chart for evolution of
+energy mix" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="This post, inspired by the
+previous post about waffle chart, explores the evolution of energy mix
+in France. This tutorial uses <code>waffle</code> package and
+ggplot2with a step-by-step explanation of each code." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-waffle-chart–for-evolution-of-energy-mix.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Waffle chart for evolution of energy
+mix</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post,
+inspired by the <a
+href="https://r-graph-gallery.com/web-waffle-for-time-evolution.html">previous
+post about waffle chart</a>), explores the evolution of energy mix in
+France. This tutorial uses <code>waffle</code> package and <a
+href="https://r-graph-gallery.com/ggplot2-package.html"><code>ggplot2</code></a>,
+with a step-by-step explanation of each code.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="waffle.html"
+            >Waffle section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container" style="padding-top: 100px">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>Today, we will be creating a <a
+href="https://r-graph-gallery.com/waffle.html">waffle chart</a> to show
+the <strong>relative (proportional) change of the consumption of primary
+energy sources in France since 1960.</strong></p>
+<p>This plot was heavily inspired by Muhammad Azhar’s <a
+href="https://r-graph-gallery.com/web-waffle-for-time-evolution.html">waffle
+plot on the R Graph Gallery</a>.</p>
+<p>It is the work of <a
+href="https://rehpere.org/en/guillaume-noblet">Guillaume Noblet</a>.
+Huge thanks to him for sharing his work here! Thanks also to Soeun Kim
+who helped integrate this tutorial to the gallery!</p>
+<p>As a teaser, this is the chart we’ll be making:</p>
+<center>
+<img src="energy-mix-waffle.png" alt="Waffle Chart" style="width: 100%; max-width: 600px; height: auto;">
+</center>
+</div>
+<div id="load-packages" class="section level1">
+<h1>Load packages</h1>
+<hr />
+<p>We begin by loading the necessary packages for data manipulation and
+visualization. These include <code>rio</code> to download a csv file
+from Our World in Data (we could also use the API or the R package
+<code>owidapi</code> ), <code>data.table</code> for data wrangling, <a
+href="https://r-graph-gallery.com/ggplot2-package.html"><code>ggplot2</code></a>
+for you know what, <a
+href="https://r-graph-gallery.com/waffle.html"><code>waffle</code></a>
+for the waffle geometry, and <a
+href="https://r-graph-gallery.com/package/ggtext.html"><code>ggtext</code></a>
+and <a
+href="https://r-graph-gallery.com/package/patchwork.html"><code>patchwork</code></a>
+for text annotations and layout.</p>
+<div class="callout-tip">
+<p>Btw, usually I use <code>rig</code>, <code>renv</code>, and
+<code>box</code> to manage the versioning of R and R packages and for
+importing functions.</p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rio) <span class="co"># for importing data</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(data.table) <span class="co"># for data wrangling</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(forcats) <span class="co"># to recode to factor</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co"># for data visualization</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(waffle) <span class="co"># to get the waffle geometrz</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(ggtext) <span class="co"># to add text annotations</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(patchwork) <span class="co"># to combine plots</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">library</span>(showtext) <span class="co"># to get fonts</span></span></code></pre></div>
+<p>For a sidenote, since <a
+href="https://r-graph-gallery.com/waffle.html"><code>waffle</code></a>
+package has been removed from <a
+href="https://cran.r-project.org/web/packages/waffle/index.html">CRAN</a>,
+you can install directly from GitHub by typing
+<code>remotes::install_github("hrbrmstr/waffle")</code>.</p>
+</div>
+<div id="wrangle-data" class="section level1">
+<h1>Wrangle data</h1>
+<hr />
+<p>As said above, we want to plot a <a
+href="https://r-graph-gallery.com/waffle.html">waffle chart</a> to
+display the relative (proportional) change of the consumption of primary
+energy sources in France since 1960. For instance, a <a
+href="https://r-graph-gallery.com/barplot.html">stacked bar chart</a>
+would be fine too, although it is harder to compare for a given year,
+aka hard to grasp exact percentages in the blink of an eye. Yet, a
+waffle a year would be overwhelming too, so let’s prepare data to get
+the <strong>sum of consumption per decade.</strong></p>
+<div class="callout-note">
+<p>At the time this post is written, for the 2020 decade, proportions
+accounts for years 2020-2024 (not a full decade).</p>
+</div>
+<p>So, we import energy consumption data from Our World in Data and
+convert it into a <code>data.table</code> for data wrangling. I define a
+helper function to round years down to the nearest decade. This helps
+group data into 10-year intervals. Now, we filter the data to include
+only France since 1960 and sum the consumption by energy source for each
+decade.</p>
+<div class="callout-tip">
+<p>To round years to the nearest decade, we can remove the modulo
+division of the year by 10, i.e., use the <code>%%</code> modulo
+operator dividing by 10, and it takes precedence over the <code>-</code>
+operator.</p>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># import </span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">setDT</span>(dat)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># function to round down to the nearest decade</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>round_to_decade <span class="ot">&lt;-</span> <span class="cf">function</span>(year) {</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">return</span>(year <span class="sc">-</span> year <span class="sc">%%</span> <span class="dv">10</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># sum consumption for france by source, every 10 years from 1900 to 2020</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>dat_sum <span class="ot">&lt;-</span> dat[</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    year <span class="sc">&gt;=</span> <span class="dv">1960</span> <span class="sc">&amp;</span> country <span class="sc">==</span> <span class="st">&quot;France&quot;</span>, </span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="fu">lapply</span>(.SD, <span class="cf">function</span>(x) <span class="fu">sum</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), </span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    .SDcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;biofuel_consumption&quot;</span>, <span class="st">&quot;coal_consumption&quot;</span>, <span class="st">&quot;gas_consumption&quot;</span>, </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>               <span class="st">&quot;hydro_consumption&quot;</span>, <span class="st">&quot;nuclear_consumption&quot;</span>, <span class="st">&quot;oil_consumption&quot;</span>, </span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>               <span class="st">&quot;other_renewable_consumption&quot;</span>, <span class="st">&quot;solar_consumption&quot;</span>, <span class="st">&quot;wind_consumption&quot;</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    by <span class="ot">=</span> .(country, <span class="at">decade =</span> <span class="fu">round_to_decade</span>(year))</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>]</span></code></pre></div>
+<p>Some final data wrangling is needed—or at least welcomed!</p>
+<ul>
+<li><p>transform the data to long format to facilitate
+plotting;</p></li>
+<li><p>calculate the percentage of each source within a decade;</p></li>
+<li><p>convert percentages to integers that add up to 100 per
+decade;</p></li>
+<li><p>add an ‘s’ to ‘decade’ to avoid misleading readers.</p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># pivot longer</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>dat_sum <span class="ot">&lt;-</span> <span class="fu">melt</span>(dat_sum, <span class="at">id.vars =</span> <span class="fu">c</span>(<span class="st">&quot;country&quot;</span>, <span class="st">&quot;decade&quot;</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># consumption per year as perc of total</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>dat_sum[, perc <span class="sc">:=</span> (value <span class="sc">/</span> <span class="fu">sum</span>(value)) <span class="sc">*</span> <span class="dv">100</span>, by <span class="ot">=</span> .(country, decade)]</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># remove NA</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>dat_sum <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(dat_sum, <span class="at">cols =</span> <span class="st">&quot;perc&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># ensure sum=100 for each decade</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>dat_sum <span class="ot">&lt;-</span> dat_sum[, perc_int <span class="sc">:=</span> <span class="fu">as.integer</span>(<span class="fu">round</span>(perc))][,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  perc_int <span class="sc">:=</span> {</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    current_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(perc_int)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="cf">if</span> (current_sum <span class="sc">!=</span> <span class="dv">100</span>) {</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>      diff <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">-</span> current_sum</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>      perc_int[<span class="fu">which.max</span>(value)] <span class="ot">&lt;-</span> perc_int[<span class="fu">which.max</span>(value)] <span class="sc">+</span> diff</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    }</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    perc_int</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  }, by <span class="ot">=</span> decade][</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  perc_int <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>]</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co"># year to character with an s for decade</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>dat_sum[, decade_chr <span class="sc">:=</span> <span class="fu">paste0</span>(<span class="fu">as.character</span>(decade), <span class="st">&quot;s&quot;</span>)] </span></code></pre></div>
+</div>
+<div id="time-to-plot" class="section level1">
+<h1>Time to plot</h1>
+<hr />
+<p>The first questions I had thought about when I saw the data were: (1)
+if I were to display energy sources as fill colors, should I display all
+of them?, and (2) if yes, how to try out to represent these with colors
+that may represent the energy source for the reader (and myself as a
+reader).</p>
+<p>So I first did some research, aka I DuckDuckGo-ed <a
+href="https://duckduckgo.com/?q=petrol+color&amp;t=h_&amp;iar=images">Petrol
+color</a> and <a
+href="https://duckduckgo.com/?q=nuclear+uranium+color&amp;t=h_&amp;iar=images">Nuclear
+Uranium color</a>. With a bit of back and forth and some trials and
+errors (and disagreement with the DuckDuckGo results)—e.g., when two
+colors for two energy sources were too close—, I got to the below
+colors, and then factored the energy sources data.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># legend of energy</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>energy_sources <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="st">&quot;Coal&quot;</span> <span class="ot">=</span> <span class="st">&quot;coal_consumption&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="st">&quot;Oil&quot;</span> <span class="ot">=</span> <span class="st">&quot;oil_consumption&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="st">&quot;Gas&quot;</span> <span class="ot">=</span> <span class="st">&quot;gas_consumption&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="st">&quot;Hydro&quot;</span> <span class="ot">=</span> <span class="st">&quot;hydro_consumption&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="st">&quot;Nuclear&quot;</span> <span class="ot">=</span> <span class="st">&quot;nuclear_consumption&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="st">&quot;Biofuel&quot;</span> <span class="ot">=</span> <span class="st">&quot;biofuel_consumption&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="st">&quot;Solar&quot;</span> <span class="ot">=</span> <span class="st">&quot;solar_consumption&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="st">&quot;Wind&quot;</span> <span class="ot">=</span> <span class="st">&quot;wind_consumption&quot;</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="st">&quot;Other Renewables&quot;</span> <span class="ot">=</span> <span class="st">&quot;other_renewable_consumption&quot;</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>energy_colors <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="st">&quot;Coal&quot;</span> <span class="ot">=</span> <span class="st">&quot;#444239FF&quot;</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="st">&quot;Oil&quot;</span> <span class="ot">=</span> <span class="st">&quot;#035F72FF&quot;</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="st">&quot;Gas&quot;</span> <span class="ot">=</span> <span class="st">&quot;#D77186FF&quot;</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="st">&quot;Hydro&quot;</span> <span class="ot">=</span> <span class="st">&quot;#A4B7E1FF&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="st">&quot;Nuclear&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E69F00&quot;</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="st">&quot;Biofuel&quot;</span> <span class="ot">=</span> <span class="st">&quot;#B0986CFF&quot;</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="st">&quot;Solar&quot;</span> <span class="ot">=</span> <span class="st">&quot;#F8D564FF&quot;</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="st">&quot;Wind&quot;</span> <span class="ot">=</span> <span class="st">&quot;#56B4E9&quot;</span>,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="st">&quot;Other Renewables&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1BB6AFFF&quot;</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co"># add levels and order by energy_sources</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>dat_sum <span class="ot">&lt;-</span> dat_sum[,</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>  variable <span class="sc">:=</span> <span class="fu">factor</span>(</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    <span class="fu">fct_recode</span>(variable, <span class="sc">!!!</span>energy_sources),</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">names</span>(energy_sources)</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>  )</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>]</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="fu">setorder</span>(dat_sum, decade, variable)</span></code></pre></div>
+<p>Onto the <a
+href="https://r-graph-gallery.com/waffle.html"><code>waffle chart</code></a>.
+The base plot is a simple waffle chart with <strong>facets per
+decade</strong> and a <strong>fill colors per energy source</strong>.
+Since I want the waffle chart to somewhat be a <strong>time series
+chart</strong>, I use only one row with a strip text at the bottom for
+the facets, and 5 blocks/squares per row (hence the y-scale must be
+modified).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dat_sum, <span class="fu">aes</span>(<span class="at">fill =</span> variable, <span class="at">values =</span> perc_int)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">geom_waffle</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>        <span class="at">size =</span> <span class="fl">0.2</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        <span class="at">n_rows =</span> <span class="dv">5</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>        <span class="at">flip =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>        <span class="at">make_proportional =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="co"># since </span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>        <span class="sc">~</span>decade_chr,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>        <span class="at">nrow =</span> <span class="dv">1</span>, </span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>        <span class="at">strip.position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>() <span class="sc">+</span> </span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>        <span class="at">labels =</span> <span class="cf">function</span>(x) x <span class="sc">*</span> <span class="dv">5</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>        <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span> </span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>        <span class="at">values =</span> energy_colors, </span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>        <span class="at">breaks =</span> <span class="fu">names</span>(energy_sources), </span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">&quot;Energy Source&quot;</span>, </span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>        <span class="at">drop =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>    )</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>g</span></code></pre></div>
+<p><img src="web-waffle-chart--for-evolution-of-energy-mix_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Next, let’s refine the layout by adding some <strong>titles, and font
+and theming options.</strong> For the subtitle, I add color-coded
+references to the energy sources, so it serves as a legend (maybe a
+legend would still be needed though?).</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># and html string</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>subtitle_text <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="st">&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="st">    In the 1960s, only &lt;span style=&#39;color:{energy_colors[&#39;Coal&#39;]};&#39;&gt;&lt;strong&gt;coal&lt;/strong&gt;&lt;/span&gt;, </span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Oil&#39;]};&#39;&gt;&lt;strong&gt;oil&lt;/strong&gt;&lt;/span&gt;, </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Gas&#39;]};&#39;&gt;&lt;strong&gt;gas&lt;/strong&gt;&lt;/span&gt;, and </span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Hydro&#39;]};&#39;&gt;&lt;strong&gt;hydro&lt;/strong&gt;&lt;/span&gt; </span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="st">    were part of the French energetic mix. By the 2020s, </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Nuclear&#39;]};&#39;&gt;&lt;strong&gt;nuclear&lt;/strong&gt;&lt;/span&gt; </span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="st">    energy grew to account for almost 40%, and other sources appeared such as </span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Biofuel&#39;]};&#39;&gt;&lt;strong&gt;biofuel&lt;/strong&gt;&lt;/span&gt;, </span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Solar&#39;]};&#39;&gt;&lt;strong&gt;solar&lt;/strong&gt;&lt;/span&gt;, </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Wind&#39;]};&#39;&gt;&lt;strong&gt;wind&lt;/strong&gt;&lt;/span&gt;, and </span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="st">    &lt;span style=&#39;color:{energy_colors[&#39;Other Renewables&#39;]};&#39;&gt;&lt;strong&gt;other renewable energy&lt;/strong&gt;&lt;/span&gt;. </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="st">    While proportions help illustrate the balance between different energy sources,</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="st">    they hide the significant overall increase in consumption.</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="st">  &quot;</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co"># Fonts</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="fu">font_add_google</span>(<span class="st">&quot;Roboto Condensed&quot;</span>, <span class="st">&quot;Roboto Condensed&quot;</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="fu">showtext_auto</span>()</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="fu">showtext_opts</span>(<span class="at">dpi =</span> <span class="dv">600</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>body_font <span class="ot">&lt;-</span> <span class="st">&quot;Roboto Condensed&quot;</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>title_font <span class="ot">&lt;-</span> <span class="st">&quot;Roboto Condensed&quot;</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>g <span class="ot">&lt;-</span> g <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">&quot;60 Years of France&#39;s Primary Energy Mix (1960-2020)&quot;</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>        <span class="at">subtitle =</span> subtitle_text,</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>        <span class="at">caption =</span> <span class="st">&quot;Each square represents 1% of total energy consumption for each decade from 1960 to 2020. These are proportions of total terawatt hours (TWh) consumed.&lt;br&gt;Data: Our World in Data | Heavily inspired by Muhammad Azhar&#39;s waffle plot on R Graph Gallery | Plot: @gnoblet&quot;</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">family =</span> body_font, <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> body_font, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_textbox_simple</span>(</span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">0</span>, </span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>            <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">20</span>, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">0</span>),</span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">20</span>, </span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>            <span class="at">family =</span> title_font, </span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>            <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>,</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;grey15&quot;</span>, </span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a>            <span class="at">width =</span> <span class="fu">unit</span>(<span class="fl">0.9</span>, <span class="st">&quot;npc&quot;</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a>        ),</span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_textbox_simple</span>(</span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">0</span>, </span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a>            <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">40</span>, <span class="dv">0</span>),</span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a>            <span class="at">width =</span> <span class="fu">unit</span>(<span class="fl">0.9</span>, <span class="st">&quot;npc&quot;</span>),</span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">14</span>, </span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a>            <span class="at">family =</span> body_font, </span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;grey15&quot;</span>),</span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_textbox_simple</span>(</span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a>            <span class="at">family =</span> body_font, </span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a>            <span class="at">face =</span><span class="st">&quot;plain&quot;</span>, </span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">11</span>, </span>
+<span id="cb6-60"><a href="#cb6-60" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>,</span>
+<span id="cb6-61"><a href="#cb6-61" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb6-62"><a href="#cb6-62" tabindex="-1"></a>            <span class="at">width =</span><span class="fu">unit</span>(<span class="fl">0.95</span>, <span class="st">&quot;npc&quot;</span>), </span>
+<span id="cb6-63"><a href="#cb6-63" tabindex="-1"></a>            <span class="at">margin =</span> <span class="fu">margin</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb6-64"><a href="#cb6-64" tabindex="-1"></a>        ),</span>
+<span id="cb6-65"><a href="#cb6-65" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>),</span>
+<span id="cb6-66"><a href="#cb6-66" tabindex="-1"></a>        <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">20</span>)</span>
+<span id="cb6-67"><a href="#cb6-67" tabindex="-1"></a>    ) </span>
+<span id="cb6-68"><a href="#cb6-68" tabindex="-1"></a>g</span></code></pre></div>
+<p><img src="web-waffle-chart--for-evolution-of-energy-mix_files/figure-html/unnamed-chunk-6-1.png" width="7.5in" height="5in" style="display: block; margin: auto;" /></p>
+<p>To wrap up this plot, let’s add one <strong>annotation</strong> to
+stress out the singular French context on nuclear energy and this
+surging proportion. I add here the arrow as a <code>geom_curve</code>
+onto the 1970s facet and then add the text with
+<code>geom_richtext</code> over the whole plot using <a
+href="https://r-graph-gallery.com/package/patchwork.html"><code>patchwork</code></a>.
+Other options are possible (and most likely more efficient ones).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> g <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">geom_curve</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>        <span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fl">3.9</span>, <span class="at">y =</span> <span class="dv">21</span>, <span class="at">xend =</span> <span class="fl">4.9</span>, <span class="at">yend =</span> <span class="dv">24</span>, <span class="at">decade_chr =</span> <span class="st">&quot;1970s&quot;</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>        <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>        <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.03</span>, <span class="st">&quot;npc&quot;</span>)),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>        <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.3</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>        <span class="at">inherit.aes =</span> <span class="cn">FALSE</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    )</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> g <span class="sc">+</span> <span class="fu">inset_element</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">geom_richtext</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>      <span class="fu">aes</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>        <span class="at">x =</span> <span class="fl">0.30</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>        <span class="at">y =</span> <span class="fl">0.55</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>        <span class="at">label =</span> <span class="st">&quot;&lt;span style=&#39;font-size:15px;&#39;&gt;In 1973, nuclear power was 8% of&lt;br&gt;the production of French electricity.&lt;/span&gt;&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>      ),</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>      <span class="at">fill =</span> <span class="cn">NA</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>      <span class="at">label.color =</span> <span class="cn">NA</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>      <span class="at">vjust =</span> <span class="dv">0</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>      <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>      <span class="at">family =</span> body_font</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>    <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">expand =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>  <span class="at">left =</span> <span class="dv">0</span>, <span class="at">right =</span> <span class="dv">1</span>, <span class="at">bottom =</span> <span class="dv">0</span>, <span class="at">top =</span> <span class="dv">1</span>, <span class="at">align_to =</span> <span class="st">&#39;full&#39;</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>)</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>g</span></code></pre></div>
+<p><img src="web-waffle-chart--for-evolution-of-energy-mix_files/figure-html/unnamed-chunk-8-1.png" width="7.5in" height="5in" style="display: block; margin: auto;" /></p>
+<p>And here is the final result! A simple annotation can make the chart
+much more reader-friendly!</p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>This post explains how to create a <a href="waffle.html">waffle
+chart</a> as a distribution of energy over time.</p>
+<p>Make sure to check out the heavily inspired previous post about <a
+href="https://r-graph-gallery.com/web-waffle-for-time-evolution.html">waffle
+chart for evolution</a> as well.</p>
+<p>If you want to learn more, you can also check the <a
+href="waffle.html">waffle section</a> of the gallery and on <a
+href="https://r-graph-gallery.com/web-waffle-chart-for-distribution.html">how
+to represent the distribution of several groups using a mix between a
+waffle chart and a histogram</a>.</p>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+<div class="container">
+
+  <p class="mySeryTitle">Related chart types</p>
+  <hr>
+  <div class="row">
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Bar150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Barplot</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="spider-or-radar-chart.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Spider150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Spider / Radar</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="wordcloud.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Wordcloud150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Wordcloud</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="parallel-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Parallel1150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Parallel</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link"  href="lollipop-plot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/Lollipop150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Lollipop</div>
+    </div>
+    <div class="col-md-2 col-sm-4 portfolio-item ">
+      <a class="portfolio-link" href="circular-barplot.html">
+        <div class="portfolio-hover">
+          <div class="portfolio-hover-content">
+            <i class="fa fa-plus fa-3x"></i>
+          </div>
+        </div>
+        <img class="img-fluid" src="img/section/CircularBarplot150.png" alt="">
+      </a>
+      <div class="captionPortfolio">Circular Barplot</div>
+    </div>
+  </div>
+
+</div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2025</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>
