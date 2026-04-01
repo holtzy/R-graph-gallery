@@ -1,0 +1,194 @@
+---
+title: "Basic dice plot with ggdiceplot"
+descriptionMeta: "A dice plot is a visualization where each tile acts as a die face, with dot positions representing different categorical variables. This post shows how to create a basic dice plot in R using the ggdiceplot package."
+descriptionTop: "A dice plot is a visualization where each tile acts as a die face, with dot positions representing different **categorical variables**. This post shows how to create a basic dice plot in R using the [ggdiceplot](package/ggdiceplot.html) package."
+sectionText: "Heatmap"
+sectionLink: "heatmap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "web-basic-dice-plot-with-ggdiceplot"
+output:
+  html_document:
+      self_contained: false
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.align='center')
+```
+
+<div class="container">
+
+
+# About
+***
+
+This page showcases the [ggdiceplot](package/ggdiceplot.html) package, a [ggplot2](ggplot2-package.html) extension for creating dice-based categorical visualizations. You can find the source code on [GitHub](https://github.com/maflot/ggdiceplot).
+
+If you use this package, please cite: Flotho, Flotho & Keller, "DicePlot: a package for high-dimensional categorical data visualization," *Bioinformatics*, 2026.
+
+
+# Packages
+***
+
+For this post, we need to install and load the [ggdiceplot](package/ggdiceplot.html) package.
+
+We can install it from CRAN using `install.packages("ggdiceplot")`. Then, we can load it:
+
+```{r}
+# install.packages("ggdiceplot")
+library(ggdiceplot)
+library(ggplot2)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+We use the bundled `sample_dice_data2` dataset, which contains simulated log2 fold-change and q-values for **oral microbial taxa** across disease conditions and specimen sites.
+
+```{r}
+data("sample_dice_data2", package = "ggdiceplot")
+toy_data <- sample_dice_data2
+head(toy_data)
+```
+
+The data is in **long format**: one row per combination of taxon, disease, and specimen. The `dots` aesthetic will map to `disease`, meaning each pip position on a tile represents a specific disease condition.
+
+<br/>
+
+
+# Basic dice plot
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+The simplest dice plot shows categorical **presence/absence**. Each tile is a die face; each pip position corresponds to one level of the `dots` variable (here: disease).
+
+Key parameters:
+
+- `ndots`: number of pip positions (matches the number of disease levels)
+- `x_length` / `y_length`: grid dimensions for the 1:1 aspect ratio
+- `pip_scale`: pip diameter as fraction of available space
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=7}
+ggplot(toy_data, aes(x = specimen, y = taxon)) +
+  geom_dice(
+    aes(dots = disease, width = 0.9, height = 0.9),
+    na.rm       = TRUE,
+    show.legend = TRUE,
+    pip_scale   = 0.9,
+    ndots       = length(unique(toy_data$disease)),
+    x_length    = length(unique(toy_data$specimen)),
+    y_length    = length(unique(toy_data$taxon))
+  ) +
+  theme_dice() +
+  labs(x = "Specimen", y = "Taxon", title = "Disease presence across taxa and specimens")
+```
+</div>
+</div>
+
+
+```{r thecode, eval=FALSE}
+```
+
+
+<br/>
+
+# Adding color: fill mapped to log2 fold-change
+***
+
+Map `fill` to a continuous variable like `lfc` (log2 fold-change) to encode **effect size** via a diverging color scale. Missing values appear as white pips.
+
+```{r, fig.height=7}
+lo  <- floor(min(toy_data$lfc, na.rm = TRUE))
+up  <- ceiling(max(toy_data$lfc, na.rm = TRUE))
+mid <- (lo + up) / 2
+
+ggplot(toy_data, aes(x = specimen, y = taxon)) +
+  geom_dice(
+    aes(dots = disease, fill = lfc, width = 0.9, height = 0.9),
+    na.rm       = TRUE,
+    show.legend = TRUE,
+    pip_scale   = 0.9,
+    ndots       = length(unique(toy_data$disease)),
+    x_length    = length(unique(toy_data$specimen)),
+    y_length    = length(unique(toy_data$taxon))
+  ) +
+  scale_fill_gradient2(
+    low = "#40004B", high = "#00441B", mid = "white",
+    na.value = "white", limit = c(lo, up), midpoint = mid,
+    name = "Log2FC"
+  ) +
+  theme_dice() +
+  labs(x = "Specimen", y = "Taxon")
+```
+
+# Adding size: significance encoding
+***
+
+Map `size` to `-log10(q)` to make more significant pips larger. When combined with fill, this creates a **domino plot** that encodes both effect size and significance.
+
+```{r, fig.height=7}
+minsize <- floor(min(-log10(toy_data$q), na.rm = TRUE))
+maxsize <- ceiling(max(-log10(toy_data$q), na.rm = TRUE))
+midsize <- ceiling(quantile(-log10(toy_data$q), 0.5, na.rm = TRUE))
+
+ggplot(toy_data, aes(x = specimen, y = taxon)) +
+  geom_dice(
+    aes(dots = disease, fill = lfc, size = -log10(q), width = 0.9, height = 0.9),
+    na.rm       = TRUE,
+    show.legend = TRUE,
+    pip_scale   = 0.9,
+    ndots       = length(unique(toy_data$disease)),
+    x_length    = length(unique(toy_data$specimen)),
+    y_length    = length(unique(toy_data$taxon))
+  ) +
+  scale_fill_gradient2(
+    low = "#40004B", high = "#00441B", mid = "white",
+    na.value = "white", limit = c(lo, up), midpoint = mid,
+    name = "Log2FC"
+  ) +
+  scale_size_continuous(
+    range  = c(2, 8),
+    limits = c(minsize, maxsize),
+    breaks = c(minsize, midsize, maxsize),
+    labels = c(10^minsize, 10^-midsize, 10^-maxsize),
+    name   = "q-value"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x     = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y     = element_text(size = 12),
+    legend.key       = element_blank(),
+    legend.key.size  = unit(0.8, "cm")
+  ) +
+  labs(x = "Specimen", y = "Taxon")
+```
+
+
+<!-- Close container -->
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```

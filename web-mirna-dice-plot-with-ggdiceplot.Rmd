@@ -1,0 +1,202 @@
+---
+title: "miRNA dysregulation dice plot with ggdiceplot"
+descriptionMeta: "A dice plot showing miRNA dysregulation across compounds and organs, using categorical fill to encode regulation direction (up, down, unchanged). Built with R and the ggdiceplot package."
+descriptionTop: "A dice plot showing **miRNA dysregulation** across compounds and organs, using categorical fill to encode regulation direction. Built with R and the [ggdiceplot](package/ggdiceplot.html) package."
+sectionText: "Heatmap"
+sectionLink: "heatmap.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com"
+url: "web-mirna-dice-plot-with-ggdiceplot"
+output:
+  html_document:
+      self_contained: false
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.align='center')
+```
+
+<div class="container" style="padding-top: 100px">
+
+
+# About
+***
+
+This page showcases a **categorical fill** dice plot using the [ggdiceplot](package/ggdiceplot.html) package. Instead of mapping fill to a continuous gradient, we map it to a discrete variable (regulation direction), making it easy to see patterns of up- and down-regulation at a glance.
+
+You can find the package source on [GitHub](https://github.com/maflot/ggdiceplot).
+
+
+# Packages
+***
+
+```{r}
+# install.packages("ggdiceplot")
+library(ggdiceplot)
+library(ggplot2)
+```
+
+<br/>
+
+
+# Dataset
+***
+
+We use the bundled `sample_dice_miRNA` dataset, which simulates miRNA dysregulation across **compounds** and **organs**, with a categorical `direction` variable (Up, Down, Unchanged).
+
+```{r}
+data("sample_dice_miRNA", package = "ggdiceplot")
+df_dice <- sample_dice_miRNA
+head(df_dice)
+```
+
+Each row represents one miRNA–compound–organ combination. The `Organ` variable will be mapped to pip positions (the `dots` aesthetic), and `direction` to fill color.
+
+<br/>
+
+
+# Basic miRNA dice plot
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+This plot places **miRNAs** on the x-axis, **compounds** on the y-axis. Each tile has up to 4 pips (one per organ: Lung, Liver, Brain, Kidney). Pip color indicates regulation direction.
+
+We use `scale_fill_manual()` with a diverging blue–red scheme to distinguish down- from up-regulation.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r thecode, echo=FALSE, out.width = "100%", fig.height=5}
+direction_colors <- c(Down = "#2166ac", Unchanged = "grey80", Up = "#b2182b")
+
+ggplot(df_dice, aes(x = miRNA, y = Compound)) +
+  geom_dice(
+    aes(dots = Organ, fill = direction, width = 0.8, height = 0.8),
+    show.legend = TRUE,
+    pip_scale   = 1.0,
+    ndots       = length(levels(df_dice$Organ)),
+    x_length    = length(levels(df_dice$miRNA)),
+    y_length    = length(levels(df_dice$Compound))
+  ) +
+  scale_fill_manual(values = direction_colors, name = "Regulation") +
+  theme_dice() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5),
+    axis.text.y = element_text(hjust = 1),
+    panel.grid  = element_blank()
+  ) +
+  labs(
+    title = "DicePlot: log2FC direction per miRNA, compound and organ",
+    x = "miRNA", y = "Compound"
+  )
+```
+</div>
+</div>
+
+
+```{r thecode, eval=FALSE}
+```
+
+<br/>
+
+
+# Customizing the theme
+***
+
+`theme_dice()` provides a clean minimal look optimized for dice plots. You can layer additional `theme()` calls on top for fine-tuning. Let's compare `theme_dice()` with `theme_minimal()`:
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, out.width = "100%", fig.height=5}
+direction_colors <- c(Down = "#2166ac", Unchanged = "grey80", Up = "#b2182b")
+
+ggplot(df_dice, aes(x = miRNA, y = Compound)) +
+  geom_dice(
+    aes(dots = Organ, fill = direction, width = 0.8, height = 0.8),
+    show.legend = TRUE,
+    pip_scale   = 1.0,
+    ndots       = length(levels(df_dice$Organ)),
+    x_length    = length(levels(df_dice$miRNA)),
+    y_length    = length(levels(df_dice$Compound))
+  ) +
+  scale_fill_manual(values = direction_colors, name = "Regulation") +
+  theme_dice() +
+  labs(title = "theme_dice()", x = "miRNA", y = "Compound")
+```
+
+</div>
+
+<div class = "col-md-6  col-sm-12">
+
+```{r, out.width = "100%", fig.height=5}
+ggplot(df_dice, aes(x = miRNA, y = Compound)) +
+  geom_dice(
+    aes(dots = Organ, fill = direction, width = 0.8, height = 0.8),
+    show.legend = TRUE,
+    pip_scale   = 1.0,
+    ndots       = length(levels(df_dice$Organ)),
+    x_length    = length(levels(df_dice$miRNA)),
+    y_length    = length(levels(df_dice$Compound))
+  ) +
+  scale_fill_manual(values = direction_colors, name = "Regulation") +
+  theme_minimal() +
+  labs(title = "theme_minimal()", x = "miRNA", y = "Compound")
+```
+
+</div>
+</div>
+
+<br/>
+
+
+# Adjusting pip scale
+***
+
+The `pip_scale` parameter controls how large pips are relative to the tile. Let's compare different values side by side:
+
+```{r, fig.width=12, fig.height=4}
+library(patchwork)
+
+make_plot <- function(ps) {
+  ggplot(df_dice, aes(x = miRNA, y = Compound)) +
+    geom_dice(
+      aes(dots = Organ, fill = direction, width = 0.8, height = 0.8),
+      pip_scale = ps,
+      ndots     = length(levels(df_dice$Organ)),
+      x_length  = length(levels(df_dice$miRNA)),
+      y_length  = length(levels(df_dice$Compound))
+    ) +
+    scale_fill_manual(values = direction_colors) +
+    theme_dice() +
+    labs(title = paste0("pip_scale = ", ps)) +
+    theme(legend.position = "none")
+}
+
+make_plot(0.5) + make_plot(0.75) + make_plot(1.0)
+```
+
+
+<!-- Close container -->
+</div>
+
+
+
+```{r, echo=FALSE}
+htmltools::includeHTML("htmlChunkRelatedCorrelation.html")
+```
