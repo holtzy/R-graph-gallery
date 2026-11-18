@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Analytics + AdThrive -->
+
+    <!-- AdThrive Head Tag Manual -->
+    <script data-no-optimize="1" data-cfasync="false">
+      (function (w, d) {
+        w.adthrive = w.adthrive || {};
+        w.adthrive.cmd = w.adthrive.cmd || [];
+        w.adthrive.plugin = "adthrive-ads-manual";
+        w.adthrive.host = "ads.adthrive.com";
+        var s = d.createElement("script");
+        s.async = true;
+        s.referrerpolicy = "no-referrer-when-downgrade";
+        s.src =
+          "https://" +
+          w.adthrive.host +
+          "/sites/6434363fc11d8059e61106b4/ads.min.js?referrer=" +
+          w.encodeURIComponent(w.location.href) +
+          "&cb=" +
+          (Math.floor(Math.random() * 100) + 1);
+        var n = d.getElementsByTagName("script")[0];
+        n.parentNode.insertBefore(s, n);
+      })(window, document);
+    </script>
+    <!-- End of AdThrive Head Tag -->
+
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-79254642-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-79254642-1");
+    </script>
+
+    <!-- Google Analytics + OutboundLink + Google Adsense -->
+
+    <meta charset="utf-8" />
+    <title>Venn Diagram with Proportional
+Areas &#8211; the R Graph Gallery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="Learn how to create Venn diagrams
+with proportional areas in R using the gVenn package. Step-by-step
+tutorial with gene list examples and customization options." />
+    <meta
+      name="keywords"
+      content="R,ggplot2,tidyverse,Example,Data,Dataviz,Datavisualization,Plot,Chart,Graph,Learning,Caveat,Pitfall,Mistake"
+    />
+    <meta name="author" content="Yan Holtz" />
+    <link rel="icon" href="img/logo/R_single_small.png" />
+
+    <!-- Control appearance when shared by social media -->
+    <meta property="og:title" content="Venn Diagram with Proportional
+Areas" />
+    <meta
+      property="og:image"
+      content="https://www.r-graph-gallery.com/img/overview_RGG.png"
+    />
+    <meta property="og:description" content="Learn how to create Venn
+diagrams with proportional areas in R using the gVenn package.
+Step-by-step tutorial with gene list examples and customization
+options." />
+    <meta
+      property="og:url"
+      content="https://www.r-graph-gallery.com/web-proportional-venn-diagram-with-gvenn.html"
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/agency.css" rel="stylesheet" />
+
+    <!-- JQUERY -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+  </head>
+
+  <body data-spy="scroll" data-target="#myScrollspy" data-offset="1">
+    <!-- THIS ALLOWS TO INSERT THE MENU THAT IS STORED IN A MENU.HTML FILE-->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav"></nav>
+    <script>
+      $(function () {
+        $("#mainNav").load("html_chunk/menu.html");
+      });
+    </script>
+
+    <!-- THIS ALLOWS TO INSERT THE MODAL OF THE MENU THAT IS STORED IN A MENU_MODAL.HTML FILE-->
+    <div id="modal_menu_insertion"></div>
+    <script>
+      $(function () {
+        $("#modal_menu_insertion").load("html_chunk/menu_modal.html");
+      });
+    </script>
+
+    <!-- Header = Title in big + social media Icon + quick description -->
+    <header class="masthead" style="padding-bottom: 30px">
+      <div class="textlanding">
+        <center><h1>Venn Diagram with Proportional Areas</h1></center>
+        <hr class="short_hr" />
+        <br />
+        <ul class="list-inline social-buttons">
+          <li class="list-inline-item">
+            <a href="https://twitter.com/R_Graph_Gallery">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://github.com/holtzy">
+              <i class="fa fa-github" style="color: white"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </li>
+          <li class="list-inline-item social-buttons">
+            <a href="https://www.yan-holtz.com">
+              <i class="fa fa-home"></i>
+            </a>
+          </li>
+        </ul>
+        <center>
+          <p style="max-width: 600px; margin-top: 40px">This post
+explains how to build <strong>Venn diagrams with proportional
+areas</strong> using the <code>gVenn</code> package. It provides
+reproducible code with gene list examples and shows you how to customize
+colors, labels, and styling.</p>
+        </center>
+        <div style="text-align: center">
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="venn-diagram.html"
+            >Venn diagram section</a
+          >
+          <a
+            class="btn btn-secondary btn-xl text-uppercase js-scroll-trigger"
+            href="https://www.data-to-viz.com/graph/venn.html"
+            >Data to Viz</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- THIS ALLOWS TO INSERT THE ADVERTISEMENT BANNER THAT IS STORED IN A BANNER.HTML FILE-->
+    <div id="position_for_images"></div>
+    <script>
+      $(function () {
+        $("#position_for_images").load("html_chunk/images.html");
+      });
+    </script>
+
+    
+    <!-- STYLE for chart pages but not the rest of tthe website -->
+    <style>
+      img {
+        margin-top: 20px;
+      }
+    </style>
+
+    <div class="container">
+<div id="about" class="section level1">
+<h1>About</h1>
+<hr />
+<p>The <code>gVenn</code> allows you to create Venn diagrams with
+proportional areas. Initially created to work with genomic intervals, it
+also works perfectly for visualizing overlaps between between gene lists
+and other character vectors.</p>
+<p>Check out the full <a href="https://ckntav.github.io/gVenn/">package
+documentation</a> for more details. <code>gVenn</code> is a project by
+<a href="https://github.com/ckntav">Christophe Tav</a>.</p>
+<p><br>
+<img src="https://raw.githubusercontent.com/ckntav/gVenn/master/man/figures/20250827_hex_gVenn_v1.png" alt="" width="20%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<hr />
+<p>You can install <code>gVenn</code> from Bioconductor:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from Bioconductor</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;gVenn&quot;</span>)</span></code></pre></div>
+<p>Then load the library:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(gVenn)</span></code></pre></div>
+<p>That’s all you need!</p>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<hr />
+<p>We’ll use the built-in <code>gene_list</code> dataset that comes with
+the package. It contains three sets of gene names:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Load the example dataset</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(gene_list)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Check the structure</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">str</span>(gene_list)</span></code></pre></div>
+<pre><code>## List of 3
+##  $ random_genes_A: chr [1:125] &quot;ALPP&quot; &quot;ACTG1P9&quot; &quot;AHSG&quot; &quot;ASIC2&quot; ...
+##  $ random_genes_B: chr [1:115] &quot;AFM&quot; &quot;ADPRH&quot; &quot;AIF1&quot; &quot;ACVR2A&quot; ...
+##  $ random_genes_C: chr [1:70] &quot;ACTN1&quot; &quot;ALDOA&quot; &quot;CRYBG1&quot; &quot;AK4&quot; ...</code></pre>
+<p>This is a simple named list containing three character vectors. Each
+vector represents a set of genes. This is the typical format you’ll use
+with <code>gVenn</code>!</p>
+<p>You can see we have:</p>
+<ul>
+<li><strong>125 genes</strong> in list A</li>
+<li><strong>115 genes</strong> in list B<br />
+</li>
+<li><strong>70 genes</strong> in list C</li>
+</ul>
+<p>Let’s visualize the overlaps to find shared and unique genes!</p>
+</div>
+<div id="two-steps-to-an-area-proportional-venn-diagram"
+class="section level1">
+<h1>Two steps to an area-proportional Venn diagram</h1>
+<hr />
+<p>Creating a Venn diagram with <code>gVenn</code> is incredibly
+simple:</p>
+<ol style="list-style-type: decimal">
+<li>First, compute the overlaps using
+<code>computeOverlaps()</code></li>
+<li>Then, visualize with <code>plotVenn()</code></li>
+</ol>
+<p>The magic of <code>gVenn</code> is that the <strong>areas are
+proportional</strong> to the actual overlap sizes. In traditional Venn
+diagrams, circles often have fixed sizes, but here the areas are
+adjusted to size each region to reflect the true numbers!</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># 1. Compute overlaps</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>overlap <span class="ot">&lt;-</span> <span class="fu">computeOverlaps</span>(gene_list)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># 2. Create the Venn diagram</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap)</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/default-Venn-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<div id="understanding-your-results" class="section level2">
+<h2>Understanding your results</h2>
+<p>From the Venn diagram above, we can see:</p>
+<ul>
+<li><strong>67 genes</strong> are unique to list A (only in A)</li>
+<li><strong>45 genes</strong> are unique to list B (only in B)</li>
+<li><strong>17 genes</strong> are unique to list C (only in C)</li>
+<li><strong>21 genes</strong> are shared between A and B (but not
+C)</li>
+<li><strong>4 genes</strong> are shared between A and C (but not B)</li>
+<li><strong>16 genes</strong> are shared between B and C (but not
+A)</li>
+<li><strong>33 genes</strong> are common to all three lists (A ∩ B ∩
+C)</li>
+</ul>
+<p>The diagram makes it easy to see these patterns at a glance!</p>
+</div>
+</div>
+<div id="custom-colors" class="section level1">
+<h1>Custom colors</h1>
+<hr />
+<div class="row">
+<div class="col-md-6 col-sm-12 align-self-center">
+<p>Let’s make the diagram prettier by customizing the fill colors. The
+<code>fills</code> parameter accepts:</p>
+<ul>
+<li>A character vector of colors</li>
+<li>A list with <code>fill</code> (colors) and <code>alpha</code>
+(transparency, 0-1)</li>
+</ul>
+<p>You can use any valid R color: hex codes (<code>"#FF6B6B"</code>),
+named colors (<code>"steelblue"</code>), or RGB values.</p>
+<p>The <code>alpha</code> parameter controls transparency - values
+closer to 0 are more transparent, while 1 is fully opaque.</p>
+</div>
+<div class="col-md-6 col-sm-12">
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/custom-colors-1.png" alt="" width="100%" /></p>
+</div>
+</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>         <span class="at">fills =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="fu">c</span>(<span class="st">&quot;#FF6B6B&quot;</span>, <span class="st">&quot;#4ECDC4&quot;</span>, <span class="st">&quot;steelblue1&quot;</span>), </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                      <span class="at">alpha =</span> <span class="fl">0.75</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>         <span class="at">legend =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="adding-a-title" class="section level1">
+<h1>Adding a title</h1>
+<hr />
+<p>Add a title to your Venn diagram using the <code>main</code>
+parameter:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>         <span class="at">main =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">&quot;Gene set overlaps&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                     <span class="at">fontsize =</span> <span class="dv">16</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                     <span class="at">font =</span> <span class="dv">2</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                     <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>))  <span class="co"># font=2 means bold</span></span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/with-title-1.png" alt="" width="672" /></p>
+<p>The <code>main</code> parameter can be:</p>
+<ul>
+<li>A simple character string: <code>main = "My Title"</code></li>
+<li>A list with <code>label</code>, <code>fontsize</code>,
+<code>font</code>, and <code>col</code> for full control</li>
+</ul>
+</div>
+<div id="show-counts-and-percentages" class="section level1">
+<h1>Show counts and percentages</h1>
+<hr />
+<p>By default, the diagram shows counts. You can also display
+<strong>percentages</strong> or <strong>both</strong> using the
+<code>quantities</code> parameter.</p>
+<p>This is particularly useful for presentations where you want to
+communicate proportions clearly.</p>
+<p>The <code>type</code> option accepts:</p>
+<ul>
+<li><code>"counts"</code>: raw numbers (default)</li>
+<li><code>"percent"</code>: percentages</li>
+<li><code>c("counts", "percent")</code>: both!</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>         <span class="at">quantities =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;counts&quot;</span>, <span class="st">&quot;percent&quot;</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                           <span class="at">fontsize =</span> <span class="dv">9</span>))</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/counts-percent-1.png" alt="" width="672" /></p>
+</div>
+<div id="style-with-colored-borders" class="section level1">
+<h1>Style with colored borders</h1>
+<hr />
+<p>For a different look, try using transparent fills with colorful
+borders:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>         <span class="at">fills =</span> <span class="st">&quot;transparent&quot;</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>         <span class="at">edges =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;#E74C3C&quot;</span>, <span class="st">&quot;#3498DB&quot;</span>, <span class="st">&quot;#2ECC71&quot;</span>), </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                      <span class="at">lwd =</span> <span class="dv">4</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                      <span class="at">lty =</span> <span class="dv">2</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>         <span class="at">main =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">&quot;bordered style&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                     <span class="at">fontsize =</span> <span class="dv">14</span>))</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/colored-borders-1.png" alt="" width="672" /></p>
+<p>The <code>edges</code> parameter controls the borders:</p>
+<ul>
+<li><code>col</code>: border colors</li>
+<li><code>lwd</code>: line width (thickness)</li>
+<li><code>lty</code>: line type (1=solid, 2=dashed, etc.)</li>
+</ul>
+</div>
+<div id="show-set-labels" class="section level1">
+<h1>Show set labels</h1>
+<hr />
+<p>By default, labels are hidden. Enable them with
+<code>labels = TRUE</code> or customize their appearance with a
+list.</p>
+<p>The labels show the names of your input lists (in this case:
+“random_genes_A”, “random_genes_B”, “random_genes_C”).</p>
+<p>You can control:</p>
+<ul>
+<li><code>col</code>: color</li>
+<li><code>fontsize</code>: font size</li>
+<li><code>font</code>: font style (1=plain, 2=bold, 3=italic, 4=bold
+italic)</li>
+<li><code>fontfamily</code>: font family</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="st">&quot;#303030&quot;</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                      <span class="at">fontsize =</span> <span class="dv">7</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                      <span class="at">font =</span> <span class="dv">3</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                      <span class="at">fontfamily =</span> <span class="st">&quot;mono&quot;</span>))</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/with-labels-1.png" alt="" width="672" /></p>
+</div>
+<div id="customize-legend" class="section level1">
+<h1>Customize legend</h1>
+<hr />
+<p>By default, a legend appears on the right side. You can customize its
+position or hide it:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>         <span class="at">legend =</span> <span class="fu">list</span>(<span class="at">side =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Treatment A&quot;</span>, <span class="st">&quot;Treatment B&quot;</span>, <span class="st">&quot;Control&quot;</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                       <span class="at">fontsize =</span> <span class="dv">11</span>))</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/legend-bottom-1.png" alt="" width="672" /></p>
+<p>The <code>legend</code> parameter accepts:</p>
+<ul>
+<li><code>FALSE</code> - hide the legend</li>
+<li>A character string: <code>"right"</code>, <code>"left"</code>,
+<code>"top"</code>, <code>"bottom"</code> for position</li>
+<li>A list with <code>side</code>, <code>labels</code>,
+<code>fontsize</code> for full customization</li>
+</ul>
+</div>
+<div id="combining-multiple-custom-options" class="section level1">
+<h1>Combining multiple custom options</h1>
+<hr />
+<p>Here’s a complete example with all customizations for a
+publication-ready figure:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plotVenn</span>(overlap,</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>         <span class="co"># Custom colors with transparency</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>         <span class="at">fills =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="fu">c</span>(<span class="st">&quot;#2B70AB&quot;</span>, <span class="st">&quot;#FFB027&quot;</span>, <span class="st">&quot;#3EA742&quot;</span>), </span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>                      <span class="at">alpha =</span> <span class="fl">0.75</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>         </span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>         <span class="co"># Subtle borders</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>         <span class="at">edges =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="st">&quot;gray30&quot;</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>         </span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>         <span class="co"># Bold labels</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">list</span>(<span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fontsize =</span> <span class="dv">8</span>, <span class="at">font =</span> <span class="dv">2</span>),</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>         </span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>         <span class="co"># Show counts</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>         <span class="at">quantities =</span> <span class="fu">list</span>(<span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;counts&quot;</span>, <span class="st">&quot;percent&quot;</span>), </span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>                          <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, </span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>                          <span class="at">fontsize =</span> <span class="dv">10</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>         </span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>         <span class="co"># Title</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>         <span class="at">main =</span> <span class="fu">list</span>(<span class="at">label =</span> <span class="st">&quot;multiple custom options Venn&quot;</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>                     <span class="at">col =</span> <span class="st">&quot;navy&quot;</span>, </span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>                     <span class="at">fontsize =</span> <span class="dv">16</span>, </span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a>                     <span class="at">font =</span> <span class="dv">2</span>),</span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a>         </span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a>         <span class="co"># Custom legend</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a>         <span class="at">legend =</span> <span class="fu">list</span>(<span class="at">side =</span> <span class="st">&quot;bottom&quot;</span>,</span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Upregulated in Treatment A&quot;</span>,</span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a>                                 <span class="st">&quot;Upregulated in Treatment B&quot;</span>,</span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a>                                 <span class="st">&quot;Upregulated in Control&quot;</span>),</span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a>                      <span class="at">fontsize =</span> <span class="dv">10</span>))</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/multiple-custom-options-1.png" alt="" width="768" /></p>
+<p>This demonstrates how flexible <code>gVenn</code> is - you can
+customize every aspect to match your needs!</p>
+</div>
+<div id="going-further" class="section level1">
+<h1>Going further</h1>
+<hr />
+<p>For more complex visualizations with <strong>4 or more sets</strong>,
+consider using UpSet plots instead of Venn diagrams. The
+<code>gVenn</code> package also provides <code>plotUpSet()</code> for
+this purpose.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">plotUpSet</span>(overlap)</span></code></pre></div>
+<p><img src="web-proportional-venn-diagram-with-gvenn_files/figure-html/upset-plot-1.png" alt="" width="480" style="display: block; margin: auto;" /></p>
+<p>Check out the full <a href="https://ckntav.github.io/gVenn/">gVenn
+documentation</a> to learn how to:</p>
+<ul>
+<li>Work with genomic regions (GRanges)</li>
+<li>Create UpSet plots for complex overlaps</li>
+<li>Apply advanced customization</li>
+<li>Save your visualizations</li>
+<li>Extract and analyze intersection sets</li>
+<li>See additional examples and use cases</li>
+</ul>
+<!-- Close container -->
+</div>
+</div>
+<!-- ============================ RELATED SECTION ============================ -->
+<section class="bg-light" id="portfolio_landing" style="padding-top: 30px; padding-bottom: 30px; margin-top: 100px;">
+
+  <div class="container">
+
+    <p class="mySeryTitle">Related chart types</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="stacked-barplot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/GroupedRed150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Grouped and Stacked barplot</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="treemap.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Tree150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Treemap</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="doughnut-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Doughnut150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Doughnut</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="pie-plot.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Pie150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Pie chart</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="dendrogram.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/Dendrogram150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Dendrogram</div>
+      </div>
+      <div class="col-md-2 col-sm-4 portfolio-item">
+        <a class="portfolio-link"  href="circle-packing.html">
+          <div class="portfolio-hover">
+            <div class="portfolio-hover-content">
+              <i class="fa fa-plus fa-3x"></i>
+            </div>
+          </div>
+          <img class="img-fluid" src="img/section/CircularPacking150.png" alt="">
+        </a>
+        <div class="captionPortfolio">Circular packing</div>
+      </div>
+    </div>
+
+  </div>
+</section> 
+    <!-- ============================ CONTACT SECTION ============================ -->
+    <section
+      id="contact"
+      class="bg"
+      style="background-color: white; padding-top: 60px"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-2 text-center"></div>
+          <div class="col-lg-8 text-center">
+            <br /><br /><br />
+            <h2>❤️ 10 best R tricks ❤️</h2>
+            <p style="max-width: 620px; text-align: center">
+              👋 After crafting hundreds of R charts over 12 years, I've
+              distilled my top 10 tips and tricks. Receive them via email!
+              <b>One insight per day for the next 10 days</b>! 🔥
+            </p>
+            <div style="display: flex; justify-content: center">
+              <script
+                async
+                data-uid="329fda5a7e"
+                src="https://prodigious-trailblazer-3628.ck.page/329fda5a7e/index.js"
+              ></script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ FOOTER SECTION ============================ -->
+
+    <!-- AdThrive Footer Code Start-->
+    <script
+      type="text/javascript"
+      async
+      src="https://btloader.com/tag?o=5698917485248512&upapi=true&domain=r-graph-gallery.com"
+    ></script>
+    <script>
+      !(function () {
+        "use strict";
+        var e;
+        (e = document),
+          (function () {
+            var t, n;
+            function r() {
+              var t = e.createElement("script");
+              (t.src =
+                "https://cafemedia-com.videoplayerhub.com/galleryplayer.js"),
+                e.head.appendChild(t);
+            }
+            function a() {
+              var t = e.cookie.match("(^|[^;]+)\s*__adblocker\s*=\s*([^;]+)");
+              return t && t.pop();
+            }
+            function c() {
+              clearInterval(n);
+            }
+            return {
+              init: function () {
+                var e;
+                "true" === (t = a())
+                  ? r()
+                  : ((e = 0),
+                    (n = setInterval(function () {
+                      (100 !== e && "false" !== t) || c(),
+                        "true" === t && (r(), c()),
+                        (t = a()),
+                        e++;
+                    }, 50)));
+              },
+            };
+          })().init();
+      })();
+    </script>
+    <!-- AdThrive Footer Code End -->
+
+    <footer class="bg-light" id="myFooter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="copyright"
+              >Copyright &copy; the R graph gallery 2025</span
+            >
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline social-buttons">
+              <li class="list-inline-item">
+                <a href="https://twitter.com/R_Graph_Gallery">
+                  <i class="fa fa-twitter"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/holtzy">
+                  <i class="fa fa-github"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://www.linkedin.com/in/yan-holtz-2477534a/">
+                  <i class="fa fa-linkedin"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-inline quicklinks">
+              <li class="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+
+      // add bootstrap table styles to pandoc tables
+      function bootstrapStylePandocTables() {
+        $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+      }
+      $(document).ready(function () {
+        bootstrapStylePandocTables();
+      });
+
+          </script>
+
+    
+    <!-- ============================ JAVASCRIPT SECTION ============================ -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/agency.min.js"></script>
+  </body>
+</html>

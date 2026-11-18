@@ -1,0 +1,321 @@
+---
+title: "Venn Diagram with Proportional Areas"
+descriptionMeta: "Learn how to create Venn diagrams with proportional areas in R using the gVenn package. Step-by-step tutorial with gene list examples and customization options."
+descriptionTop: "This post explains how to build **Venn diagrams with proportional areas** using the `gVenn` package. It provides reproducible code with gene list examples and shows you how to customize colors, labels, and styling."
+sectionText: "Venn diagram section"
+sectionLink: "venn-diagram.html"
+DataToVizText: "Data to Viz"
+DataToVizLink: "data-to-viz.com/graph/venn.html"
+url: "web-proportional-venn-diagram-with-gvenn"
+output:
+  html_document:
+      self_contained: false    
+      mathjax: default
+      lib_dir: libs
+      template: template_rgg.html
+      css: style.css
+      toc: TRUE
+      toc_float: TRUE
+      toc_depth: 2
+      df_print: "paged"
+---
+
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set( warning=FALSE, message=FALSE)
+```
+
+<div class="container">
+
+
+# About
+***
+The `gVenn` allows you to create Venn diagrams with proportional areas. Initially created to work with genomic intervals, it also works perfectly for visualizing overlaps between between gene lists and other character vectors.
+
+Check out the full [package documentation](https://ckntav.github.io/gVenn/) for more details. `gVenn` is a project by [Christophe Tav](https://github.com/ckntav).
+
+<br>
+```{r, echo=FALSE, out.width="20%", fig.align="center"}
+knitr::include_graphics("https://raw.githubusercontent.com/ckntav/gVenn/master/man/figures/20250827_hex_gVenn_v1.png")
+```
+
+
+# Libraries
+***
+
+You can install `gVenn` from Bioconductor:
+
+```{r, eval=FALSE}
+# Install from Bioconductor
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("gVenn")
+```
+
+Then load the library:
+
+```{r}
+library(gVenn)
+```
+
+That's all you need!
+
+
+# Dataset
+***
+
+We'll use the built-in `gene_list` dataset that comes with the package. It contains three sets of gene names:
+
+```{r}
+# Load the example dataset
+data(gene_list)
+
+# Check the structure
+str(gene_list)
+```
+
+This is a simple named list containing three character vectors. Each vector represents a set of genes. This is the typical format you'll use with `gVenn`!
+
+You can see we have:
+
+- **125 genes** in list A
+- **115 genes** in list B  
+- **70 genes** in list C
+
+Let's visualize the overlaps to find shared and unique genes!
+
+
+# Two steps to an area-proportional Venn diagram
+***
+Creating a Venn diagram with `gVenn` is incredibly simple:
+
+1. First, compute the overlaps using `computeOverlaps()`
+2. Then, visualize with `plotVenn()`
+
+The magic of `gVenn` is that the **areas are proportional** to the actual overlap sizes. In traditional Venn diagrams, circles often have fixed sizes, but here the areas are adjusted to size each region to reflect the true numbers!
+
+```{r default-Venn, fig.align="center"}
+# 1. Compute overlaps
+overlap <- computeOverlaps(gene_list)
+
+# 2. Create the Venn diagram
+plotVenn(overlap)
+```
+
+## Understanding your results
+
+From the Venn diagram above, we can see:
+
+- **67 genes** are unique to list A (only in A)
+- **45 genes** are unique to list B (only in B)
+- **17 genes** are unique to list C (only in C)
+- **21 genes** are shared between A and B (but not C)
+- **4 genes** are shared between A and C (but not B)
+- **16 genes** are shared between B and C (but not A)
+- **33 genes** are common to all three lists (A ∩ B ∩ C)
+
+The diagram makes it easy to see these patterns at a glance!
+
+# Custom colors
+***
+
+<div class = "row">
+
+<div class = "col-md-6  col-sm-12 align-self-center">
+
+Let's make the diagram prettier by customizing the fill colors. The `fills` parameter accepts:
+
+- A character vector of colors
+- A list with `fill` (colors) and `alpha` (transparency, 0-1)
+
+You can use any valid R color: hex codes (`"#FF6B6B"`), named colors (`"steelblue"`), or RGB values.
+
+The `alpha` parameter controls transparency - values closer to 0 are more transparent, while 1 is fully opaque.
+
+</div>
+
+
+<div class = "col-md-6  col-sm-12">
+
+```{r custom-colors, echo=FALSE, out.width = "100%", fig.height=4}
+plotVenn(overlap,
+         fills = list(fill = c("#FF6B6B", "#4ECDC4", "steelblue1"), 
+                      alpha = 0.75),
+         legend = FALSE)
+```
+</div>
+</div>
+
+```{r custom-colors, eval=FALSE}
+```
+
+# Adding a title
+***
+
+Add a title to your Venn diagram using the `main` parameter:
+
+```{r with-title, fig.height=5, fig.width=7}
+plotVenn(overlap,
+         main = list(label = "Gene set overlaps",
+                     fontsize = 16,
+                     font = 2,
+                     col = "darkorange"))  # font=2 means bold
+```
+
+The `main` parameter can be:
+
+- A simple character string: `main = "My Title"`
+- A list with `label`, `fontsize`, `font`, and `col` for full control
+
+
+# Show counts and percentages
+***
+
+By default, the diagram shows counts. You can also display **percentages** or **both** using the `quantities` parameter.
+
+This is particularly useful for presentations where you want to communicate proportions clearly.
+
+The `type` option accepts:
+
+- `"counts"`: raw numbers (default)
+- `"percent"`: percentages
+- `c("counts", "percent")`: both!
+
+
+```{r counts-percent, fig.height=4}
+plotVenn(overlap,
+         quantities = list(type = c("counts", "percent"),
+                           fontsize = 9))
+```
+
+# Style with colored borders
+***
+
+For a different look, try using transparent fills with colorful borders:
+
+```{r colored-borders, fig.height=5, fig.width=7}
+plotVenn(overlap,
+         fills = "transparent",
+         edges = list(col = c("#E74C3C", "#3498DB", "#2ECC71"), 
+                      lwd = 4,
+                      lty = 2),
+         main = list(label = "bordered style",
+                     fontsize = 14))
+```
+
+The `edges` parameter controls the borders:
+
+- `col`: border colors
+- `lwd`: line width (thickness)
+- `lty`: line type (1=solid, 2=dashed, etc.)
+
+
+# Show set labels
+***
+
+By default, labels are hidden. Enable them with `labels = TRUE` or customize their appearance with a list.
+
+The labels show the names of your input lists (in this case: "random_genes_A", "random_genes_B", "random_genes_C").
+
+You can control:
+
+- `col`: color
+- `fontsize`: font size
+- `font`: font style (1=plain, 2=bold, 3=italic, 4=bold italic)
+- `fontfamily`: font family
+
+```{r with-labels,fig.height=5, fig.width=7}
+plotVenn(overlap,
+         labels = list(col = "#303030", 
+                      fontsize = 7, 
+                      font = 3,
+                      fontfamily = "mono"))
+```
+
+# Customize legend
+***
+
+By default, a legend appears on the right side. You can customize its position or hide it:
+
+```{r legend-bottom, fig.height=5, fig.width=7}
+plotVenn(overlap,
+         legend = list(side = "bottom",
+                       labels = c("Treatment A", "Treatment B", "Control"),
+                       fontsize = 11))
+```
+
+The `legend` parameter accepts:
+
+- `FALSE` - hide the legend
+- A character string: `"right"`, `"left"`, `"top"`, `"bottom"` for position
+- A list with `side`, `labels`, `fontsize` for full customization
+
+
+# Combining multiple custom options
+***
+
+Here's a complete example with all customizations for a publication-ready figure:
+
+```{r multiple-custom-options, fig.height=6, fig.width=8}
+plotVenn(overlap,
+         # Custom colors with transparency
+         fills = list(fill = c("#2B70AB", "#FFB027", "#3EA742"), 
+                      alpha = 0.75),
+         
+         # Subtle borders
+         edges = list(col = "gray30", lwd = 1.5),
+         
+         # Bold labels
+         labels = list(col = "black", fontsize = 8, font = 2),
+         
+         # Show counts
+         quantities = list(type = c("counts", "percent"), 
+                          col = "black", 
+                          fontsize = 10),
+         
+         # Title
+         main = list(label = "multiple custom options Venn",
+                     col = "navy", 
+                     fontsize = 16, 
+                     font = 2),
+         
+         # Custom legend
+         legend = list(side = "bottom",
+                      labels = c("Upregulated in Treatment A",
+                                 "Upregulated in Treatment B",
+                                 "Upregulated in Control"),
+                      fontsize = 10))
+```
+
+This demonstrates how flexible `gVenn` is - you can customize every aspect to match your needs!
+
+
+# Going further
+***
+
+For more complex visualizations with **4 or more sets**, consider using UpSet plots instead of Venn diagrams. The `gVenn` package also provides `plotUpSet()` for this purpose.
+
+```{r upset-plot, fig.width=5, fig.height=3, fig.align='center'}
+plotUpSet(overlap)
+```
+
+Check out the full [gVenn documentation](https://ckntav.github.io/gVenn/) to learn how to:
+
+- Work with genomic regions (GRanges)
+- Create UpSet plots for complex overlaps
+- Apply advanced customization
+- Save your visualizations
+- Extract and analyze intersection sets
+- See additional examples and use cases
+
+<!-- Close container -->
+</div>
+
+
+
+
+```{r, echo=FALSE}
+# This add some images at the end of the blogpost with related chart types
+# You can choose: Map, Correlation, Flow, Other, Ranking, Evolution, PartOfWhole, Distribution
+htmltools::includeHTML("htmlChunkRelatedPartOfWhole.html")
+```
